@@ -8,7 +8,7 @@
 <meta name="description" content="모든 사람은 예술가입니다. 한국창작인복지재단은 전 국민의 창작 활동을 지원합니다.">
 <meta property="og:title" content="창작지원">
 <meta property="og:description" content="모든 사람은 예술가입니다. 한국창작인복지재단은 전 국민의 창작 활동을 지원합니다.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f4fd8'/%3E%3Cpath d='M18 14h18v20l12 6v10H14V36h4z' fill='%23ffd21f'/%3E%3Crect x='14' y='46' width='34' height='6' fill='%23161d33'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2064%22%3E%3Crect%20width%3D%2296%22%20height%3D%2264%22%20rx%3D%2210%22%20fill%3D%22%23f3f5fa%22%2F%3E%3Cpath%20d%3D%22M9%2016%2022%2048%2035%2016%2048%2048%2061%2016M73%2016%2087%2048%22%20fill%3D%22none%22%20stroke%3D%22%231f4fd8%22%20stroke-width%3D%229%22%20stroke-linejoin%3D%22miter%22%2F%3E%3C%2Fsvg%3E">
 <style>
 :root{--blue:#1f4fd8;--ink:#161d33;--sub:#5b6681;--line:#dfe4ef;--card:#ffffff;--yellow:#ffd21f}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -115,6 +115,10 @@ button:disabled{opacity:.45;cursor:default}
 @media(max-width:720px){#obody{grid-template-columns:1fr}#obody.det #aplist{display:none}#obody:not(.det) #apdet{display:none}.apback{display:block}.stand,.foot2{display:none}.sysbar small{display:none}}
 @media(min-width:760px){#intro{background:linear-gradient(90deg,#f3f5fa 0%,rgba(243,245,250,.94) 30%,rgba(243,245,250,0) 62%);align-items:center;justify-content:flex-start;padding:0 0 0 clamp(30px,7vw,110px)}.pop{font-size:20px}}
 @media(max-height:480px){.ic h1{font-size:46px;margin-bottom:6px}.ic p{font-size:12px;margin-bottom:10px}.pri{min-height:46px}#chips{grid-template-rows:repeat(3,auto);top:calc(max(12px,env(safe-area-inset-top)) + 110px)}}
+.brand .mk,.org .mk,.sysbar .mk{width:38px;height:28px;border-radius:0;background:transparent;flex:none}
+.mk svg{display:block;width:100%;height:100%}
+.ph small{display:flex;align-items:center;gap:7px}.ph .mk{width:30px;height:20px}
+@media(max-width:420px){.brand{padding:8px 9px;gap:7px}.brand .mk{width:30px;height:23px}.brand b{font-size:14px}.brand small{font-size:9px}.right{gap:5px}.right .ib{width:36px;height:40px}.money{padding:8px;gap:6px}#money{font-size:15px}}
 </style>
 </head>
 <body>
@@ -122,7 +126,7 @@ button:disabled{opacity:.45;cursor:default}
 <div id="hud">
  <div id="pops"></div>
  <div class="row" id="r1">
-  <div class="pill brand"><div class="mk"><i></i></div><div><b>창작지원</b><small>창작환경관리팀</small></div></div>
+  <div class="pill brand"><div class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M9 16 22 48 35 16 48 48 61 16M73 16 87 48" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></div><div><b>창작지원</b><small>창작환경관리팀</small></div></div>
   <div class="right"><div class="pill money"><small>수당</small><span id="money">0원</span></div><button class="ib" id="snd" aria-label="소리">♪</button><button class="ib" id="pz" aria-label="일시정지">Ⅱ</button></div>
  </div>
  <div class="row" id="r2">
@@ -138,7 +142,7 @@ button:disabled{opacity:.45;cursor:default}
 </div>
 <div class="ov" id="intro">
  <div class="ic">
-  <div class="org"><div class="mk"><i></i></div>한국창작인복지재단</div>
+  <div class="org"><div class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M9 16 22 48 35 16 48 48 61 16M73 16 87 48" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></div>한국창작인복지재단</div>
   <h1>창작지원</h1>
   <p><b>모든 사람은 예술가입니다.</b><br>누구나 감상자가 아닌 창작 주체로 살아갈 때, 노동에서 소외되지 않는 삶이 시작됩니다. 한국창작인복지재단은 전 국민의 창작 활동을 지원합니다.<br>창작이 멈추지 않도록 작업장은 늘 비워 둡니다.</p>
   <button class="pri" id="start" disabled>준비 중</button>
@@ -148,7 +152,7 @@ button:disabled{opacity:.45;cursor:default}
 </div>
 <div class="ov" id="shop" hidden>
  <section class="panel" role="dialog" aria-modal="true">
-  <div class="ph"><div><small>한국창작인복지재단</small><h2>장비 보급</h2></div><button class="ib" id="shopx" aria-label="닫기" style="box-shadow:none;background:#f3f5fa">✕</button></div>
+  <div class="ph"><div><small><span class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M9 16 22 48 35 16 48 48 61 16M73 16 87 48" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></span>한국창작인복지재단</small><h2>장비 보급</h2></div><button class="ib" id="shopx" aria-label="닫기" style="box-shadow:none;background:#f3f5fa">✕</button></div>
   <div class="bal">보유 수당 <b id="smoney"></b></div>
   <div id="gears"></div>
   <div class="stat"><span>누적 처리 <b id="stotal"></b>마리</span><span>수거량 <b id="sliters"></b>L</span></div>
@@ -157,7 +161,7 @@ button:disabled{opacity:.45;cursor:default}
 </div>
 <div class="ov" id="office" hidden>
  <div class="mon">
-  <div class="sysbar"><div class="mk"><i></i></div><div><b>창작인경력정보시스템</b><small>한국창작인복지재단 · 예술활동증명 / 창작준비금</small></div><div class="mny">보유 수당<br><b id="omoney"></b></div><button class="out" id="officex">나가기</button></div>
+  <div class="sysbar"><div class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M9 16 22 48 35 16 48 48 61 16M73 16 87 48" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></div><div><b>창작인경력정보시스템</b><small>한국창작인복지재단 · 예술활동증명 / 창작준비금</small></div><div class="mny">보유 수당<br><b id="omoney"></b></div><button class="out" id="officex">나가기</button></div>
   <div id="obody"><div id="aplist"></div><div id="apdet"></div></div>
  </div>
  <div class="stand"></div><div class="foot2"></div>
@@ -182,7 +186,8 @@ const TAU=Math.PI*2;
 /* ───────── 저장 ───────── */
 const KEY='creative-support-v2';
 const TOOLS=[
- {id:'boot',name:'작업화',short:'작업화',price:0,desc:'한 마리씩 밟아서 처리합니다. 길게 누르면 체중이 실립니다.'},
+ {id:'hand',name:'맨손',short:'맨손',price:0,desc:'한 마리를 집어 올립니다. 계속 누르면 손가락을 오므려 터뜨립니다.'},
+ {id:'boot',name:'안전화',short:'안전화',price:300,desc:'한 마리씩 밟아서 처리합니다. 길게 누르면 체중이 실립니다.'},
  {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:1200,desc:'한 마리씩 집어 봉투에 담습니다. 봉투가 차면 묶어서 바닥에 내려칩니다.'},
  {id:'shovel',name:'수거용 삽',short:'삽',price:2500,desc:'내려쳐서 처리한 다음 바닥을 긁어 수거통에 퍼담습니다.'},
  {id:'mop',name:'물밀대',short:'밀대',price:6000,desc:'앞으로 밀어서 모읍니다. 배수구 위로 밀면 철망 사이로 내려갑니다.'},
@@ -209,11 +214,11 @@ const AP=[
 ];
 const quota=z=>Math.min(260,50+(z-1)*30);
 function loadSave(){
- const d={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['boot'],tool:'boot',muted:false,ap:{},grants:[null,null,null],ofn:false};
+ const d={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand'],tool:'hand',muted:false,ap:{},grants:[null,null,null],ofn:false};
  try{const r=JSON.parse(localStorage.getItem(KEY)||'null');
   if(r&&r.v===2){d.money=clamp(+r.money||0,0,1e9);d.total=clamp(Math.floor(+r.total||0),0,1e9);d.liters=clamp(+r.liters||0,0,1e9);
    d.zone=clamp(Math.floor(+r.zone||1),1,999);d.prog=clamp(Math.floor(+r.prog||0),0,quota(d.zone));d.paid=!!r.paid&&d.prog>=quota(d.zone);
-   if(Array.isArray(r.owned)&&r.owned.includes('glue')){d.money+=4000;d.rf=true}d.owned=TOOLS.map(t=>t.id).filter(id=>id==='boot'||Array.isArray(r.owned)&&r.owned.includes(id));d.tool=d.owned.includes(r.tool)?r.tool:'boot';d.muted=!!r.muted;d.ofn=!!r.ofn;
+   if(Array.isArray(r.owned)&&r.owned.includes('glue')){d.money+=4000;d.rf=true}d.owned=TOOLS.map(t=>t.id).filter(id=>id==='hand'||Array.isArray(r.owned)&&r.owned.includes(id));d.tool=d.owned.includes(r.tool)?r.tool:'hand';d.muted=!!r.muted;d.ofn=!!r.ofn;
    if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999)}}
    if(Array.isArray(r.grants))for(let k=0;k<3;k++){const g=r.grants[k];if(g&&AP[g.a]&&d.ap[g.a]&&d.ap[g.a].s==='paid'&&!d.grants.some(q=>q&&q.a===g.a))d.grants[k]={a:g.a,left:clamp(+g.left||0,.1,GRANT_T)}}
    for(const k in d.ap)if(d.ap[k].s==='paid'&&!d.grants.some(g=>g&&g.a===+k))d.ap[k].s='cert'}
@@ -439,6 +444,9 @@ function roomTarget(z,snap){const k=Math.min(4,Math.max(0,z-1))*.5;ROOM.tx=1.9+k
 function updateRoom(dt){const e=Math.abs(XB-ROOM.tx)+Math.abs(ZN-ROOM.tn)+Math.abs(ZF-ROOM.tf);if(e<1e-5)return;
  if(e<.004){XB=ROOM.tx;ZN=ROOM.tn;ZF=ROOM.tf}else{XB=damp(XB,ROOM.tx,2.2,dt);ZN=damp(ZN,ROOM.tn,2.2,dt);ZF=damp(ZF,ROOM.tf,2.2,dt)}roomApply()}
 const creators=[];
+function drawMark(g,x,y,w,color='#1f4fd8'){
+ g.save();g.translate(x,y);g.scale(w/96,w/96);g.strokeStyle=color;g.lineWidth=9;g.lineJoin='miter';g.beginPath();g.moveTo(9,16);g.lineTo(22,48);g.lineTo(35,16);g.lineTo(48,48);g.lineTo(61,16);g.moveTo(73,16);g.lineTo(87,48);g.stroke();g.restore();
+}
 function buildRoom(){
  const base=canvasTex(2048,2048,(g,w,h)=>{
   const px=m=>m/11*w,X=x=>(x+5.5)/11*w,Z=z=>(z+5.5)/11*h;
@@ -453,7 +461,7 @@ function buildRoom(){
  const fl=new THREE.Mesh(new THREE.PlaneGeometry(11,11),floorMat);fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;scene.add(fl);
  const F='"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';
  const slogan=canvasTex(2048,512,(g,w,h)=>{g.clearRect(0,0,w,h);g.textAlign='center';g.textBaseline='middle';g.fillStyle='#1f4fd8';g.font='900 210px '+F;g.fillText('마음껏 표현하세요',w/2,150);
-  g.font='700 70px '+F;const sub='한국창작인복지재단  ·  시민 창작 교실',sw=g.measureText(sub).width+130,y=390,r=58;g.beginPath();g.moveTo(w/2-sw/2+r,y-r);g.arcTo(w/2+sw/2,y-r,w/2+sw/2,y+r,r);g.arcTo(w/2+sw/2,y+r,w/2-sw/2,y+r,r);g.arcTo(w/2-sw/2,y+r,w/2-sw/2,y-r,r);g.arcTo(w/2-sw/2,y-r,w/2+sw/2,y-r,r);g.fill();g.fillStyle='#fff';g.fillText(sub,w/2,y+4)});
+  g.font='700 70px '+F;const sub='한국창작인복지재단  ·  시민 창작 교실',sw=g.measureText(sub).width+130,y=390,r=58;g.beginPath();g.moveTo(w/2-sw/2+r,y-r);g.arcTo(w/2+sw/2,y-r,w/2+sw/2,y+r,r);g.arcTo(w/2+sw/2,y+r,w/2-sw/2,y+r,r);g.arcTo(w/2-sw/2,y+r,w/2-sw/2,y-r,r);g.arcTo(w/2-sw/2,y-r,w/2+sw/2,y-r,r);g.fill();g.fillStyle='#fff';g.fillText(sub,w/2+45,y+4);drawMark(g,w/2-sw/2+20,y-34,95,'#fff')});
  const sm=inkify(new THREE.MeshStandardMaterial({map:slogan,transparent:true,roughness:.62,envMapIntensity:.3,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
  const sp=new THREE.Mesh(new THREE.PlaneGeometry(4.8,1.2),sm);sp.rotation.x=-Math.PI/2;sp.position.set(0,.002,-1.55);sp.receiveShadow=true;sp.renderOrder=1;scene.add(sp);ROOM.sp=sp;
  const plain=M(0xd9d5cc,.7,0,.3);
@@ -463,7 +471,7 @@ function buildRoom(){
  const wallM=M(0xf6f3ec,.9),band=M(0xbfd0f5,.8),blue=M(0x1f4fd8,.6);
  addMesh(ROOM.wb,BX(11,6,.1),wallM,0,3,-6.9,false);addMesh(ROOM.wb,BX(11,.9,.04),band,0,.45,-6.84,false);addMesh(ROOM.wb,BX(11,.05,.05),blue,0,.92,-6.83,false);
  for(const s of[-1,1]){const W=s<0?ROOM.wl:ROOM.wr;addMesh(W,BX(.1,3.4,12.5),wallM,s*5.55,1.7,-.7,false);addMesh(W,BX(.04,.9,12.5),band,s*5.49,.45,-.7,false);addMesh(W,BX(.05,.05,12.5),blue,s*5.48,.92,-.7,false)}
- const banner=canvasTex(1024,256,(g,w,h)=>{g.fillStyle='#fff';g.fillRect(0,0,w,h);g.fillStyle='#1f4fd8';g.fillRect(0,0,w,26);g.fillRect(0,h-26,w,26);g.textAlign='center';g.textBaseline='middle';g.font='900 104px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';g.font='900 96px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';g.fillText('모든 사람은 예술가다',w/2,h*.46);g.font='700 30px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';g.fillStyle='#5b6681';g.fillText('감상자에서 창작 주체로 · 한국창작인복지재단',w/2,h*.76)});
+ const banner=canvasTex(1024,256,(g,w,h)=>{g.fillStyle='#fff';g.fillRect(0,0,w,h);g.fillStyle='#1f4fd8';g.fillRect(0,0,w,26);g.fillRect(0,h-26,w,26);g.textAlign='center';g.textBaseline='middle';g.font='900 104px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';g.font='900 96px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';g.fillText('모든 사람은 예술가다',w/2,h*.46);g.font='700 30px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';g.fillStyle='#5b6681';g.fillText('감상자에서 창작 주체로 · 한국창작인복지재단',w/2+35,h*.76);drawMark(g,122,172,75)});
  const bn=new THREE.Mesh(new THREE.PlaneGeometry(4.6,1.15),new THREE.MeshStandardMaterial({map:banner,roughness:.8,envMapIntensity:.2}));bn.position.set(0,2.2,-6.83);ROOM.wb.add(bn);
  const win=new THREE.MeshStandardMaterial({color:lin(0xcfe6ff),emissive:lin(0x9cc8ff),emissiveIntensity:.55,roughness:.2});
  [-3.9,3.9].forEach((x,i)=>{const W=ROOM.ww[i];addMesh(W,BX(1.7,1.3,.05),blue,x,2.2,-6.84,false);addMesh(W,BX(1.56,1.16,.06),win,x,2.2,-6.83,false);addMesh(W,BX(.05,1.16,.07),wallM,x,2.2,-6.82,false)});
@@ -954,7 +962,7 @@ function gooBurst(c,ex,ez,ox,oz,power){
   else chunk(ex,.03,ez,dx*sp,rnd(.8,1.8),dz*sp,rnd(.02,.034),.004,rnd(.02,.034),c.type===1?CANVAS:PAPER)}}
 }
 function killCreature(c,cause,ex,ez,ox,oz){
- if(c.dead)return;c.dead=true;credit(c);earn(TYPES[c.type].pay,c.x,c.z,c.st==='tank'?c.y:.12);
+ if(c.dead)return;c.dead=true;credit(c);earn(TYPES[c.type].pay,c.x,c.z,c.st==='tank'||cause==='hand'?c.y:.12);
  if(cause==='boot'){
   stamp(c.x,c.z,c.r*8.6,c.r*8.6,Math.sin(c.yaw),Math.cos(c.yaw),Math.random()<.5?1:2,c.ink,1);
   gooBurst(c,ex,ez,ox,oz,1);corpse(c);gore(c,ox,oz,1);eyeball(c,ox,oz);if(Math.random()<.6)eyeball(c,ox*.4-oz,oz*.4+ox,.8);
@@ -1152,12 +1160,12 @@ function updateBody(dt,mx,mz){
  showW=damp(showW,ST.ph==='peelB'||ST.ph==='show'?1:0,10,dt);
  // 다리
  for(let i=0;i<2;i++){const L=legs[i],b=i?bootL:bootR,side=i?-1:1;
-  const vis=!truck;L.hem.visible=b.visible=vis;if(!vis)continue;
+  const vis=!truck&&S.tool!=='hand';L.hem.visible=b.visible=vis;if(!vis)continue;
   _a.set(0,.2,.085);b.localToWorld(_a);_b.set(P.x+side*(.12+(i===0?.5*showW:0)),1.05,P.z+.05-.26*lean).sub(_a).normalize().multiplyScalar(.07).add(_a);
   between(L.hem,_a,_b);
   // 밑창 잔여물
   for(const r of b.userData.res)blobAt(r.lx,-.004,r.lz,r.s,r.s*.45,r.s,r.color,b)}
- reticle.visible=started&&S.tool==='boot'&&(ST.ph==='idle'||ST.ph==='back');reticle.position.set(P.x+AIMX,.006,P.z-AIMZ);
+ reticle.visible=started&&(S.tool==='boot'&&(ST.ph==='idle'||ST.ph==='back')||S.tool==='hand'&&HG.ph==='idle');reticle.position.set(P.x+AIMX,.006,P.z-AIMZ);
  // 카메라
  camX=damp(camX,ST.ph==='idle'||ST.ph==='back'?0:(ST.T.x-P.x)*.75-.03,6,dt);
  shake=Math.max(0,shake-dt*7);
@@ -1169,9 +1177,108 @@ function updateBody(dt,mx,mz){
  sun.position.set(P.x-1.4,6,P.z+.4);sun.target.position.set(P.x,0,P.z-2);sun.target.updateMatrixWorld();
 }
 function plant(b,pose){
+ if(S.tool==='hand'){AU.step(false);return}
  const res=b.userData.res;AU.step(res.length>0);
  if(res.length){stamp(pose.x,pose.z,.15,.36,-Math.sin(pose.yaw),-Math.cos(pose.yaw),4,res[res.length-1].color,.42+.05*res.length);if(Math.random()<.5)res.shift()}
  for(const c of creatures){if(c.st!=='walk'&&c.st!=='flee')continue;if(Math.hypot(c.x-pose.x,c.z-pose.z)<.1){c.st='maim';c.t=0;c.life=rnd(5,9);c.sq=.25;c.panic=1;stamp(c.x,c.z,c.r*5,c.r*5,0,1,0,c.ink,1);AU.squeal(c.type,.9);AU.squelch(.45)}}
+}
+
+/* ───────── 맨손: 집기 → 들어 올리기 → 쥐기 → 펴기 ───────── */
+const HG={g:null,arm:null,sleeve:null,palm:null,thumb:null,fingers:[],wet:[],ph:'idle',t:0,p:0,c:null,target:null,pos:new THREE.Vector3(),from:new THREE.Vector3(),to:new THREE.Vector3(),rest:new THREE.Vector3(),grip:0,stain:null,drip:0};
+function buildHand(){
+ const h=HG,g=h.g=new THREE.Group(),skin=M(0xd9ac89,.72,0,.26),nail=M(0xe6c4ac,.6),crease=M(0xa97659,.9),navy=M(0x24439e,.85),geo=SP(12,9);
+ const oval=(parent,mat,x,y,z,sx,sy,sz)=>{const m=addMesh(parent,geo,mat,x,y,z);m.scale.set(sx,sy,sz);return m};
+ h.palm=oval(g,skin,0,0,0,.104,.04,.105);
+ oval(g,skin,0,-.003,.1,.057,.034,.07);
+ // Three connected joints per finger; the palm stays in place as they curl over it.
+ for(let i=0;i<4;i++){
+  const root=new THREE.Group();root.position.set((i-1.5)*.049,.004,-.074);g.add(root);let parent=root;
+  const joints=[],lengths=[.063,.047,.035].map(v=>v*(i===3?.79:i===1?1.06:1));
+  for(let j=0;j<3;j++){
+   const pivot=j===0?root:new THREE.Group();if(j){pivot.position.z=-lengths[j-1];parent.add(pivot)}
+   const len=lengths[j],r=.019-j*.002;oval(pivot,skin,0,0,-len*.48,r,r*.93,len*.62);
+   if(j===2){const n=oval(pivot,nail,0,-r*.83,-len*.55,r*.72,.003,len*.3);n.rotation.x=-.08}
+   else{const line=addMesh(pivot,CY(.001,.001,r*1.25,5),crease,0,r*.9,-len*.79);line.rotation.z=Math.PI/2}
+   joints.push(pivot);parent=pivot;
+  }
+  h.fingers.push({joints,i});
+ }
+ h.thumb=new THREE.Group();h.thumb.position.set(-.08,.005,.048);g.add(h.thumb);
+ oval(h.thumb,skin,-.024,0,-.017,.038,.025,.05);
+ h.thumbTip=new THREE.Group();h.thumbTip.position.set(-.045,.003,-.045);h.thumb.add(h.thumbTip);
+ oval(h.thumbTip,skin,0,0,-.024,.025,.021,.041);oval(h.thumbTip,nail,0,-.019,-.03,.017,.003,.018);
+ // Fine palm lines, deliberately matte like the skin around them.
+ for(const q of [[-.026,.034,-.002,.082,.2],[.025,.036,.026,.075,-.23],[.005,.036,-.035,.075,.09]]){
+  const line=addMesh(g,CY(.0012,.0012,q[3],6),crease,q[0],q[1],q[2]);line.rotation.z=Math.PI/2;line.rotation.y=q[4];
+ }
+ const cuff=addMesh(g,CY(.06,.056,.055,12),navy,0,0,.145);cuff.rotation.x=Math.PI/2;
+ const label=canvasTex(96,64,(c)=>{c.fillStyle='#f3f5fa';c.fillRect(0,0,96,64);drawMark(c,0,0,96)});
+ const patch=addMesh(g,new THREE.PlaneGeometry(.07,.044),new THREE.MeshStandardMaterial({map:label,roughness:.9}),0,.057,.145,false);patch.rotation.x=-Math.PI/2;
+ h.arm=addMesh(scene,CY(.043,.055,1,12),skin);h.sleeve=addMesh(scene,CY(.062,.085,1,12),navy);
+ const wetMat=M(0x8a1c1c,.2,0,.65);
+ for(let i=0;i<6;i++){const m=oval(g,wetMat,(i%3-1)*.047,.039,-.045+Math.floor(i/3)*.07,.022,.004,.03);m.visible=false;h.wet.push(m)}
+ g.visible=h.arm.visible=h.sleeve.visible=false;scene.add(g);
+}
+function handRelease(){
+ const h=HG,c=h.c;
+ if(c&&!c.dead){c.st='walk';c.t=0;c.y=0;c.sq=c.sqT=1;c.roll=0;c.x=clamp(c.x,-XB,XB);c.z=clamp(c.z,ZN,ZF)}
+ h.c=h.target=null;h.ph='idle';h.p=h.t=0;
+}
+function handReset(){handRelease();HG.stain=null;HG.drip=0;for(const m of HG.wet)m.visible=false}
+const handLocked=()=>HG.ph!=='idle'&&HG.ph!=='hold';
+function handBurst(c){
+ const h=HG,x=c.x,y=c.y+.04,z=c.z;
+ // Every droplet starts in the raised hand, then falls onto the existing floor ink.
+ for(let i=0;i<18;i++){const a=rnd(0,TAU),v=rnd(.35,1.4);drop(x,y,z,Math.cos(a)*v,rnd(.1,.9),Math.sin(a)*v,rnd(.006,.014),c.ink)}
+ for(let i=0;i<6;i++){const a=rnd(0,TAU),v=rnd(.25,.9);chunk(x,y,z,Math.cos(a)*v,rnd(.15,.65),Math.sin(a)*v,rnd(.007,.018),rnd(.004,.01),rnd(.01,.022),i%3?c.ink:c.skin)}
+ if(c.type!==6){chunk(x,y,z,.22,.35,-.4,c.r*.8,.008,c.r*.8,c.skin,1);const r=c.r*.14;chunk(x,y+.02,z,-.35,.75,.25,r,r,r,WHITE,2)}
+ h.stain=c.ink;for(const m of h.wet){m.visible=true;m.material.color.copy(c.ink)}h.drip=.12;h.wetTime=4;
+ AU.cut();AU.pop(c.type,1.1);AU.squelch(.75);shake=Math.max(shake,.7);hitstop=.055;
+ killCreature(c,'hand');panicNear(x,z,1);h.c=null;h.ph='burst';h.t=0;
+}
+function handUpdate(dt,act){
+ const h=HG,on=S.tool==='hand';h.g.visible=h.arm.visible=h.sleeve.visible=on;
+ if(!on){if(h.ph!=='idle'||h.c)handRelease();return}
+ h.t+=dt;h.rest.set(P.x+.22,.58+Math.sin(time*2)*.006,P.z-.58);
+ let grip=.06,tilt=.12;
+ if(h.ph==='idle'){
+  h.pos.copy(h.rest);
+  if(act&&started){let best=null,bd=.36;for(const c of creatures){if(c.dead||busy(c))continue;const d=Math.hypot(c.x-(P.x+AIMX),c.z-(P.z-AIMZ));if(d<bd){best=c;bd=d}}
+   h.p=0;h.target=best;h.from.copy(h.pos);h.to.set(best?best.x:P.x+AIMX,.045,best?best.z+.045:P.z-AIMZ);h.ph='reach';h.t=0;AU.whoosh();
+  }
+ }else if(h.ph==='reach'){
+  const c=h.target,u=ss(h.t/.22);if(c&&!c.dead&&!busy(c))h.to.set(c.x,.045,c.z+.045);h.pos.lerpVectors(h.from,h.to,u);tilt=lerp(.12,-.14,u);
+  if(!act){h.from.copy(h.pos);h.ph='return';h.t=0;h.target=null}
+  else if(h.t>=.22){if(c&&!c.dead&&!busy(c)){h.c=c;c.st='held';c.panic=1;c.pt=0;h.ph='scoop';AU.squeal(c.type,.8,0,.27)}else{h.ph='return';h.from.copy(h.pos)}h.t=0;h.target=null}
+ }else if(h.ph==='scoop'){
+  grip=lerp(.06,.38,ss(h.t/.16));tilt=-.14;
+  if(h.t>=.16){h.from.copy(h.pos);h.ph='lift';h.t=0}
+ }else if(h.ph==='lift'){
+  const u=ss(h.t/.3);h.to.set(P.x+.07,.9,P.z-.84);h.pos.lerpVectors(h.from,h.to,u);h.pos.y+=Math.sin(u*Math.PI)*.055;grip=.38;tilt=lerp(-.14,.25,u);
+  if(h.t>=.3){h.ph='hold';h.p=0;h.t=0}
+ }else if(h.ph==='hold'){
+  h.pos.set(P.x+.07,.9+Math.sin(time*3)*.004,P.z-.84);tilt=.25;
+  h.p=clamp(h.p+(act?dt/.65:-dt*2),0,1);grip=.38+.62*ss(h.p);
+  if(h.c){h.c.sq=1-.74*ss(h.p);h.c.panic=1;h.pos.x+=Math.sin(time*55)*.002*h.p;
+   if(act&&h.t>.23&&h.p<.9){AU.squeal(h.c.type,1,0,.27);h.t=0}
+  }
+ }else if(h.ph==='burst'){
+  grip=1;tilt=.25;h.pos.y=.9+Math.sin(Math.min(1,h.t/.15)*Math.PI)*.016;
+  if(h.t>=.16){h.ph='open';h.t=0;AU.peel(.32)}
+ }else if(h.ph==='open'){
+  grip=1-ss(h.t/.28);tilt=.25;
+  if(h.t>=.28){h.from.copy(h.pos);h.ph='return';h.t=0}
+ }else if(h.ph==='return'){
+  const u=ss(h.t/.2);h.pos.lerpVectors(h.from,h.rest,u);grip=.06;tilt=lerp(.25,.12,u);
+  if(h.t>=.2){h.ph='idle';h.t=0}
+ }
+ h.grip=grip;h.g.position.copy(h.pos);h.g.rotation.set(tilt,-.12,-.09);
+ for(const f of h.fingers){const q=ss(grip);f.joints[0].rotation.set(q*1.25,0,(f.i-1.5)*.055*(1-q));f.joints[1].rotation.x=q*1.55;f.joints[2].rotation.x=q*.8}
+ h.thumb.rotation.set(grip*.45,-grip*1.35,-grip*.45);h.thumbTip.rotation.y=-grip*.65;
+ h.g.updateMatrixWorld(true);
+ _a.set(0,0,.16);h.g.localToWorld(_a);_b.set(P.x+.32,.93,P.z+.16);_c.lerpVectors(_a,_b,.6);between(h.arm,_a,_c);between(h.sleeve,_c,_b);
+ if(h.c&&!h.c.dead){const c=h.c;_a.set(0,.045+.018*h.p,-.035);h.g.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.yaw=.15;c.roll=Math.sin(time*28)*.09*(1+h.p);c.sq=1-.74*ss(h.p);if(h.ph==='hold'&&act&&h.p>=1)handBurst(c)}
+ if(h.stain&&h.wetTime>0){h.wetTime-=dt;h.drip-=dt;if(h.drip<=0){h.drip=.25;_a.set(-.04,.04,-.07);h.g.localToWorld(_a);drop(_a.x,_a.y,_a.z,0,-.1,0,.006,h.stain)}}
 }
 
 /* ───────── 삽 ───────── */
@@ -1579,7 +1686,7 @@ function washUpdate(dt,act){
  w.er-=dt;if(w.er<=0){w.er=.05;let got=0;for(let j=0;j<5;j++)got+=eraseAt(x0,P.z-1.25-j*.33,.3,.36,.7,5);if(got)earn(got*6,x0,P.z-1.6)}
 }
 
-const tool2Locked=()=>tongLocked()||VC.gr>0;
+const tool2Locked=()=>handLocked()||tongLocked()||VC.gr>0;
 function tools2Reset(){TG.held=null;TG.in.length=0;TG.dead=0;TG.ph='idle';TG.tgt=null}
 
 /* ───────── 사무실 · 예술활동증명 · 창작준비금 ───────── */
@@ -1591,7 +1698,7 @@ function buildOffice(){
  addMesh(g,BX(.06,1.94,.9),M(0x30343f,.6),-.004,.97,0);addMesh(g,BX(.06,1.86,.8),M(0x5b86e6,.45),-.02,.95,0);
  addMesh(g,BX(.064,.46,.34),new THREE.MeshStandardMaterial({color:lin(0xdff0ff),emissive:lin(0xbfe0ff),emissiveIntensity:.5,roughness:.2}),-.021,1.42,0,false);
  addMesh(g,BX(.07,.03,.13),M(0xe4e8ee,.3,.6),-.05,.96,.27);
- const sign=canvasTex(512,160,(c,w,h)=>{c.fillStyle='#fff';c.fillRect(0,0,w,h);c.strokeStyle='#1f4fd8';c.lineWidth=10;c.strokeRect(5,5,w-10,h-10);c.fillStyle='#1f4fd8';c.textAlign='center';c.textBaseline='middle';c.font='900 96px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';c.fillText('사무실',w/2,h/2+6)});
+ const sign=canvasTex(512,160,(c,w,h)=>{c.fillStyle='#fff';c.fillRect(0,0,w,h);c.strokeStyle='#1f4fd8';c.lineWidth=10;c.strokeRect(5,5,w-10,h-10);c.fillStyle='#1f4fd8';c.textAlign='center';c.textBaseline='middle';c.font='900 96px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';drawMark(c,25,30,132);c.fillText('사무실',w/2+66,h/2+6)});
  const sp=new THREE.Mesh(new THREE.PlaneGeometry(.62,.194),new THREE.MeshStandardMaterial({map:sign,roughness:.7,envMapIntensity:.2}));sp.rotation.y=-Math.PI/2;sp.position.set(-.012,2.08,0);g.add(sp);
  const mat=new THREE.Mesh(new THREE.PlaneGeometry(.5,.8),M(0x3b4a6b,.9));mat.rotation.x=-Math.PI/2;mat.rotation.z=Math.PI/2;mat.position.set(-.32,.004,0);mat.receiveShadow=true;g.add(mat);
  // 문 앞 바닥 표시
@@ -1645,7 +1752,7 @@ function spawnInitial(){
  while(made<n){const cx=rnd(-XB+.4,XB-.4),cz=rnd(ZN+.5,ZF-.6);if(Math.hypot(cx-P.x,cz-P.z)<.6)continue;herd(cx,cz,pick(act).type,5+(Math.random()*5|0))}
 }
 function resetRoom(){
- creatures.length=0;drops.length=0;chunks.length=0;ST.ph='idle';ST.pins.length=0;SH.carry.length=0;SH.ph='idle';SH.tossN=0;SH.load=0;SH.lc.length=0;SH.binN=0;vacClear();TK.load=0;AU.loop('grind',false);tools2Reset();clearStrands();inkClear();bootR.userData.res.length=0;bootL.userData.res.length=0;
+ handReset();creatures.length=0;drops.length=0;chunks.length=0;ST.ph='idle';ST.pins.length=0;SH.carry.length=0;SH.ph='idle';SH.tossN=0;SH.load=0;SH.lc.length=0;SH.binN=0;vacClear();TK.load=0;AU.loop('grind',false);tools2Reset();clearStrands();inkClear();bootR.userData.res.length=0;bootL.userData.res.length=0;
  P.x=0;P.z=.8;creators.forEach(c=>c.timer=rnd(3,7));spawnInitial();
 }
 function nextZone(){if(!S.paid)return;S.zone++;S.prog=0;S.paid=false;resetRoom();roomTarget(S.zone);save();updateHUD(true);toast('창작 교실 증설 · '+S.zone+'구역',3.5);AU.chime()}
@@ -1666,7 +1773,7 @@ function setTool(id){if(!S.owned.includes(id)||S.tool===id)return;if(stompLocked
 const fine=window.matchMedia&&matchMedia('(pointer:fine)').matches;
 let hintN=0;
 function setHint(){
- const verb={boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'내려치고, 계속 누르면 퍼담습니다',tong:'집어서 봉투에 담고, 봉투가 차면 눌러서 내려칩니다',mop:'누른 채 앞으로 밀어 배수구로 보냅니다',trim:'누르는 동안 잘라 냅니다',wash:'누르는 동안 물을 쏩니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다',truck:'누르는 동안 수거합니다'}[S.tool];
+ const verb={hand:'누르면 집어 들고, 꾹 누르면 터뜨립니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'내려치고, 계속 누르면 퍼담습니다',tong:'집어서 봉투에 담고, 봉투가 차면 눌러서 내려칩니다',mop:'누른 채 앞으로 밀어 배수구로 보냅니다',trim:'누르는 동안 잘라 냅니다',wash:'누르는 동안 물을 쏩니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다',truck:'누르는 동안 수거합니다'}[S.tool];
  $('hinttxt').textContent=fine?'WASD 이동 · 스페이스나 마우스를 '+verb:'왼쪽 화면: 이동 · 오른쪽 화면: '+verb;
  $('hint').style.opacity=1;hintN=6;
 }
@@ -1714,8 +1821,8 @@ function bind(){
  $('snd').onclick=()=>{AU.wake();S.muted=!S.muted;AU.mute(S.muted);save();updateHUD(true)};
  $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('shopx').onclick=closeShop;$('next').onclick=nextZone;$('gooffice').onclick=openOffice;$('officex').onclick=closeOffice;
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
- $('reset').onclick=()=>{if(!confirm('수당과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['boot'],tool:'boot',muted:m,ap:{},grants:[null,null,null],ofn:false};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
- $('howto').innerHTML=fine?'이동: WASD 또는 방향키<br>작업: 스페이스 또는 마우스를 누르고 있기<br>장비 바꾸기: 숫자 키 1~8 · 장비 보급: B<br>사무실: 오른쪽 사무실 문 앞에서 Enter':'이동: 화면 왼쪽을 누른 자리에서 끌기<br>작업: 화면 오른쪽을 누르고 있기<br>장비 바꾸기: 왼쪽 위 장비 이름<br>사무실: 오른쪽 사무실 문 앞에 서면 들어가는 단추가 뜹니다';
+ $('reset').onclick=()=>{if(!confirm('수당과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand'],tool:'hand',muted:m,ap:{},grants:[null,null,null],ofn:false};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
+ $('howto').innerHTML=fine?'이동: WASD 또는 방향키<br>작업: 스페이스 또는 마우스를 누르고 있기<br>장비 바꾸기: 숫자 키 1~9 · 장비 보급: B<br>사무실: 오른쪽 사무실 문 앞에서 Enter':'이동: 화면 왼쪽을 누른 자리에서 끌기<br>작업: 화면 오른쪽을 누르고 있기<br>장비 바꾸기: 왼쪽 위 장비 이름<br>사무실: 오른쪽 사무실 문 앞에 서면 들어가는 단추가 뜹니다';
  cv.addEventListener('webglcontextlost',e=>{e.preventDefault();pauseGame();toast('그래픽 연결이 끊겼습니다. 페이지를 새로 열어 주세요.',30)});
 }
 function resize(){W=innerWidth;H=innerHeight;portrait=H>W;renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=portrait?CAM.fp:CAM.fl;camera.updateProjectionMatrix()}
@@ -1734,7 +1841,7 @@ function sim(dt){
   if((mx||mz||act)&&hintN>0){hintN-=dt;if(hintN<=0)$('hint').style.opacity=0}}
  stompUpdate(dt,act);
  updateBody(dt,mx,mz);updateGoogly();
- shovelUpdate(dt,act);vacUpdate(dt,act);truckUpdate(dt,act);trimUpdate(dt,act);tongUpdate(dt,act);washUpdate(dt,act);mopUpdate(dt,act);
+ handUpdate(dt,act);shovelUpdate(dt,act);vacUpdate(dt,act);truckUpdate(dt,act);trimUpdate(dt,act);tongUpdate(dt,act);washUpdate(dt,act);mopUpdate(dt,act);
  updateCreators(dt);updateCreatures(dt);officeUpdate();
  if(ST.ph!=='idle')updateStrands(dt);
  updateBits(dt);sweepDead();
@@ -1762,7 +1869,7 @@ function init(){
  const env=canvasTex(256,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#ffffff');gr.addColorStop(.45,'#e6ecf5');gr.addColorStop(.55,'#b9bfc9');gr.addColorStop(1,'#8f8a84');g.fillStyle=gr;g.fillRect(0,0,w,h);g.fillStyle='#ffffff';for(let i=0;i<4;i++)g.fillRect(14+i*64,8,36,14)});
  env.mapping=THREE.EquirectangularReflectionMapping;const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromEquirectangular(env).texture;env.dispose();pm.dispose();
  inkInit();buildRoom();buildCreatureGeo();buildFlocks();buildBits();
- bootR=buildBoot();bootL=buildBoot();buildLegs();buildStrands();buildShovel();buildBin();buildVac();buildTruck();buildDrains();buildTrim();buildTong();buildMop();buildWash();buildOffice();
+ bootR=buildBoot();bootL=buildBoot();buildLegs();buildStrands();buildHand();buildShovel();buildBin();buildVac();buildTruck();buildDrains();buildTrim();buildTong();buildMop();buildWash();buildOffice();
  roomTarget(S.zone,true);bind();resize();spawnInitial();sim(.016);drawCreatures();drawBits();inkFlush();renderer.render(scene,camera);
  $('start').disabled=false;$('start').textContent=S.total?'이어서 출근하기':'출근하기';$('load').textContent='';
  requestAnimationFrame(frame);
@@ -1779,3 +1886,4 @@ init();
 </script>
 </body>
 </html>
+
