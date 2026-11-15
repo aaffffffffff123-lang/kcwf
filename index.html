@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#f3f5fa">
-<title>창작지원 · 한국창작인복지재단</title>
+<title>한국창작인복지재단</title>
 <meta name="description" content="모든 사람은 예술가입니다. 한국창작인복지재단은 전 국민의 창작 활동을 지원합니다.">
-<meta property="og:title" content="창작지원">
+<meta property="og:title" content="한국창작인복지재단">
 <meta property="og:description" content="모든 사람은 예술가입니다. 한국창작인복지재단은 전 국민의 창작 활동을 지원합니다.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2064%22%3E%3Crect%20width%3D%2296%22%20height%3D%2264%22%20rx%3D%2210%22%20fill%3D%22%23f3f5fa%22%2F%3E%3Cpath%20d%3D%22M8%2019H35M21.5%2019V49M41%2019H68M54.5%2019V49M76%2015%2089%2049%22%20fill%3D%22none%22%20stroke%3D%22%231f4fd8%22%20stroke-width%3D%229%22%20stroke-linejoin%3D%22miter%22%2F%3E%3C%2Fsvg%3E">
 <style>
@@ -66,7 +66,7 @@ button:disabled{opacity:.45;cursor:default}
 .org{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:800;color:var(--blue);margin-bottom:12px}
 .org .mk{width:24px;height:24px;border-radius:7px;background:var(--blue);display:grid;place-items:center}
 .org .mk i{display:block;width:9px;height:9px;border-radius:50%;border:3px solid #fff}
-.ic h1{font-size:clamp(54px,15vw,84px);line-height:1;letter-spacing:-.07em;margin:0 0 14px;font-weight:900}
+.ic h1{font-size:clamp(36px,10vw,62px);line-height:1.06;letter-spacing:-.07em;margin:0 0 14px;font-weight:900}
 .ic p b{color:var(--ink);font-weight:800}
 .ic p{font-size:15px;line-height:1.7;margin:0 0 20px;color:#3b4662;letter-spacing:-.02em;word-break:keep-all;font-weight:500}
 .pri{width:100%;min-height:56px;border-radius:16px;background:var(--blue);color:#fff;font-weight:800;font-size:17px;box-shadow:0 4px 0 #163a9e,0 10px 22px rgba(31,79,216,.28);display:flex;align-items:center;justify-content:center;gap:8px}
@@ -132,11 +132,11 @@ button:disabled{opacity:.45;cursor:default}
 </style>
 </head>
 <body>
-<canvas id="gl" tabindex="0" aria-label="창작지원 작업장"></canvas>
+<canvas id="gl" tabindex="0" aria-label="한국창작인복지재단 작업장"></canvas>
 <div id="hud">
  <div id="pops"></div>
  <div class="row" id="r1">
-  <div class="pill brand"><div class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 19H35M21.5 19V49M41 19H68M54.5 19V49M76 15 89 49" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></div><div><b>창작지원</b><small>창작환경관리팀</small></div></div>
+  <div class="pill brand"><div class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 19H35M21.5 19V49M41 19H68M54.5 19V49M76 15 89 49" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></div><div><b>작업물<br>처리반</b></div></div>
   <div class="right"><div class="pill money"><small>수당</small><span id="money">0원</span></div><button class="ib" id="snd" aria-label="소리">♪</button><button class="ib" id="pz" aria-label="일시정지">Ⅱ</button></div>
  </div>
  <div class="row" id="r2">
@@ -152,11 +152,11 @@ button:disabled{opacity:.45;cursor:default}
 <div class="ov" id="intro">
  <div class="ic">
   <div class="org"><div class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 19H35M21.5 19V49M41 19H68M54.5 19V49M76 15 89 49" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></div>한국창작인복지재단</div>
-  <h1>창작지원</h1>
+  <h1>한국창작인<br>복지재단</h1>
   <p><b>모든 사람은 예술가입니다.</b><br>누구나 감상자가 아닌 창작 주체로 살아갈 때, 노동에서 소외되지 않는 삶이 시작됩니다. 한국창작인복지재단은 전 국민의 창작 활동을 지원합니다.<br>창작이 멈추지 않도록 작업장은 늘 비워 둡니다.</p>
   <button class="pri" id="start" disabled>준비 중</button>
   <div id="load">작업장을 준비하고 있습니다.</div>
-  <div class="foot">창작환경관리팀 · <a href="../">혐규오락실</a></div>
+  <div class="foot">작업물처리반 · <a href="../">혐규오락실</a></div>
  </div>
 </div>
 <div class="ov" id="shop" hidden>
@@ -177,7 +177,7 @@ button:disabled{opacity:.45;cursor:default}
 </div>
 <div class="ov" id="pause" hidden>
  <section class="panel" role="dialog" aria-modal="true">
-  <div class="ph"><div><small>창작환경관리팀</small><h2>일시정지</h2></div></div>
+  <div class="ph"><div><small>작업물처리반</small><h2>일시정지</h2></div></div>
   <div class="col"><button class="pri" id="resume">계속하기</button></div>
   <p class="note" id="howto"></p>
   <button class="sub" id="reset">진행 기록 초기화</button>
@@ -564,7 +564,7 @@ function buildRoom(){
   for(let i=0;i<3;i++)ROOM.ln.push(mk(new THREE.MeshStandardMaterial(Object.assign({color:lin(0x1f4fd8)},o))));
   const hz=canvasTex(128,32,(g,w,h)=>{g.fillStyle='#ffd21f';g.fillRect(0,0,w,h);g.fillStyle='#161d33';for(let x=-64;x<w;x+=64){g.beginPath();g.moveTo(x,h);g.lineTo(x+32,h);g.lineTo(x+64,0);g.lineTo(x+32,0);g.fill()}});hz.wrapS=THREE.RepeatWrapping;ROOM.hz=hz;
   ROOM.ln.push(mk(new THREE.MeshStandardMaterial(Object.assign({map:hz},o))));
-  const nt=canvasTex(2048,256,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='rgba(31,79,216,.45)';g.lineWidth=8;g.setLineDash([52,40]);g.beginPath();g.moveTo(20,60);g.lineTo(w-20,60);g.stroke();g.setLineDash([]);g.textAlign='center';g.textBaseline='middle';g.font='700 46px '+F;g.fillStyle='rgba(31,79,216,.6)';g.fillText('창작환경관리  ·  바닥을 깨끗하게',w/2,160)});
+  const nt=canvasTex(2048,256,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='rgba(31,79,216,.45)';g.lineWidth=8;g.setLineDash([52,40]);g.beginPath();g.moveTo(20,60);g.lineTo(w-20,60);g.stroke();g.setLineDash([]);g.textAlign='center';g.textBaseline='middle';g.font='700 46px '+F;g.fillStyle='rgba(31,79,216,.6)';g.fillText('작업물처리반  ·  바닥을 깨끗하게',w/2,160)});
   ROOM.note=mk(new THREE.MeshStandardMaterial(Object.assign({map:nt,transparent:true,depthWrite:false},o)))}
  DESKS.forEach(buildDesk);
 }
