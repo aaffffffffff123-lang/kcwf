@@ -90,38 +90,6 @@ button:disabled{opacity:.45;cursor:default}
 .note{font-size:12px;line-height:1.75;color:var(--sub);margin:14px 2px 0;word-break:keep-all}
 .sub{font-size:12px;color:#8792ab;text-decoration:underline;margin-top:14px;padding:6px}
 .col{display:flex;flex-direction:column;gap:10px}
-#gooffice{position:absolute;left:50%;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 66px);transform:translateX(-50%);background:#fff;color:var(--blue);border:2px solid var(--blue);font-weight:800;font-size:15px;padding:13px 22px;border-radius:16px;box-shadow:0 6px 16px rgba(22,29,51,.2);display:none;white-space:nowrap}
-#gooffice:active{transform:translate(-50%,1px)}
-#office{background:linear-gradient(180deg,#eef0f6 0%,#e2e6ef 78%,#d2b388 78%,#c19f70 100%);flex-direction:column;padding:max(12px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
-.mon{flex:1 1 auto;min-height:0;width:min(1000px,100%);background:#fff;border:9px solid #2c3242;border-radius:18px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 14px 34px rgba(22,29,51,.28);-webkit-user-select:text;user-select:text}
-.stand{flex:none;width:110px;height:22px;background:#2c3242;margin-top:-1px}.foot2{flex:none;width:230px;height:10px;border-radius:6px 6px 0 0;background:#232836}
-.sysbar{flex:none;display:flex;align-items:center;gap:9px;padding:9px 12px;background:#f3f5fa;border-bottom:1px solid var(--line)}
-.sysbar .mk{width:24px;height:24px;border-radius:7px;background:var(--blue);display:grid;place-items:center;flex:none}.sysbar .mk i{display:block;width:9px;height:9px;border-radius:50%;border:3px solid #fff}
-.sysbar b{font-size:14px;letter-spacing:-.03em;display:block;line-height:1.15}.sysbar small{font-size:10px;color:var(--sub);display:block}
-.sysbar .mny{margin-left:auto;text-align:right;font-size:10px;color:var(--sub);font-weight:600}.sysbar .mny b{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
-.sysbar .out{background:var(--ink);color:#fff;font-weight:800;font-size:13px;border-radius:10px;padding:9px 12px;flex:none}
-#obody{flex:1;min-height:0;display:grid;grid-template-columns:300px 1fr}
-#aplist{overflow:auto;border-right:1px solid var(--line);-webkit-overflow-scrolling:touch}
-.aphead{padding:9px 12px;font-size:11px;font-weight:700;color:var(--sub);background:#fafbfd;border-bottom:1px solid var(--line);position:sticky;top:0}
-.aprow{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:12px;border-bottom:1px solid var(--line);text-align:left;width:100%;align-items:center}
-.aprow.sel{background:#eef3ff}.aprow b{font-size:15px}.aprow small{font-size:12px;color:var(--sub);grid-column:1}
-.st{font-size:11px;font-weight:800;padding:4px 9px;border-radius:99px;white-space:nowrap}.aprow .st{grid-row:1/3;grid-column:2}
-.st.new{background:#eceff6;color:#56617c}.st.cert{background:#dff5e7;color:#157040}.st.rej{background:#fde5e2;color:#b3352a}.st.paid{background:#ffefb0;color:#6b4e00}
-#apdet{overflow:auto;padding:14px 16px 22px;-webkit-overflow-scrolling:touch}
-.apnone{color:var(--sub);font-size:13px;margin:40px 0;text-align:center}
-.apback{display:none;font-weight:800;font-size:14px;color:var(--blue);padding:6px 0 12px}
-.aptitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.aptitle h3{margin:2px 0 0;font-size:22px;letter-spacing:-.04em}.aptitle small{font-size:11px;color:var(--sub);font-variant-numeric:tabular-nums}
-#apdet h4{font-size:14px;margin:20px 0 8px;padding-top:14px;border-top:2px solid var(--ink);letter-spacing:-.02em}
-.kv{display:grid;grid-template-columns:86px 1fr;gap:7px 10px;margin:0;font-size:13px;line-height:1.55}.kv dt{color:var(--sub);font-weight:600}.kv dd{margin:0;word-break:keep-all}
-.tb{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.5}.tb th{background:#f3f5fa;font-size:11px;color:var(--sub);text-align:left;padding:6px 8px;border:1px solid var(--line)}
-.tb td{padding:8px;border:1px solid var(--line);vertical-align:top;word-break:keep-all}.tb td b{display:block;font-size:12px;margin-bottom:2px}.tb td i{display:block;font-style:normal;color:var(--sub);font-size:11.5px;margin-top:2px}
-.tb .j{font-weight:800;white-space:nowrap;width:1%}.ok{color:#157040}.no{color:#b3352a}.out{color:#8a5a00}
-.ev{font-size:12px;color:var(--sub);margin:8px 0 0}
-.sys{margin:12px 0 0;background:#f3f5fa;border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;color:var(--sub);display:flex;justify-content:space-between;align-items:center}.sys b{font-size:14px}
-.btns{display:flex;gap:8px;margin-top:10px}.btns button{flex:1;min-height:46px;border-radius:12px;font-weight:800;font-size:14px;padding:0 10px}
-.b1{background:var(--blue);color:#fff}.b2{background:#fff;color:#b3352a;border:2px solid #f0c4bf}
-.why{font-size:12px;color:#b3352a;margin:8px 2px 0}
-@media(max-width:720px){#obody{grid-template-columns:1fr}#obody.det #aplist{display:none}#obody:not(.det) #apdet{display:none}.apback{display:block}.stand,.foot2{display:none}.sysbar small{display:none}}
 @media(min-width:760px){#intro{background:linear-gradient(90deg,#f3f5fa 0%,rgba(243,245,250,.94) 30%,rgba(243,245,250,0) 62%);align-items:center;justify-content:flex-start;padding:0 0 0 clamp(30px,7vw,110px)}.pop{font-size:20px}}
 @media(max-height:480px){.ic h1{font-size:46px;margin-bottom:6px}.ic p{font-size:12px;margin-bottom:10px}.pri{min-height:46px}#chips{grid-template-rows:repeat(3,auto);top:calc(max(12px,env(safe-area-inset-top)) + 110px)}}
 .brand .mk,.org .mk,.sysbar .mk{width:38px;height:28px;border-radius:0;background:transparent;flex:none}
@@ -129,6 +97,27 @@ button:disabled{opacity:.45;cursor:default}
 .ph small{display:flex;align-items:center;gap:7px}.ph .mk{width:30px;height:20px}
 @media(max-width:420px){.brand{padding:8px 9px;gap:7px}.brand .mk{width:30px;height:23px}.brand b{font-size:14px}.brand small{font-size:9px}.right{gap:5px}.right .ib{width:36px;height:40px}.money{padding:8px;gap:6px}#money{font-size:15px}}
 @media(max-width:350px){#r1 .brand{padding:7px}.brand small{display:none}#r1 .brand .mk{width:24px}#r1 .brand b{font-size:12px}#r1 .right{gap:4px}#r1 .right .ib{width:30px;height:36px}#r1 .money{padding:7px 5px;gap:4px}#money{font-size:13px}#r2{gap:7px}#zone{min-width:0;flex:1;padding:8px}#zone span{font-size:11px}#supportbtn{min-width:114px;padding:7px}#supportbtn b{font-size:12px}#shopbtn{font-size:12px;padding:10px 12px}.chip{padding:8px 9px}}
+#interview{padding:0;background:transparent;flex-direction:column;justify-content:flex-start;align-items:stretch;overflow:hidden}
+.int-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));padding-top:max(12px,env(safe-area-inset-top));background:#e9e8e1;flex:none}
+.int-head small{display:block;color:#6d716c;font-size:10px;letter-spacing:.1em}.int-head h2{margin:3px 0 0;font-size:18px;letter-spacing:-.04em}.int-head button{background:#fff9;padding:10px 12px;min-height:42px;border-radius:9px;font-size:12px;white-space:nowrap}
+#candidate-stage{height:clamp(170px,32vh,320px);flex:none;position:relative;touch-action:pan-y}
+.int-arrow{position:absolute;top:38%;width:44px;height:48px;border-radius:50%;background:#ffffffe0;font-size:28px;box-shadow:0 3px 10px #30352d20}.int-arrow:first-child{left:12px}.int-arrow:nth-child(2){right:12px}
+#candidate-position{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.12em;color:#555e57;background:#fff9;padding:4px 10px;border-radius:10px}
+.int-paper{width:min(720px,100%);min-height:0;flex:1;overflow:auto;align-self:center;padding:16px 18px 20px;background:#faf8f0;border-top:1px solid #d4d1c4;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.int-person{display:flex;align-items:center;justify-content:space-between;gap:12px}.int-person small{font-size:10px;color:#7a7e75}.int-person h3{font-size:24px;letter-spacing:-.04em;margin:3px 0}.int-seal{color:#577364;border:2px solid #778e7d;font-size:12px;line-height:1.5;padding:3px 8px;transform:rotate(-6deg);text-align:center;flex:none}
+.int-meta{font-size:12px;line-height:1.7;color:#6c716a;margin:10px 0}.int-meta b{color:#313a32}.int-meta span+span:before{content:' · ';color:#b1b3a9}
+.int-work{display:grid;grid-template-columns:116px 1fr;gap:13px;align-items:center;margin:12px 0;padding:10px 0;border-top:1px solid #dddcd1;border-bottom:1px solid #dddcd1}.int-work svg{width:100%;height:auto;display:block}.int-work b{font-size:14px;line-height:1.4}.int-work p{font-size:12px;line-height:1.5;margin:6px 0 0;color:#697166;word-break:keep-all}
+.int-files{margin:14px 0;font-size:12px;line-height:1.65;color:#6c716a}.int-files summary{cursor:pointer;padding:7px 0;font-weight:600;min-height:36px}.int-files dl{display:grid;grid-template-columns:92px 1fr;gap:6px 12px;margin:10px 0}.int-files dt{color:#878c83}.int-files dd{margin:0;color:#414a40;word-break:keep-all}
+#candidate-approve{width:100%;min-height:46px;border:1px solid #375c99;border-radius:6px;background:#315a96;color:white;font-size:14px;font-weight:800}#candidate-approve[aria-pressed=true]{border:2px solid #668174;background:#eff3ec;color:#4c6a58}
+.int-bottom{flex:none;background:#e9e8e1;padding:9px max(14px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));border-top:1px solid #d1d4ca}
+.int-chosen{display:flex;align-items:center;justify-content:center;gap:5px;margin-bottom:8px;min-height:29px;flex-wrap:wrap}.int-chosen small{font-size:10px;color:#6f776b;margin-right:5px}.int-chosen button{min-height:32px;border-radius:5px;border:1px solid #cbd1c6;background:#f7f8f2;font-size:11px;padding:5px 8px}.int-chosen .empty{font-size:11px;color:#899081}
+#interview-enter{display:block;width:min(684px,100%);margin:auto;min-height:46px;border-radius:8px;font-weight:800;font-size:14px;background:#ffd21f;color:#272d25}#interview-enter:disabled{background:#d9dcd3;opacity:1;color:#929a8d}
+@media(min-width:900px){#interview{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(340px,.85fr);grid-template-rows:auto 1fr auto}.int-head{grid-column:1/-1}.int-paper{width:100%;height:100%;grid-column:2;grid-row:2;padding:24px 28px;border-left:1px solid #cccfc3;border-top:0}#candidate-stage{height:100%;grid-column:1;grid-row:2;min-height:0}.int-bottom{grid-column:1/-1}.int-person h3{font-size:32px}.int-work{grid-template-columns:150px 1fr}.int-arrow{top:45%}}
+@media(max-width:350px){.int-head{padding-left:12px;padding-right:12px}.int-head h2{font-size:16px}.int-paper{padding:12px}.int-work{grid-template-columns:85px 1fr;gap:10px}.int-files dl{grid-template-columns:75px 1fr}.int-chosen button{padding:4px 6px}}
+@media(max-height:560px) and (max-width:899px){#interview{display:grid;grid-template-columns:45% 55%;grid-template-rows:auto 1fr auto}.int-head{grid-column:1/-1;padding:7px 12px}.int-head small{display:none}#candidate-stage{height:100%;grid-column:1;grid-row:2;min-height:0}.int-paper{height:100%;grid-column:2;grid-row:2;padding:10px}.int-bottom{grid-column:1/-1;padding:6px 12px}.int-chosen{margin-bottom:4px;min-height:0}.int-work{grid-template-columns:70px 1fr}.int-arrow{width:36px;height:40px}.int-arrow:first-child{left:4px}.int-arrow:nth-child(2){right:4px}}
+
+@media(max-height:560px) and (max-width:899px){.int-paper{display:flex;flex-direction:column;align-items:stretch}.int-person{order:0}.int-meta{order:1}.int-work{order:3;flex:none}.int-files{order:4}#candidate-approve{order:2;flex:none;min-height:42px}}
+
 </style>
 </head>
 <body>
@@ -144,7 +133,6 @@ button:disabled{opacity:.45;cursor:default}
   <div class="hud-actions"><button id="shopbtn">장비 보급</button><button id="supportbtn" disabled><b id="supportlabel">창작지원금</b><small id="supportcost">전원 지급</small></button></div>
  </div>
  <div id="chips"></div>
- <button id="gooffice">사무실 들어가기</button>
  <div id="toast" role="status"></div>
  <div id="hint"><span id="hinttxt"></span></div>
  <div id="stick"><i></i></div>
@@ -168,13 +156,12 @@ button:disabled{opacity:.45;cursor:default}
   <p class="note">진행 상황은 이 기기에 자동으로 저장됩니다.</p>
  </section>
 </div>
-<div class="ov" id="office" hidden>
- <div class="mon">
-  <div class="sysbar"><div class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 19H35M21.5 19V49M41 19H68M54.5 19V49M76 15 89 49" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></div><div><b>창작인경력정보시스템</b><small>한국창작인복지재단 · 예술활동증명 / 창작준비금</small></div><div class="mny">보유 수당<br><b id="omoney"></b></div><button class="out" id="officex">나가기</button></div>
-  <div id="obody"><div id="aplist"></div><div id="apdet"></div></div>
- </div>
- <div class="stand"></div><div class="foot2"></div>
-</div>
+<section class="ov" id="interview" role="dialog" aria-modal="true" aria-labelledby="interview-title" hidden>
+ <header class="int-head"><div><small>한국창작인복지재단</small><h2 id="interview-title">입주자 배정</h2></div><button id="interview-back">작업장으로</button></header>
+ <div id="candidate-stage" aria-label="입주 대상자들이 의자에 앉아 기다리고 있습니다"><button class="int-arrow" id="candidate-prev" aria-label="이전 대상자">‹</button><button class="int-arrow" id="candidate-next" aria-label="다음 대상자">›</button><span id="candidate-position"></span></div>
+ <article class="int-paper" id="candidate-paper"></article>
+ <footer class="int-bottom"><div class="int-chosen" id="interview-chosen" aria-live="polite"></div><button id="interview-enter" disabled>작업실로</button></footer>
+</section>
 <div class="ov" id="pause" hidden>
  <section class="panel" role="dialog" aria-modal="true">
   <div class="ph"><div><small>작업물처리반</small><h2>일시정지</h2></div></div>
@@ -206,40 +193,54 @@ const TOOLS=[
  {id:'truck',name:'고압 수거차',short:'수거차',price:26000,desc:'롤러로 눌러 넓은 폭을 한꺼번에 처리하고 압착해서 배출합니다.'}
 ];
 
-const GRANT=3000,GRANT_T=42,SUPPORT_UNIT=100,SUPPORT_T=14;
+const GRANT=3000,GRANT_T=96,SUPPORT_UNIT=100,SUPPORT_T=14,ACTIVITY_T=90;
 const AP=[
- {name:'권도윤',field:'문학 (시)',type:4,kind:'예술활동증명 (일반)',crit:'최근 5년간 문예지 발표 5편 이상 또는 단행본 1권 이상',recT:'동인지 『습작』 1~5호에 시 각 1편 수록',note:'동인 4명, 편집·발행 본인',rec:'ok',incT:'0원',inc:'no',mid:41,ev:'동인지 표지·목차 사본 5건',plan:'준비금이 지급되면 첫 시집 원고를 쓰기 시작할 예정입니다.'},
- {name:'한서진',field:'문학 (웹소설)',type:4,kind:'예술활동증명 (일반)',crit:'최근 5년간 문예지 발표 5편 이상 또는 단행본 1권 이상',recT:'웹소설 플랫폼 연재 1,240화 (완결 3종)',note:'연재물은 발표 편수로 산정하지 않음',rec:'out',incT:'연 3,860만 원',inc:'ok',mid:168,ev:'플랫폼 정산 내역서 12건',plan:'지급 여부와 관계없이 매일 연재하고 있습니다.'},
- {name:'문가을',field:'미술 (회화)',type:1,kind:'신진예술인 예술활동증명',crit:'최근 2년간 전시 참여 1회 이상',recT:'카페 벽면 단체전 1회',note:'참여 작가 31명, 출품 1점',rec:'ok',incT:'0원',inc:'no',mid:52,ev:'전시 리플릿 1건',plan:'작업실을 구하면 그림을 그릴 수 있을 것 같습니다. 준비금은 보증금에 쓰겠습니다.'},
- {name:'오태경',field:'미술 (조각)',type:2,kind:'예술활동증명 (일반)',crit:'최근 5년간 개인전 1회 또는 단체전 5회 이상',recT:'단체전 4회',note:'',rec:'no',incT:'연 96만 원',inc:'no',mid:38,ev:'전시 도록 4건, 판매 영수증 3건',plan:'매주 흙을 만지고 있습니다. 지급 여부와 관계없이 계속합니다.'},
- {name:'설예린',field:'음악 (작곡)',type:3,kind:'예술활동증명 (일반)',crit:'최근 3년간 음반 1종 이상 발매 또는 공연 3회 이상',recT:'디지털 싱글 1종 발매',note:'누적 재생 14회',rec:'ok',incT:'23원',inc:'no',mid:77,ev:'음원 유통 확인서 1건',plan:'지원이 없어 2년째 곡을 쓰지 못하고 있습니다. 지급 즉시 재개하겠습니다.'},
- {name:'진하람',field:'음악 (거리 공연)',type:3,kind:'예술활동증명 (일반)',crit:'최근 3년간 음반 1종 이상 발매 또는 공연 3회 이상',recT:'거리 공연 312회',note:'등록 공연장 외 공연은 산정 제외',rec:'out',incT:'모금함 수입 연 410만 원 (증빙 불가)',inc:'no',mid:49,ev:'공연 사진 312건',plan:'날이 풀리면 다시 나갑니다.'},
- {name:'백이수',field:'만화',type:0,kind:'예술활동증명 (일반)',crit:'최근 3년간 단행본 1권 이상 또는 매체 연재 10회 이상',recT:'개인 계정 연재 640회',note:'본인 계정 게시는 매체 연재로 보지 않음',rec:'out',incT:'연 55만 원',inc:'no',mid:44,ev:'게시물 화면 캡처 640건',plan:'계속 그립니다.'},
- {name:'차유나',field:'미술 (드로잉)',type:0,kind:'신진예술인 예술활동증명',crit:'최근 2년간 전시 참여 1회 이상',recT:'아트페어 부스 참가 1회',note:'참가비 본인 부담',rec:'ok',incT:'0원',inc:'no',mid:63,ev:'참가 확인서 1건',plan:'준비금으로 태블릿을 구입한 뒤 작업을 시작하겠습니다.'},
- {name:'남기현',field:'공예 (도자)',type:2,kind:'예술활동증명 특례 (표준계약서)',crit:'표준계약서 체결 1건 이상',recT:'표준계약서 1건',note:'계약 금액 5만 원',rec:'ok',incT:'연 5만 원',inc:'no',mid:58,ev:'계약서 사본 1건',plan:'가마 사용료가 지급되면 굽겠습니다.'},
- {name:'육지안',field:'문학 (수필)',type:4,kind:'예술활동증명 (일반)',crit:'최근 5년간 문예지 발표 5편 이상 또는 단행본 1권 이상',recT:'자비 출판 단행본 1권',note:'발행 30부',rec:'ok',incT:'0원 (출판비 180만 원 지출)',inc:'no',mid:71,ev:'도서 판권지 사본 1건',plan:'2쇄를 찍을 수 있으면 다음 책을 쓰겠습니다.'},
- {name:'변소율',field:'미술 (회화)',type:1,kind:'예술활동증명 (일반)',crit:'최근 5년간 개인전 1회 또는 단체전 5회 이상',recT:'개인전 1회',note:'대관료 본인 부담, 방명록 6명',rec:'ok',incT:'0원',inc:'no',mid:119,ev:'전시 포스터 1건, 대관 계약서 1건',plan:'준비금이 끊기면 붓을 놓을 수밖에 없습니다.'},
- {name:'마도현',field:'음악 (밴드)',type:3,kind:'예술활동증명 (일반)',crit:'최근 3년간 음반 1종 이상 발매 또는 공연 3회 이상',recT:'공연 3회',note:'관객 합계 11명, 출연료 없음',rec:'ok',incT:'0원',inc:'no',mid:35,ev:'공연 포스터 3건',plan:'합주실 대여비가 나오면 연습을 재개합니다.'}
+ {"name":"권도윤","type":4,"field":"문학","title":"창문을 닫은 뒤","work":"시 7편 · 문예지 게재본","recT":"문예지 발표 7편","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"원고료 48만 원 / 연","inc":"no","mid":62,"ev":"발표 지면 7건 · 원고료 입금내역","papers":[["작업 공간","월세방 책상"],["생활비","교정 아르바이트"]],"income":"근로·사업소득과 본인 재산 반영","plan":"다음 호 원고 3편. 현재 초고 작성 중.","art":"pages","kind":"예술활동증명 (일반)","desk":4},
+ {"name":"한서진","type":4,"field":"분야 선택","title":"접어서 건네는 문장","work":"봉제한 문장 84점 · 건넨 날짜 기록","recT":"문장·천·전달 기록 84건","crit":"접수 분야별 발표 실적","rec":"out","incT":"판매 수입 없음","inc":"no","mid":53,"ev":"천에 적은 원고 · 전달 기록 · 설치 사진","papers":[["작업 방식","하루 한 문장을 천에 꿰매서 건넴"],["작업 공간","퇴근 후 식탁"]],"income":"근로소득과 본인 재산 반영","plan":"받은 사람이 다시 접어 다른 사람에게 건넵니다.","art":"stitch","choices":[{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"문장 84점 / 인정 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"},{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치 사진 12건 / 전시 확인 0건","note":"전시 기간·장소 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
+ {"name":"문가을","type":1,"field":"미술","title":"오후의 방","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":18,"ev":"전시 도록 · 대관 계약서 · 결제 확인서","papers":[["대관료 결제자","모"],["작업실 사용","부 소유 공간 / 사용료 없음"],["생활비 부담","가족"]],"income":"본인 소득·재산 산정","plan":"같은 공간에서 다음 연작을 준비합니다.","art":"paint","kind":"예술활동증명 (일반)","desk":1},
+ {"name":"오태경","type":2,"field":"공예","title":"남은 흙의 무게","work":"도자 26점 · 제작 과정","recT":"단체전 4회","crit":"개인전 1회 또는 단체전 5회","rec":"no","incT":"작품 판매 96만 원 / 연","inc":"no","mid":38,"ev":"도록 4건 · 판매 영수증 · 작업 사진","papers":[["다음 전시","참가비 미납 / 접수 취소"],["제작 기록","현재 26번째 작업 진행"]],"income":"본인 소득·재산 산정","plan":"남은 흙으로 다음 것을 만듭니다.","art":"clay","kind":"예술활동증명 (일반)"},
+ {"name":"설예린","type":3,"field":"음악","title":"새벽의 실내","work":"음원 3곡 · 악보와 녹음 기록","recT":"음원 3곡 발매","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"음원 정산 8만 원 / 연","inc":"no","mid":77,"ev":"음원 유통 확인서 · 크레딧 · 정산내역","papers":[["녹음 공간","시간제 대여"],["현재 작업","네 번째 곡 녹음 대기"]],"income":"본인 소득·재산 산정","plan":"남겨둔 녹음부터 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":3},
+ {"name":"진하람","type":3,"field":"분야 선택","title":"계단이 되돌려주는 목소리","work":"발걸음으로 소리가 달라지는 구조물","recT":"설치물 1점 / 작동 기록 18건","crit":"접수 분야별 발표 실적","rec":"out","incT":"작동 관람 무료 / 수입 없음","inc":"no","mid":49,"ev":"구조물 사진 · 회로도 · 작동 영상 · 소리 기록","papers":[["재료","폐목재·압력판·녹음된 목소리"],["참여 방식","지나가는 사람이 밟으면 소리가 이어짐"]],"income":"본인 소득·재산 산정","plan":"한 계단을 더 연결합니다.","art":"hybrid","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치물 1점 / 전시 확인 0건","note":"전시 개최 확인서 보완","rec":"out"},{"field":"음악","crit":"음원 3곡 또는 공연 3회","recT":"소리 기록 18건 / 발매 음원 0곡","note":"발매 정보·공연 실적 보완","rec":"out"},{"field":"공연","crit":"공연 참여 3편","recT":"작동 영상 18건 / 출연 확인 0편","note":"공연명·출연 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
+ {"name":"백이수","type":0,"field":"만화","title":"다녀왔습니다","work":"밤마다 한 장씩 그린 만화","recT":"개인 계정 연재 640회","crit":"연재 계약·기간 또는 단행본 발행 확인","rec":"out","incT":"그림 수입 55만 원 / 연","inc":"no","mid":44,"ev":"연재 화면 · 원본 파일 · 업로드 기록","papers":[["연재 계약","없음"],["작업 시간","퇴근 후 00:30~02:00"]],"income":"근로소득과 본인 재산 반영","plan":"641화를 그리고 있습니다.","art":"comic","kind":"예술활동증명 (일반)"},
+ {"name":"차유나","type":0,"field":"분야 선택","title":"없어진 가게의 지도","work":"사라진 간판을 찾아 걸으며 고치는 지도","recT":"현장 기록 47건 / 지도 갱신 47회","crit":"접수 분야별 발표 실적","rec":"out","incT":"열람 무료 / 수입 없음","inc":"no","mid":63,"ev":"지도 · 간판 채록 · 이동 기록","papers":[["완성본","현장 변화에 따라 계속 갱신"],["배포","골목에 부착 / 주소 없이 전달"]],"income":"본인 소득·재산 산정","plan":"철거된 자리에 남은 이름을 더 적습니다.","art":"map","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"지도 47개 판 / 전시 확인 0회","note":"전시명·기간 확인 보완","rec":"out"},{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"채록 47건 / 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
+ {"name":"남기현","type":2,"field":"공예","title":"손에 맞게 고친 것들","work":"손잡이를 바꾸며 남긴 제작 기록","recT":"수선·제작 39건 / 전시 확인 0건","crit":"개인전 1회 또는 단체전 5회","rec":"out","incT":"재료비 정산 31만 원 / 연","inc":"no","mid":58,"ev":"제작 전후 사진 · 사용자 메모","papers":[["작업 장소","수선 작업대"],["작품 보관","사용하는 사람에게 전달"]],"income":"근로·사업소득과 본인 재산 반영","plan":"잡기 어렵다는 손잡이를 다시 깎고 있습니다.","art":"clay","kind":"예술활동증명 (일반)"},
+ {"name":"육지안","type":4,"field":"문학","title":"돌아오는 길","work":"수필집 1권 · 원고 수정본","recT":"문학 작품집 1권","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"인세 19만 원 / 연","inc":"no","mid":71,"ev":"판권지 · 출판 계약 · 인세 정산서","papers":[["작업 공간","도서관 열람석"],["초고","다음 작품 32매"]],"income":"본인 소득·재산 산정","plan":"열람실이 닫히기 전까지 원고를 씁니다.","art":"pages","kind":"예술활동증명 (일반)","desk":9},
+ {"name":"변소율","type":1,"field":"미술","title":"불을 끄기 전","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":124,"ev":"전시 도록 · 급여명세서 · 임대차 계약서","papers":[["급여명세","야간근로·연장근로 수당 포함"],["주거·작업실","월세 / 본인 부담"],["대관료","할부 납부 중"]],"income":"근로소득과 본인 재산 반영","plan":"다음 전시 대관일에 맞춰 야간근무를 바꿨습니다.","art":"paint","worker":true,"kind":"예술활동증명 (일반)"},
+ {"name":"마도현","type":3,"field":"음악","title":"남아 있는 소리","work":"공연 3편 · 합주 녹음","recT":"공연 3편 참여","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"공연료 42만 원 / 연","inc":"no","mid":35,"ev":"공연 포스터 · 출연 확인 · 합주 녹음","papers":[["합주실","시간제 공동 대여"],["현재 작업","다음 공연 편곡 중"]],"income":"본인 소득·재산 산정","plan":"합주실 예약 시간에 맞춰 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":8},
+ {"name":"도해원","type":0,"field":"만화","title":"작은 칸의 하루","work":"연재 만화 24화 · 원본 스케치","recT":"계약 연재 24회","crit":"연재 계약·기간 확인","rec":"ok","incT":"원고료 72만 원 / 연","inc":"no","mid":68,"ev":"연재 계약서 · 게재 확인","papers":[["작업 공간","집 안 작은 책상"],["생활비","편집 보조"]],"income":"본인 소득·재산 산정","plan":"다음 회차를 이어갑니다.","art":"comic","desk":0},
+ {"name":"정은서","type":2,"field":"공예","title":"잠깐 빌린 모양","work":"사용하며 형태가 변하는 그릇 18점","recT":"단체전 5회","crit":"단체전 5회","rec":"ok","incT":"판매 24만 원 / 연","inc":"no","mid":57,"ev":"전시 확인서 5건 · 작품 사진","papers":[["작업 공간","공동 공방"],["전시 참가비","재료비와 분할 납부"]],"income":"본인 소득·재산 산정","plan":"그릇의 변화를 기록합니다.","art":"clay","desk":2},
+ {"name":"윤시온","type":3,"field":"음악","title":"한 사람이 지나갈 때","work":"압력판·폐목재·발걸음에 반응하는 목소리","recT":"음원 3곡 발매","crit":"음원 3곡","rec":"ok","incT":"음원 정산 0원","inc":"no","mid":41,"ev":"소리 부분 발췌 · 3개 트랙 유통 확인","papers":[["전체 작업","구조물·이동 경로·녹음된 목소리"],["등록 제목","한 사람이 지나갈 때 Ⅰ / Ⅱ / Ⅲ"],["작업 공간","공유 작업실"]],"income":"본인 소득·재산 산정","plan":"소리와 계단을 연결합니다.","art":"hybrid","desk":13}
 ];
+const ELIGIBLE=AP.map((a,i)=>i).filter(i=>Number.isInteger(AP[i].desk)&&(AP[i].rec==='ok'||AP[i].inc==='ok')&&AP[i].mid<=120);
 const quota=z=>Math.min(260,50+(z-1)*30);
+function proofFor(id,record={}){
+ const a=AP[id];if(!a)return {pass:false};const route=a.choices?a.choices[record.k]:a;
+ if(!route)return {pass:false,field:'',crit:'접수 분야 선택',recT:a.recT,rec:'out',note:'분야 선택 후 산정'};
+ return {...route,pass:route.rec==='ok'||a.inc==='ok'};
+}
 function loadSave(){
- const d={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand'],tool:'hand',muted:false,ap:{},grants:[null,null,null],ofn:false,support:null};
+ const d={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand'],tool:'hand',muted:false,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null};
  try{const r=JSON.parse(localStorage.getItem(KEY)||'null');
   if(r&&r.v===2){d.money=clamp(+r.money||0,0,1e9);d.total=clamp(Math.floor(+r.total||0),0,1e9);d.liters=clamp(+r.liters||0,0,1e9);
    d.zone=clamp(Math.floor(+r.zone||1),1,999);d.prog=clamp(Math.floor(+r.prog||0),0,quota(d.zone));d.paid=!!r.paid&&d.prog>=quota(d.zone);
    if(Array.isArray(r.owned)&&r.owned.includes('glue')){d.money+=4000;d.rf=true}d.owned=TOOLS.map(t=>t.id).filter(id=>id==='hand'||Array.isArray(r.owned)&&r.owned.includes(id));d.tool=d.owned.includes(r.tool)?r.tool:'hand';d.muted=!!r.muted;d.ofn=!!r.ofn;
-   if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999)}}
-   if(Array.isArray(r.grants))for(let k=0;k<3;k++){const g=r.grants[k];if(g&&AP[g.a]&&d.ap[g.a]&&d.ap[g.a].s==='paid'&&!d.grants.some(q=>q&&q.a===g.a))d.grants[k]={a:g.a,left:clamp(+g.left||0,.1,GRANT_T)}}
+   if(Array.isArray(r.funds))d.funds=d.funds.map((v,i)=>Number.isFinite(r.funds[i])?clamp(r.funds[i],0,ACTIVITY_T):v);
+   d.advance=clamp(+r.advance||0,0,1e6);
+   if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid','spent','more'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999),k:Number.isInteger(v.k)&&AP[k].choices?.[v.k]?v.k:-1}}
+   if(Array.isArray(r.grants))for(let k=0;k<3;k++){const g=r.grants[k];if(g&&AP[g.a]&&d.ap[g.a]&&['paid','spent'].includes(d.ap[g.a].s)&&!d.grants.some(q=>q&&q.a===g.a)){const left=clamp(+g.left||0,0,GRANT_T);d.grants[k]={a:g.a,left,receipt:Number.isFinite(g.receipt)?clamp(g.receipt,0,2):2};d.ap[g.a].s=left>0?'paid':'spent'}}
+   if(Array.isArray(r.team)){const team=[...new Set(r.team.filter(id=>ELIGIBLE.includes(id)))];if(team.length>=3&&team.length<=5)d.team=team}
+   if(d.paid&&r.draft&&r.draft.zone===d.zone+1&&Array.isArray(r.draft.ids)){d.draft={zone:d.zone+1,ids:[...new Set(r.draft.ids.filter(id=>ELIGIBLE.includes(id)))].slice(0,Math.min(5,3+Math.floor((d.zone-1)/3))),focus:ELIGIBLE.includes(r.draft.focus)?r.draft.focus:ELIGIBLE[0]}}
    if(r.support&&r.support.zone===d.zone&&Number.isFinite(r.support.t)&&r.support.t>=0&&r.support.t<SUPPORT_T&&Array.isArray(r.support.ids)){
-    const ids=[...new Set(r.support.ids.filter(i=>Number.isInteger(i)&&i>=0&&i<30))];if(ids.length)d.support={t:r.support.t,zone:d.zone,ids}}
-   for(const k in d.ap)if(d.ap[k].s==='paid'&&!d.grants.some(g=>g&&g.a===+k))d.ap[k].s='cert'}
+    const ids=[...new Set(r.support.ids.filter(i=>Number.isInteger(i)&&i>=0&&i<30&&(!d.team||d.team.some(id=>AP[id].desk===i))))];if(ids.length)d.support={t:r.support.t,zone:d.zone,ids}}
+   for(const k in d.ap){const a=d.ap[k];if(a.s==='paid'&&!d.grants.some(g=>g&&g.a===+k))a.s='cert';if(a.s==='cert'&&!proofFor(+k,a).pass)a.s='more'}
+  }
  }catch(e){}
  return d;
 }
 let S=loadSave(),dirty=false,saveT=0;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(Object.assign({v:2},S)))}catch(e){}dirty=false}
 if(S.rf){delete S.rf;save()}
-const apS=id=>S.ap[id]||(S.ap[id]={s:'new',n:0});
+const apS=id=>S.ap[id]||(S.ap[id]={s:'new',n:0,k:-1});
 const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
 
 /* ───────── 소리 ───────── */
@@ -480,15 +481,20 @@ function inkFlush(){
 
 /* ───────── 작업장 ───────── */
 let XB=3.9,ZN=-4.35,ZF=4.3; // 생물이 돌아다니는 범위 (구역이 오를수록 넓어진다)
-const ROOM={office:null,tx:3.9,tn:-4.35,tf:4.3,wb:null,wl:null,wr:null,ww:[],sp:null,ln:[],hz:null,note:null,drains:[]};
-const DESKS=[[0,0],[0,-1.7],[0,1.7],[1,.3],[3,.3],[2,.85],[1,-2.4],[3,-2.4],[0,-3.4],[0,3.4],[2,-.85],[3,3],[1,3],[2,2.55],[2,-2.55]].map((d,i)=>{const ry=d[0]*Math.PI/2;return{side:d[0],off:d[1],x:0,z:0,ry,fx:Math.sin(ry),fz:Math.cos(ry),type:i%5}});
-function deskPos(){for(const d of DESKS){if(d.side===0){d.x=d.off;d.z=ZN-.5}else if(d.side===1){d.x=-(XB+.52);d.z=d.off}else if(d.side===2){d.x=d.off;d.z=ZF+.52}else{d.x=XB+.52;d.z=d.off}}}
-const NREG=DESKS.length; // 여기까지는 그냥 나와서 만드는 사람들, 뒤는 창작준비금을 받아야 앉는 자리
+const ROOM={tx:3.9,tn:-4.35,tf:4.3,wb:null,wl:null,wr:null,ww:[],sp:null,ln:[],hz:null,note:null,drains:[]};
+const DESKS=[[0,0],[0,-1.7],[0,1.7],[1,.3],[3,.3],[2,.85],[1,-2.4],[3,-2.4],[0,-3.4],[0,3.4],[2,-.85],[3,3],[1,3],[2,2.55],[2,-2.55]].map((d,i)=>{const ry=d[0]*Math.PI/2;return{side:d[0],off:d[1],homeSide:d[0],homeOff:d[1],x:0,z:0,ry,fx:Math.sin(ry),fz:Math.cos(ry),type:i%5}});
+function deskPos(){for(let i=0;i<DESKS.length;i++){const d=DESKS[i];let side=d.homeSide??d.side,off=d.homeOff??d.off;
+ if(S.team){const at=S.team.findIndex(id=>AP[id].desk===i);if(at>=0)[side,off]=[[0,0],[1,.3],[3,.3],[2,-.85],[2,.85]][at]}
+ d.side=side;d.off=off;d.ry=side*Math.PI/2;d.fx=Math.sin(d.ry);d.fz=Math.cos(d.ry);
+ if(side===0){d.x=off;d.z=ZN-.5}else if(side===1){d.x=-(XB+.52);d.z=off}else if(side===2){d.x=off;d.z=ZF+.52}else{d.x=XB+.52;d.z=off}
+}}
+
+const NREG=DESKS.length; // 기본 자리와 이전 저장의 지원금 자리.
 [[1,-1.05],[1,1.65],[3,1.65]].forEach((q,k)=>{for(let ty=0;ty<5;ty++){const ry=q[0]*Math.PI/2;DESKS.push({side:q[0],off:q[1],x:0,z:0,ry,fx:Math.sin(ry),fz:Math.cos(ry),type:ty,seat:k})}});
 deskPos();
 const roomK=()=>clamp(ROOM.tx*(ROOM.tf-ROOM.tn)/33.7,.45,1);
 function roomApply(){ // 벽·책상·바닥 표시·배수구를 지금 방 크기에 맞춘다
- deskPos();creators.forEach(c=>c.g.position.set(c.d.x,0,c.d.z));
+ deskPos();creators.forEach(c=>{c.g.position.set(c.d.x,0,c.d.z);c.g.rotation.y=c.d.ry});
  ROOM.wb.position.z=ZN+4.35;ROOM.wl.position.x=3.9-XB;ROOM.wr.position.x=XB-3.9;
  ROOM.ww.forEach((w,i)=>{w.visible=XB>=2.6;w.position.set((i?1:-1)*(XB-3.9),0,ZN+4.35)});
  const k=XB/3.9,cz=(ZN+ZF)/2,len=ZF-ZN+.3,wid=2*XB+.3,L=ROOM.ln;
@@ -497,7 +503,6 @@ function roomApply(){ // 벽·책상·바닥 표시·배수구를 지금 방 크
  L[0].position.set(-(XB+.15),.0016,cz);L[0].scale.set(.055,len,1);L[1].position.set(XB+.15,.0016,cz);L[1].scale.set(.055,len,1);
  L[2].position.set(0,.0016,ZF+.15);L[2].scale.set(wid,.055,1);L[3].position.set(0,.0018,ZN-.15);L[3].scale.set(wid,.1,1);ROOM.hz.repeat.set(wid/.4,1);
  const dp=[[-.6*XB,ZN*.6],[0,ZN*.6],[.6*XB,ZN*.6],[-.3*XB,.6],[.3*XB,.6]];
- if(ROOM.office)ROOM.office.position.set(XB+.3,0,OFZ);
  dp.forEach((p,i)=>{DRAINS[i][0]=p[0];DRAINS[i][1]=p[1];if(ROOM.drains[i])ROOM.drains[i].position.set(p[0],0,p[1])});
 }
 function roomTarget(z,snap){const k=Math.min(4,Math.max(0,z-1))*.5;ROOM.tx=1.9+k;ROOM.tn=-(2.35+k);ROOM.tf=2.3+k;if(snap){XB=ROOM.tx;ZN=ROOM.tn;ZF=ROOM.tf;roomApply()}}
@@ -512,11 +517,15 @@ function buildSupportEnvelope(){
  const g=new THREE.Group();addMesh(g,supportEnvelopeGeo,supportEnvelopeMat);
  const top=new THREE.Mesh(new THREE.PlaneGeometry(.23,.13),supportEnvelopeMat.userData.top);top.rotation.x=-Math.PI/2;top.position.y=.0046;g.add(top);g.visible=false;return g;
 }
-const supportRecipients=()=>creators.filter(c=>c.d.seat==null?c.i<Math.min(NREG,2+S.zone*2):S.grants[c.d.seat]&&AP[S.grants[c.d.seat].a].type===c.type);
+const supportRecipients=()=>creators.filter(creatorActive);
+function activityLeft(c){return c.d.seat==null?S.funds[c.i]||0:S.grants[c.d.seat]?.left||0}
+function supportCredit(){const people=supportRecipients();return people.length>0&&people.every(c=>activityLeft(c)<=0)}
 function startSupport(){
  if(!started||paused||S.support)return false;
- const recipients=supportRecipients(),cost=recipients.length*SUPPORT_UNIT;if(!recipients.length||S.money<cost)return false;
- S.money-=cost;S.support={t:0,zone:S.zone,ids:recipients.map(c=>c.i)};supportSoundT=0;
+ const recipients=supportRecipients(),cost=recipients.length*SUPPORT_UNIT;if(!recipients.length||S.money<cost&&!supportCredit())return false;
+ const missing=Math.max(0,cost-S.money);S.money=Math.max(0,S.money-cost);S.advance+=missing;
+ for(const c of recipients){if(c.d.seat==null)S.funds[c.i]=ACTIVITY_T;else{const g=S.grants[c.d.seat];g.left=GRANT_T;apS(g.a).s='paid'}}
+ S.support={t:0,zone:S.zone,ids:recipients.map(c=>c.i)};supportSoundT=0;
  AU.stopReactions();AU.wake();AU.buy();save();updateHUD(true);$('gl').focus();return true;
 }
 function updateSupport(dt){
@@ -524,9 +533,9 @@ function updateSupport(dt){
  const old=S.support.t;S.support.t+=dt;dirty=true;
  if(old<.48&&S.support.t>=.48)AU.rustle();
  if(old<10.15&&S.support.t>=10.15)AU.dump(4);
- if(S.support.t>=SUPPORT_T){S.support=null;creators.forEach(c=>{c.envelope.visible=false;c.timer=Math.max(c.timer,rnd(2.2,4))});save()}
+ if(S.support.t>=SUPPORT_T){S.support=null;creators.forEach(c=>{c.timer=Math.max(c.timer,rnd(2.2,4))});save()}
 }
-function resetSupport(){S.support=null;supportSoundT=0;AU.stopReactions();for(const c of creators){c.envelope.visible=c.mouth.visible=false;for(const h of c.hands){h.hand.scale.set(.042,.03,.055);h.hand.rotation.set(0,0,0)}c.push=c.pop=c.look=0;c.head.position.set(0,1.075,-.285)}}
+function resetSupport(){S.support=null;supportSoundT=0;AU.stopReactions();for(const c of creators){c.envelope.visible=c.mouth.visible=false;c.wait=0;for(const h of c.hands){h.hand.scale.set(.042,.03,.055);h.hand.rotation.set(0,0,0)}c.push=c.pop=c.look=0;c.head.position.set(0,1.075,-.285)}}
 
 function drawMark(g,x,y,w,color='#1f4fd8'){
  g.save();g.translate(x,y);g.scale(w/96,w/96);g.strokeStyle=color;g.lineWidth=9;g.lineJoin='miter';g.beginPath();g.moveTo(8,19);g.lineTo(35,19);g.moveTo(21.5,19);g.lineTo(21.5,49);g.moveTo(41,19);g.lineTo(68,19);g.moveTo(54.5,19);g.lineTo(54.5,49);g.moveTo(76,15);g.lineTo(89,49);g.stroke();g.restore();
@@ -566,7 +575,7 @@ function buildRoom(){
   ROOM.ln.push(mk(new THREE.MeshStandardMaterial(Object.assign({map:hz},o))));
   const nt=canvasTex(2048,256,(g,w,h)=>{g.clearRect(0,0,w,h);g.strokeStyle='rgba(31,79,216,.45)';g.lineWidth=8;g.setLineDash([52,40]);g.beginPath();g.moveTo(20,60);g.lineTo(w-20,60);g.stroke();g.setLineDash([]);g.textAlign='center';g.textBaseline='middle';g.font='700 46px '+F;g.fillStyle='rgba(31,79,216,.6)';g.fillText('작업물처리반  ·  바닥을 깨끗하게',w/2,160)});
   ROOM.note=mk(new THREE.MeshStandardMaterial(Object.assign({map:nt,transparent:true,depthWrite:false},o)))}
- DESKS.forEach(buildDesk);
+ DESKS.forEach((d,i)=>buildDesk(d,i));
 }
 let floorMat;
 function inkify(mat){mat.onBeforeCompile=sh=>{
@@ -600,9 +609,9 @@ function drool(c,u){ // 책상 앞판을 타고 흐르는 진물
  const dr=c.drool;if(u!=null){const i=clamp(Math.round((u+.5)/.2),0,5);dr.L[i]=Math.min(.3,dr.L[i]+rnd(.012,.03))}
  for(let k=0;k<6;k++){const L=dr.L[k];D.position.set(dr.u[k],.75-L*.5,.377);D.rotation.set(0,0,0);D.scale.set(L>0?.016+L*.02:0,L*.5+.008,.012);D.updateMatrix();dr.im.setMatrixAt(k,D.matrix)}
  dr.im.instanceMatrix.needsUpdate=true}
-function buildDesk(d,idx){const ty=d.type,v=(idx/5|0)%3;
+function buildDesk(d,idx,target=scene){const ty=d.type,v=(idx/5|0)%3;
  if(!bodyMat){bodyMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.66,envMapIntensity:.35});droolMat=new THREE.MeshStandardMaterial({roughness:.1,envMapIntensity:1.1});bulgeGeo=lump(SP(14,10),.1,3)}
- const g=new THREE.Group();g.position.set(d.x,0,d.z);g.rotation.y=d.ry;scene.add(g);
+ const g=new THREE.Group();g.position.set(d.x,0,d.z);g.rotation.y=d.ry;target.add(g);
  const ps=[],hp=[],A=(...a)=>ps.push(part(...a)),Hd=(...a)=>hp.push(part(...a)),G=(...a)=>ps.push(seg(...a));
  const WOOD=0xe9c38a,WOODD=0xcf9f5e,STEEL=0x7f8a9c,K=0x1b1a20,W=0xffffff,PI=Math.PI;
  const SKIN=[0xf0c6a0,0xdba77e,0xf4d2b3,0xc48a5f,0xefc19a][(idx*3+ty)%5],SKD=shade(SKIN,.8);
@@ -613,9 +622,9 @@ function buildDesk(d,idx){const ty=d.type,v=(idx/5|0)%3;
   {top:[0x8a4fe0,0xff6a3d,0x12b08a][v],pants:0x8fb6e6,cuff:0xc4dbf3,sock:0xffffff,shoe:0xf4f4f4,acc:[0xb6f23a,0xff4f9a,0xffd21f][v],hair:[0xf5e9b5,0xf7a8c8,0xa8e6dc][v],hat:[0xff5a1f,0xffffff,0x1f4fd8][v],short:0,tat:0},
   {top:0x1d1d24,pants:[0x8a5230,0x5c3a66,0x3f6a45][v],cuff:[0x9c6340,0x70497c,0x4f7f56][v],sock:0xe8a51a,shoe:0x6a1f22,hat:[0xa01f30,0x1f3f9a,0x2a2a30][v],hair:0x34302c,short:0,tat:0}
  ][ty];
- // 책상 · 스툴
- A(BX(1.36,.05,.74),WOOD,0,.745,0);A(BX(1.28,.11,.03),WOODD,0,.665,.34);
- for(const a of[-.62,.62])for(const b of[-.31,.31])A(BX(.04,.72,.04),STEEL,a,.36,b);
+ // 작업실 책상과 면담용 의자는 같은 인물 모델을 사용한다.
+ if(!d.interview){A(BX(1.36,.05,.74),WOOD,0,.745,0);A(BX(1.28,.11,.03),WOODD,0,.665,.34);for(const a of[-.62,.62])for(const b of[-.31,.31])A(BX(.04,.72,.04),STEEL,a,.36,b);}
+ else{A(BX(.36,.3,.035),0x6d7d6a,0,.78,-.84);for(const x of[-.15,.15])G([x,.45,-.81],[x,.92,-.84],.014,.014,STEEL,6);}
  A(CY(.17,.17,.035,14),WOODD,0,.455,-.66);
  for(let k=0;k<4;k++){const a=k*PI/2+PI/4,cx=Math.cos(a),cz=Math.sin(a);G([cx*.1,.44,-.66+cz*.1],[cx*.2,0,-.66+cz*.2],.014,.014,K,5)}
  // 하체: 통 넓은 바지 · 롤업 · 양말 · 신발
@@ -651,6 +660,7 @@ function buildDesk(d,idx){const ty=d.type,v=(idx/5|0)%3;
  else if(ty===3){Hd(lump(SP(10,8),.1,5),L.hair,0,.035,-.01,.124,.118,.128);Hd(SP(7,5),L.hair,.03,.075,.09,.075,.035,.045);Hd(new THREE.TorusGeometry(.13,.013,6,16,PI),L.hat,0,0,-.005);for(const s of[-1,1]){Hd(CY(.052,.052,.04,14),L.hat,s*.13,-.005,-.005,1,1,1,0,0,PI/2);Hd(CY(.04,.04,.046,12),K,s*.126,-.005,-.005,1,1,1,0,0,PI/2)}}
  else{Hd(lump(SP(10,8),.06,4),L.hair,0,0,-.035,.122,.13,.11);Hd(SP(12,7),L.hat,.018,.108,-.015,.152,.045,.152,0,0,-.2);Hd(CY(.006,.006,.03,5),L.hat,.02,.152,-.015);glasses(.033,.0045,0xd9a520);stache()}
  // 책상 위 물건 · 옆에 둔 물건
+ if(!d.interview){
  A(CY(.03,.036,.03,10),STEEL,.56,.785,.29);
  if(ty===0){for(let k=0;k<3;k++)A(BX(.3,.004,.22),W,-.1+k*.14,.775+k*.004,.05+k*.03,1,1,1,0,rnd(-.4,.4),0);A(CY(.045,.04,.1,10),0x1f4fd8,.5,.82,-.12);for(let k=0;k<3;k++)A(CY(.006,.006,.16,5),[0x161d33,0xe2563b,0x2f9e6b][k],.49+k*.012,.9,-.12,1,1,1,0,0,(k-1)*.2);
   A(CY(.036,.029,.1,10),0xf4f1e6,-.52,.82,-.08);A(CY(.038,.034,.045,10),0xb07a45,-.52,.815,-.08);A(CY(.038,.038,.012,10),K,-.52,.876,-.08);
@@ -673,6 +683,7 @@ function buildDesk(d,idx){const ty=d.type,v=(idx/5|0)%3;
   for(let k=0;k<4;k++)A(BX(.3,.005,.4),W,.4,.775+k*.006,-.05,1,1,1,0,rnd(-.1,.1),0);for(let k=0;k<3;k++)A(lump(SP(8,6),.2,2),W,-.3-k*.09,.81,.2-k*.12,.045,.045,.045);
   A(BX(.13,.075,.05),K,-.5,.81,-.15,1,1,1,0,.4,0);A(BX(.13,.02,.052),0xc9ced6,-.5,.85,-.15,1,1,1,0,.4,0);A(CY(.03,.03,.05,12),K,-.488,.81,-.122,1,1,1,PI/2,0,-.4);
   A(BX(.3,.34,.05),0xefe6cf,-.86,.18,.2,1,1,1,-.12,.3,0);A(BX(.17,.05,.056),K,-.86,.22,.2,1,1,1,-.12,.3,0);A(BX(.17,.05,.056),L.hat,-.86,.14,.2,1,1,1,-.12,.3,0)}
+ }
  const body=new THREE.Mesh(merge(ps),bodyMat);body.castShadow=true;body.receiveShadow=true;g.add(body);
  const head=new THREE.Mesh(merge(hp),bodyMat);head.castShadow=true;head.position.set(0,1.075,-.285);head.rotation.order='YXZ';g.add(head);
  const mouth=new THREE.Group();mouth.position.set(0,-.065,.145);head.add(mouth);mouth.visible=false;
@@ -687,16 +698,20 @@ function buildDesk(d,idx){const ty=d.type,v=(idx/5|0)%3;
   const fo=addMesh(g,fg,bodyMat),el=addMesh(g,tint(SP(8,6),L.short?L.top:L.top),bodyMat);el.scale.setScalar(.046);
   const hand=addMesh(g,tint(SP(8,6),SKIN),bodyMat);hand.scale.set(.042,.03,.055);
   hands.push({up,fo,el,hand,s,sh:new THREE.Vector3(s*.21,.95,-.41),base:ty===4?new THREE.Vector3(s*.06,.875,-.175):new THREE.Vector3(s*.16,.805,-.07)})}
+ if(d.interview)return {g,head,hands,i:idx,type:ty};
  // 완성 직전에 부풀어 오르는 작품
  const wy=[.778,.79,.8,.815,.778][ty];
  const bulge=new THREE.Mesh(bulgeGeo,new THREE.MeshStandardMaterial({color:lin(0xdba79c).lerp(lin(TYPES[ty].tints[v%TYPES[ty].tints.length]),.3),roughness:.12,envMapIntensity:1}));bulge.position.set(0,wy,.07);bulge.visible=false;bulge.castShadow=true;g.add(bulge);
  const im=new THREE.InstancedMesh(SP(8,6),droolMat,6);im.frustumCulled=false;const dc=TRAIL.clone().lerp(lin(TYPES[ty].tints[v%TYPES[ty].tints.length]),.3);for(let k=0;k<6;k++)im.setColorAt(k,dc);g.add(im);
  const lamp=new THREE.Mesh(SP(10,8),new THREE.MeshStandardMaterial({color:lin(0x39d07a),emissive:lin(0x39d07a),emissiveIntensity:.9,roughness:.3}));lamp.scale.setScalar(.032);lamp.position.set(.56,.815,.29);g.add(lamp);
  const c={i:idx,type:ty,d,g,hands,head,mouth,teeth,bulge,wy,lamp,drool:{im,L:[0,0,0,0,0,0],u:[-.5,-.3,-.1,.1,.3,.5].map(u=>u+rnd(-.05,.05))},seat:d.seat,sl:0,bill:null,timer:rnd(2,5)+idx*.3,push:0,pop:0,look:0,clog:false,ht:rnd(0,9)};
- if(d.seat!=null){const bl=new THREE.Mesh(merge([part(BX(.15,1,.072),0x5fae7c,0,0,0),part(BX(.03,1.02,.074),0xf2f0e4,0,0,0)]),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.75,envMapIntensity:.3}));bl.position.set(.36,.78,.25);bl.rotation.y=.25;bl.castShadow=true;bl.visible=false;g.add(bl);c.bill=bl;g.visible=false}
+ {const bl=new THREE.Mesh(merge([part(BX(.15,1,.072),0x5fae7c,0,0,0),part(BX(.03,1.02,.074),0xf2f0e4,0,0,0)]),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.75,envMapIntensity:.3}));bl.position.set(.43,.78,.22);bl.rotation.y=.25;bl.castShadow=true;bl.visible=false;g.add(bl);c.bill=bl;}
+ {const tag=new THREE.Mesh(new THREE.PlaneGeometry(.58,.16),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.9}));tag.position.set(0,.66,.382);g.add(tag);c.tag=tag;c.tagText='';tag.visible=false;if(d.seat!=null)g.visible=false;}
+ c.wait=0;
  c.envelope=buildSupportEnvelope();g.add(c.envelope);
  drool(c,null);creators.push(c);
 }
+function creatorTag(c,text){if(!c.tag||c.tagText===text)return;c.tagText=text;const old=c.tag.material.map;c.tag.material.map=canvasTex(512,144,(g,w,h)=>{g.fillStyle='#eee9dd';g.fillRect(0,0,w,h);g.fillStyle='#30363e';g.textAlign='center';g.textBaseline='middle';g.font='700 54px sans-serif';g.fillText(text,w/2,h/2,w-30)});c.tag.material.needsUpdate=true;if(old)old.dispose()}
 // 기본 배출과 지원금 배출은 같은 책상 → 모서리 → 바닥 경로를 쓴다.
 function creatorOutput(c,n,ai=false,supported=false){
  const d=c.d,hd=++herdSeq,ph=rnd(0,TAU),fy=Math.atan2(d.fx,d.fz);c.push=1;c.pop=1;if(ai)AU.click();
@@ -725,21 +740,24 @@ function updateCreators(dt){
  const act=Math.min(NREG,2+S.zone*2);
  for(const c of creators){const d=c.d;let gs=null,on=true;
   if(d.seat!=null){
-   gs=S.grants[d.seat];on=!!gs&&AP[gs.a].type===c.type;if(!on)gs=null;c.sl=damp(c.sl,on?1:0,5,dt);const q=ss(c.sl);c.g.visible=q>.02;
+   gs=S.grants[d.seat];on=!S.team&&!!gs&&AP[gs.a].type===c.type;if(!on)gs=null;c.sl=damp(c.sl,on?1:0,5,dt);const q=ss(c.sl);c.g.visible=q>.02;
    c.g.position.set(d.x-d.fx*(1-q)*1.1,0,d.z-d.fz*(1-q)*1.1);c.g.scale.setScalar(.35+.65*q);
-   const f=gs?clamp(gs.left/GRANT_T,0,1):0;c.bill.visible=f>.004;c.bill.scale.y=Math.max(.004,f*.1);c.bill.position.y=.772+c.bill.scale.y/2}
-  else c.g.visible=c.i<act;
+   if(gs){c.tag.visible=true;creatorTag(c,AP[gs.a].name);}
+  }else{c.g.visible=creatorActive(c);const id=teamApplicant(c);c.tag.visible=id!=null;if(id!=null)creatorTag(c,AP[id].name);}
   if(!c.g.visible)continue;
-  const si=started&&S.support?S.support.ids.indexOf(c.i):-1,ft=si<0?-1:S.support.t-si*.022,prev=ft-dt;
+  if(gs&&started&&!paused)gs.receipt=Math.min(2,(gs.receipt??2)+dt);
+  const si=started&&S.support?S.support.ids.indexOf(c.i):-1,ft=si>=0?S.support.t-si*.022:gs&&gs.receipt<2?gs.receipt:-1,prev=ft-dt;
   const reaction=supportReaction(c,ft,prev),rk=reaction.mix;
-  const funded=si>=0,working=ft>=1&&ft<11,boost=working?ss((ft-1)/1.3):0,rest=ft>=11?Math.sin(Math.PI*clamp((ft-11)/2.5,0,1)):0,receive=ft>=.43&&ft<1?Math.sin(Math.PI*(ft-.43)/.57):0;
-  c.envelope.visible=ft>=0&&ft<13.5;
-  if(c.envelope.visible){const land=ss(ft/.48),fade=1-ss((ft-12.8)/.7);c.envelope.position.set(.32,lerp(1.55,gs?.89:.791,land)+Math.sin(clamp((ft-.48)/.14,0,1)*Math.PI)*.025,.24);c.envelope.rotation.set((1-land)*-.45,.12+(1-land)*.6,(1-land)*.24);c.envelope.scale.setScalar(fade)}
+  const left=activityLeft(c),waiting=left<=0&&si<0,frac=clamp(left/(gs?GRANT_T:ACTIVITY_T),0,1);c.wait=damp(c.wait,waiting?1:0,5,dt);
+  if(c.bill){c.bill.visible=frac>.001;c.bill.scale.y=Math.max(.002,frac*.09);c.bill.position.y=.78+c.bill.scale.y/2}
+  const funded=si>=0||ft>=0,working=si>=0&&ft>=1&&ft<11,boost=working?ss((ft-1)/1.3):0,rest=ft>=11?Math.sin(Math.PI*clamp((ft-11)/2.5,0,1)):0,receive=ft>=.43&&ft<1?Math.sin(Math.PI*(ft-.43)/.57):0;
+  c.envelope.visible=ft>=0&&ft<13.5||c.wait>.01;
+  if(ft>=0&&ft<13.5){const land=ss(ft/.48),fade=1-ss((ft-12.8)/.7);c.envelope.position.set(.43,lerp(1.55,.792+frac*.09,land)+Math.sin(clamp((ft-.48)/.14,0,1)*Math.PI)*.025,.24);c.envelope.rotation.set((1-land)*-.45,.12+(1-land)*.6,(1-land)*.24);c.envelope.scale.setScalar(fade)}
   // 지원 중에는 막힌 바닥에도 계속 쏟아내고, 평소의 혼잡 정지는 그대로 둔다.
   const cx=d.x+d.fx,cz=d.z+d.fz;let n=0;for(const k of creatures)if(k.st==='walk'&&Math.abs(k.x-cx)<1&&Math.abs(k.z-cz)<1)n++;
   c.clog=!funded&&(c.clog?n>6:n>=12);
-  const lc=working?LAMP_Y:c.clog?LAMP_R:LAMP_G;c.lamp.material.color.copy(lc);c.lamp.material.emissive.copy(lc);c.lamp.material.emissiveIntensity=c.clog?(Math.sin(time*9)>0?1.7:.12):working?1+.3*Math.sin(time*18):.9;
-  if(!c.clog)c.ht+=dt*(1+4.5*boost)*(1-.85*rest)*(1-.8*receive)*(1-rk);
+  const lc=working?LAMP_Y:c.clog?LAMP_R:LAMP_G;c.lamp.material.color.copy(lc);c.lamp.material.emissive.copy(lc);c.lamp.material.emissiveIntensity=waiting?0:c.clog?(Math.sin(time*9)>0?1.7:.12):working?1+.3*Math.sin(time*18):.9;if(waiting)c.lamp.material.color.setHex(0x6d7782);
+  if(!c.clog&&!waiting)c.ht+=dt*(1+4.5*boost)*(1-.85*rest)*(1-.8*receive)*(1-rk);
   c.push=Math.max(0,c.push-dt*(working?4.5:1.5));c.pop=Math.max(0,c.pop-dt*(working?4:1.3));c.look=damp(c.look,c.clog?1:0,4,dt);
   const lk=ss(c.look),sp=3+(c.i%5)*.4;
   c.head.position.y=1.075+Math.sin(c.ht*sp)*.013*boost-.065*rest;
@@ -749,6 +767,7 @@ function updateCreators(dt){
    c.head.position.y+=.015*rk;c.head.rotation.x=lerp(c.head.rotation.x,reaction.kind===0?-.2:-.04,rk);
    c.head.rotation.y=lerp(c.head.rotation.y,clamp(Math.atan2(localX,Math.max(.4,localZ)),-.5,.5),rk);c.head.rotation.z+=Math.sin(reaction.rt*10+c.i)*.035*rk}
   c.mouth.visible=rk>.08;c.mouth.scale.set(rk*(reaction.kind===2?.38:reaction.kind===1?.75:1),rk*(reaction.kind===2?.4:reaction.kind===1?.35:1),rk);c.teeth.visible=reaction.kind===0;
+  if(c.wait){c.head.rotation.x=lerp(c.head.rotation.x,-.04,c.wait);c.head.rotation.y*=1-c.wait;}
   c.head.updateMatrix();
   const pk=Math.sin(c.push*Math.PI)*(working?.3:1);
   for(const h of c.hands){const t=c.ht*sp+h.s;
@@ -765,8 +784,10 @@ function updateCreators(dt){
     else _b.set(-.31,1.25+.035*Math.sin(r*9),-.26);
     _a.lerp(_b,rk);
    }
+   if(c.wait)_a.lerp(_b.set(h.s*.24,h.s>0?.87:.79,h.s>0?.16:.03),c.wait);
    armIK(h,_a)}
-  const sw=c.clog||!started?0:ss(1-c.timer/1.5),bk=working?Math.max(.4+.3*Math.abs(Math.sin(c.ht*sp)),c.pop):rest?0:Math.max(sw,c.pop*.9);c.bulge.visible=bk>.02&&rk<.1;
+  if(c.wait>.01&&si<0){const h=c.hands.find(h=>h.s>0);c.envelope.position.copy(h.hand.position);c.envelope.position.z+=.04;c.envelope.position.y+=.03;c.envelope.rotation.set(.2,.12,-.1);c.envelope.scale.setScalar(c.wait)}
+  const sw=c.clog||!started?0:ss(1-c.timer/1.5),bk=working?Math.max(.4+.3*Math.abs(Math.sin(c.ht*sp)),c.pop):rest?0:Math.max(sw,c.pop*.9);c.bulge.visible=bk>.02&&rk<.1&&!waiting;
   if(c.bulge.visible){const q=1+.08*Math.sin(time*31+c.i)*bk;c.bulge.scale.set(.14*bk*q,.1*bk*(2-q),.12*bk*q)}
   if(!started||paused||!on)continue;
   if(funded){
@@ -775,8 +796,8 @@ function updateCreators(dt){
     if(time>supportSoundT&&Math.hypot(P.x-c.d.x,P.z-c.d.z)<4){supportSoundT=time+.13;AU.noise(c.type===2?'lowpass':'bandpass',c.type===2?420:1900,c.type===2?160:900,1,.035,.07);if(c.type===3)AU.tone('triangle',440+(c.i%4)*110,440,.045,.035)}}
    continue;
   }
-  if(c.clog)continue;
-  if(gs){gs.left-=dt;dirty=true;if(gs.left<=0){grantEnd(d.seat);continue}}
+  if(c.clog||waiting)continue;
+  if(gs){gs.left=Math.max(0,gs.left-dt);dirty=true;if(gs.left<=0){grantEnd(d.seat);continue}}else{S.funds[c.i]=Math.max(0,left-dt);dirty=true;if(S.funds[c.i]<=0)continue}
   c.timer-=dt;
   if(c.timer<=0){c.timer=gs?rnd(9,11):rnd(6.5,10)*Math.max(.5,1-S.zone*.04);
    if(gs?creatures.length<CAP-20:alive()<Math.min(230,80+S.zone*22)*roomK()){
@@ -1082,7 +1103,8 @@ const frac=x=>x-Math.floor(x);
 
 /* ───────── 수당 ───────── */
 const pops=[];let popBucket=0,popX=0,popZ=0,popY=.12,popT=0;
-function earn(n,x,z,y=.12){S.money+=n;dirty=true;popBucket+=n;popX=x;popZ=z;popY=y;if(popT<=0)popT=.1}
+function receiveWage(n){const paid=Math.min(n,S.advance);S.advance-=paid;S.money+=n-paid;return n-paid}
+function earn(n,x,z,y=.12){n=receiveWage(n);dirty=true;popBucket+=n;popX=x;popZ=z;popY=y;if(popT<=0)popT=.1}
 function flushPop(){if(!popBucket)return;let p=pops.find(p=>p.t<=0);if(!p){if(pops.length>=10){popBucket=0;return}const el=document.createElement('div');el.className='pop';$('pops').appendChild(el);p={el,t:0};pops.push(p)}
  p.el.textContent='+'+popBucket.toLocaleString('ko-KR');p.t=.9;p.x=popX+rnd(-.05,.05);p.z=popZ;p.y=popY;popBucket=0}
 function updatePops(dt){
@@ -1091,7 +1113,7 @@ function updatePops(dt){
   p.el.style.opacity=p.t<=0?0:Math.min(1,k*3);p.el.style.transform='translate(-50%,-50%) translate('+((_a.x*.5+.5)*W).toFixed(1)+'px,'+((-_a.y*.5+.5)*H).toFixed(1)+'px) scale('+(1+.35*ss((k-.75)*4)).toFixed(3)+')'}
 }
 function credit(c){S.total++;S.liters+=c.vol;if(S.prog<quota(S.zone))S.prog++;
- if(S.prog>=quota(S.zone)&&!S.paid){S.paid=true;const b=600+S.zone*400;S.money+=b;toast(S.zone+'구역 정산 완료 · 보너스 '+won(b),4);AU.chime();save()}
+ if(S.prog>=quota(S.zone)&&!S.paid){S.paid=true;const b=600+S.zone*400;receiveWage(b);toast(S.zone+'구역 정산 완료 · 보너스 '+won(b),4);AU.chime();save()}
  dirty=true}
 
 /* ───────── 죽음 처리 ───────── */
@@ -2081,83 +2103,109 @@ function washUpdate(dt,act){
 const tool2Locked=()=>handLocked()||tongLocked()||VC.gr>0;
 function tools2Reset(){tongDrop();TG.t=0;TG.armed=false}
 
-/* ───────── 사무실 · 예술활동증명 · 창작준비금 ───────── */
-const OFZ=-1.06;
-function buildOffice(){
- const g=new THREE.Group(),wallM=M(0xf6f3ec,.9),band=M(0xbfd0f5,.8),blue=M(0x1f4fd8,.6);
- addMesh(g,BX(1.2,2.3,1.3),wallM,.62,1.15,0);addMesh(g,BX(1.26,.07,1.36),blue,.62,2.33,0);
- addMesh(g,BX(.03,.9,1.3),band,.012,.45,0,false);addMesh(g,BX(.035,.05,1.3),blue,.01,.92,0,false);
- addMesh(g,BX(.06,1.94,.9),M(0x30343f,.6),-.004,.97,0);addMesh(g,BX(.06,1.86,.8),M(0x5b86e6,.45),-.02,.95,0);
- addMesh(g,BX(.064,.46,.34),new THREE.MeshStandardMaterial({color:lin(0xdff0ff),emissive:lin(0xbfe0ff),emissiveIntensity:.5,roughness:.2}),-.021,1.42,0,false);
- addMesh(g,BX(.07,.03,.13),M(0xe4e8ee,.3,.6),-.05,.96,.27);
- const sign=canvasTex(512,160,(c,w,h)=>{c.fillStyle='#fff';c.fillRect(0,0,w,h);c.strokeStyle='#1f4fd8';c.lineWidth=10;c.strokeRect(5,5,w-10,h-10);c.fillStyle='#1f4fd8';c.textAlign='center';c.textBaseline='middle';c.font='900 96px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';drawMark(c,25,30,132);c.fillText('사무실',w/2+66,h/2+6)});
- const sp=new THREE.Mesh(new THREE.PlaneGeometry(.62,.194),new THREE.MeshStandardMaterial({map:sign,roughness:.7,envMapIntensity:.2}));sp.rotation.y=-Math.PI/2;sp.position.set(-.012,2.08,0);g.add(sp);
- const mat=new THREE.Mesh(new THREE.PlaneGeometry(.5,.8),M(0x3b4a6b,.9));mat.rotation.x=-Math.PI/2;mat.rotation.z=Math.PI/2;mat.position.set(-.32,.004,0);mat.receiveShadow=true;g.add(mat);
- // 문 앞 바닥 표시
- const ft=canvasTex(512,160,(c,w,h)=>{c.clearRect(0,0,w,h);c.fillStyle='#1f4fd8';c.beginPath();c.moveTo(80,10);c.arcTo(w-10,10,w-10,h-10,70);c.arcTo(w-10,h-10,10,h-10,70);c.arcTo(10,h-10,10,10,70);c.arcTo(10,10,w-10,10,70);c.fill();c.fillStyle='#fff';c.textAlign='center';c.textBaseline='middle';c.font='900 92px "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif';c.fillText('사무실 ▶',w/2,h/2+6)});
- const fp=new THREE.Mesh(new THREE.PlaneGeometry(.86,.27),new THREE.MeshStandardMaterial({map:ft,transparent:true,roughness:.62,envMapIntensity:.3,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3}));fp.rotation.x=-Math.PI/2;fp.position.set(-.82,.003,0);fp.receiveShadow=true;fp.renderOrder=1;g.add(fp);
- scene.add(g);ROOM.office=g;
-}
-const OF={sel:-1,near:false};
+/* 다음 작업실 배정: 적격 통보를 받은 사람만 호출한다. */
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
-function grantStart(id){const k=S.grants.findIndex(g=>!g);if(k<0||S.money<GRANT)return false;S.money-=GRANT;S.grants[k]={a:id,left:GRANT_T};apS(id).s='paid';
- const c=creators.find(c=>c.d.seat===k&&c.type===AP[id].type);if(c){c.timer=2.6;c.sl=0}AU.buy();save();return true}
-function grantEnd(k){const g=S.grants[k];if(!g)return;const st=apS(g.a);st.s='cert';st.n++;S.grants[k]=null;toast(AP[g.a].name+' · 창작준비금 소진, 창작 중단',3.4);dirty=true}
-const ST_TXT={new:'심의 대기',cert:'증명 완료',rej:'반려',paid:'수혜 중'},J_TXT={ok:'충족',no:'미달',out:'기준 외 활동'};
-function renderOffice(){
- $('omoney').textContent=won(S.money);
- const sel=OF.sel,free=S.grants.filter(g=>!g).length;
- $('obody').classList.toggle('det',sel>=0);
- $('aplist').innerHTML='<div class="aphead">접수 '+AP.length+'건 · 창작준비금 자리 '+(3-free)+' / 3</div>'+AP.map((a,i)=>{const st=apS(i);return '<button class="aprow'+(i===sel?' sel':'')+'" data-i="'+i+'"><b>'+esc(a.name)+'</b><small>'+esc(a.field)+' · '+(st.n?'재신청 '+st.n+'회':'신규')+'</small><span class="st '+st.s+'">'+ST_TXT[st.s]+'</span></button>'}).join('');
- $('aplist').querySelectorAll('.aprow').forEach(b=>b.onclick=()=>{OF.sel=+b.dataset.i;AU.tick();renderOffice();$('apdet').scrollTop=0});
- const D=$('apdet');
- if(sel<0){D.innerHTML='<p class="apnone">왼쪽 목록에서 신청 건을 선택하십시오.</p>';return}
- const a=AP[sel],st=apS(sel),pass=a.rec==='ok'||a.inc==='ok',fit=a.mid<=120,gi=S.grants.findIndex(g=>g&&g.a===sel);
- let why='';if(st.s==='paid')why='';else if(st.s!=='cert')why='예술활동증명을 완료한 신청인만 선정할 수 있습니다.';else if(!fit)why='소득인정액이 기준 중위소득 120%를 초과하여 선정할 수 없습니다.';else if(!free)why='창작준비금 자리가 모두 찼습니다.';else if(S.money<GRANT)why='보유 수당이 부족합니다.';
- D.innerHTML='<button class="apback" id="apback">‹ 목록</button>'
-  +'<div class="aptitle"><div><small>접수번호 '+(2026)+'-'+String(1041+sel*37).padStart(5,'0')+'</small><h3>'+esc(a.name)+'</h3></div><span class="st '+st.s+'">'+ST_TXT[st.s]+'</span></div>'
-  +'<dl class="kv"><dt>예술 분야</dt><dd>'+esc(a.field)+'</dd><dt>신청 유형</dt><dd>'+esc(a.kind)+'</dd><dt>수혜 이력</dt><dd>창작준비금 '+st.n+'회</dd></dl>'
-  +'<h4>예술활동증명 심의</h4>'
-  +'<table class="tb"><tr><th>기준</th><th>제출 내용</th><th>판정</th></tr>'
-  +'<tr><td><b>공개 발표된 예술활동</b>'+esc(a.crit)+'</td><td>'+esc(a.recT)+(a.note?'<i>'+esc(a.note)+'</i>':'')+'</td><td class="j '+a.rec+'">'+J_TXT[a.rec]+'</td></tr>'
-  +'<tr><td><b>예술활동 수입</b>최근 1년간 120만 원 이상</td><td>'+esc(a.incT)+'</td><td class="j '+a.inc+'">'+J_TXT[a.inc]+'</td></tr></table>'
-  +'<p class="ev">제출 증빙: '+esc(a.ev)+'</p>'
-  +'<div class="sys">시스템 판정 <b class="'+(pass?'ok':'no')+'">'+(pass?'기준 충족':'기준 미달')+'</b></div>'
-  +'<div class="btns">'+(st.s==='paid'?'':st.s==='cert'?'<button class="b2" data-a="rej">인정 취소 · 반려</button>':st.s==='rej'?'<button class="b1" data-a="cert">재심의 · 예술활동증명 인정</button>':'<button class="b1" data-a="cert">예술활동증명 인정</button><button class="b2" data-a="rej">반려</button>')+'</div>'
-  +'<h4>창작준비금지원사업 · 창작디딤돌</h4>'
-  +'<dl class="kv"><dt>소득인정액</dt><dd>기준 중위소득 '+a.mid+'% <b class="'+(fit?'ok':'no')+'">'+(fit?'적합':'초과')+'</b></dd><dt>지원 금액</dt><dd>'+won(GRANT)+' (일시금)</dd><dt>활동 계획</dt><dd>'+esc(st.n?'지난 창작준비금이 소진되어 창작을 중단했습니다. 다시 지급되면 재개하겠습니다.':a.plan)+'</dd></dl>'
-  +(st.s==='paid'?'<div class="sys">창작준비금 수혜 중 · 잔여 <b class="ok">'+Math.ceil((gi>=0?S.grants[gi].left:0)/GRANT_T*100)+'%</b></div>':'<div class="btns"><button class="b1" data-a="pay"'+(why?' disabled':'')+'>선정 · '+won(GRANT)+' 지급</button></div>'+(why?'<p class="why">'+why+'</p>':''));
- $('apback').onclick=()=>{OF.sel=-1;renderOffice()};
- D.querySelectorAll('.btns button').forEach(b=>b.onclick=()=>{const act=b.dataset.a;
-  if(act==='pay'){if(!grantStart(sel))return}else{st.s=act;AU.tick();save()}
-  updateHUD(true);renderOffice()});
+const IV={open:false,sel:0,scene:null,camera:null,actors:[],x:0,t:0,rect:null};
+const teamSize=z=>Math.min(5,3+Math.floor((z-2)/3));
+function teamApplicant(c){return S.team?.find(id=>AP[id].desk===c.i)}
+function creatorActive(c){return S.team?teamApplicant(c)!=null:c.d.seat==null?c.i<Math.min(NREG,2+S.zone*2):!!S.grants[c.d.seat]&&AP[S.grants[c.d.seat].a].type===c.type}
+function draftForZone(){if(!S.draft||S.draft.zone!==S.zone+1)S.draft={zone:S.zone+1,ids:[],focus:ELIGIBLE[(S.zone-1)%ELIGIBLE.length]};return S.draft}
+function interviewOrder(){const offset=(S.zone-1)%ELIGIBLE.length;return ELIGIBLE.slice(offset).concat(ELIGIBLE.slice(0,offset))}
+function buildInterview(){
+ if(IV.scene)return;
+ const s=IV.scene=new THREE.Scene();s.background=lin(0xe9e8e1);s.environment=scene.environment;
+ s.add(new THREE.HemisphereLight(0xffffff,0xafa99a,.6));const light=new THREE.DirectionalLight(0xfff3e0,.65);light.position.set(-3,6,4);s.add(light);
+ addMesh(s,BX(30,.04,8),M(0xd5d1c4,.95),5,-.025,-1,false);addMesh(s,BX(30,4,.05),M(0xe9e8e1,.95),5,2,-2,false);
+ IV.camera=new THREE.PerspectiveCamera(40,1,.06,50);
+ for(const id of ELIGIBLE){const a=AP[id],c=buildDesk({x:0,z:0,ry:0,type:a.type,interview:true},a.desk,s);c.applicant=id;c.nod=0;
+  const folder=addMesh(c.g,BX(.28,.018,.21),M(0xe3dbc3,.85),0,.61,-.29);folder.rotation.x=.17;
+  const label=new THREE.Mesh(new THREE.PlaneGeometry(.22,.13),M(0xf9f6ed,.9));label.rotation.x=-Math.PI/2+.17;label.position.set(0,.624,-.29);c.g.add(label);
+  const seal=addMesh(c.g,BX(.072,.006,.05),M(0x407b61,.85),.065,.632,-.24);seal.rotation.x=.17;c.seal=seal;
+  const shadow=new THREE.Mesh(new THREE.CircleGeometry(.42,32),new THREE.MeshBasicMaterial({color:0x55584e,transparent:true,opacity:.11,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.set(0,.002,-.35);shadow.scale.y=1.6;c.g.add(shadow);
+  IV.actors.push(c);
+ }
 }
-function openOffice(){if(!started||paused||!OF.near||stompLocked()||shovelLocked()||tool2Locked())return;paused=true;releaseAll();OF.sel=-1;renderOffice();$('office').hidden=false;$('gooffice').style.display='none';if(!S.ofn){S.ofn=true}save()}
-function closeOffice(){$('office').hidden=true;paused=false;last=0;$('gl').focus()}
-function officeUpdate(){const n=started&&!paused&&P.x>XB-.8&&Math.abs(P.z-OFZ)<.8;if(started&&!paused&&!S.ofn&&!OF.told&&S.money>=GRANT){OF.told=true;toast('사무실에 창작준비금 신청이 접수되어 있습니다',4.5)}if(n!==OF.near){OF.near=n;$('gooffice').style.display=n?'block':'none'}}
+function layoutInterview(){if(!IV.open)return;const r=$('candidate-stage').getBoundingClientRect();IV.rect={x:r.left,y:r.top,w:Math.max(1,r.width),h:Math.max(1,r.height)};if(IV.camera){IV.camera.aspect=IV.rect.w/IV.rect.h;IV.camera.updateProjectionMatrix()}}
+function openInterview(){
+ if(!started||paused||!S.paid||stompLocked()||shovelLocked()||tool2Locked())return false;
+ paused=true;releaseAll();buildInterview();const d=draftForZone();IV.open=true;IV.sel=d.focus;IV.x=interviewOrder().indexOf(IV.sel)*.91;IV.t=0;
+ $('hud').style.display='none';$('interview').hidden=false;renderInterview();layoutInterview();save();AU.wake();$('candidate-approve').focus();return true;
+}
+function closeInterview(){if(!IV.open)return;IV.open=false;$('interview').hidden=true;$('hud').style.display='block';paused=false;last=0;renderer.setViewport(0,0,W,H);save();$('next').focus()}
+function focusCandidate(delta){if(!IV.open)return;const order=interviewOrder(),i=order.indexOf(IV.sel);IV.sel=order[(i+delta+order.length)%order.length];draftForZone().focus=IV.sel;AU.wake();AU.tick();save();renderInterview();$('candidate-paper').scrollTop=0}
+function chooseCandidate(id){
+ if(!IV.open||!ELIGIBLE.includes(id))return false;AU.wake();const d=draftForZone(),i=d.ids.indexOf(id);
+ if(i>=0)d.ids.splice(i,1);else{if(d.ids.length>=teamSize(d.zone))return false;d.ids.push(id);const c=IV.actors.find(c=>c.applicant===id);if(c)c.nod=1;AU.thwack()}
+ save();renderInterview();return true;
+}
+function renderInterview(){
+ const d=draftForZone(),a=AP[IV.sel],chosen=d.ids.includes(IV.sel),need=teamSize(d.zone),order=interviewOrder();
+ $('interview-title').textContent=d.zone+'구역 · 입주자 배정';$('candidate-position').textContent=(order.indexOf(IV.sel)+1)+' / '+order.length;
+ const detail=$('candidate-paper');detail.innerHTML='<div class="int-person"><div><small>대상자 '+String(1041+IV.sel*37).padStart(5,'0')+'</small><h3>'+esc(a.name)+'</h3></div><div class="int-seal">적격<br>지급 대상</div></div>'
+  +'<div class="int-meta"><span>접수 분야 <b>'+esc(a.field)+'</b></span><span>예술활동증명 완료</span></div>'
+  +'<div class="int-work">'+workImage(a)+'<div><b>'+esc(a.title)+'</b><p>'+esc(a.work)+'</p></div></div>'
+  +'<button id="candidate-approve" aria-pressed="'+chosen+'"'+(!chosen&&d.ids.length>=need?' disabled':'')+'>'+(chosen?'배정 승인됨 · 취소':'배정 승인')+'</button>'
+  +'<details class="int-files"><summary>첨부 서류</summary><dl><dt>확인 실적</dt><dd>'+esc(a.recT)+'</dd><dt>제출 자료</dt><dd>'+esc(a.ev)+'</dd>'+a.papers.map(([k,v])=>'<dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd>').join('')+'<dt>소득인정액</dt><dd>기준 중위소득 '+a.mid+'% · 적합</dd></dl></details>';
+ $('candidate-approve').onclick=()=>chooseCandidate(IV.sel);
+ $('interview-chosen').innerHTML='<small>배정 '+d.ids.length+' / '+need+'</small>'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+esc(AP[id].name)+' 배정 취소">'+esc(AP[id].name)+' ×</button>').join('')+(d.ids.length?'':'<span class="empty">배정 대기</span>');
+ $('interview-chosen').querySelectorAll('button').forEach(b=>b.onclick=()=>chooseCandidate(+b.dataset.id));
+ $('interview-enter').disabled=d.ids.length!==need;$('interview-enter').textContent=d.ids.length===need?need+'명과 작업실로':'입주자 '+need+'명 배정';
+ layoutInterview();
+}
+function enterNextWorkshop(){
+ if(!IV.open||!S.paid||!S.draft||S.draft.zone!==S.zone+1)return false;
+ const d=S.draft;if(d.ids.length!==teamSize(d.zone)||new Set(d.ids).size!==d.ids.length||!d.ids.every(id=>ELIGIBLE.includes(id)))return false;
+ S.team=d.ids.slice();S.zone=d.zone;S.prog=0;S.paid=false;S.draft=null;S.grants=[null,null,null];S.funds.fill(ACTIVITY_T);
+ IV.open=false;$('interview').hidden=true;$('hud').style.display='block';paused=false;last=0;renderer.setViewport(0,0,W,H);
+ roomTarget(S.zone,true);resetRoom();updateCreators(0);save();updateHUD(true);setHint();AU.wake();AU.chime();$('gl').focus();return true;
+}
+function drawInterview(dt){
+ const order=interviewOrder(),d=draftForZone();IV.t+=dt;IV.x=damp(IV.x,order.indexOf(IV.sel)*.91,7,dt);
+ for(const c of IV.actors){c.g.position.x=order.indexOf(c.applicant)*.91;c.nod=Math.max(0,c.nod-dt*1.8);const k=Math.sin(c.nod*Math.PI),focus=c.applicant===IV.sel;
+  c.head.rotation.set(.03+.18*k+Math.sin(IV.t*1.6+c.i)*.012,focus?0:Math.sin(IV.t*.3+c.i)*.09,0);c.head.position.y=1.075-.028*k;
+  c.seal.visible=d.ids.includes(c.applicant);
+  for(const h of c.hands){_a.set(h.s*.12,.64+Math.sin(IV.t*1.7+c.i)*.002,-.29);armIK(h,_a)}
+ }
+ const r=IV.rect;if(!r)return;const cam=IV.camera,dist=Math.max(2.45,1.35/(2*Math.tan(cam.fov*Math.PI/360)*cam.aspect));
+ cam.position.set(IV.x,1.2,dist);cam.lookAt(IV.x,.66,-.26);cam.updateMatrixWorld(true);
+ renderer.setViewport(r.x,H-r.y-r.h,r.w,r.h);renderer.render(IV.scene,cam);renderer.setViewport(0,0,W,H);
+}
+function grantEnd(k){const g=S.grants[k];if(!g||apS(g.a).s==='spent')return;g.left=0;const st=apS(g.a);st.s='spent';st.n++;dirty=true}
+
+function workImage(a){
+ let v='';const paper='#eae5d8',ink='#3b4051';
+ if(a.art==='paint')v='<rect x="62" y="22" width="202" height="152" fill="#c3c9c4"/><path d="M62 145L123 66 173 104 215 49 264 91V174H62Z" fill="#677c7c"/><path d="M63 145L145 121 196 143 264 103V174H63Z" fill="#b39d87"/><path d="M105 24V173M211 24V173" stroke="#e5d9bc" stroke-width="5"/><path d="M155 22V174" stroke="#ddd3c0" stroke-width="2"/>';
+ else if(a.art==='hybrid'){for(let i=0;i<5;i++)v+='<g class="pressure"><path d="M'+(43+i*48)+' '+(145-i*17)+'h40v17h-40z" fill="'+['#96775c','#a18b70','#5c7475','#c3ac8b','#776759'][i]+'"/><path d="M'+(63+i*48)+' '+(145-i*17)+'v-28" stroke="#333d47" stroke-width="2"/><circle class="signal" cx="'+(63+i*48)+'" cy="'+(112-i*17)+'" r="8" fill="#dcb965"/></g>';v+='<path d="M40 174Q104 180 122 144T220 144T288 92" fill="none" stroke="#655a4c" stroke-width="2"/>'}
+ else if(a.art==='stitch'){for(let i=0;i<6;i++)v+='<g transform="translate('+(25+i*44)+','+(38+(i%2)*26)+') rotate('+(i%2?8:-7)+')"><rect width="40" height="101" fill="'+(i%2?'#d4c5a5':'#eee7d4')+'"/><path d="M9 14V86M29 14V86" stroke="#776b5e" stroke-dasharray="2 6"/></g>';v+='<path d="M14 138Q52 26 99 120T175 112T300 67" fill="none" stroke="#a4524a" stroke-width="2"/>'}
+ else if(a.art==='map'){v='<path d="M24 26L100 39 187 20 297 35V170L205 181 118 163 24 177Z" fill="#e3dece"/>';for(let i=0;i<5;i++)v+='<path d="M'+(40+i*52)+' 35L'+(65+i*44)+' 168" stroke="#b0b6b0" stroke-width="4"/>';v+='<path d="M38 147L87 110 128 128 161 70 220 89 282 54" stroke="#aa6355" stroke-width="3" fill="none"/>';for(let i=0;i<6;i++)v+='<rect x="'+(48+i*39)+'" y="'+(58+(i%3)*29)+'" width="24" height="17" fill="#aaa58f"/>'}
+ else if(a.art==='clay'){for(let i=0;i<7;i++)v+='<ellipse cx="'+(47+i*37)+'" cy="'+(132-(i%3)*23)+'" rx="'+(14+i%3*3)+'" ry="'+(19+i%3*9)+'" fill="'+['#ab7b5e','#b69c83','#788481'][i%3]+'"/><path d="M'+(38+i*37)+' '+(125-(i%3)*23)+'l18 5" stroke="#dfceaf" stroke-width="2"/>'}
+ else if(a.art==='sound'){v='<rect x="29" y="30" width="266" height="137" fill="#e2dfd4"/>';for(let i=0;i<4;i++){v+='<path d="M42 '+(54+i*30)+'H280" stroke="#b6b6ac"/>';for(let j=0;j<38;j++){const h=3+Math.abs(Math.sin(j*2.3+i))*14;v+='<path d="M'+(45+j*6)+' '+(54+i*30-h)+'v'+(h*2)+'" stroke="'+['#54797e','#8a6377','#a98d63','#637c68'][i]+'" stroke-width="2"/>'}}}
+ else{for(let i=0;i<3;i++){v+='<g transform="translate('+(35+i*66)+','+(25+i*8)+') rotate('+(i*4-5)+')"><rect width="126" height="145" fill="'+paper+'" stroke="#d2ccbe"/>';if(a.art==='comic'){for(let j=0;j<4;j++)v+='<rect x="'+(8+(j%2)*57)+'" y="'+(12+Math.floor(j/2)*61)+'" width="50" height="53" fill="none" stroke="#77776f"/><path d="M'+(16+(j%2)*57)+' '+(50+Math.floor(j/2)*61)+'q17 -32 31 0" stroke="#727b7c" fill="none"/>'}else for(let j=0;j<12;j++)v+='<path d="M13 '+(18+j*10)+'h'+(j%4===0?63:93)+'" stroke="'+ink+'" stroke-width="1.3" opacity=".6"/>';v+='</g>'}}
+ return '<svg viewBox="0 0 324 196" role="img" aria-label="'+esc(a.title)+' 제출 작업 자료"><rect width="324" height="196" fill="#f1eee5"/>'+v+'</svg>';
+}
 
 /* ───────── 진행 ───────── */
 function spawnInitial(){
- const act=creators.filter(c=>c.i<Math.min(NREG,2+S.zone*2)),n=Math.round(Math.min(110,40+S.zone*10)*Math.max(.55,roomK()));let made=0;
+ const act=supportRecipients(),n=Math.round(Math.min(110,40+S.zone*10)*Math.max(.55,roomK()));let made=0;
  const herd=(cx,cz,type,k)=>{const hd=++herdSeq;for(let i=0;i<k;i++){spawnCreature(Math.random()<.1?6:type,clamp(cx+rnd(-.16,.16),-XB+.2,XB-.2),clamp(cz+rnd(-.16,.16),ZN+.2,ZF-.2),{herd:hd});made++}};
- herd(P.x+AIMX,P.z-AIMZ,1,7);herd(P.x-.45,P.z-1.3,0,6);herd(P.x+.55,P.z-1.5,2,6);
+ herd(P.x+AIMX,P.z-AIMZ,act[0]?.type??1,7);herd(P.x-.45,P.z-1.3,act[1]?.type??0,6);herd(P.x+.55,P.z-1.5,act[2]?.type??2,6);
  while(made<n){const cx=rnd(-XB+.4,XB-.4),cz=rnd(ZN+.5,ZF-.6);if(Math.hypot(cx-P.x,cz-P.z)<.6)continue;herd(cx,cz,pick(act).type,5+(Math.random()*5|0))}
 }
 function resetRoom(){
  resetSupport();handReset();creatures.length=0;drops.length=0;chunks.length=0;ST.ph='idle';ST.pins.length=0;SH.carry.length=0;SH.ph='idle';SH.tossN=0;SH.load=0;SH.lc.length=0;SH.binN=SH.binLv=SH.binDrain=0;SH.binPieces.length=0;solidEnd(SH.binSolid,0);solidEnd(SH.binEyes,0);vacClear();TK.load=0;AU.loop('grind',false);tools2Reset();clearThreads();inkClear();bootR.userData.res.length=0;bootL.userData.res.length=0;
  P.x=0;P.z=.8;creators.forEach(c=>c.timer=rnd(3,7));spawnInitial();
 }
-function nextZone(){if(!S.paid)return;S.zone++;S.prog=0;S.paid=false;resetRoom();roomTarget(S.zone);save();updateHUD(true);toast('창작 교실 증설 · '+S.zone+'구역',3.5);AU.chime()}
+function nextZone(){return openInterview()}
 
 /* ───────── HUD ───────── */
 let toastT=0,hudKey='';
 function toast(s,sec=2.6){$('toast').textContent=s;$('toast').classList.add('on');toastT=sec}
 function updateHUD(force){
- const supportPhase=S.support?(S.support.t>=11.5?2:1):0,recipients=supportRecipients().length,cost=recipients*SUPPORT_UNIT;
- const key=[Math.round(S.money),S.prog,S.zone,S.paid,S.tool,S.owned.length,S.muted,supportPhase,recipients].join('|');if(!force&&key===hudKey)return;hudKey=key;
- $('supportbtn').disabled=!!supportPhase||S.money<cost||!recipients;$('supportbtn').classList.toggle('running',!!supportPhase);
- $('supportlabel').textContent=supportPhase===2?'숨 고르는 중':supportPhase?'지급 완료':'창작지원금';$('supportcost').textContent=supportPhase?'전원 지급':'전원 · '+won(cost);
- $('supportbtn').setAttribute('aria-label',supportPhase?'전원에게 창작지원금을 지급했습니다':'현재 구역 전원에게 창작지원금 '+won(cost)+' 지급');
+ const supportPhase=S.support?(S.support.t>=11.5?2:1):0,recipients=supportRecipients().length,cost=recipients*SUPPORT_UNIT,credit=S.money<cost&&supportCredit();
+ const key=[Math.round(S.money),S.prog,S.zone,S.paid,S.tool,S.owned.length,S.muted,supportPhase,recipients,credit,Math.ceil(S.advance)].join('|');if(!force&&key===hudKey)return;hudKey=key;
+ $('supportbtn').disabled=!!supportPhase||S.money<cost&&!credit||!recipients;$('supportbtn').classList.toggle('running',!!supportPhase);
+ $('supportlabel').textContent=supportPhase===2?'숨 고르는 중':supportPhase?'지급 완료':credit?'지원금 선지급':'창작지원금';$('supportcost').textContent=supportPhase?'전원 지급':credit?'부족분 수당에서 상계':'전원 · '+won(cost);
+ $('supportbtn').setAttribute('aria-label',supportPhase?'전원에게 창작지원금을 지급했습니다':credit?'지원금 '+won(cost)+' 지급, 부족분 '+won(cost-S.money)+'은 이후 수당에서 상계':'현재 구역 전원에게 창작지원금 '+won(cost)+' 지급');
  $('money').textContent=won(S.money);$('ztxt').textContent=S.zone+'구역 · 처리 '+S.prog+' / '+quota(S.zone);$('zbar').style.width=(S.prog/quota(S.zone)*100)+'%';
  $('next').style.display=S.paid?'block':'none';$('hud').classList.toggle('has-next',S.paid);
  $('shopbtn').classList.toggle('can',TOOLS.some(t=>!S.owned.includes(t.id)&&S.money>=t.price));
@@ -2201,13 +2249,14 @@ function bind(){
  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('lostpointercapture',up);
  cv.addEventListener('contextmenu',e=>e.preventDefault());
  addEventListener('keydown',e=>{if(!started)return;
-  if(e.code==='Escape'||e.code==='KeyP'){e.preventDefault();if(!$('office').hidden)closeOffice();else if(!$('shop').hidden)closeShop();else if(paused)resumeGame();else pauseGame();return}
+  if(e.code==='Escape'||e.code==='KeyP'){e.preventDefault();if(IV.open)closeInterview();else if(!$('shop').hidden)closeShop();else if(paused)resumeGame();else pauseGame();return}
+  if(IV.open){if(e.code==='ArrowLeft'||e.code==='ArrowRight'){e.preventDefault();focusCandidate(e.code==='ArrowLeft'?-1:1)}return}
   if(paused)return;
   if(['Space','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyW','KeyA','KeyS','KeyD'].includes(e.code)){e.preventDefault();AU.wake()}
   keys[e.code]=true;
   if(e.code.startsWith('Digit')){const t=TOOLS[+e.code.slice(5)-1];if(t)setTool(t.id)}
   if(e.code==='KeyB'||e.code==='KeyE')openShop();
-  if(e.code==='Enter'||e.code==='KeyF')openOffice()});
+  if(e.code==='Enter'&&S.paid){e.preventDefault();nextZone()}});
  addEventListener('keyup',e=>{keys[e.code]=false});
  addEventListener('blur',()=>{if(started&&!paused)pauseGame();else releaseAll()});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(started&&!paused)pauseGame();else{releaseAll();AU.sleep()}save()}});
@@ -2216,13 +2265,13 @@ function bind(){
  $('start').onclick=()=>{if(started)return;started=true;paused=false;$('intro').hidden=true;$('hud').style.display='block';AU.wake();updateHUD(true);setHint();$('gl').focus()};
  $('snd').onclick=()=>{AU.wake();S.muted=!S.muted;AU.mute(S.muted);save();updateHUD(true)};
  $('supportbtn').onclick=startSupport;
- $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('shopx').onclick=closeShop;$('next').onclick=nextZone;$('gooffice').onclick=openOffice;$('officex').onclick=closeOffice;
+ $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('shopx').onclick=closeShop;$('next').onclick=nextZone;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('interview-enter').onclick=enterNextWorkshop;
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
- $('reset').onclick=()=>{if(!confirm('수당과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand'],tool:'hand',muted:m,ap:{},grants:[null,null,null],ofn:false};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
- $('howto').innerHTML=fine?'이동: WASD 또는 방향키<br>작업: 스페이스 또는 마우스를 누르고 있기<br>장비 바꾸기: 숫자 키 1~9 · 장비 보급: B<br>사무실: 오른쪽 사무실 문 앞에서 Enter':'이동: 화면 왼쪽을 누른 자리에서 끌기<br>작업: 화면 오른쪽을 누르고 있기<br>장비 바꾸기: 왼쪽 위 장비 이름<br>사무실: 오른쪽 사무실 문 앞에 서면 들어가는 단추가 뜹니다';
+ $('reset').onclick=()=>{if(!confirm('수당과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand'],tool:'hand',muted:m,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
+ $('howto').innerHTML=fine?'이동: WASD 또는 방향키<br>작업: 스페이스 또는 마우스를 누르고 있기<br>장비 바꾸기: 숫자 키 1~9 · 장비 보급: B<br>다음 구역: Enter · 입주자 배정':'이동: 화면 왼쪽을 누른 자리에서 끌기<br>작업: 화면 오른쪽을 누르고 있기<br>장비 바꾸기: 왼쪽 위 장비 이름<br>구역 완료 후 다음 작업실의 입주자를 배정합니다';
  cv.addEventListener('webglcontextlost',e=>{e.preventDefault();pauseGame();toast('그래픽 연결이 끊겼습니다. 페이지를 새로 열어 주세요.',30)});
 }
-function resize(){W=innerWidth;H=innerHeight;portrait=H>W;renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=portrait?CAM.fp:CAM.fl;camera.updateProjectionMatrix()}
+function resize(){W=innerWidth;H=innerHeight;portrait=H>W;renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=portrait?CAM.fp:CAM.fl;camera.updateProjectionMatrix();if(IV.open)layoutInterview()}
 
 /* ───────── 루프 ───────── */
 let last=0,slow=0,pr=1;
@@ -2239,7 +2288,7 @@ function sim(dt){
  stompUpdate(dt,act);
  updateBody(dt,mx,mz);updateGoogly();
  handUpdate(dt,act);shovelUpdate(dt,act);vacUpdate(dt,act);truckUpdate(dt,act);trimUpdate(dt,act);tongUpdate(dt,act);washUpdate(dt,act);mopUpdate(dt,act);
- updateSupport(dt);updateCreators(dt);updateCreatures(dt);officeUpdate();
+ updateSupport(dt);updateCreators(dt);updateCreatures(dt);
  updateThreads(dt);
  updateBits(dt);sweepDead();
  if(toastT>0){toastT-=dt;if(toastT<=0)$('toast').classList.remove('on')}
@@ -2250,6 +2299,7 @@ function frame(now){
  if(document.hidden){last=0;return}
  const raw=last?(now-last)/1000:.016;last=now;const dt=Math.min(.034,Math.max(.001,raw));
  if(started&&!paused){if(raw>.045)slow++;else slow=Math.max(0,slow-1);if(slow>80&&pr>1){pr=Math.max(1,pr-.5);renderer.setPixelRatio(pr);renderer.setSize(W,H,false);slow=0}}
+ if(IV.open){drawInterview(dt);return}
  if(!paused){if(hitstop>0){hitstop-=raw}else sim(dt)}
  drawCreatures();drawBits();inkFlush();updatePops(paused?0:dt);if(started)updateHUD(false);
  renderer.render(scene,camera);
@@ -2266,7 +2316,7 @@ function init(){
  const env=canvasTex(256,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#ffffff');gr.addColorStop(.45,'#e6ecf5');gr.addColorStop(.55,'#b9bfc9');gr.addColorStop(1,'#8f8a84');g.fillStyle=gr;g.fillRect(0,0,w,h);g.fillStyle='#ffffff';for(let i=0;i<4;i++)g.fillRect(14+i*64,8,36,14)});
  env.mapping=THREE.EquirectangularReflectionMapping;const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromEquirectangular(env).texture;env.dispose();pm.dispose();
  inkInit();buildRoom();buildCreatureGeo();buildFlocks();buildBits();
- bootR=buildBoot();bootL=buildBoot();buildLegs();buildThreads();buildHand();buildShovel();buildBin();buildVac();buildTruck();buildDrains();buildTrim();buildTong();buildMop();buildWash();buildOffice();
+ bootR=buildBoot();bootL=buildBoot();buildLegs();buildThreads();buildHand();buildShovel();buildBin();buildVac();buildTruck();buildDrains();buildTrim();buildTong();buildMop();buildWash();
  roomTarget(S.zone,true);bind();resize();spawnInitial();sim(.016);drawCreatures();drawBits();inkFlush();renderer.render(scene,camera);
  $('start').disabled=false;$('start').textContent=S.total?'이어서 출근하기':'출근하기';$('load').textContent='';
  requestAnimationFrame(frame);
