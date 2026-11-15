@@ -882,7 +882,7 @@ function mergeX(list){ // 위치·법선·색 + 얼룩 마스크 + 팔다리 흔
 function seg(a,b,r0,r1,hex,s=6){const A=new THREE.Vector3(a[0],a[1],a[2]),B=new THREE.Vector3(b[0],b[1],b[2]),d=B.clone().sub(A),l=d.length(),g=CY(r1,r0,l,s);
  g.applyMatrix4(new THREE.Matrix4().compose(A.clone().lerp(B,.5),new THREE.Quaternion().setFromUnitVectors(UP,d.normalize()),new THREE.Vector3(1,1,1)));return tint(g,hex)}
 const EYEP=[0,.98,1.19]; // 눈이 부풀 때 기준점
-function human(kind){ // 손가락만 한 벌거숭이 사람, 기어다니는 자세
+function human(kind,held=false){ // 손가락만 한 벌거숭이 사람, 기어다니는 자세
  const ai=kind===5,SK=ai?0xdccfff:0xd9b7a5,SK2=ai?0xc6b4f6:0xc99c8d,SK3=ai?0xb49cf0:0xb97c74,K=0x1a0f12,MO=0x3a0a10,HAIR=ai?0x2a1d5c:[0x1c1614,0x2b1d14,0,0x15110f,0x4a4038][kind],b=[];
  const NI=q=>q.index?q.toNonIndexed():q,mk=q=>{q=NI(q);q.userData={mask:1};return q},lb=(q,ph,a,c)=>{q=NI(q);q.userData={limb:[ph,a,c]};return q};
  const ro=ai?0:1;
@@ -897,7 +897,7 @@ function human(kind){ // 손가락만 한 벌거숭이 사람, 기어다니는 �
  b.push(seg([0,.56,.5],[0,.72,.78],.1,.09,SK));
  b.push(part(lump(SP(14,11),.035*ro,2),SK,0,.78,.92,.3,.32,.36));
  b.push(part(SP(8,6),SK,0,.7,1.12,.2,.16,.17)); // 턱
- for(const s of[-1,1]){b.push(part(SP(6,5),SK2,s*.3,.8,.9,.05,.1,.08));b.push(part(SP(7,5),K,s*.13,.965,1.165,.085,.07,.07))}
+ for(const s of[-1,1]){b.push(part(SP(6,5),SK2,s*.3,.8,.9,.05,.1,.08));if(!held)b.push(part(SP(7,5),K,s*.13,.965,1.165,.085,.07,.07))}
  b.push(seg([0,1.0,1.2],[0,.9,1.3],.03,.05,SK2,5));
  const mo=kind===3?1.8:1;b.push(part(SP(8,6),MO,0,.83-.03*mo,1.26,.1*mo,.085*mo,.07));
  if(kind===3)b.push(part(SP(6,5),0xc2495a,0,.76,1.3,.08,.035,.07));
@@ -1096,7 +1096,7 @@ function buildBits(){
  eyeIM=new THREE.InstancedMesh(merge([part(SP(10,8),0xf4efe2,0,0,0),part(SP(8,6),0x17151c,0,0,.72,.5,.5,.36),part(SP(6,5),0xc2392b,0,0,-.86,.3,.3,.5)]),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.1,envMapIntensity:1}),CHUNKCAP);
  baleIM=new THREE.InstancedMesh(lump(new THREE.BoxGeometry(2,2,2,3,3,3),.035,2.2),new THREE.MeshStandardMaterial({roughness:.3,envMapIntensity:.8}),CHUNKCAP);
  {const tg=new THREE.TorusGeometry(1,.17,5,12,Math.PI*1.4);tg.rotateX(Math.PI/2);gutIM=new THREE.InstancedMesh(tg,new THREE.MeshStandardMaterial({roughness:.1,envMapIntensity:1.1}),CHUNKCAP)}
- for(const m of[skinIM,eyeIM,baleIM,gutIM]){if(m!==eyeIM)m.setColorAt(0,new THREE.Color(1,1,1));m.frustumCulled=false;m.count=0;m.castShadow=true;m.receiveShadow=true;scene.add(m)}
+ for(const m of[skinIM,eyeIM,baleIM,gutIM]){m.setColorAt(0,new THREE.Color(1,1,1));m.frustumCulled=false;m.count=0;m.castShadow=true;m.receiveShadow=true;scene.add(m)}
 }
 function drop(x,y,z,vx,vy,vz,r,color,bin=false){if(drops.length>=300)return;drops.push({x,y,z,vx,vy,vz,r,color,bin})}
 function chunk(x,y,z,vx,vy,vz,sx,sy,sz,color,kind=0){if(chunks.length>=CHUNKCAP)chunks.shift();chunks.push({x,y,z,vx,vy,vz,sx,sy,sz,color,kind,age:0,rx:rnd(0,6),ry:rnd(0,6),sp:rnd(-9,9),rest:false})}
@@ -1133,7 +1133,7 @@ function drawBits(){
   if(k.kind===1&&k.age<1.8){const w=Math.sin(k.age*46+k.x*40)*(1-k.age/1.8);D.rotation.y+=w*.1;D.scale.x*=1+w*.07;D.scale.z*=1-w*.05} // 죽은 뒤에도 잠깐 떤다
   D.updateMatrix();
   if(k.kind===1){skinIM.setMatrixAt(m1,D.matrix);skinIM.setColorAt(m1,k.color);m1++}
-  else if(k.kind===2){eyeIM.setMatrixAt(m2,D.matrix);m2++}
+  else if(k.kind===2){eyeIM.setMatrixAt(m2,D.matrix);eyeIM.setColorAt(m2,k.color);m2++}
   else if(k.kind===3){baleIM.setMatrixAt(m3,D.matrix);baleIM.setColorAt(m3,k.color);m3++}
   else if(k.kind===4){gutIM.setMatrixAt(m4,D.matrix);gutIM.setColorAt(m4,k.color);m4++}
   else{chunkIM.setMatrixAt(m0,D.matrix);chunkIM.setColorAt(m0,k.color);m0++}}
@@ -1448,8 +1448,8 @@ const HG={g:null,arm:null,sleeve:null,fingers:[],tb:null,t1:null,t2:null,ph:'idl
  pos:new THREE.Vector3(),from:new THREE.Vector3(),to:new THREE.Vector3(),rest:new THREE.Vector3(),quat:new THREE.Quaternion(),qFrom:new THREE.Quaternion(),
  grip:0,wet:0,gloss:0,drip:0,sqT:0,beatT:0,wetT:0,seepT:0,tearT:0,twT:0,twN:0,bc:[],vel:new THREE.Vector3(),last:new THREE.Vector3()};
 const HERO={g:null,body:null,eyes:null,geo:[],on:false,fall:false,c:null,v:new THREE.Vector3(),w:new THREE.Vector3(),sw:new THREE.Vector3(),sv:new THREE.Vector3(),from:new THREE.Vector3(),qFrom:new THREE.Quaternion(),slot:new THREE.Vector3(),
- amp:0,limp:0,ph:0,nod:0,nodV:0,loll:0,lollV:0,nodT:0,lollT:0,fluid:null,flow:0,flowT:0,fluidColor:new THREE.Color(),
- U:{uTint:{value:new THREE.Color()},uInk:{value:new THREE.Color()},uG:{value:new THREE.Vector3(0,-1,0)},uSw:{value:new THREE.Vector3()},uA:{value:new THREE.Vector4()},uB:{value:new THREE.Vector4()},uC:{value:new THREE.Vector4(1,0,0,0)}}};
+ amp:0,limp:0,ph:0,nod:0,nodV:0,loll:0,lollV:0,nodT:0,lollT:0,fluid:null,sockets:null,flow:0,flowT:0,sprayT:0,mouthTracked:false,fluidColor:new THREE.Color(),
+ U:{uTint:{value:new THREE.Color()},uInk:{value:new THREE.Color()},uG:{value:new THREE.Vector3(0,-1,0)},uSw:{value:new THREE.Vector3()},uA:{value:new THREE.Vector4()},uB:{value:new THREE.Vector4()},uC:{value:new THREE.Vector4(1,0,0,0)},uEyeType:{value:0},uEmptyEyes:{value:0}}};
 const HQ={rest:new THREE.Quaternion(),grab:new THREE.Quaternion(),carry:new THREE.Quaternion(),face:new THREE.Quaternion(),show:new THREE.Quaternion(),slot:new THREE.Quaternion()};
 const _qa=new THREE.Quaternion(),_qb=new THREE.Quaternion(),_mb=new THREE.Matrix4(),_hx=new THREE.Vector3(),_hy=new THREE.Vector3(),_hz=new THREE.Vector3(),_e=new THREE.Vector3(),_f=new THREE.Vector3();
 function qXY(q,xx,xy,xz,yx,yy,yz){_hx.set(xx,xy,xz).normalize();_hz.set(yx,yy,yz);_hz.crossVectors(_hx,_hz).normalize();_hy.crossVectors(_hz,_hx);return q.setFromRotationMatrix(_mb.makeBasis(_hx,_hy,_hz))}
@@ -1506,14 +1506,25 @@ function buildHand(){
  buildHero();
 }
 // 쥔 한 마리만 따로 그리는 몸: 숨·버둥거림·눌림·축 늘어짐을 여기서 움직인다
+function heroEyeSeats(type){return type===6?[[-.12,1.03,1.25,.07],[.12,1.03,1.25,.07]]:type===5?[[-.13,.98,1.185,.058],[.13,.98,1.185,.058],[0,1.07,1.1,.05]]:[[-.13,.98,1.185,.058],[.13,.98,1.185,.058]]}
+function heroSocketGeo(type){ // 구형 덮개가 아니라 뒤로 깊어지는 열린 그릇. 바닥은 거의 검게 남긴다.
+ const pos=[],col=[],idx=[],rings=[[1.04,0,.48],[.94,.028,.36],[.72,.075,.15],[.36,.12,.025],[0,.14,0]],N=24;
+ for(const seat of heroEyeSeats(type)){
+  const [x,y,z]=seat,r=seat[0]===0?.079:type===6?.105:.10,base=pos.length/3;
+  for(const [k,depth,c] of rings)for(let i=0;i<=N;i++){const a=i/N*TAU,u=Math.cos(a)*r*k,v=Math.sin(a)*r*.85*k;pos.push(x+u,y+v*.8660254-depth*.5,z-v*.5-depth*.8660254);col.push(c,c,c)}
+  for(let j=0;j<rings.length-1;j++)for(let i=0;i<N;i++){const a=base+j*(N+1)+i,b=a+N+1;idx.push(a,b,a+1,a+1,b,b+1)}
+ }
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setAttribute('aMask',new THREE.Float32BufferAttribute(new Float32Array(pos.length/3),1));g.setAttribute('aLimb',new THREE.Float32BufferAttribute(new Float32Array(pos.length),3));g.setIndex(idx);g.computeVertexNormals();return g;
+}
 function buildHero(){
- const H=HERO,U=H.U,mk=eye=>{const m=new THREE.MeshStandardMaterial({vertexColors:true,roughness:eye?.15:.42,envMapIntensity:.9});
-  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.uniforms.uE={value:eye?1:0};
-   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aMask;attribute vec3 aLimb;uniform vec3 uTint,uInk,uG,uSw;uniform vec4 uA,uB,uC;uniform float uE;\nfloat bmp(float z,float c){float d=(z-c)/.2;return exp(-d*d);}')
+ const H=HERO,U=H.U,mk=(eye,socket=false)=>{const m=new THREE.MeshStandardMaterial({vertexColors:true,roughness:socket?.78:eye?.2:.42,envMapIntensity:socket?.04:.65,side:socket?THREE.DoubleSide:THREE.FrontSide});
+  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);sh.uniforms.uE={value:eye?1:0};sh.uniforms.uSocket={value:socket?1:0};
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aMask;attribute vec3 aLimb;uniform vec3 uTint,uInk,uG,uSw;uniform vec4 uA,uB,uC;uniform float uE,uSocket,uEyeType;varying vec3 vFace,vEyeP;varying float vEyeWhite;\nfloat bmp(float z,float c){float d=(z-c)/.2;return exp(-d*d);}\nvec3 eyeSeat(vec3 p){if(uEyeType>5.5)return vec3(sign(p.x)*.12,1.03,1.25);if(uEyeType>4.5&&abs(p.x)<.065)return vec3(0.,1.07,1.1);return vec3(sign(p.x)*.13,.98,1.185);}')
     .replace('#include <color_vertex>',[
      'float hwC=aLimb.z>.5?0.:smoothstep(.5,.72,position.z),bdC=smoothstep(-.95,-.6,position.z)*(1.-smoothstep(.3,.62,position.z));',
      'vColor.xyz=mix(color.xyz,uTint,aMask);',
-     'if(uE>.5){vColor.xyz=mix(vColor.xyz,vColor.xyz*vec3(1.,.38,.34),uB.z*.7*step(.3,color.r));}else{',
+     'vFace=position;vEyeWhite=step(.3,color.r);vec3 seat=eyeSeat(position);vEyeP=(position-seat)/(uEyeType>5.5?.07:.058);',
+     'if(uSocket>.5){vColor.xyz=mix(vec3(.006,.004,.007),uInk,color.r);}else if(uE>.5){vColor.xyz=mix(vColor.xyz,uInk,smoothstep(.03,.94,uB.z)*.86*vEyeWhite);}else{',
      'vColor.xyz=mix(vColor.xyz,vec3(.3,.03,.06),uB.z*hwC*.62*(1.-.5*aMask)*smoothstep(.12,.4,color.r));',
      'vColor.xyz=mix(vColor.xyz,vec3(.28,.025,.045),uA.w*bdC*.5*(1.-.5*aMask));',
      'vColor.xyz=mix(vColor.xyz,uInk,(1.-smoothstep(.07,.13+.08*uC.z,distance(position,vec3(0.,.8,1.27))))*step(.01,uC.z));}',
@@ -1521,7 +1532,7 @@ function buildHero(){
     .replace('#include <begin_vertex>',[
      '#include <begin_vertex>',
      'float lw=aLimb.y,isL=step(.5,aLimb.z),hw=(1.-isL)*smoothstep(.5,.72,position.z),bd=smoothstep(-.95,-.6,position.z)*(1.-smoothstep(.3,.62,position.z));',
-     'if(uE>.5){transformed=vec3(0.,.98,1.19)+(transformed-vec3(0.,.98,1.19))*uC.x;}',
+     'if(uE>.5){vec3 ep=eyeSeat(position);transformed=ep+(transformed-ep)*uC.x+vec3(0.,0.,uA.w*.03);}',
      'if(isL>.5){float sw=uA.x*(1.+.21*sin(aLimb.x*5.+step(0.,position.z)*2.))+aLimb.x+step(0.,position.z)*1.3;',
      ' transformed.z+=sin(sw)*lw*.36*uA.y;transformed.y+=cos(sw*1.37)*lw*.26*uA.y;transformed.x+=sin(sw*.83+1.)*lw*.2*uA.y*sign(position.x);',
      ' float tw=uC.y*step(0.,cos(aLimb.x))*step(position.z,0.);transformed.z+=tw*lw*.5;transformed.y+=tw*lw*.3;', // 죽은 뒤 한쪽 다리만 떤다
@@ -1529,38 +1540,41 @@ function buildHero(){
      'float rw=(1.-isL*lw)*(1.-hw),ff=1.-(.52*uA.w+uC.w)*bd+.3*uA.w*(bmp(position.z,.62)+bmp(position.z,-.9));',
      'transformed.x*=mix(1.,ff,rw);transformed.y=.5+(transformed.y-.5)*mix(1.,ff,rw);',
      'if(hw>0.){vec3 N=vec3(0.,.62,.6),d=(transformed-N)*(1.+.15*uB.z*hw);float a=uB.x*hw,cs=cos(a),sn=sin(a);d.yz=vec2(d.y*cs-d.z*sn,d.y*sn+d.z*cs);a=uB.y*hw;cs=cos(a);sn=sin(a);d.xz=vec2(d.x*cs-d.z*sn,d.x*sn+d.z*cs);transformed=N+d;}',
-     'float tl=(1.-isL)*clamp((-1.-position.z)/1.2,0.,1.);transformed+=(vec3(uG.xy,0.)*.9+uSw)*tl*tl;'].join('\n'))};
+     'float tl=(1.-isL)*clamp((-1.-position.z)/1.2,0.,1.);transformed+=(vec3(uG.xy,0.)*.9+uSw)*tl*tl;'].join('\n'));
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uInk;uniform vec4 uB;uniform float uE,uSocket,uEyeType,uEmptyEyes;varying vec3 vFace,vEyeP;varying float vEyeWhite;\nbool eyeHole(vec3 p,vec3 c,float r){vec3 d=p-c;vec2 uv=vec2(d.x,d.y*.8660254-d.z*.5)/vec2(r,r*.85);return dot(uv,uv)<1.&&dot(d,vec3(0.,.5,.8660254))>-.18;}')
+    .replace('#include <color_fragment>','#include <color_fragment>\nif(uEmptyEyes>.5&&uE<.5&&uSocket<.5){vec3 seat=uEyeType>5.5?vec3(.12,1.03,1.25):vec3(.13,.98,1.185);float r=uEyeType>5.5?.105:.10;if(eyeHole(vFace,seat,r)||eyeHole(vFace,vec3(-seat.x,seat.yz),r)||(uEyeType>4.5&&uEyeType<5.5&&eyeHole(vFace,vec3(0.,1.07,1.1),.079)))discard;}\nif(uE>.5){float ang=atan(vEyeP.y,vEyeP.x),vein=1.-smoothstep(.025,.10,abs(sin(ang*8.+sin(vEyeP.z*7.+ang*3.)*.7)));diffuseColor.rgb=mix(diffuseColor.rgb,uInk*.45,vein*smoothstep(.04,.7,uB.z)*vEyeWhite*.85);}')};
   return m};
  H.g=new THREE.Group();H.body=new THREE.Mesh(new THREE.BufferGeometry(),mk(false));H.eyes=new THREE.Mesh(new THREE.BufferGeometry(),mk(true));
  for(const m of[H.body,H.eyes]){m.frustumCulled=false;H.g.add(m)}H.body.castShadow=true;H.g.visible=false;scene.add(H.g);
+ H.sockets=new THREE.Mesh(new THREE.BufferGeometry(),mk(false,true));H.sockets.frustumCulled=false;H.sockets.visible=false;H.g.add(H.sockets);
  // 흐르는 줄기는 고정 풀 하나로 그린다. 입 세 줄기 + 콧구멍 두 줄기, 각 8마디.
- H.fluid=new THREE.InstancedMesh(CY(1,1,1,6),new THREE.MeshStandardMaterial({roughness:.08,envMapIntensity:1.1}),40);
+ H.fluid=new THREE.InstancedMesh(CY(1,1,1,6),new THREE.MeshStandardMaterial({roughness:.22,envMapIntensity:.45}),40);
  H.fluid.instanceMatrix.setUsage(THREE.DynamicDrawUsage);H.fluid.frustumCulled=false;H.fluid.count=0;scene.add(H.fluid);
- TYPES.forEach((T,i)=>{const b=new THREE.BufferGeometry(),e=new THREE.BufferGeometry(),B=T.geo.body,E=T.geo.eyes,n=E.attributes.position.count;
+ TYPES.forEach((T,i)=>{const b=new THREE.BufferGeometry(),e=new THREE.BufferGeometry(),B=i===6?T.geo.body:human(i,true).body,E=T.geo.eyes,n=E.attributes.position.count;
   for(const k of['position','normal','color','aMask','aLimb'])b.setAttribute(k,B.attributes[k]);
   for(const k of['position','normal','color'])e.setAttribute(k,E.attributes[k]);e.setAttribute('aMask',new THREE.BufferAttribute(new Float32Array(n),1));e.setAttribute('aLimb',new THREE.BufferAttribute(new Float32Array(n*3),3));
-  H.geo[i]={b,e}});
+  H.geo[i]={b,e,s:heroSocketGeo(i)}});
 }
 function heroGrab(c){
  const H=HERO,G=H.geo[c.type],ai=c.type===5;if(H.on)heroLand();clearThreads(2);
- H.body.geometry=G.b;H.eyes.geometry=G.e;H.body.material.roughness=ai?.07:.42;H.body.material.metalness=ai?.25:0;
+ H.body.geometry=G.b;H.eyes.geometry=G.e;H.sockets.geometry=G.s;H.sockets.visible=false;H.U.uEmptyEyes.value=0;H.U.uEyeType.value=c.type;H.body.material.roughness=ai?.07:.42;H.body.material.metalness=ai?.25:0;
  H.U.uTint.value.copy(c.tint);H.U.uInk.value.copy(c.ink);H.c=c;H.on=true;H.fall=false;c.hero=1;
- H.eyes.visible=true;H.flow=H.flowT=0;H.fluid.count=0;H.fluidColor.copy(WATER).lerp(c.ink,.12);H.fluid.material.color.copy(H.fluidColor);
+ H.eyes.visible=true;H.flow=H.flowT=H.sprayT=0;H.mouthTracked=false;H.fluid.count=0;H.fluidColor.copy(c.ink);H.fluid.material.color.copy(c.ink);
  scene.add(H.g);H.g.position.set(c.x,c.y,c.z);H.g.rotation.set(0,c.yaw,0);H.g.scale.setScalar(c.r);H.g.updateMatrixWorld(true);HG.g.attach(H.g);
  H.from.copy(H.g.position);H.qFrom.copy(H.g.quaternion);H.slot.set(-.004+.1*c.r,.0135-.26*c.r,-.03);
  H.amp=1;H.limp=0;H.nod=H.nodV=H.loll=H.lollV=0;H.sw.set(0,0,0);H.sv.set(0,0,0);H.U.uA.value.set(0,1,0,0);H.U.uB.value.set(0,0,0,0);H.U.uC.value.set(1.5,0,0,0);H.g.visible=true;
 }
-function heroHide(){const H=HERO;if(H.c)H.c.hero=0;H.on=H.fall=false;H.c=null;H.g.visible=false;H.flow=H.flowT=0;H.fluid.count=0;if(H.g.parent!==scene)scene.add(H.g)}
+function heroHide(){const H=HERO;if(H.c)H.c.hero=0;H.on=H.fall=false;H.c=null;H.g.visible=false;H.flow=H.flowT=H.sprayT=0;H.mouthTracked=false;H.sockets.visible=false;H.U.uEmptyEyes.value=0;H.fluid.count=0;if(H.g.parent!==scene)scene.add(H.g)}
 // 얼굴 꼭짓점과 같은 변형을 적용한다. localToWorld만 쓰면 흔드는 고개와 분출 위치가 어긋난다.
 function heroFacePoint(x,y,z,out,eye=false){
  const H=HERO,U=H.U;
- if(eye){const s=U.uC.value.x;x*=s;y=.98+(y-.98)*s;z=1.19+(z-1.19)*s}
+ if(eye){const poop=U.uEyeType.value===6,third=U.uEyeType.value===5&&Math.abs(x)<.065,s=U.uC.value.x,cx=third?0:Math.sign(x)*(poop?.12:.13),cy=third?1.07:poop?1.03:.98,cz=third?1.1:poop?1.25:1.185;x=cx+(x-cx)*s;y=cy+(y-cy)*s;z=cz+(z-cz)*s+U.uA.value.w*.03}
  const k=1+.15*U.uB.value.z;let dx=x*k,dy=(y-.62)*k,dz=(z-.6)*k;
  let a=U.uB.value.x,cs=Math.cos(a),sn=Math.sin(a),t=dy*cs-dz*sn;dz=dy*sn+dz*cs;dy=t;
  a=U.uB.value.y;cs=Math.cos(a);sn=Math.sin(a);t=dx*cs-dz*sn;dz=dx*sn+dz*cs;dx=t;
  return H.g.localToWorld(out.set(dx,.62+dy,.6+dz));
 }
-const HF={origin:new THREE.Vector3(),forward:new THREE.Vector3(),side:new THREE.Vector3(),a:new THREE.Vector3(),b:new THREE.Vector3(),v:new THREE.Vector3()};
+const HF={origin:new THREE.Vector3(),forward:new THREE.Vector3(),side:new THREE.Vector3(),a:new THREE.Vector3(),b:new THREE.Vector3(),v:new THREE.Vector3(),mouth:new THREE.Vector3(),lastMouth:new THREE.Vector3(),shake:new THREE.Vector3(),spray:new THREE.Vector3()};
 function heroFaceAxes(){
  heroFacePoint(0,.9,1.3,HF.origin);heroFacePoint(0,.9,1.5,HF.forward);HF.forward.sub(HF.origin).normalize();
  heroFacePoint(.2,.9,1.3,HF.side);HF.side.sub(HF.origin).normalize();
@@ -1571,6 +1585,10 @@ function handFluid(dt){
  H.flow=damp(H.flow,alive?clamp(h.hold*(.28+.72*h.q),0,1):0,alive?10:18,dt);
  if(!burst&&H.flow<.025)return;
  heroFaceAxes();const F=HF,p=H.flow,bk=burst?1-h.t/.18:0,poop=H.c.type===6;
+ heroFacePoint(0,poop?.74:H.c.type===3?.73:.78,poop?1.48:1.35,F.mouth);
+ F.shake.set(0,0,0);if(H.mouthTracked)F.shake.subVectors(F.mouth,F.lastMouth).multiplyScalar(1/Math.max(.001,dt)).sub(h.vel);if(F.shake.lengthSq()>.49)F.shake.setLength(.7);F.lastMouth.copy(F.mouth);H.mouthTracked=true;
+ H.sprayT-=dt;const spray=alive&&h.hold>.35&&p>.12&&H.sprayT<=0;
+ if(spray)H.sprayT=rnd(.07,.12)/(1+.2*h.q);
  const point=(t,j,out)=>out.copy(F.origin).addScaledVector(F.v,t).addScaledVector(F.side,Math.sin(time*25+j*2+t*45)*.0015*t/.2).addScaledVector(UP,-4.9*t*t);
  let n=0;
  for(let j=0;j<(poop?3:5);j++){
@@ -1586,6 +1604,11 @@ function handFluid(dt){
    point(span*(k+1)/8,j,F.b);
    _d.subVectors(F.b,F.a);const len=_d.length(),r=radius*(1-k*.055)*(1+.16*Math.sin(time*31+j*2-k*1.8));
    D.position.addVectors(F.a,F.b).multiplyScalar(.5);D.quaternion.setFromUnitVectors(UP,_d.multiplyScalar(1/Math.max(.00001,len)));D.scale.set(r,len*1.08,r);D.updateMatrix();m.setMatrixAt(n++,D.matrix);F.a.copy(F.b);
+   if(spray&&!nose&&(k===2||k===5)){
+    const kick=h.hold*(.3+.7*h.q),flick=Math.cos(time*53+j*1.7);
+    F.spray.copy(F.shake).multiplyScalar(1.6).addScaledVector(F.side,(flick*.65+rnd(-.4,.4))*kick).addScaledVector(F.forward,rnd(-.3,.7)*kick);F.spray.y+=rnd(-.25,.55)*kick;
+    drop(F.b.x,F.b.y,F.b.z,F.spray.x,F.spray.y,F.spray.z,rnd(.0014,.0028)*(1+.3*h.q),H.c.ink);
+   }
   }
  }
  m.count=n;m.instanceMatrix.needsUpdate=true;
@@ -1593,7 +1616,7 @@ function handFluid(dt){
  H.flowT-=dt;if(H.flowT<=0){H.flowT=lerp(.065,.024,p);
   heroFacePoint(rnd(-.035,.035),poop?.74:H.c.type===3?.73:.78,poop?1.48:1.35,F.origin);
   F.v.copy(F.forward).multiplyScalar(.04+.15*p);F.v.y-=.3+.55*p;
-  for(let i=0;i<(p>.65?2:1);i++)drop(F.origin.x,F.origin.y,F.origin.z,F.v.x+rnd(-.04,.04),F.v.y-rnd(0,.16),F.v.z+rnd(-.04,.04),rnd(.0018,.0032)*(1+.25*p),H.fluidColor);
+  for(let i=0;i<(p>.65?2:1);i++)drop(F.origin.x,F.origin.y,F.origin.z,F.v.x+rnd(-.04,.04),F.v.y-rnd(0,.16),F.v.z+rnd(-.04,.04),rnd(.0018,.0032)*(1+.25*p),H.c.ink);
  }
 }
 function handBurst(c){
@@ -1603,7 +1626,7 @@ function handBurst(c){
   const nose=j>0,side=j===1?-1:1;heroFacePoint(nose?side*.034:0,nose?.9:poop?.74:c.type===3?.73:.78,nose?1.34:poop?1.48:1.35,F.origin);
   for(let i=0;i<(nose?13:30);i++){
    F.v.copy(F.forward).multiplyScalar(rnd(nose?1.1:.7,nose?2.1:1.8)).addScaledVector(F.side,nose?side*rnd(.2,.65):rnd(-.9,.9));F.v.y+=rnd(-.6,.8);
-   drop(F.origin.x,F.origin.y,F.origin.z,F.v.x,F.v.y,F.v.z,rnd(nose?.0017:.0023,nose?.0038:.006),i%4===0?c.ink:H.fluidColor);
+   drop(F.origin.x,F.origin.y,F.origin.z,F.v.x,F.v.y,F.v.z,rnd(nose?.0017:.0023,nose?.0038:.006),c.ink);
   }
  }
  // 눈은 부푼 실제 눈 자리에서 빠지고, 얼굴 쪽 눈 메시는 즉시 숨긴다.
@@ -1612,9 +1635,9 @@ function handBurst(c){
   heroFacePoint(side*(poop?.12:.13),i===2?1.07:poop?1.03:.98,i===2?1.1:poop?1.25:1.185,F.origin,true);
   F.v.copy(F.forward).multiplyScalar(i===2?.85:1.05).addScaledVector(F.side,side*rnd(.65,.95));F.v.y+=rnd(.65,1.05);
   const r=c.r*(i===2?.05:poop?.07:.058)*H.U.uC.value.x*(1+.15*H.U.uB.value.z);
-  chunk(F.origin.x,F.origin.y,F.origin.z,F.v.x,F.v.y,F.v.z,r,r,r,WHITE,2);
+  chunk(F.origin.x,F.origin.y,F.origin.z,F.v.x,F.v.y,F.v.z,r,r,r,c.ink,2);
  }
- H.eyes.visible=false;c.noeye=1;H.flow=0;
+ H.eyes.visible=false;H.sockets.visible=true;H.U.uEmptyEyes.value=1;c.noeye=1;H.flow=0;
 }
 function heroLand(){ // 바닥에 떨어져 여느 사체처럼 남는다
  const H=HERO,c=H.c;if(!H.on)return;
@@ -1649,7 +1672,7 @@ function handRelease(){
   if(h.dmg>.4){c.st='maim';c.life=rnd(4,8);c.sq=.4;stamp(c.x,c.z,c.r*5,c.r*5,0,1,0,c.ink,1)}else c.st='walk'}
  heroHide();clearThreads(2);h.c=h.target=null;h.ph='idle';h.p=h.q=h.t=h.dmg=h.stage=h.near=h.hold=0;
 }
-function handReset(){handRelease();HG.wet=HG.gloss=0;HG.drip=0}
+function handReset(){handRelease();HG.wet=HG.gloss=HG.wetT=HG.drip=0}
 const handLocked=()=>HG.ph!=='idle'&&HG.ph!=='hold';
 const STG=[.3,.47,.62,.75,.87,1];
 function handKill(){ // 압력이 끝에 닿는 순간 액체와 눈이 함께 튀어나온다
@@ -1707,7 +1730,7 @@ function handUpdate(dt,act){
      AU.bubble(rnd(170,300),.05+.1*h.q)}
     else{h.dmg>.4?AU.choke(c.type,.55,.12):AU.squeal(c.type,.5,0,.16);h.sqT=h.dmg>.4?rnd(.5,.9):rnd(1.1,2)}}
    // 눈물 · 입에서 새는 피 · 손가락 사이로 배어 나오는 것
-   h.tearT-=dt;if(h.tearT<=0&&(h.hold>.3||h.dmg>.2)&&c.type!==6){h.tearT=rnd(.12,.3);heroFacePoint(rnd(-1,1)<0?-.14:.14,.95,1.22,_a,true);drop(_a.x,_a.y,_a.z,rnd(-.05,.05),0,rnd(-.05,.05),.0016,WATER)}
+   h.tearT-=dt;if(h.tearT<=0&&(h.hold>.3||h.dmg>.2)&&c.type!==6){h.tearT=rnd(.12,.3);heroFacePoint(rnd(-1,1)<0?-.14:.14,.95,1.22,_a,true);drop(_a.x,_a.y,_a.z,rnd(-.05,.05),0,rnd(-.05,.05),.0016,c.ink)}
    if(h.stage>=2){h.wet=Math.min(.6,h.wet+dt*.04*h.hold);if(!h.wetT)skinU.uStain.value.copy(c.ink);h.gloss=Math.max(h.gloss,.8);
     h.seepT-=dt;if(h.seepT<=0){h.seepT=rnd(.16,.4)/(h.stage-1);const f=pick(h.fingers);f.joints[Math.random()<.5?1:2].getWorldPosition(_a);drop(_a.x,_a.y-.008,_a.z,rnd(-.04,.04),-.05,rnd(-.04,.04),rnd(.002,.0036),c.ink);
     }}
