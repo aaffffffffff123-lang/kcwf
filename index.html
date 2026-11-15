@@ -1443,12 +1443,12 @@ function plant(b,pose){
  for(const c of creatures){if(c.st!=='walk'&&c.st!=='flee')continue;if(Math.hypot(c.x-pose.x,c.z-pose.z)<.1){c.st='maim';c.t=0;c.life=rnd(5,9);c.sq=.25;c.panic=1;stamp(c.x,c.z,c.r*5,c.r*5,0,1,0,c.ink,1);AU.squeal(c.type,.9);AU.squelch(.45)}}
 }
 
-/* ───────── 맨손: 덮쳐 쥐기 → 얼굴 앞으로 들기 → 쥐어짜기 → 축 늘어짐 → 펴서 떼어내기 ───────── */
+/* ───────── 맨손: 덮쳐 쥐기 → 얼굴 앞으로 들기 → 액체가 새다 터짐 → 펴서 떼어내기 ───────── */
 const HG={g:null,arm:null,sleeve:null,fingers:[],tb:null,t1:null,t2:null,ph:'idle',t:0,p:0,q:0,hold:0,near:0,stage:0,dmg:0,c:null,target:null,
  pos:new THREE.Vector3(),from:new THREE.Vector3(),to:new THREE.Vector3(),rest:new THREE.Vector3(),quat:new THREE.Quaternion(),qFrom:new THREE.Quaternion(),
  grip:0,wet:0,gloss:0,drip:0,sqT:0,beatT:0,wetT:0,seepT:0,tearT:0,twT:0,twN:0,bc:[],vel:new THREE.Vector3(),last:new THREE.Vector3()};
 const HERO={g:null,body:null,eyes:null,geo:[],on:false,fall:false,c:null,v:new THREE.Vector3(),w:new THREE.Vector3(),sw:new THREE.Vector3(),sv:new THREE.Vector3(),from:new THREE.Vector3(),qFrom:new THREE.Quaternion(),slot:new THREE.Vector3(),
- amp:0,limp:0,ph:0,nod:0,nodV:0,loll:0,lollV:0,nodT:0,lollT:0,
+ amp:0,limp:0,ph:0,nod:0,nodV:0,loll:0,lollV:0,nodT:0,lollT:0,fluid:null,flow:0,flowT:0,fluidColor:new THREE.Color(),
  U:{uTint:{value:new THREE.Color()},uInk:{value:new THREE.Color()},uG:{value:new THREE.Vector3(0,-1,0)},uSw:{value:new THREE.Vector3()},uA:{value:new THREE.Vector4()},uB:{value:new THREE.Vector4()},uC:{value:new THREE.Vector4(1,0,0,0)}}};
 const HQ={rest:new THREE.Quaternion(),grab:new THREE.Quaternion(),carry:new THREE.Quaternion(),face:new THREE.Quaternion(),show:new THREE.Quaternion(),slot:new THREE.Quaternion()};
 const _qa=new THREE.Quaternion(),_qb=new THREE.Quaternion(),_mb=new THREE.Matrix4(),_hx=new THREE.Vector3(),_hy=new THREE.Vector3(),_hz=new THREE.Vector3(),_e=new THREE.Vector3(),_f=new THREE.Vector3();
@@ -1533,6 +1533,9 @@ function buildHero(){
   return m};
  H.g=new THREE.Group();H.body=new THREE.Mesh(new THREE.BufferGeometry(),mk(false));H.eyes=new THREE.Mesh(new THREE.BufferGeometry(),mk(true));
  for(const m of[H.body,H.eyes]){m.frustumCulled=false;H.g.add(m)}H.body.castShadow=true;H.g.visible=false;scene.add(H.g);
+ // 흐르는 줄기는 고정 풀 하나로 그린다. 입 세 줄기 + 콧구멍 두 줄기, 각 8마디.
+ H.fluid=new THREE.InstancedMesh(CY(1,1,1,6),new THREE.MeshStandardMaterial({roughness:.08,envMapIntensity:1.1}),40);
+ H.fluid.instanceMatrix.setUsage(THREE.DynamicDrawUsage);H.fluid.frustumCulled=false;H.fluid.count=0;scene.add(H.fluid);
  TYPES.forEach((T,i)=>{const b=new THREE.BufferGeometry(),e=new THREE.BufferGeometry(),B=T.geo.body,E=T.geo.eyes,n=E.attributes.position.count;
   for(const k of['position','normal','color','aMask','aLimb'])b.setAttribute(k,B.attributes[k]);
   for(const k of['position','normal','color'])e.setAttribute(k,E.attributes[k]);e.setAttribute('aMask',new THREE.BufferAttribute(new Float32Array(n),1));e.setAttribute('aLimb',new THREE.BufferAttribute(new Float32Array(n*3),3));
@@ -1542,11 +1545,77 @@ function heroGrab(c){
  const H=HERO,G=H.geo[c.type],ai=c.type===5;if(H.on)heroLand();clearThreads(2);
  H.body.geometry=G.b;H.eyes.geometry=G.e;H.body.material.roughness=ai?.07:.42;H.body.material.metalness=ai?.25:0;
  H.U.uTint.value.copy(c.tint);H.U.uInk.value.copy(c.ink);H.c=c;H.on=true;H.fall=false;c.hero=1;
+ H.eyes.visible=true;H.flow=H.flowT=0;H.fluid.count=0;H.fluidColor.copy(WATER).lerp(c.ink,.12);H.fluid.material.color.copy(H.fluidColor);
  scene.add(H.g);H.g.position.set(c.x,c.y,c.z);H.g.rotation.set(0,c.yaw,0);H.g.scale.setScalar(c.r);H.g.updateMatrixWorld(true);HG.g.attach(H.g);
  H.from.copy(H.g.position);H.qFrom.copy(H.g.quaternion);H.slot.set(-.004+.1*c.r,.0135-.26*c.r,-.03);
  H.amp=1;H.limp=0;H.nod=H.nodV=H.loll=H.lollV=0;H.sw.set(0,0,0);H.sv.set(0,0,0);H.U.uA.value.set(0,1,0,0);H.U.uB.value.set(0,0,0,0);H.U.uC.value.set(1.5,0,0,0);H.g.visible=true;
 }
-function heroHide(){const H=HERO;if(H.c)H.c.hero=0;H.on=H.fall=false;H.c=null;H.g.visible=false;if(H.g.parent!==scene)scene.add(H.g)}
+function heroHide(){const H=HERO;if(H.c)H.c.hero=0;H.on=H.fall=false;H.c=null;H.g.visible=false;H.flow=H.flowT=0;H.fluid.count=0;if(H.g.parent!==scene)scene.add(H.g)}
+// 얼굴 꼭짓점과 같은 변형을 적용한다. localToWorld만 쓰면 흔드는 고개와 분출 위치가 어긋난다.
+function heroFacePoint(x,y,z,out,eye=false){
+ const H=HERO,U=H.U;
+ if(eye){const s=U.uC.value.x;x*=s;y=.98+(y-.98)*s;z=1.19+(z-1.19)*s}
+ const k=1+.15*U.uB.value.z;let dx=x*k,dy=(y-.62)*k,dz=(z-.6)*k;
+ let a=U.uB.value.x,cs=Math.cos(a),sn=Math.sin(a),t=dy*cs-dz*sn;dz=dy*sn+dz*cs;dy=t;
+ a=U.uB.value.y;cs=Math.cos(a);sn=Math.sin(a);t=dx*cs-dz*sn;dz=dx*sn+dz*cs;dx=t;
+ return H.g.localToWorld(out.set(dx,.62+dy,.6+dz));
+}
+const HF={origin:new THREE.Vector3(),forward:new THREE.Vector3(),side:new THREE.Vector3(),a:new THREE.Vector3(),b:new THREE.Vector3(),v:new THREE.Vector3()};
+function heroFaceAxes(){
+ heroFacePoint(0,.9,1.3,HF.origin);heroFacePoint(0,.9,1.5,HF.forward);HF.forward.sub(HF.origin).normalize();
+ heroFacePoint(.2,.9,1.3,HF.side);HF.side.sub(HF.origin).normalize();
+}
+function handFluid(dt){
+ const H=HERO,h=HG,m=H.fluid;m.count=0;if(!H.on||!H.c)return;
+ const alive=h.ph==='hold'&&!H.c.dead,burst=h.ph==='limp'&&h.t<.18;
+ H.flow=damp(H.flow,alive?clamp(h.hold*(.28+.72*h.q),0,1):0,alive?10:18,dt);
+ if(!burst&&H.flow<.025)return;
+ heroFaceAxes();const F=HF,p=H.flow,bk=burst?1-h.t/.18:0,poop=H.c.type===6;
+ const point=(t,j,out)=>out.copy(F.origin).addScaledVector(F.v,t).addScaledVector(F.side,Math.sin(time*25+j*2+t*45)*.0015*t/.2).addScaledVector(UP,-4.9*t*t);
+ let n=0;
+ for(let j=0;j<(poop?3:5);j++){
+  const nose=j>=3,side=nose?(j===3?-1:1):j-1;
+  if(nose&&!burst&&p<.6)continue;
+  heroFacePoint(side*(nose?.034:.045),nose?.9:poop?.74:H.c.type===3?.73:.78,nose?1.34:poop?1.48:1.35,F.origin);
+  const strength=burst?bk:nose?(p-.6)*2.5:p;
+  F.v.copy(F.forward).multiplyScalar(burst?(nose?1.55:1.25)*bk:nose?.14+.4*strength:.025+.13*p).addScaledVector(F.side,side*(burst?.34:nose?.06:.018));F.v.y-=burst?.06:nose?.04:.15;
+  const span=burst?.045+.07*bk:nose?.035+.055*strength:.045+.14*p;
+  const radius=(nose?.0011:j===1?.0032:.0017)*(.45+.75*strength)*(burst?1.5:1);
+  point(0,j,F.a);
+  for(let k=0;k<8;k++){
+   point(span*(k+1)/8,j,F.b);
+   _d.subVectors(F.b,F.a);const len=_d.length(),r=radius*(1-k*.055)*(1+.16*Math.sin(time*31+j*2-k*1.8));
+   D.position.addVectors(F.a,F.b).multiplyScalar(.5);D.quaternion.setFromUnitVectors(UP,_d.multiplyScalar(1/Math.max(.00001,len)));D.scale.set(r,len*1.08,r);D.updateMatrix();m.setMatrixAt(n++,D.matrix);F.a.copy(F.b);
+  }
+ }
+ m.count=n;m.instanceMatrix.needsUpdate=true;
+ if(!alive)return;
+ H.flowT-=dt;if(H.flowT<=0){H.flowT=lerp(.065,.024,p);
+  heroFacePoint(rnd(-.035,.035),poop?.74:H.c.type===3?.73:.78,poop?1.48:1.35,F.origin);
+  F.v.copy(F.forward).multiplyScalar(.04+.15*p);F.v.y-=.3+.55*p;
+  for(let i=0;i<(p>.65?2:1);i++)drop(F.origin.x,F.origin.y,F.origin.z,F.v.x+rnd(-.04,.04),F.v.y-rnd(0,.16),F.v.z+rnd(-.04,.04),rnd(.0018,.0032)*(1+.25*p),H.fluidColor);
+ }
+}
+function handBurst(c){
+ const H=HERO,F=HF,poop=c.type===6;heroFaceAxes();
+ // 입과 양쪽 콧구멍 각각에서 물줄기와 굵은 방울이 퍼진다.
+ for(let j=0;j<(poop?1:3);j++){
+  const nose=j>0,side=j===1?-1:1;heroFacePoint(nose?side*.034:0,nose?.9:poop?.74:c.type===3?.73:.78,nose?1.34:poop?1.48:1.35,F.origin);
+  for(let i=0;i<(nose?13:30);i++){
+   F.v.copy(F.forward).multiplyScalar(rnd(nose?1.1:.7,nose?2.1:1.8)).addScaledVector(F.side,nose?side*rnd(.2,.65):rnd(-.9,.9));F.v.y+=rnd(-.6,.8);
+   drop(F.origin.x,F.origin.y,F.origin.z,F.v.x,F.v.y,F.v.z,rnd(nose?.0017:.0023,nose?.0038:.006),i%4===0?c.ink:H.fluidColor);
+  }
+ }
+ // 눈은 부푼 실제 눈 자리에서 빠지고, 얼굴 쪽 눈 메시는 즉시 숨긴다.
+ for(let i=0;i<(c.type===5?3:2);i++){
+  const side=i===0?-1:i===1?1:0;
+  heroFacePoint(side*(poop?.12:.13),i===2?1.07:poop?1.03:.98,i===2?1.1:poop?1.25:1.185,F.origin,true);
+  F.v.copy(F.forward).multiplyScalar(i===2?.85:1.05).addScaledVector(F.side,side*rnd(.65,.95));F.v.y+=rnd(.65,1.05);
+  const r=c.r*(i===2?.05:poop?.07:.058)*H.U.uC.value.x*(1+.15*H.U.uB.value.z);
+  chunk(F.origin.x,F.origin.y,F.origin.z,F.v.x,F.v.y,F.v.z,r,r,r,WHITE,2);
+ }
+ H.eyes.visible=false;c.noeye=1;H.flow=0;
+}
 function heroLand(){ // 바닥에 떨어져 여느 사체처럼 남는다
  const H=HERO,c=H.c;if(!H.on)return;
  if(c&&c.dead){H.g.getWorldPosition(_a);const k={type:c.type,x:clamp(_a.x,-XB,XB),z:clamp(_a.z,ZN,ZF),r:c.r,yaw:H.g.rotation.y,skin:c.skin,tint:c.tint,ink:c.ink};
@@ -1583,11 +1652,10 @@ function handRelease(){
 function handReset(){handRelease();HG.wet=HG.gloss=0;HG.drip=0}
 const handLocked=()=>HG.ph!=='idle'&&HG.ph!=='hold';
 const STG=[.3,.47,.62,.75,.87,1];
-function handKill(){ // 터지지 않는다. 손안에서 꺼진다
+function handKill(){ // 압력이 끝에 닿는 순간 액체와 눈이 함께 튀어나온다
  const h=HG,c=h.c,H=HERO;
- AU.cut();AU.crushIn(1);shake=Math.max(shake,.5);hitstop=.07;buzz([28,40,55]);
+ AU.cut();AU.pop(c.type,1.1);AU.noise('bandpass',1700,420,.7,.17,.38);shake=Math.max(shake,.5);hitstop=.045;buzz([28,40,55]);handBurst(c);
  for(let i=0;i<11;i++){h.fingers[i%4].joints[1].getWorldPosition(_a);drop(_a.x+rnd(-.01,.01),_a.y,_a.z+rnd(-.01,.01),rnd(-.25,.25),rnd(-.2,.3),rnd(-.25,.25),rnd(.002,.0042),c.ink)}
- H.g.localToWorld(_a.set(0,.8,1.3));for(let i=0;i<4;i++)drop(_a.x,_a.y,_a.z,rnd(-.2,.2),rnd(.1,.5),rnd(-.2,.2),rnd(.002,.0035),c.ink);
  h.wet=Math.min(.6,h.wet+(h.wet<.2?.27:.09));h.gloss=1;skinU.uStain.value.lerp(c.ink,h.wetT?.6:1);h.wetT=9;
  c.x=h.pos.x;c.z=h.pos.z;c.y=h.pos.y;killCreature(c,'hand');panicNear(P.x,P.z-.6,1.2);
  h.c=null;h.ph='limp';h.t=0;h.beatT=.22;h.twT=.34;h.twN=3;H.sv.y-=3;H.lollV+=rnd(-1,1)<0?-9:9;H.nodV+=6;
@@ -1626,7 +1694,7 @@ function handUpdate(dt,act){
    const s0=h.stage?STG[h.stage-1]:0,s1=STG[h.stage],su=clamp((h.p-s0)/(s1-s0),0,1);h.q=s0+(s1-s0)*(su<.78?.3*su/.78:.3+.7*ss((su-.78)/.22));
    if(h.p>=s1&&h.stage<5){h.stage++;h.dmg=h.p;AU.rib(.8+.1*h.stage);hitstop=.022;shake=Math.max(shake,.16+.05*h.stage);buzz(10+h.stage*3);H.amp=1.8;H.sv.x+=rnd(-2,2);H.nodV+=rnd(-8,8);
     if(h.stage<3){AU.cut();AU.squeal(c.type,1.5,0,.14)}else AU.choke(c.type,1.2,.2);
-    if(h.stage>=2){H.g.localToWorld(_a.set(0,.8,1.3));for(let i=0;i<2+h.stage;i++)drop(_a.x,_a.y,_a.z,rnd(-.2,.2),rnd(0,.4),rnd(-.2,.2),rnd(.0016,.003),c.ink)}}
+   }
    const sq=h.q*(.55+.45*h.hold),vig=1-Math.pow(h.dmg,1.6)*.82;
    grip=.7+.3*sq;trem=h.hold*(.4+h.q);skinU.uGrip.value=h.hold*(.35+.65*h.q);
    // 버둥거림: 눌리는 동안은 미친 듯이, 놓으면 헐떡이며 늘어져 있다
@@ -1639,16 +1707,15 @@ function handUpdate(dt,act){
      AU.bubble(rnd(170,300),.05+.1*h.q)}
     else{h.dmg>.4?AU.choke(c.type,.55,.12):AU.squeal(c.type,.5,0,.16);h.sqT=h.dmg>.4?rnd(.5,.9):rnd(1.1,2)}}
    // 눈물 · 입에서 새는 피 · 손가락 사이로 배어 나오는 것
-   h.tearT-=dt;if(h.tearT<=0&&(h.hold>.3||h.dmg>.2)&&c.type!==6){h.tearT=rnd(.12,.3);H.g.localToWorld(_a.set(rnd(-1,1)<0?-.14:.14,.95,1.22));drop(_a.x,_a.y,_a.z,rnd(-.05,.05),0,rnd(-.05,.05),.0016,WATER)}
+   h.tearT-=dt;if(h.tearT<=0&&(h.hold>.3||h.dmg>.2)&&c.type!==6){h.tearT=rnd(.12,.3);heroFacePoint(rnd(-1,1)<0?-.14:.14,.95,1.22,_a,true);drop(_a.x,_a.y,_a.z,rnd(-.05,.05),0,rnd(-.05,.05),.0016,WATER)}
    if(h.stage>=2){h.wet=Math.min(.6,h.wet+dt*.04*h.hold);if(!h.wetT)skinU.uStain.value.copy(c.ink);h.gloss=Math.max(h.gloss,.8);
     h.seepT-=dt;if(h.seepT<=0){h.seepT=rnd(.16,.4)/(h.stage-1);const f=pick(h.fingers);f.joints[Math.random()<.5?1:2].getWorldPosition(_a);drop(_a.x,_a.y-.008,_a.z,rnd(-.04,.04),-.05,rnd(-.04,.04),rnd(.002,.0036),c.ink);
-     if(Math.random()<.4){H.g.localToWorld(_a.set(0,.76,1.3));drop(_a.x,_a.y,_a.z,0,-.05,0,rnd(.0018,.003),c.ink)}}}
+    }}
    // 손가락 사이로 밀려 나오는 살
    const bk=ss((sq-.28)/.55);if(bk>.01){H.g.localToWorld(_b.set(0,.5,-.1));_hx.set(1,0,0).applyQuaternion(h.quat);
     for(let i=0;i<3;i++){h.fingers[i].joints[1].getWorldPosition(_a);h.fingers[i+1].joints[1].getWorldPosition(_c);h.fingers[i].joints[2].getWorldPosition(_e);h.fingers[i+1].joints[2].getWorldPosition(_f);
      _a.add(_c).add(_e).add(_f).multiplyScalar(.25);_e.subVectors(_a,_b);_e.addScaledVector(_hx,-_e.dot(_hx)).normalize();
      const rr=(.0058+.0012*Math.sin(i*2.3+c.ph))*bk*(1+.08*Math.sin(time*26+i));_a.addScaledVector(_e,.0025+.004*bk);h.bc[i].copy(SKINC).lerp(c.tint,c.type===6?.9:.25).lerp(GUT,.45*bk);blobAt(_a.x,_a.y,_a.z,rr,rr,rr,h.bc[i])}}
-   if(h.p>=1)handKill();
   }else{ // 숨이 끊겼다: 손안에서 축 늘어지고, 심장이 몇 번 더 뛰다 멎는다
    grip=lerp(1,.94,ss(h.t/.5));trem=Math.max(0,.5-h.t);skinU.uGrip.value=lerp(1,.5,ss(h.t/.6));
    H.limp=damp(H.limp,1,13,dt);H.amp=damp(H.amp,0,16,dt);H.nodT=.38;H.lollT=H.loll>0?.45:-.45;
@@ -1684,6 +1751,8 @@ function handUpdate(dt,act){
  handPose(grip,trem);h.g.updateMatrixWorld(true);
  if(h.ph!=='hold'&&h.ph!=='limp')skinU.uGrip.value=damp(skinU.uGrip.value,0,8,dt);
  heroUpdate(dt);
+ if(h.ph==='hold'&&h.c&&!h.c.dead&&h.p>=1)handKill();
+ handFluid(dt);
  // 팔: 손목에서 팔꿈치 쪽으로 손을 따라 뻗고, 소매는 어깨로 이어진다
  h.g.localToWorld(_a.set(0,-.001,.1));h.g.localToWorld(_c.set(0,-.001,.36));_b.set(P.x+.3,1.0,P.z+.14);_c.lerp(_b,.45);between(h.arm,_a,_c);between(h.sleeve,_c,_b);
  if(h.c&&!h.c.dead){const c=h.c;c.x=h.pos.x;c.y=h.pos.y;c.z=h.pos.z}
@@ -2429,5 +2498,6 @@ init();
 </script>
 </body>
 </html>
+
 
 
