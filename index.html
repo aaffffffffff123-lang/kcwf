@@ -1218,7 +1218,7 @@ function updateBody(dt,mx,mz){
  showW=damp(showW,ST.ph==='peelB'||ST.ph==='show'?1:0,10,dt);
  // 다리
  for(let i=0;i<2;i++){const L=legs[i],b=i?bootL:bootR,side=i?-1:1;
-  const vis=!truck&&S.tool!=='hand';L.hem.visible=b.visible=vis;if(!vis)continue;
+  const vis=S.tool==='boot';L.hem.visible=b.visible=vis;if(!vis)continue;
   _a.set(0,.2,.085);b.localToWorld(_a);_b.set(P.x+side*(.12+(i===0?.5*showW:0)),1.05,P.z+.05-.26*lean).sub(_a).normalize().multiplyScalar(.07).add(_a);
   between(L.hem,_a,_b);
   // 밑창 잔여물
@@ -1537,8 +1537,8 @@ function shovelUpdate(dt,act){
  const s=SH,g=s.g,on=S.tool==='shovel';g.visible=s.bin.visible=on;
  if(!on){if(s.carry.length){for(const c of s.carry){c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1;c.y=0}s.carry.length=0}s.load=0;s.lc.length=0;s.ph='idle';s.lean=0;AU.loop('scrape',false);return}
  s.t+=dt;const p=s.pose;
- // 수거통
- const bx=P.x+(portrait?.36:.66),bz=P.z-(portrait?.56:.72);s.bin.position.set(bx,0,bz);
+ // 삽은 오른쪽, 통은 왼쪽 앞. 세로 화면에서도 통 전체와 삽날 사이를 비운다.
+ const bx=P.x-Math.min(.66,W/H*.55),bz=P.z-1.35;s.bin.position.set(bx,0,bz);
  if(s.binN>=36){s.binN=0;AU.flush()}
  s.binLv=damp(s.binLv,Math.min(1,s.binN/36),s.binN?6:2.2,dt);s.pulp.visible=s.binLv>.03;s.pulp.position.y=.05+.24*s.binLv;s.pulp.rotation.y+=dt*.4;s.pulp.material.color.copy(s.binC);
  if(s.ph==='idle'){shovelIdle(p);s.lean=0;if(act&&started)shovelBegin()}
@@ -1563,7 +1563,7 @@ function shovelUpdate(dt,act){
   if(s.ph==='hold'){AU.loop('scrape',act&&moveK>.3);if(!act){s.ph='heave';s.t=0;s.from=Object.assign({},p);AU.loop('scrape',false)}}
  }
  else if(s.ph==='heave'){const u=Math.min(1,s.t/.42),e=ss(u),k=Math.sin(Math.min(1,u/.6)*Math.PI*.5);
-  p.x=s.from.x+(bx-.22-s.from.x)*.6*k;p.y=.44*k;p.z=s.from.z+(bz-.12-s.from.z)*.75*k;p.rx=.35*k;p.rz=-.75*k;p.ry=0;s.lean=.3*(1-e);
+  p.x=s.from.x+(bx+.22-s.from.x)*.6*k;p.y=.44*k;p.z=s.from.z+(bz-.12-s.from.z)*.75*k;p.rx=.35*k;p.rz=.75*k;p.ry=0;s.lean=.3*(1-e);
   if(u>=.42&&(s.carry.length||s.load)){const T=.42,n=s.carry.length;
    for(const c of s.carry){c.st='tossed';c.t=0;c.vx=(bx+rnd(-.06,.06)-c.x)/T;c.vz=(bz+rnd(-.06,.06)-c.z)/T;c.vy=(.22-c.y+4.9*T*T)/T}
    s.carry.length=0;s.tossN=n;
@@ -1637,7 +1637,8 @@ function vacUpdate(dt,act){
  if(!on){if(v.tank.length||v.eat.length){for(const c of v.tank)killCreature(c,'none');for(const e of v.eat)killCreature(e.c,'none')}if(v.gr>0)AU.loop('grind',false);vacClear();return}
  const churn=v.ph===1&&v.gr>.3,sh=churn||run?.004:0;
  v.g.position.set(P.x+Math.sin(time*70)*sh,(run?-.02:0)+Math.sin(time*53)*sh,P.z);
- // 통: 평소에는 왼쪽 아래에 달려 있고, 갈 때는 눈앞으로 들어 올린다
+ // 통: 호스와 겹치지 않게 왼쪽 앞에 달고, 갈 때는 눈앞으로 들어 올린다.
+ v.rest.set(-Math.min(.3,W/H*.55),.3,-.94);
  v.k=damp(v.k,v.ph===1||v.ph===2?1:0,6,dt);const kk=ss(v.k);
  cn.position.lerpVectors(v.rest,v.show,kk);cn.position.y+=Math.sin(kk*Math.PI)*.06;cn.rotation.set(lerp(.35,-v.TILT,kk),0,-.12*(1-kk));cn.scale.setScalar(lerp(1,v.ZOOM,kk));
  if(churn){cn.position.x+=Math.sin(time*88)*.0022;cn.position.y+=Math.sin(time*71)*.0018}
@@ -1797,7 +1798,8 @@ function tongUpdate(dt,act){
  const g=TG,on=S.tool==='tong';g.g.visible=g.bag.visible=on;
  if(!on){if(g.held||g.in.length||g.ph!=='idle')tongDrop();return}
  g.t+=dt;
- const bx=P.x+(portrait?.27:.6),bz=P.z-(portrait?.74:.6),hx=P.x+.05,hz=P.z-.82,tip=g.tip;
+ // 봉투는 집게의 오른손·작업 경로 반대편에 둔다.
+ const bx=P.x-Math.min(.6,W/H*.5),bz=P.z-1.2,hx=P.x+.05,hz=P.z-.82,tip=g.tip;
  let bX=bx,bY=0,bZ=bz,sqy=1,open=1,tied=false;
  if(g.ph==='idle'){tip.set(P.x+.12,.3+Math.sin(time*2)*.004,P.z-.62);
   if(act&&started){let best=null,bd=.36;for(const c of creatures){if(busy(c)||c.dead)continue;const d=Math.hypot(c.x-hx,c.z-hz);if(d<bd){bd=d;best=c}}
@@ -2094,4 +2096,5 @@ init();
 </script>
 </body>
 </html>
+
 
