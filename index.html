@@ -254,8 +254,8 @@ const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,m
    this.bake();
   }catch(e){this.c=null}},
  wake(){this.init();if(this.c&&this.c.state!=='running')this.c.resume().catch(()=>{})},
- sleep(){for(const k in this.loops)this.loop(k,false);if(this.c&&this.c.state==='running')this.c.suspend().catch(()=>{})},
- mute(m){if(this.out)this.out.gain.setTargetAtTime(m?0:1,this.c.currentTime,.03)},
+ sleep(){this.stopReactions();for(const k in this.loops)this.loop(k,false);if(this.c&&this.c.state==='running')this.c.suspend().catch(()=>{})},
+ mute(m){if(m)this.stopReactions();if(this.out)this.out.gain.setTargetAtTime(m?0:1,this.c.currentTime,.03)},
  get ok(){return !!this.c&&this.c.state==='running'&&!S.muted},
  tone(type,f0,f1,dur,vol,delay=0,dest){if(!this.ok||this.full(vol,dur+delay))return;const c=this.c,t=c.currentTime+Math.max(0,delay),o=c.createOscillator(),g=c.createGain();
   o.type=type;o.frequency.setValueAtTime(Math.max(20,f0),t);if(f1!==f0)o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);
@@ -339,6 +339,40 @@ const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,m
  coin(){if(!this.ok)return;const now=this.c.currentTime;if(now-this.coinT<.07)return;this.coinT=now;this.tone('sine',1319,1319,.07,.08);this.tone('sine',1976,1976,.2,.09,.06)},
  chime(){this.tone('sine',660,660,.09,.13);this.tone('sine',880,880,.16,.13,.1)},
  buy(){this.tone('triangle',659,659,.12,.16);this.tone('triangle',988,988,.3,.16,.1)},
+ // 짧은 환호·손뼉·두 음 휘파람을 한 번만 만들어 재생한다. 군중 수만큼 발진기를 만들지 않는다.
+ reactionBuffers:null,reactionVoices:[],reactionNext:{cheer:0,clap:0,whistle:0},
+ bakeReactions(){
+  if(this.reactionBuffers||!this.c)return;
+  const sr=this.c.sampleRate,bank={cheer:[],clap:[],whistle:[]};
+  const make=(kind,variant)=>{const dur=kind==='clap'?.14:kind==='whistle'?.8:.78+variant*.045,b=this.c.createBuffer(1,Math.ceil(sr*dur),sr),a=b.getChannelData(0);let ph=0,lastNoise=0,peak=0;
+   const f1={x1:0,x2:0,y1:0,y2:0},f2={x1:0,x2:0,y1:0,y2:0};
+   const tune=(f,hz,q)=>{const w=TAU*hz/sr,al=Math.sin(w)/(2*q),d=1+al;f.b=al/d;f.a1=-2*Math.cos(w)/d;f.a2=(1-al)/d};
+   const filter=(f,x)=>{const y=f.b*(x-f.x2)-f.a1*f.y1-f.a2*f.y2;f.x2=f.x1;f.x1=x;f.y2=f.y1;f.y1=y;return y};
+   for(let i=0;i<a.length;i++){const t=i/sr,u=t/dur,n=Math.random()*2-1;let y=0;
+    if(kind==='clap'){const edge=n-lastNoise*.72;lastNoise=n;y=edge*(Math.exp(-t*48)+.32*Math.exp(-Math.pow((t-.017)/.008,2)))*ss(t/.0015)}
+    else if(kind==='whistle'){const first=t<.24,q=first?clamp((t-.025)/.17,0,1):clamp((t-.29)/.45,0,1),en=first?ss((t-.025)/.015)*(1-ss((t-.17)/.045)):ss((t-.29)/.025)*(1-ss((t-.66)/.08));const f=(first?lerp(1600,2250,q):lerp(2580,1820,ss(q)))+Math.sin(t*TAU*13)*16;ph+=TAU*f/sr;y=(Math.sin(ph)+.035*n)*en}
+    else{const open=ss(t/.2),f=165+variant*29+105*Math.sin(Math.PI*u*.9)+7*Math.sin(t*TAU*6.2);ph=(ph+f/sr)%1;
+     if(i%64===0){tune(f1,lerp(340,790,open)+variant*35,5);tune(f2,lerp(680,1220,open)+variant*70,7)}
+     const glottal=(2*ph-1)*.8+n*.035,en=ss(t/.045)*(1-ss((u-.65)/.35))*(.86+.14*Math.sin(t*TAU*5));y=(filter(f1,glottal)*1.7+filter(f2,glottal)) * en}
+    a[i]=y;peak=Math.max(peak,Math.abs(y));
+   }
+   const scale=(kind==='whistle'?.5:.72)/Math.max(.001,peak);for(let i=0;i<a.length;i++)a[i]*=scale;return b;
+  };
+  for(let i=0;i<3;i++)bank.cheer.push(make('cheer',i));bank.clap.push(make('clap',0));bank.whistle.push(make('whistle',0));this.reactionBuffers=bank;
+ },
+ react(kind,volume,pan,variant=0){
+  if(!this.ok)return;this.bakeReactions();const c=this.c,now=c.currentTime;
+  this.reactionVoices=this.reactionVoices.filter(v=>v.end>now);
+  if(now<this.reactionNext[kind]||this.reactionVoices.length>=8)return;
+  const bank=this.reactionBuffers[kind],buffer=bank[variant%bank.length],rate=kind==='clap'?.94+(variant%5)*.035:kind==='whistle'?.96+(variant%3)*.035:1;
+  if(this.full(volume,buffer.duration/rate))return;
+  this.reactionNext[kind]=now+(kind==='clap'?.045:kind==='whistle'?.25:.13);
+  const src=c.createBufferSource(),gain=c.createGain();src.buffer=buffer;src.playbackRate.value=rate;gain.gain.value=volume;src.connect(gain);
+  let out=gain;if(c.createStereoPanner){out=c.createStereoPanner();out.pan.value=clamp(pan,-.8,.8);gain.connect(out)}out.connect(this.fx);
+  const entry={src,gain,out,end:now+buffer.duration/rate};this.reactionVoices.push(entry);
+  src.onended=()=>{src.disconnect();gain.disconnect();if(out!==gain)out.disconnect();const i=this.reactionVoices.indexOf(entry);if(i>=0)this.reactionVoices.splice(i,1)};src.start();
+ },
+ stopReactions(){const voices=this.reactionVoices.splice(0);for(const v of voices){try{v.src.stop();v.gain.disconnect()}catch(e){}}this.reactionNext={cheer:0,clap:0,whistle:0}},
  tick(){this.tone('sine',880,880,.04,.06)},
  clang(k=1){this.noise('bandpass',3400,1500,3,.09,.5*k);this.tone('triangle',930,610,.22,.2*k);this.tone('sine',1870,1500,.3,.08*k);this.tone('sine',92,38,.3,1*k);this.noise('lowpass',900,140,.7,.2,.75*k)},
  splat(k=1){this.noise('bandpass',1100,260,1.1,.26,.7*k);for(let i=0;i<5;i++)this.bubble(rnd(180,520),.3*k,i*.022+.01);this.noise('highpass',2800,2000,.7,.05,.3*k)},
@@ -483,7 +517,7 @@ function startSupport(){
  if(!started||paused||S.support)return false;
  const recipients=supportRecipients(),cost=recipients.length*SUPPORT_UNIT;if(!recipients.length||S.money<cost)return false;
  S.money-=cost;S.support={t:0,zone:S.zone,ids:recipients.map(c=>c.i)};supportSoundT=0;
- AU.wake();AU.buy();save();updateHUD(true);$('gl').focus();return true;
+ AU.stopReactions();AU.wake();AU.buy();save();updateHUD(true);$('gl').focus();return true;
 }
 function updateSupport(dt){
  if(!started||paused||!S.support)return;
@@ -492,7 +526,7 @@ function updateSupport(dt){
  if(old<10.15&&S.support.t>=10.15)AU.dump(4);
  if(S.support.t>=SUPPORT_T){S.support=null;creators.forEach(c=>{c.envelope.visible=false;c.timer=Math.max(c.timer,rnd(2.2,4))});save()}
 }
-function resetSupport(){S.support=null;supportSoundT=0;for(const c of creators){c.envelope.visible=false;c.push=c.pop=c.look=0;c.head.position.set(0,1.075,-.285)}}
+function resetSupport(){S.support=null;supportSoundT=0;AU.stopReactions();for(const c of creators){c.envelope.visible=c.mouth.visible=false;for(const h of c.hands){h.hand.scale.set(.042,.03,.055);h.hand.rotation.set(0,0,0)}c.push=c.pop=c.look=0;c.head.position.set(0,1.075,-.285)}}
 
 function drawMark(g,x,y,w,color='#1f4fd8'){
  g.save();g.translate(x,y);g.scale(w/96,w/96);g.strokeStyle=color;g.lineWidth=9;g.lineJoin='miter';g.beginPath();g.moveTo(8,19);g.lineTo(35,19);g.moveTo(21.5,19);g.lineTo(21.5,49);g.moveTo(41,19);g.lineTo(68,19);g.moveTo(54.5,19);g.lineTo(54.5,49);g.moveTo(76,15);g.lineTo(89,49);g.stroke();g.restore();
@@ -641,6 +675,9 @@ function buildDesk(d,idx){const ty=d.type,v=(idx/5|0)%3;
   A(BX(.3,.34,.05),0xefe6cf,-.86,.18,.2,1,1,1,-.12,.3,0);A(BX(.17,.05,.056),K,-.86,.22,.2,1,1,1,-.12,.3,0);A(BX(.17,.05,.056),L.hat,-.86,.14,.2,1,1,1,-.12,.3,0)}
  const body=new THREE.Mesh(merge(ps),bodyMat);body.castShadow=true;body.receiveShadow=true;g.add(body);
  const head=new THREE.Mesh(merge(hp),bodyMat);head.castShadow=true;head.position.set(0,1.075,-.285);head.rotation.order='YXZ';g.add(head);
+ const mouth=new THREE.Group();mouth.position.set(0,-.065,.145);head.add(mouth);mouth.visible=false;
+ const opening=addMesh(mouth,SP(8,6),M(0x36151d,.8));opening.scale.set(.031,.039,.008);
+ const teeth=addMesh(mouth,BX(.036,.009,.003),M(0xf4ede0,.7),0,.021,.007);
  // 팔
  const hands=[],slv=L.short?SKIN:L.top,INKC=lin(0x244a52),skc=lin(SKIN);
  for(const s of[-1,1]){
@@ -655,7 +692,7 @@ function buildDesk(d,idx){const ty=d.type,v=(idx/5|0)%3;
  const bulge=new THREE.Mesh(bulgeGeo,new THREE.MeshStandardMaterial({color:lin(0xdba79c).lerp(lin(TYPES[ty].tints[v%TYPES[ty].tints.length]),.3),roughness:.12,envMapIntensity:1}));bulge.position.set(0,wy,.07);bulge.visible=false;bulge.castShadow=true;g.add(bulge);
  const im=new THREE.InstancedMesh(SP(8,6),droolMat,6);im.frustumCulled=false;const dc=TRAIL.clone().lerp(lin(TYPES[ty].tints[v%TYPES[ty].tints.length]),.3);for(let k=0;k<6;k++)im.setColorAt(k,dc);g.add(im);
  const lamp=new THREE.Mesh(SP(10,8),new THREE.MeshStandardMaterial({color:lin(0x39d07a),emissive:lin(0x39d07a),emissiveIntensity:.9,roughness:.3}));lamp.scale.setScalar(.032);lamp.position.set(.56,.815,.29);g.add(lamp);
- const c={i:idx,type:ty,d,g,hands,head,bulge,wy,lamp,drool:{im,L:[0,0,0,0,0,0],u:[-.5,-.3,-.1,.1,.3,.5].map(u=>u+rnd(-.05,.05))},seat:d.seat,sl:0,bill:null,timer:rnd(2,5)+idx*.3,push:0,pop:0,look:0,clog:false,ht:rnd(0,9)};
+ const c={i:idx,type:ty,d,g,hands,head,mouth,teeth,bulge,wy,lamp,drool:{im,L:[0,0,0,0,0,0],u:[-.5,-.3,-.1,.1,.3,.5].map(u=>u+rnd(-.05,.05))},seat:d.seat,sl:0,bill:null,timer:rnd(2,5)+idx*.3,push:0,pop:0,look:0,clog:false,ht:rnd(0,9)};
  if(d.seat!=null){const bl=new THREE.Mesh(merge([part(BX(.15,1,.072),0x5fae7c,0,0,0),part(BX(.03,1.02,.074),0xf2f0e4,0,0,0)]),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.75,envMapIntensity:.3}));bl.position.set(.36,.78,.25);bl.rotation.y=.25;bl.castShadow=true;bl.visible=false;g.add(bl);c.bill=bl;g.visible=false}
  c.envelope=buildSupportEnvelope();g.add(c.envelope);
  drool(c,null);creators.push(c);
@@ -671,6 +708,19 @@ function creatorOutput(c,n,ai=false,supported=false){
   if(!made&&supported){const paper=ty===0||ty===4,col=pick(TYPES[ty].tintsL);chunk(wx(u1,.36),.77,wz(u1,.36),d.fx*rnd(.35,.8),rnd(.2,.6),d.fz*rnd(.35,.8),paper?.028:.021,paper?.007:.018,paper?.037:.028,col);drool(c,u1)}
  }
 }
+// 봉투가 닿은 뒤 약 1초 동안만 반응한다. 첫 작품 배출보다 먼저 마친다.
+function supportReaction(c,ft,prev){
+ const kind=c.i%3,rt=ft-.51-(c.i%4)*.025,pr=prev-.51-(c.i%4)*.025;
+ const mix=ss(rt/.12)*(1-ss((rt-.88)/.17));
+ if(started&&!paused&&ft>=0){
+  const dist=Math.hypot(P.x-c.d.x,P.z-c.d.z),level=.5+.5/(1+dist*.35),pan=(c.d.x-P.x)/(dist+1);
+  const cue=(at,name,vol)=>{if(pr<at&&rt>=at)AU.react(name,vol*level,pan,c.i)};
+  if(kind===0)cue(.12,'cheer',.23);
+  else if(kind===1)for(const at of[.22,.47,.72])cue(at,'clap',.19);
+  else cue(.14,'whistle',.17);
+ }
+ return {kind,rt,mix};
+}
 function updateCreators(dt){
  const act=Math.min(NREG,2+S.zone*2);
  for(const c of creators){const d=c.d;let gs=null,on=true;
@@ -681,6 +731,7 @@ function updateCreators(dt){
   else c.g.visible=c.i<act;
   if(!c.g.visible)continue;
   const si=started&&S.support?S.support.ids.indexOf(c.i):-1,ft=si<0?-1:S.support.t-si*.022,prev=ft-dt;
+  const reaction=supportReaction(c,ft,prev),rk=reaction.mix;
   const funded=si>=0,working=ft>=1&&ft<11,boost=working?ss((ft-1)/1.3):0,rest=ft>=11?Math.sin(Math.PI*clamp((ft-11)/2.5,0,1)):0,receive=ft>=.43&&ft<1?Math.sin(Math.PI*(ft-.43)/.57):0;
   c.envelope.visible=ft>=0&&ft<13.5;
   if(c.envelope.visible){const land=ss(ft/.48),fade=1-ss((ft-12.8)/.7);c.envelope.position.set(.32,lerp(1.55,gs?.89:.791,land)+Math.sin(clamp((ft-.48)/.14,0,1)*Math.PI)*.025,.24);c.envelope.rotation.set((1-land)*-.45,.12+(1-land)*.6,(1-land)*.24);c.envelope.scale.setScalar(fade)}
@@ -688,12 +739,17 @@ function updateCreators(dt){
   const cx=d.x+d.fx,cz=d.z+d.fz;let n=0;for(const k of creatures)if(k.st==='walk'&&Math.abs(k.x-cx)<1&&Math.abs(k.z-cz)<1)n++;
   c.clog=!funded&&(c.clog?n>6:n>=12);
   const lc=working?LAMP_Y:c.clog?LAMP_R:LAMP_G;c.lamp.material.color.copy(lc);c.lamp.material.emissive.copy(lc);c.lamp.material.emissiveIntensity=c.clog?(Math.sin(time*9)>0?1.7:.12):working?1+.3*Math.sin(time*18):.9;
-  if(!c.clog)c.ht+=dt*(1+4.5*boost)*(1-.85*rest)*(1-.8*receive);
+  if(!c.clog)c.ht+=dt*(1+4.5*boost)*(1-.85*rest)*(1-.8*receive)*(1-rk);
   c.push=Math.max(0,c.push-dt*(working?4.5:1.5));c.pop=Math.max(0,c.pop-dt*(working?4:1.3));c.look=damp(c.look,c.clog?1:0,4,dt);
   const lk=ss(c.look),sp=3+(c.i%5)*.4;
   c.head.position.y=1.075+Math.sin(c.ht*sp)*.013*boost-.065*rest;
   c.head.rotation.x=lerp(.62+Math.sin(c.ht*sp*.5)*(.05+.065*boost),-.08,lk)+.48*rest-.22*receive;
   c.head.rotation.y=Math.sin(c.ht*.8+c.i)*.12*(1-lk)+.5*receive;c.head.rotation.z=Math.sin(c.ht*sp*.25+c.i)*.05*(1-lk)+.12*rest;
+  if(rk){const localX=(P.x-d.x)*d.fz-(P.z-d.z)*d.fx,localZ=(P.x-d.x)*d.fx+(P.z-d.z)*d.fz;
+   c.head.position.y+=.015*rk;c.head.rotation.x=lerp(c.head.rotation.x,reaction.kind===0?-.2:-.04,rk);
+   c.head.rotation.y=lerp(c.head.rotation.y,clamp(Math.atan2(localX,Math.max(.4,localZ)),-.5,.5),rk);c.head.rotation.z+=Math.sin(reaction.rt*10+c.i)*.035*rk}
+  c.mouth.visible=rk>.08;c.mouth.scale.set(rk*(reaction.kind===2?.38:reaction.kind===1?.75:1),rk*(reaction.kind===2?.4:reaction.kind===1?.35:1),rk);c.teeth.visible=reaction.kind===0;
+  c.head.updateMatrix();
   const pk=Math.sin(c.push*Math.PI)*(working?.3:1);
   for(const h of c.hands){const t=c.ht*sp+h.s;
    _a.copy(h.base);
@@ -701,8 +757,16 @@ function updateCreators(dt){
    else{_a.x+=Math.sin(t*1.3)*(.06+.025*boost);_a.z+=Math.cos(t)*(.05+.025*boost);_a.y+=Math.abs(Math.sin(t*2))*(.02+.025*boost)}
    _a.x=lerp(_a.x,h.s*.21,pk);_a.z=lerp(_a.z,.05,pk);_a.y=lerp(_a.y,c.type===4?.875:.8,pk);
    _a.lerp(_b.set(h.s*.24,.79,.07),rest*.9);if(h.s>0)_a.lerp(_b.set(.28,.85,.17),receive*.7);
+   h.hand.scale.set(.042,.03,.055);h.hand.rotation.set(0,0,0);
+   if(rk){const r=reaction.rt;
+    if(reaction.kind===0)_b.set(h.s*(.3+.035*Math.sin(r*10+h.s)),1.3+.05*Math.sin(r*12+h.s),-.29);
+    else if(reaction.kind===1){let contact=0;for(const at of[.22,.47,.72])contact=Math.max(contact,ss((r-at+.085)/.085)*(1-ss((r-at-.036)/.065)));_b.set(h.s*lerp(.17,.022,contact),.97,-.095);h.hand.scale.set(lerp(.042,.022,rk),lerp(.03,.047,rk),.055)}
+    else if(h.s>0){_b.set(.023,-.058,.154).applyMatrix4(c.head.matrix);h.hand.scale.setScalar(lerp(.042,.026,rk))}
+    else _b.set(-.31,1.25+.035*Math.sin(r*9),-.26);
+    _a.lerp(_b,rk);
+   }
    armIK(h,_a)}
-  const sw=c.clog||!started?0:ss(1-c.timer/1.5),bk=working?Math.max(.4+.3*Math.abs(Math.sin(c.ht*sp)),c.pop):rest?0:Math.max(sw,c.pop*.9);c.bulge.visible=bk>.02;
+  const sw=c.clog||!started?0:ss(1-c.timer/1.5),bk=working?Math.max(.4+.3*Math.abs(Math.sin(c.ht*sp)),c.pop):rest?0:Math.max(sw,c.pop*.9);c.bulge.visible=bk>.02&&rk<.1;
   if(c.bulge.visible){const q=1+.08*Math.sin(time*31+c.i)*bk;c.bulge.scale.set(.14*bk*q,.1*bk*(2-q),.12*bk*q)}
   if(!started||paused||!on)continue;
   if(funded){
@@ -2123,7 +2187,7 @@ function resumeGame(){$('pause').hidden=true;paused=false;last=0;AU.wake();$('gl
 
 /* ───────── 입력 ───────── */
 const keys={};let stickId=null,stickX=0,stickY=0,sx0=0,sy0=0,actIds=new Set(),mouseAct=false;
-function releaseAll(){for(const k in keys)keys[k]=false;stickId=null;stickX=stickY=0;actIds.clear();mouseAct=false;$('stick').style.display='none';AU.loop('scrape',false);AU.loop('vac',false);AU.loop('truck',false);AU.loop('grind',false);AU.loop('trim',false);AU.loop('wash',false);AU.loop('squeak',false);VC.on=false;TK.on=false;TR.on=false;WS.on=false}
+function releaseAll(){AU.stopReactions();for(const k in keys)keys[k]=false;stickId=null;stickX=stickY=0;actIds.clear();mouseAct=false;$('stick').style.display='none';AU.loop('scrape',false);AU.loop('vac',false);AU.loop('truck',false);AU.loop('grind',false);AU.loop('trim',false);AU.loop('wash',false);AU.loop('squeak',false);VC.on=false;TK.on=false;TR.on=false;WS.on=false}
 const acting=()=>mouseAct||actIds.size>0||!!keys.Space;
 function bind(){
  const cv=$('gl');
