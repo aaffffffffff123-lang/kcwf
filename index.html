@@ -188,10 +188,10 @@ const KEY='creative-support-v2';
 const TOOLS=[
  {id:'hand',name:'맨손',short:'맨손',price:0,desc:'한 마리를 집어 올립니다. 꾹 누르고 있으면 손안에서 쥐어짭니다.'},
  {id:'boot',name:'안전화',short:'안전화',price:300,desc:'한 마리씩 밟아서 처리합니다. 길게 누르면 체중이 실립니다.'},
- {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:1200,desc:'한 마리씩 집어 봉투에 담습니다. 봉투가 차면 묶어서 바닥에 내려칩니다.'},
+ {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:1200,desc:'64명까지 모아 담습니다. 가득 찬 봉투를 바닥에 놓고 꾹 눌러 발로 압착합니다.'},
  {id:'shovel',name:'수거용 삽',short:'삽',price:2500,desc:'내려쳐서 처리한 다음 바닥을 긁어 수거통에 퍼담습니다.'},
  {id:'mop',name:'물밀대',short:'밀대',price:6000,desc:'앞으로 밀어서 모읍니다. 배수구 위로 밀면 철망 사이로 내려갑니다.'},
- {id:'vac',name:'흡입 수거기',short:'흡입기',price:9000,desc:'주변의 생물과 얼룩을 빨아들입니다. 통이 가득 차면 롤러로 갈아서 배수합니다.'},
+ {id:'vac',name:'흡입 수거기',short:'흡입기',price:9000,desc:'96명까지 모아 담습니다. 가득 차면 롤러로 갈아 아래 통에 잘게 쌓습니다.'},
  {id:'trim',name:'예초기',short:'예초기',price:14000,desc:'누르는 동안 줄날이 돌아갑니다. 닿는 대로 잘라 냅니다.'},
  {id:'wash',name:'고압세척기',short:'세척기',price:19000,desc:'물줄기로 쓸어 보냅니다. 바닥 얼룩도 같이 씻깁니다.'},
  {id:'truck',name:'고압 수거차',short:'수거차',price:26000,desc:'롤러로 눌러 넓은 폭을 한꺼번에 처리하고 압착해서 배출합니다.'}
@@ -677,7 +677,7 @@ const TYPES=[
 const BONE=lin(0xefe6d2),BRAIN=lin(0xd6a0a6),INTEST=lin(0xdc8f96),HAIRC=lin(0x1c1614),PAPER=lin(0xf1ede0),CANVAS=lin(0xd9c7a0),SKINC=lin(0xd9b7a5),WATER=lin(0xcfe8ff),BLOOD=lin(0x8a1c1c),TRAIL=lin(0x8a6a3a),GUT=lin(0x7d2a2e),MUCUS=lin(0xb7a136),ROT=lin(0x4a4318),WHITE=new THREE.Color(1,1,1),DUNG=lin(0x33200d),LAMP_G=lin(0x39d07a),LAMP_R=lin(0xff3b2f);
 const busy=c=>c.st==='fall'||c.st==='pinned'||c.st==='carried'||c.st==='tossed'||c.st==='tank'||c.st==='held'||c.st==='bag';
 const CAP=260,creatures=[],flocks=[];let herdSeq=0;
-const alive=()=>creatures.length;
+const alive=()=>{let n=0;for(const c of creatures)if(!c.dead&&c.st!=='bag'&&c.st!=='tank')n++;return n};
 function mergeX(list){ // 위치·법선·색 + 얼룩 마스크 + 팔다리 흔들림 가중치
  const ps=list.map(g=>g.index?g.toNonIndexed():g);let n=0;for(const q of ps)n+=q.attributes.position.count;
  const A=new Float32Array(n*3),N=new Float32Array(n*3),C=new Float32Array(n*3),Mk=new Float32Array(n),L=new Float32Array(n*3);let o=0;
@@ -820,7 +820,7 @@ function updateCreatures(dt){
    c.y=0;c.yaw+=Math.sin(time*11+c.ph)*dt*5;c.roll=Math.sin(time*23+c.ph)*.35;c.panic=1;c.sq=damp(c.sq,1,10,dt);
    c.tr-=dt;if(c.tr<=0){c.tr=.25;stamp(c.x+rnd(-.03,.03),c.z+rnd(-.03,.03),.09,.09,0,1,6,c.ink,.8)}
    if(Math.random()<dt*1.1)AU.squeal(c.type,.7);if(c.t>c.life)killCreature(c,'bleed');continue}
-  if(c.st==='tossed'){c.vy-=9.8*dt;c.x+=c.vx*dt;c.y+=c.vy*dt;c.z+=c.vz*dt;c.roll+=dt*9;c.sq=1;if(c.t>.42){if(SH.tossN){AU.dump(SH.tossN);SH.tossN=0;binSplash()}SH.binN++;SH.binC.lerp(c.ink,.4);killCreature(c,'shovel')}continue}
+  if(c.st==='tossed'){c.vy-=9.8*dt;c.x+=c.vx*dt;c.y+=c.vy*dt;c.z+=c.vz*dt;c.roll+=dt*9;c.sq=1;if(c.t>.42){if(SH.tossN){AU.dump(SH.tossN);SH.tossN=0;binSplash()}binAdd(1,c.ink);killCreature(c,'shovel')}continue}
   if(c.st==='sucked'){if(!VC.on&&!TK.on){c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1;c.str=1;c.y=0}c.sqT=1;c.sq=damp(c.sq,1,10,dt);continue}
   c.y=0;
   let sp=0;
@@ -950,6 +950,15 @@ function drawBits(){
 }
 const _m4=()=>new THREE.Matrix4();const blobPool=[];let blobI=0;
 function blobAt(x,y,z,sx,sy,sz,color,parent){const m=blobPool[blobI]||(blobPool[blobI]=_m4());blobI++;D.position.set(x,y,z);D.rotation.set(0,0,0);D.scale.set(sx,sy,sz);D.updateMatrix();if(parent)m.multiplyMatrices(parent.matrixWorld,D.matrix);else m.copy(D.matrix);extraBlobs.push({m,color})}
+
+// 수거통의 고형물은 물방울 풀과 분리한다. 튀는 방울이 많아도 내용물이 사라지지 않는다.
+function solidBatch(parent,n,geo,rough=.62){
+ const m=new THREE.InstancedMesh(geo||lump(SP(8,6),.16,3),new THREE.MeshStandardMaterial({vertexColors:!!(geo&&geo.attributes.color),roughness:rough,envMapIntensity:.35}),n);
+ m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);m.setColorAt(0,WHITE);m.count=0;m.frustumCulled=false;m.castShadow=true;parent.add(m);return m;
+}
+function solidAt(m,i,x,y,z,sx,sy,sz,col,rx=0,ry=0,rz=0){D.position.set(x,y,z);D.rotation.set(rx,ry,rz);D.scale.set(sx,sy,sz);D.updateMatrix();m.setMatrixAt(i,D.matrix);m.setColorAt(i,col)}
+function solidEnd(m,n){m.count=n;m.instanceMatrix.needsUpdate=true;m.instanceColor.needsUpdate=true}
+const frac=x=>x-Math.floor(x);
 
 /* ───────── 수당 ───────── */
 const pops=[];let popBucket=0,popX=0,popZ=0,popY=.12,popT=0;
@@ -1490,7 +1499,7 @@ function handUpdate(dt,act){
 }
 
 /* ───────── 삽 ───────── */
-const SH={g:null,bin:null,pulp:null,ph:'idle',t:0,carry:[],load:0,loadC:null,lc:[],lean:0,pose:{x:0,y:0,z:0,rx:0,ry:0,rz:0},from:null,lastZ:0,lastX:0,T:new THREE.Vector3(),tossN:0,binN:0,binLv:0,binC:new THREE.Color(.5,.42,.12),hits:0};
+const SH={g:null,bin:null,pulp:null,ph:'idle',t:0,carry:[],load:0,loadC:null,lc:[],lean:0,pose:{x:0,y:0,z:0,rx:0,ry:0,rz:0},from:null,lastZ:0,lastX:0,T:new THREE.Vector3(),tossN:0,binN:0,binLv:0,binDrain:0,binPieces:[],binSolid:null,binEyes:null,binC:new THREE.Color(.5,.42,.12),hits:0};
 function glove(parts,x,y,z,ry=0){parts.push(part(SP(10,8),0xff5a1f,x,y,z,.05,.043,.066,0,ry,0));parts.push(part(SP(8,6),0xff5a1f,x-.045,y+.01,z-.02,.022,.02,.035));parts.push(part(CY(.043,.04,.06,10),0x24439e,x,y,z+.08,1,1,1,Math.PI/2,0,0))}
 function buildShovel(){
  const g=new THREE.Group(),steel=[part(BX(.34,.012,.3),0x8ea0b4,0,.008,.15),part(BX(.34,.006,.03),0xcfd9e3,0,.006,.012),part(BX(.34,.075,.012),0x8ea0b4,0,.04,.3),part(CY(.022,.027,.14,8),0x7b8a9c,0,.075,.34,1,1,1,.9,0,0)];
@@ -1511,7 +1520,27 @@ function buildBin(){
  const body=merge([part(new THREE.CylinderGeometry(.17,.14,.3,20,1,true),0x2f6fd0,0,.17,0),part(new THREE.TorusGeometry(.17,.014,8,24),0x1b2f6b,0,.32,0,1,1,1,Math.PI/2,0,0),part(CY(.14,.14,.02,20),0x1b2f6b,0,.03,0),part(BX(.2,.04,.012),0xffd21f,0,.2,.162)]);
  const m=new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,envMapIntensity:.5,side:THREE.DoubleSide}));m.castShadow=true;m.receiveShadow=true;g.add(m);
  const p=new THREE.Mesh(lump(new THREE.CylinderGeometry(.158,.15,.03,18,1),.05,6),new THREE.MeshStandardMaterial({roughness:.1,envMapIntensity:1}));p.visible=false;g.add(p);SH.pulp=p;
+ SH.binSolid=solidBatch(g,240);SH.binEyes=solidBatch(g,24,eyeIM.geometry,.3);
  g.visible=false;scene.add(g);SH.bin=g;
+}
+function binAdd(n,col){
+ const s=SH;s.binN+=n;s.binC.lerp(col,.35);
+ for(let j=0;j<Math.min(n,72)*3;j++){const i=s.binPieces.length,k=i%11;
+  const color=k===0?BONE:k===1?SKINC:col.clone().lerp(GUT,.55).lerp(SKINC,k%3===0?.25:0);
+  s.binPieces.push({color,eye:k===3,seed:rnd(0,TAU),settle:rnd(.045,.09)});if(s.binPieces.length>224)s.binPieces.shift()}
+}
+function binContents(dt){
+ const s=SH;
+ if(s.binN>=72&&!s.binDrain)s.binDrain=1.8;
+ if(s.binDrain){s.binDrain=Math.max(0,s.binDrain-dt);if(!s.binDrain){s.binN=0;s.binPieces.length=0;AU.flush()}}
+ s.binLv=damp(s.binLv,Math.min(1,s.binN/72),s.binN?7:3,dt);
+ s.pulp.visible=s.binLv>.02;s.pulp.position.y=.045+.105*s.binLv;s.pulp.material.color.copy(s.binC).lerp(GUT,.35);s.pulp.material.roughness=.55;
+ let a=0,b=0;
+ for(let i=0;i<s.binPieces.length;i++){const e=s.binPieces[i],layer=i/16|0,th=i*2.39996,rr=Math.sqrt(frac(i*.618+.13))*.125;
+  e.settle*=Math.exp(-dt*12);const y=.064+Math.min(.22,layer*.017)+Math.sin(e.seed)*.008+e.settle;
+  if(e.eye&&b<24)solidAt(s.binEyes,b++,Math.cos(th)*rr,y+.008,Math.sin(th)*rr,.012,.012,.012,WHITE,0,e.seed,.4);
+  else{const k=i%5,sz=k===0?.032:.019;solidAt(s.binSolid,a++,Math.cos(th)*rr,y,Math.sin(th)*rr,k===1?.012:.023,k===0?.009:.014,sz,e.color,Math.sin(e.seed)*.4,e.seed,.25*Math.cos(e.seed))}}
+ solidEnd(s.binSolid,a);solidEnd(s.binEyes,b);
 }
 function binSplash(){const b=SH.bin.position;for(let i=0;i<5;i++)drop(b.x+rnd(-.08,.08),.32,b.z+rnd(-.08,.08),rnd(-.5,.5),rnd(.8,1.8),rnd(-.5,.5),rnd(.008,.016),SH.binC)}
 function shovelIdle(o){o.x=P.x+.14;o.y=.16+Math.sin(time*2)*.004;o.z=P.z-.9;o.rx=.1;o.ry=-.05;o.rz=0;return o}
@@ -1539,8 +1568,7 @@ function shovelUpdate(dt,act){
  s.t+=dt;const p=s.pose;
  // 삽은 오른쪽, 통은 왼쪽 앞. 세로 화면에서도 통 전체와 삽날 사이를 비운다.
  const bx=P.x-Math.min(.66,W/H*.55),bz=P.z-1.35;s.bin.position.set(bx,0,bz);
- if(s.binN>=36){s.binN=0;AU.flush()}
- s.binLv=damp(s.binLv,Math.min(1,s.binN/36),s.binN?6:2.2,dt);s.pulp.visible=s.binLv>.03;s.pulp.position.y=.05+.24*s.binLv;s.pulp.rotation.y+=dt*.4;s.pulp.material.color.copy(s.binC);
+ binContents(dt);
  if(s.ph==='idle'){shovelIdle(p);s.lean=0;if(act&&started)shovelBegin()}
  else if(s.ph==='raise'){const u=Math.min(1,s.t/.17),e=ss(u);p.x=lerp(s.from.x,s.T.x,e);p.z=lerp(s.from.z,s.T.z-.15,e);p.y=lerp(s.from.y,.62,eo(u));p.rx=lerp(s.from.rx,-.5,e);p.ry=lerp(s.from.ry,0,e);p.rz=lerp(s.from.rz,0,e);s.lean=0;if(u>=1){s.ph='slam';s.t=0}}
  else if(s.ph==='slam'){const u=Math.min(1,s.t/.06);p.x=s.T.x;p.z=s.T.z-.15;p.y=lerp(.62,0,u*u);p.rx=lerp(-.5,0,u);p.ry=p.rz=0;s.lean=.35*u;if(u>=1){p.y=0;p.rx=0;slamImpact();s.ph='stick';s.t=0}}
@@ -1569,7 +1597,7 @@ function shovelUpdate(dt,act){
    s.carry.length=0;s.tossN=n;
    if(s.load){_a.set(0,.05,.15);g.localToWorld(_a);const col=s.loadC||MUCUS;
     for(let i=0,m=Math.min(14,s.load*2);i<m;i++)drop(_a.x+rnd(-.08,.08),_a.y,_a.z+rnd(-.08,.08),(bx-_a.x)/T+rnd(-.15,.15),(.22-_a.y+4.9*T*T)/T+rnd(-.3,.3),(bz-_a.z)/T+rnd(-.15,.15),rnd(.012,.024),col,true);
-    s.binN+=s.load;s.binC.lerp(col,.5);if(!n){AU.dump(Math.min(7,s.load));binSplash()}s.load=0;s.lc.length=0}
+    binAdd(s.load,col);if(!n){AU.dump(Math.min(7,s.load));binSplash()}s.load=0;s.lc.length=0}
    AU.noise('bandpass',900,2600,1.2,.16,.25);shake=.35}
   if(u>=1){s.ph='back';s.t=0;s.from=Object.assign({},p)}}
  else if(s.ph==='back'){const u=Math.min(1,s.t/.2),e=ss(u);shovelIdle(tmpP);if(s.hits&&Math.random()<dt*40)drop(p.x+rnd(-.16,.16),p.y+.01,p.z+rnd(0,.3),rnd(-.1,.1),0,rnd(-.1,.1),rnd(.006,.012),BLOOD);p.x=lerp(s.from.x,tmpP.x,e);p.y=lerp(s.from.y,tmpP.y,e)+Math.sin(u*Math.PI)*.05;p.z=lerp(s.from.z,tmpP.z,e);p.rx=lerp(s.from.rx,.3,e);p.rz=lerp(s.from.rz,0,e);p.ry=lerp(s.from.ry,-.06,e);
@@ -1582,8 +1610,8 @@ function shovelUpdate(dt,act){
 const shovelLocked=()=>SH.ph==='raise'||SH.ph==='slam'||SH.ph==='stick'||SH.ph==='pull'||SH.ph==='thrust'||SH.ph==='heave';
 
 /* ───────── 흡입기 ───────── */
-const HR=.13,HH=.24,BH=.05,JR=.105,JH=.12,NIP=.024,JB=-.01-BH-JH; // 호퍼 반지름·높이, 롤러집 높이, 죽통 반지름·높이, 롤러가 맞물리는 높이, 죽통 바닥
-const VC={g:null,on:false,lumps:[],curve:null,t:0,er:0,streaks:[],mouth:new THREE.Vector3(),tank:[],eat:[],bits:[],spl:[],can:null,pipe:null,rol:[],rolM:null,slurry:null,gr:0,grK:0,iv:.1,ph:0,pt:0,k:0,w:0,spin:0,lv:0,lvN:0,flT:0,col:new THREE.Color(.5,.42,.12),CAP:30,rest:new THREE.Vector3(-.17,.3,-.72),show:new THREE.Vector3(0,.93,-.79),TILT:.3,ZOOM:1.45};
+const HR=.13,HH=.32,BH=.05,JR=.105,JH=.17,NIP=.024,JB=-.01-BH-JH; // 호퍼 반지름·높이, 롤러집 높이, 죽통 반지름·높이, 롤러가 맞물리는 높이, 죽통 바닥
+const VC={g:null,on:false,lumps:[],curve:null,t:0,er:0,streaks:[],mouth:new THREE.Vector3(),tank:[],eat:[],bits:[],spl:[],can:null,pipe:null,rol:[],rolM:null,gr:0,grK:0,iv:.1,ph:0,pt:0,k:0,w:0,spin:0,lv:0,lvN:0,flT:0,col:new THREE.Color(.5,.42,.12),CAP:96,minced:[],falls:[],minceSeq:0,minceMesh:null,crumbMesh:null,slurpT:0,voiceT:0,rest:new THREE.Vector3(-.17,.3,-.72),show:new THREE.Vector3(0,.86,-.79),TILT:.3,ZOOM:1.2};
 const PUPIL=new THREE.Color(.01,.008,.012);
 function buildVac(){
  const g=new THREE.Group();
@@ -1618,7 +1646,8 @@ function buildVac(){
    return merge(rg)};
   VC.rolM=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.4,metalness:.35,envMapIntensity:.7});
   [[1,0,9],[-1,.0115,8]].forEach(q=>{const r=new THREE.Mesh(mkRol(q[1],q[2]),VC.rolM);r.position.set(0,NIP,q[0]*.03);r.castShadow=true;can.add(r);VC.rol.push(r)});
-  VC.slurry=new THREE.Mesh(CY(JR-.005,JR-.005,1,20),new THREE.MeshStandardMaterial({roughness:.35,envMapIntensity:.3}));VC.slurry.visible=false;can.add(VC.slurry);
+  const strand=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.9,0,0),new THREE.Vector3(-.3,.18,.1),new THREE.Vector3(.25,-.12,-.08),new THREE.Vector3(.85,.06,.18)]),5,.21,5,false);
+  VC.minceMesh=solidBatch(can,600,strand,.62);VC.crumbMesh=solidBatch(can,600,null,.68);
   const gm=()=>new THREE.MeshStandardMaterial({color:lin(0xdff1ff),transparent:true,opacity:.2,roughness:.03,envMapIntensity:1.8,depthWrite:false,side:THREE.DoubleSide});
   const glass=new THREE.Mesh(new THREE.CylinderGeometry(HR,HR,HH,26,1,true),gm());glass.position.y=HH/2;glass.renderOrder=5;can.add(glass);
   const jar=new THREE.Mesh(new THREE.CylinderGeometry(JR,JR,JH,22,1,true),gm());jar.position.y=JB+JH/2;jar.renderOrder=5;can.add(jar);
@@ -1627,9 +1656,25 @@ function buildVac(){
  googly(g,.05,.2,-.85,.03,-.2);
  g.visible=false;scene.add(g);VC.g=g;
 }
-function vacSlot(i,o){const ly=i/9|0,q=i%9;if(q===8)o.set(0,NIP+.05+ly*.03,0);else{const a=q/8*TAU+ly*.55;o.set(Math.cos(a)*.078,NIP+.045+ly*.03,Math.sin(a)*.078)}return o}
+function vacSlot(i,o){const ly=i/12|0,j=i%12,a=j*2.39996+ly*.35,r=j<8?.079:.032;o.set(Math.cos(a)*r,NIP+.041+ly*.031,Math.sin(a)*r);return o}
 function vacBit(x,y,z,vx,vy,vz,r,color,kind){if(VC.bits.length<120)VC.bits.push({x,y,z,vx,vy,vz,r,color,kind,t:0,b:0})}
-function vacClear(){const v=VC;v.tank.length=0;v.eat.length=0;v.bits.length=0;v.spl.length=0;v.gr=0;v.ph=0;v.k=0;v.w=0;v.lv=0;v.lvN=0}
+function vacClear(){const v=VC;v.tank.length=0;v.eat.length=0;v.bits.length=0;v.spl.length=0;v.gr=0;v.ph=0;v.k=0;v.w=0;v.lv=0;v.lvN=0;v.minceSeq=0;v.minced.length=0;v.falls.length=0;if(v.minceMesh){solidEnd(v.minceMesh,0);solidEnd(v.crumbMesh,0)}}
+function vacMince(c,x){
+ const v=VC;if(v.falls.length>=80)return;const i=v.minceSeq++,a=i*2.39996,rr=Math.sqrt(frac(i*.618+.19))*(JR-.025);
+ const color=i%8===0?SKINC.clone().lerp(WHITE,.48):GUT.clone().lerp(SKINC,.22+.2*frac(i*.37)).lerp(c.ink,.12);
+ v.falls.push({i,x:x*.65,y:-.012-BH,z:rnd(-.015,.015),tx:Math.cos(a)*rr,tz:Math.sin(a)*rr,ty:JB+.015+Math.floor(i/24)*.007,t:0,vy:-.18,a:rnd(0,TAU),s:rnd(.011,.019),kind:i%3===0,color});
+}
+function drawMince(dt){
+ const v=VC;
+ for(let i=v.falls.length-1;i>=0;i--){const b=v.falls[i];b.t+=dt;b.vy-=1.8*dt;b.y+=b.vy*dt;b.x=damp(b.x,b.tx,7,dt);b.z=damp(b.z,b.tz,7,dt);b.a+=dt*2;
+  if(b.y<=b.ty){b.y=b.ty;b.x=b.tx;b.z=b.tz;v.falls.splice(i,1);if(v.minced.length<512)v.minced.push(b)}}
+ let m=0,n=0;
+ const put=b=>{const drain=v.ph===3?ss((v.pt-frac(b.i*.37)*.35)/.9):0,k=1-drain;if(k<.01)return;
+  const y=lerp(b.y,JB-.1,drain),x=b.x*(1-drain*.8),z=b.z*(1-drain*.8),q=b.s*k;
+  if(b.kind)solidAt(v.crumbMesh,n++,x,y,z,q*.7,q*.45,q*.8,b.color,.3,b.a,.2);
+  else solidAt(v.minceMesh,m++,x,y,z,q,q*.75,q*.75,b.color,Math.sin(b.a)*.4,b.a,.25)};
+ for(const b of v.minced)put(b);for(const b of v.falls)put(b);solidEnd(v.minceMesh,m);solidEnd(v.crumbMesh,n);
+}
 function vacUpdate(dt,act){
  const v=VC,on=S.tool==='vac',grinding=v.gr>0,run=on&&act&&started&&!grinding,cn=v.can;v.g.visible=on;
  if(run!==v.on){v.on=run;AU.loop('vac',run);if(!run)for(const c of creatures)if(c.st==='sucked'){c.st='flee';c.t=0;c.fx=v.mouth.x;c.fz=v.mouth.z;c.fleeT=1;c.str=1}}
@@ -1640,7 +1685,7 @@ function vacUpdate(dt,act){
  // 통: 호스와 겹치지 않게 왼쪽 앞에 달고, 갈 때는 눈앞으로 들어 올린다.
  v.rest.set(-Math.min(.3,W/H*.55),.3,-.94);
  v.k=damp(v.k,v.ph===1||v.ph===2?1:0,6,dt);const kk=ss(v.k);
- cn.position.lerpVectors(v.rest,v.show,kk);cn.position.y+=Math.sin(kk*Math.PI)*.06;cn.rotation.set(lerp(.35,-v.TILT,kk),0,-.12*(1-kk));cn.scale.setScalar(lerp(1,v.ZOOM,kk));
+ cn.position.lerpVectors(v.rest,v.show,kk);cn.position.y+=Math.sin(kk*Math.PI)*.06;cn.rotation.set(lerp(.35,-v.TILT,kk),0,-.12*(1-kk));cn.scale.setScalar(lerp(1,Math.min(v.ZOOM,W/H*2.7),kk));
  if(churn){cn.position.x+=Math.sin(time*88)*.0022;cn.position.y+=Math.sin(time*71)*.0018}
  _c.set(HR+.03,HH-.035,0).applyEuler(cn.rotation).add(cn.position);between(v.pipe,v.curve.getPoint(.47,_a),_c);v.pipe.scale.x=v.pipe.scale.z=Math.max(.001,1-kk*1.6); // 갈 때는 관을 빼고 통만 든다
  v.g.updateMatrixWorld(true);
@@ -1649,7 +1694,7 @@ function vacUpdate(dt,act){
  // 호퍼 안에 쌓인 것들
  v.tank.forEach((c,i)=>{vacSlot(i,_b);_b.y+=Math.abs(Math.sin(time*(churn?17:6)+c.ph))*(churn?.016:.005);if(churn){_b.x+=Math.sin(time*27+c.ph*3)*.006;_b.z+=Math.cos(time*23+c.ph*2)*.006}
   const tp=c.tp;tp.x=damp(tp.x,_b.x,10,dt);tp.y=damp(tp.y,_b.y,10,dt);tp.z=damp(tp.z,_b.z,10,dt);
-  _a.copy(tp);cn.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.sc=.6*cn.scale.x;c.yaw=Math.atan2(-tp.z,tp.x)+Math.sin(time*(churn?9:2.5)+c.ph)*.5;c.roll=Math.sin(time*(churn?40:11)+c.ph)*.3;c.sq=1;c.panic=1});
+  _a.copy(tp);cn.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.sc=.43*cn.scale.x;c.yaw=Math.atan2(-tp.z,tp.x)+Math.sin(time*(churn?9:2.5)+c.ph)*.5;c.roll=Math.sin(time*(churn?40:11)+c.ph)*.3;c.sq=1;c.panic=1});
  if(!grinding&&v.tank.length&&Math.random()<dt*.8)AU.squeal(pick(v.tank).type,.5);
  // 분쇄: 아래 깔린 것부터 한 마리씩 발끝이 롤러에 물려 끌려 내려간다
  if(grinding){v.gr+=dt;const t=v.gr;
@@ -1658,31 +1703,29 @@ function vacUpdate(dt,act){
   if(v.ph===1){
    if(v.tank.length&&Math.random()<dt*6)AU.squeal(pick(v.tank).type,1.3);
    if(t>.6&&v.tank.length){v.grK-=dt;if(v.grK<=0){v.grK=v.iv;const c=v.tank.shift();c.up=1;c.yaw=Math.PI+rnd(-.22,.22);c.clip=-2.4;
-     v.eat.push({c,t:0,x:rnd(-.075,.075),x0:c.tp.x,y0:c.tp.y,z0:c.tp.z,bit:0,eye:false,bite:false});AU.squeal(c.type,1.5,0,rnd(.5,.7))}}
-   for(let i=v.eat.length-1;i>=0;i--){const e=v.eat[i],c=e.c,re=c.r*.6;c.sc=.6*cn.scale.x;e.t+=dt;const u=e.t/.75;let ox,oy,oz;
+     v.eat.push({c,t:0,x:rnd(-.075,.075),x0:c.tp.x,y0:c.tp.y,z0:c.tp.z,bit:0,emitted:0,eye:false,bite:false});if(time>v.voiceT){v.voiceT=time+.15;AU.squeal(c.type,1.1,0,.35)}}}
+   for(let i=v.eat.length-1;i>=0;i--){const e=v.eat[i],c=e.c,re=c.r*.43;c.sc=.43*cn.scale.x;e.t+=dt;const u=e.t/.75;let ox,oy,oz;
     if(u<.2){const q=ss(u/.2);ox=lerp(e.x0,e.x,q);oy=lerp(e.y0,NIP+2.4*re,q)+Math.sin(q*Math.PI)*.02;oz=lerp(e.z0,0,q)}
     else{const q=(u-.2)/.8,j=clamp(q+.04*Math.sin(q*TAU*6),0,1); // 톱니에 걸릴 때마다 덜컥덜컥 내려간다
      ox=e.x+Math.sin(time*64+c.ph)*.003;oy=NIP+lerp(2.4,-1.5,j)*re;oz=0;c.clip=(NIP-oy)/re;c.flay=Math.min(1,q*1.3);c.gk=q;
-     if(!e.bite){e.bite=true;AU.crunch();shake=Math.max(shake,.45)}
+     if(!e.bite){e.bite=true;AU.crunch();shake=Math.max(shake,.25)}
+     while(e.emitted<4&&q>=(e.emitted+1)/5){vacMince(c,ox);e.emitted++}
      e.bit-=dt;if(e.bit<=0){e.bit=.03;const k=Math.random();
       vacBit(ox+rnd(-.012,.012),NIP+.012,rnd(-.008,.008),rnd(-.35,.35),rnd(.5,1.9),rnd(-.6,.6),k<.76?rnd(.0022,.0048):rnd(.003,.005),k<.4||c.type===6?c.ink:k<.76?BLOOD:k<.88?BONE:k<.95?SKINC:c.tint,k<.76?0:1);
       if(k<.5)vacBit(ox+rnd(-.012,.012),NIP+.012,rnd(-.008,.008),rnd(-.5,.5),rnd(.3,1.3),rnd(-.8,.8),rnd(.002,.004),BLOOD,0)}
      if(Math.random()<dt*9)AU.crackle(1,.55,0,420,1100);
      if(!e.eye&&c.clip>.9){e.eye=true;c.noeye=1;for(const s of[-1,1])vacBit(ox+s*.006,NIP+.03,0,s*rnd(.1,.4),rnd(1.3,2),rnd(-.3,.5),re*.2,WHITE,2);AU.squirt()}}
     _a.set(ox,oy,oz);cn.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.roll=Math.sin(time*31+c.ph)*.3*(1-(c.gk||0)*.6);c.sq=1;c.panic=1;
-    if(u>=1){v.eat.splice(i,1);if(v.lvN)v.col.lerp(c.ink,.25);else v.col.copy(c.ink);v.lvN++;_a.set(e.x*1.6,HH+.04,0);cn.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;killCreature(c,'grind');shake=Math.max(shake,.5)}}
+    if(u>=1){while(e.emitted<4){vacMince(c,e.x);e.emitted++}v.eat.splice(i,1);if(v.lvN)v.col.lerp(c.ink,.25);else v.col.copy(c.ink);v.lvN++;_a.set(e.x*1.6,HH+.04,0);cn.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;killCreature(c,'grind');shake=Math.max(shake,.5)}}
    if(!v.tank.length&&!v.eat.length){v.ph=2;v.pt=0;AU.cut()}}
-  else if(v.ph===2){v.pt+=dt;if(v.pt>.75){v.ph=3;v.pt=0;v.flT=0;AU.flush()}}
+  else if(v.ph===2){v.pt+=dt;if(v.pt>1.6){v.ph=3;v.pt=0;v.flT=0;AU.flush()}}
   else{v.pt+=dt;v.flT-=dt;if(v.flT<=0&&v.pt<.8){v.flT=.12;const l=v.lumps.find(l=>l.u<0);if(l){l.u=.47;l.end=1}}
-   if(v.pt>1.15){v.gr=0;v.ph=0;v.lvN=0;v.lv=0}}
+   if(v.pt>1.6){v.gr=0;v.ph=0;v.lvN=0;v.lv=0;v.minced.length=0;v.falls.length=0;v.minceSeq=0}}
  }
  v.spin+=v.w*dt;v.rol[0].rotation.x=-v.spin;v.rol[1].rotation.x=v.spin+Math.PI/8;
  {const q=Math.min(1,v.lvN/6);v.rolM.color.setRGB(1-.15*q,1-.7*q,1-.7*q)}
- // 죽통
- v.lv=damp(v.lv,v.ph===3?0:Math.min(1,v.lvN/v.CAP),v.ph===3?3.2:8,dt);
- const sl=v.lv*JH*.9;v.slurry.visible=v.lv>.01;v.slurry.scale.y=Math.max(.001,sl);v.slurry.position.y=JB+sl/2;v.slurry.material.color.copy(v.col).lerp(BLOOD,.45);
- if(v.lv>.05)for(let i=0;i<9;i++){const a=i*.9+time*(churn?9:v.ph===2?5:2),rr=.02+((i*5)%4)*.02,e=i%3===0,q=e?.011:.008+(i%4)*.003;blobAt(Math.cos(a)*rr,JB+sl+q*.25,Math.sin(a)*rr,q,q*(e?1:.6),q,e?WHITE:i%3===1?BONE:GUT,cn)}
- if(v.ph===1&&v.lvN)for(let j=0;j<5;j++){const f=(time*2.4+j*.2)%1;blobAt(Math.sin(j*2.1)*.04,lerp(-.012-BH,JB+sl,f*f),Math.cos(j*1.7)*.02,.007,.017,.007,v.col,cn)}
+ // 롤러 밑에서 나온 짧은 가닥과 지방 조각을 각각 떨어뜨려 층층이 쌓는다.
+ v.lv=damp(v.lv,v.ph===3?0:Math.min(1,v.lvN/v.CAP),v.ph===3?3.2:8,dt);drawMince(dt);
  // 호퍼 안에서 튀는 피·뼛조각·눈알
  for(let i=v.bits.length-1;i>=0;i--){const b=v.bits[i];b.t+=dt;b.vy-=9.8*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;b.z+=b.vz*dt;
   const rd=Math.hypot(b.x,b.z),lim=HR-.012;
@@ -1699,11 +1742,11 @@ function vacUpdate(dt,act){
  const R=.85;
  for(const c of creatures){if(busy(c)||c.dead)continue;
   const dx=v.mouth.x-c.x,dz=v.mouth.z-c.z,d=Math.hypot(dx,dz);
-  if(d<R){c.st='sucked';c.panic=1;const pull=(2.4*(1-d/R)+.5)*dt;c.x+=dx/d*Math.min(d,pull);c.z+=dz/d*Math.min(d,pull);c.yaw=Math.atan2(dx,dz);c.str=1+ss(1-d/.45)*1.1;c.y=ss(1-d/.25)*.04;
-   if(d<.1&&v.tank.length<v.CAP&&v.gr<=0){c.st='tank';c.t=0;c.sc=.6;c.str=1;c.tp=new THREE.Vector3(HR-.04,HH-.04,rnd(-.03,.03));v.tank.push(c);AU.slurp();AU.squeal(c.type,1.1,.05);const l=v.lumps.find(l=>l.u<0);if(l){l.u=0;l.end=.47}
-    if(v.tank.length>=v.CAP){v.gr=.0001;v.ph=1;v.pt=0;v.grK=0;v.iv=clamp(3.6/v.tank.length,.085,.2);for(let i=0;i<5;i++)AU.squeal(v.tank[i].type,1.3,i*.04)}}}
+  if(d<R){c.st='sucked';c.panic=1;const pull=(2.4*(1-d/R)+.5)*dt;c.x+=dx/Math.max(.0001,d)*Math.min(d,pull);c.z+=dz/Math.max(.0001,d)*Math.min(d,pull);c.yaw=Math.atan2(dx,dz);c.str=1+ss(1-d/.45)*1.1;c.y=ss(1-d/.25)*.04;
+   if(d<.1&&v.tank.length<v.CAP&&v.gr<=0){c.st='tank';c.t=0;c.sc=.43;c.str=1;c.tp=new THREE.Vector3(HR-.04,HH-.04,rnd(-.03,.03));v.tank.push(c);if(time>v.slurpT){v.slurpT=time+.09;AU.slurp();AU.squeal(c.type,.85,.03,.25)}const l=v.lumps.find(l=>l.u<0);if(l){l.u=0;l.end=.47}
+    if(v.tank.length>=v.CAP){v.gr=.0001;v.ph=1;v.pt=0;v.grK=0;v.iv=clamp(5.2/v.tank.length,.045,.16);for(let i=0;i<5;i++)AU.squeal(v.tank[i].type,1.3,i*.04)}}}
   else if(c.st==='sucked'){c.st='flee';c.t=0;c.fx=v.mouth.x;c.fz=v.mouth.z;c.fleeT=1;c.str=1}}
- for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];if(k.kind===3)continue;const dx=v.mouth.x-k.x,dz=v.mouth.z-k.z,d=Math.hypot(dx,dz);if(d<R){k.x+=dx/d*dt*2.2;k.z+=dz/d*dt*2.2;k.ry+=dt*9;if(d<.1){chunks.splice(i,1);S.liters+=.2;earn(5,k.x,k.z);AU.bubble(rnd(600,900),.12)}}}
+ for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];if(k.kind===3)continue;const dx=v.mouth.x-k.x,dz=v.mouth.z-k.z,d=Math.hypot(dx,dz);if(d<R){k.x+=dx/Math.max(.0001,d)*dt*2.2;k.z+=dz/Math.max(.0001,d)*dt*2.2;k.ry+=dt*9;if(d<.1){chunks.splice(i,1);S.liters+=.2;earn(5,k.x,k.z);AU.bubble(rnd(600,900),.12)}}}
  v.er-=dt;if(v.er<=0){v.er=.07;const got=eraseAt(v.mouth.x,v.mouth.z,.62,.62,.3,6);if(got)earn(got*6,v.mouth.x,v.mouth.z)}
  for(const s of v.streaks){s.d-=dt*2.4;s.a+=dt*3;if(s.d<.08){s.d=rnd(.5,.85);s.a=rnd(0,TAU)}s.m.position.set(v.mouth.x+Math.cos(s.a)*s.d,.03+(.85-s.d)*.03,v.mouth.z+Math.sin(s.a)*s.d);s.m.rotation.z=-s.a+Math.PI/2+.5;s.m.scale.set(1,s.d*1.6,1)}
 }
@@ -1772,62 +1815,81 @@ function trimUpdate(dt,act){
 }
 
 /* ───────── 집게 · 종량제 봉투 ───────── */
-const TG={g:null,a:null,b:null,bag:null,sack:null,rim:null,pulp:null,ph:'idle',t:0,held:null,tgt:null,in:[],dead:0,y0:0,T:new THREE.Vector3(),tip:new THREE.Vector3(),from:new THREE.Vector3()};
+const TG={CAP:64,g:null,a:null,b:null,bag:null,sack:null,rim:null,knot:null,neck:-1,foot:null,leg:null,solid:null,remains:[],ph:'idle',t:0,held:null,tgt:null,in:[],dead:0,load:0,pressure:0,compress:0,popT:0,armed:false,fromCompress:0,T:new THREE.Vector3(),tip:new THREE.Vector3(),from:new THREE.Vector3()};
 function buildTong(){
  const g=new THREE.Group(),steel=new THREE.MeshStandardMaterial({color:lin(0x9fb0c2),roughness:.3,metalness:.6,envMapIntensity:1});
  for(const s of[-1,1]){const pv=new THREE.Group(),m=new THREE.Mesh(BX(.014,.014,1),steel);m.position.set(s*.012,0,.5);m.castShadow=true;pv.add(m);const tp=new THREE.Mesh(BX(.03,.02,.05),steel);tp.position.set(s*.012,0,.985);pv.add(tp);g.add(pv);if(s<0)TG.a=pv;else TG.b=pv}
- const gp=[];glove(gp,0,0,.02);const gm=new THREE.Mesh(merge(gp),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.65}));gm.scale.z=1;g.add(gm);TG.gm=gm;googly(gm,0,.052,.03,.024,-.2);
+ const gp=[];glove(gp,0,0,.02);const gm=new THREE.Mesh(merge(gp),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.65}));g.add(gm);TG.gm=gm;googly(gm,0,.052,.03,.024,-.2);
  g.visible=false;scene.add(g);TG.g=g;
  const bag=new THREE.Group();
- TG.pulp=new THREE.Mesh(lump(SP(10,8),.12,3),new THREE.MeshStandardMaterial({color:BLOOD,roughness:.15,envMapIntensity:1}));TG.pulp.position.y=.1;TG.pulp.visible=false;bag.add(TG.pulp);
- TG.sack=new THREE.Mesh(lump(SP(16,12),.06,3),new THREE.MeshStandardMaterial({color:lin(0xf3f5ee),transparent:true,opacity:.34,roughness:.2,envMapIntensity:1.2,depthWrite:false,side:THREE.DoubleSide}));TG.sack.scale.set(.17,.2,.17);TG.sack.position.y=.2;TG.sack.renderOrder=5;bag.add(TG.sack);
- TG.rim=new THREE.Mesh(new THREE.TorusGeometry(.12,.012,6,20),new THREE.MeshStandardMaterial({color:lin(0xe9edf2),roughness:.4}));TG.rim.rotation.x=Math.PI/2;TG.rim.position.y=.39;bag.add(TG.rim);
- const band=new THREE.Mesh(new THREE.CylinderGeometry(.172,.172,.05,20,1,true),new THREE.MeshStandardMaterial({color:lin(0x1f9e5a),transparent:true,opacity:.75,roughness:.4,side:THREE.DoubleSide,depthWrite:false}));band.position.y=.2;band.renderOrder=6;bag.add(band);
- googly(bag,0,.33,.11,.034,.75);
+ const profile=[[.025,0],[.12,.02],[.165,.08],[.175,.18],[.16,.28],[.125,.36],[.115,.4]].map(p=>new THREE.Vector2(...p));
+ const geo=new THREE.LatheGeometry(profile,28),pos=geo.attributes.position;
+ for(let i=0;i<pos.count;i++){const x=pos.getX(i),z=pos.getZ(i),y=pos.getY(i),a=Math.atan2(z,x),wr=1+.032*Math.sin(a*14+y*28)+.02*Math.sin(a*9-y*47);pos.setXYZ(i,x*wr,y,z*wr)}geo.computeVertexNormals();
+ TG.sack=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:lin(0xf3f5ee),transparent:true,opacity:.25,roughness:.4,envMapIntensity:.7,depthWrite:false,side:THREE.DoubleSide}));TG.sack.userData.rest=new Float32Array(pos.array);TG.sack.renderOrder=5;bag.add(TG.sack);
+ TG.rim=new THREE.Mesh(new THREE.TorusGeometry(.115,.009,6,24),M(0xe9edf2,.5));TG.rim.rotation.x=Math.PI/2;TG.rim.position.y=.4;bag.add(TG.rim);
+ TG.knot=new THREE.Mesh(merge([part(SP(8,6),0xe9edf2,0,.405,0,.034,.019,.027),part(BX(.014,.07,.006),0xe9edf2,-.022,.435,0,1,1,1,0,0,-.5),part(BX(.015,.065,.006),0xe9edf2,.023,.43,0,1,1,1,0,0,.65)]),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55}));TG.knot.visible=false;bag.add(TG.knot);
+ const band=new THREE.Mesh(new THREE.CylinderGeometry(.177,.177,.045,28,1,true),new THREE.MeshStandardMaterial({color:lin(0x1f9e5a),transparent:true,opacity:.5,roughness:.5,side:THREE.DoubleSide,depthWrite:false}));band.position.y=.18;band.renderOrder=6;bag.add(band);
+ TG.solid=solidBatch(bag,160);googly(bag,0,.31,.12,.029,.75);
  bag.visible=false;scene.add(bag);TG.bag=bag;
+ TG.foot=buildBoot();TG.foot.visible=false;TG.leg=addMesh(scene,CY(.044,.04,1,12),M(0x24439e,.8));TG.leg.visible=false;
 }
-function tongDrop(){const g=TG;if(g.held){g.held.st='flee';g.held.t=0;g.held.fx=P.x;g.held.fz=P.z;g.held.fleeT=1;g.held.y=0;g.held=null}for(const c of g.in)killCreature(c,'none');g.in.length=0;g.dead=0;g.ph='idle';g.tgt=null}
-function bagSlam(x,z){
- const g=TG,n=g.in.length,k=Math.max(1,Math.round(n*rnd(.35,.6)));
- for(let i=0;i<k&&g.in.length;i++){const c=g.in.splice(Math.random()*g.in.length|0,1)[0];killCreature(c,'none');g.dead++}
- AU.cut();AU.bagThump(k);AU.rustle();hitstop=.07;shake=1.2;
- stamp(x,z,.36,.36,0,1,0,BLOOD,Math.min(1,.45+.08*g.dead));for(let i=0;i<5;i++){const a=rnd(0,TAU);drop(x+Math.cos(a)*.14,.04,z+Math.sin(a)*.14,Math.cos(a)*rnd(.5,1.4),rnd(.4,1.2),Math.sin(a)*rnd(.5,1.4),rnd(.008,.014),BLOOD)}
- panicNear(x,z,1.3);
+function bagSlot(i,o){const layer=i/12|0,j=i%12,a=j*2.39996+layer*.4,r=j<8?.102:.041;o.set(Math.cos(a)*r,.045+layer*.047,Math.sin(a)*r);return o}
+function tongDrop(){const g=TG;
+ const release=c=>{c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1;c.y=0;c.sc=c.sq=1;c.x=P.x+rnd(-.32,.32);c.z=P.z-1.05+rnd(-.25,.25)};
+ if(g.held)release(g.held);for(const c of g.in)release(c);
+ g.held=null;g.in.length=0;g.remains.length=0;g.dead=g.load=g.pressure=g.compress=0;g.ph='idle';g.tgt=null;g.foot.visible=g.leg.visible=false;solidEnd(g.solid,0);
+}
+function bagCrush(){
+ const g=TG,target=Math.min(g.load,Math.floor(ss(g.pressure)*g.load));if(g.dead>=target||!g.in.length)return;
+ const k=Math.min(target-g.dead,2+(Math.random()*4|0),g.in.length);
+ for(let j=0;j<k;j++){const c=g.in.shift();bagSlot(c.bagI,_a);g.remains.push({x:_a.x,y:_a.y,z:_a.z,color:c.ink.clone().lerp(GUT,.55),a:c.ph});killCreature(c,'none');g.dead++}
+ AU.crackle(Math.min(6,k+1),.8,0,550,1800,.017);AU.squelch(.45);if(g.in.length)AU.squeal(g.in[0].type,.7,0,.25);shake=Math.max(shake,.32);
+ const b=g.bag.position;if(g.pressure>.5){const a=rnd(0,TAU);drop(b.x+Math.cos(a)*.22,.015,b.z+Math.sin(a)*.22,Math.cos(a)*.22,.12,Math.sin(a)*.22,.009,BLOOD);stamp(b.x,b.z,.38,.44,0,1,0,BLOOD,.25)}
 }
 function tongUpdate(dt,act){
- const g=TG,on=S.tool==='tong';g.g.visible=g.bag.visible=on;
+ const g=TG,on=S.tool==='tong';g.g.visible=g.bag.visible=on;g.foot.visible=g.leg.visible=false;
  if(!on){if(g.held||g.in.length||g.ph!=='idle')tongDrop();return}
  g.t+=dt;
- // 봉투는 집게의 오른손·작업 경로 반대편에 둔다.
- const bx=P.x-Math.min(.6,W/H*.5),bz=P.z-1.2,hx=P.x+.05,hz=P.z-.82,tip=g.tip;
- let bX=bx,bY=0,bZ=bz,sqy=1,open=1,tied=false;
+ const bx=P.x-Math.min(.6,W/H*.45),bz=P.z-1.35,hx=P.x+.02,hz=P.z-1.08,tip=g.tip;
+ let bX=bx,bY=0,bZ=bz,open=1,tied=false,footY=0,footZ=hz,footTilt=0,footOn=false;
+ const full=clamp((g.in.length+g.dead)/g.CAP,0,1),size=.94+.28*full;
  if(g.ph==='idle'){tip.set(P.x+.12,.3+Math.sin(time*2)*.004,P.z-.62);
-  if(act&&started){let best=null,bd=.36;for(const c of creatures){if(busy(c)||c.dead)continue;const d=Math.hypot(c.x-hx,c.z-hz);if(d<bd){bd=d;best=c}}
-   g.tgt=best;g.T.set(best?best.x:hx,.05,best?best.z:hz);g.ph='reach';g.t=0;g.from.copy(tip)}}
+  if(act&&started){let best=null,bd=.38;for(const c of creatures){if(busy(c)||c.dead)continue;const d=Math.hypot(c.x-(P.x+.05),c.z-(P.z-.82));if(d<bd){bd=d;best=c}}
+   g.tgt=best;g.T.set(best?best.x:P.x+.05,.05,best?best.z:P.z-.82);g.ph='reach';g.t=0;g.from.copy(tip)}}
  else if(g.ph==='reach'){const u=Math.min(1,g.t/.13),c=g.tgt;if(c&&!c.dead&&!busy(c))g.T.set(c.x,.05,c.z);tip.lerpVectors(g.from,g.T,ss(u));
-  if(u>=1){if(c&&!c.dead&&!busy(c)){c.st='held';c.panic=1;c.cut=c.cut;g.held=c;AU.squeal(c.type,1.2,0,rnd(.3,.5))}AU.snip();g.ph='carry';g.t=0;g.from.copy(tip)}}
- else if(g.ph==='carry'){const u=Math.min(1,g.t/(g.held?.3:.12));open=g.held?.25:.5;_c.set(g.held?bx:P.x+.12,g.held?.5:.3,g.held?bz:P.z-.62);tip.lerpVectors(g.from,_c,ss(u));tip.y+=Math.sin(u*Math.PI)*.12;
-  if(u>=1){if(g.held){const c=g.held;c.st='bag';c.t=0;c.sc=.8;g.in.push(c);g.held=null;AU.rustle();if(g.in.length>=8){g.ph='tie';g.t=0}else g.ph='idle'}else g.ph='idle'}}
- else{tied=true;open=.2;
-  if(g.ph==='tie'){const u=ss(g.t/.35);bX=lerp(bx,hx,u);bY=lerp(0,.42,u);bZ=lerp(bz,hz+.1,u);if(g.t>=.35){g.ph='ready';g.t=1;g.y0=.42;AU.rustle()}}
-  else if(g.ph==='ready'){bX=hx;bY=lerp(g.y0,.42,ss(g.t/.2))+Math.sin(time*3)*.008;bZ=hz+.1;
-   if(!g.in.length&&g.t>.3){if(chunks.length>=CHUNKCAP)chunks.shift();chunks.push({x:hx,y:.3,z:hz,vx:rnd(.8,1.6)*(Math.random()<.5?-1:1),vy:1.6,vz:-rnd(.6,1.4),sx:.13,sy:.06,sz:.13,color:BLOOD,kind:3,age:0,rx:0,ry:rnd(0,3),sp:0,rest:false});AU.thunk();g.dead=0;g.ph='idle'}
-   else if(act&&g.t>.14&&g.in.length){g.ph='up';g.t=0}}
-  else if(g.ph==='up'){const u=Math.min(1,g.t/.16);bX=hx;bY=lerp(.42,.95,eo(u));bZ=lerp(hz+.1,hz+.3,u);if(u>=1){g.ph='down';g.t=0}}
-  else if(g.ph==='down'){const u=Math.min(1,g.t/.07);bX=hx;bY=lerp(.95,0,u*u);bZ=lerp(hz+.3,hz-.05,u);if(u>=1){bagSlam(hx,hz-.05);g.ph='hit';g.t=0}}
-  else if(g.ph==='hit'){bX=hx;bY=0;bZ=hz-.05;sqy=lerp(.5,1,ss(g.t/.2));if(g.t>.22){g.ph='ready';g.t=0;g.y0=0}}
-  tip.set(bX+.02,bY+.41*sqy,bZ)}
- g.bag.position.set(bX,bY,bZ);g.bag.scale.set(1/Math.sqrt(sqy),sqy,1/Math.sqrt(sqy));g.bag.updateMatrixWorld(true);
- if(g.dead&&tied&&Math.random()<dt*10)drop(bX+rnd(-.05,.05),bY+.02,bZ+rnd(-.05,.05),0,0,0,rnd(.006,.011),BLOOD);
- g.rim.scale.setScalar(tied?.22:1);g.pulp.visible=g.dead>0;g.pulp.scale.setScalar(.03+.1*Math.min(1,g.dead/8));g.sack.material.color.copy(WHITE).lerp(BLOOD,Math.min(.85,g.dead/8));
- // 집게
+  if(u>=1){if(c&&!c.dead&&!busy(c)){c.st='held';c.panic=1;g.held=c;AU.squeal(c.type,.8,0,.22)}AU.snip();g.ph='carry';g.t=0;g.from.copy(tip)}}
+ else if(g.ph==='carry'){const u=Math.min(1,g.t/(g.held?.24:.12));open=g.held?.25:.5;_c.set(g.held?bx:P.x+.12,g.held?.44*size:.3,g.held?bz:P.z-.62);tip.lerpVectors(g.from,_c,ss(u));tip.y+=Math.sin(u*Math.PI)*.1;
+  if(u>=1){if(g.held){const c=g.held;c.st='bag';c.t=0;c.bagI=g.in.length;c.sc=.52;g.in.push(c);g.held=null;AU.rustle();if(g.in.length>=g.CAP){g.ph='tie';g.t=0;g.load=g.in.length;g.dead=0;g.armed=false}else g.ph='idle'}else g.ph='idle'}}
+ else{tied=true;open=.2;bX=hx;bZ=hz;
+  if(g.ph==='tie'){const u=ss(g.t/.5);bX=lerp(bx,hx,u);bZ=lerp(bz,hz,u);bY=Math.sin(u*Math.PI)*.055;tip.set(bX,bY+.42*size,bZ);if(g.t>=.5){g.ph='ready';g.t=0;AU.rustle();setHint()}}
+  else if(g.ph==='ready'){if(!act)g.armed=true;if(act&&g.armed&&g.in.length){g.ph='lift';g.t=0;AU.whoosh()}}
+  else if(g.ph==='lift'){const u=ss(g.t/.24);footOn=true;footY=lerp(.08,.66,u);footZ=lerp(P.z-.3,hz,u);footTilt=-.25*Math.sin(u*Math.PI);if(g.t>=.24){g.ph='down';g.t=0}}
+  else if(g.ph==='down'){const u=clamp(g.t/.13,0,1);footOn=true;footY=lerp(.66,.36*size*(1-g.compress),u*u);if(u>=1){g.ph='press';g.t=0;g.popT=0;AU.thud(.8);AU.rustle();shake=.55;hitstop=.035}}
+  else if(g.ph==='press'){
+   if(act){g.pressure=Math.min(1,g.pressure+dt/1.9);g.popT-=dt;if(g.popT<=0){g.popT=.065;bagCrush()}}
+   g.compress=damp(g.compress,.18+.61*ss(g.pressure),10,dt);footOn=true;footY=.36*size*(1-g.compress);footTilt=Math.sin(time*8)*.035*g.pressure;
+   if(!act||!g.in.length){g.ph='peel';g.t=0;g.fromCompress=g.compress;AU.rustle()}}
+  else if(g.ph==='peel'){const u=ss(g.t/.34);footOn=true;g.compress=lerp(g.fromCompress,.58*g.dead/Math.max(1,g.load),u);footY=lerp(.36*size*(1-g.fromCompress),.57,u);footTilt=u*.55;
+   if(g.t>=.34){g.ph='back';g.t=0}}
+  else if(g.ph==='back'){const u=ss(g.t/.24);footOn=true;footY=lerp(.57,.04,u);footZ=lerp(hz,P.z-.2,u);footTilt=(1-u)*.55;
+   if(g.t>=.24){g.ph=g.in.length?'ready':'done';g.t=0;g.armed=false;footOn=false}}
+  else if(g.ph==='done'){if(g.t>.65){if(chunks.length>=CHUNKCAP)chunks.shift();chunks.push({x:hx+.24,y:.025,z:hz,vx:.4,vy:.15,vz:-.15,sx:.18,sy:.015,sz:.24,color:WHITE.clone().lerp(BLOOD,.55),kind:3,age:0,rx:0,ry:.2,sp:0,rest:false});g.in.length=0;g.remains.length=0;g.dead=g.load=g.compress=g.pressure=0;g.ph='idle';g.t=0;setHint()}}
+  if(g.ph!=='tie')tip.set(P.x+.38,.64,P.z+.05);
+ }
+ const sqy=1-g.compress,spread=1+.48*g.compress;
+ g.bag.position.set(bX,bY,bZ);g.bag.scale.set(size*spread,size*sqy,size*spread);g.bag.updateMatrixWorld(true);
+ const neck=tied?(g.ph==='tie'?ss(g.t/.5):1):0;
+ if(neck!==g.neck){const p=g.sack.geometry.attributes.position,rest=g.sack.userData.rest;for(let i=0;i<p.count;i++){const y=rest[i*3+1],gather=ss((y-.25)/.15)*neck,k=1-.88*gather;p.setXYZ(i,rest[i*3]*k,y,rest[i*3+2]*k-.08*gather)}p.needsUpdate=true;g.sack.geometry.computeVertexNormals();g.neck=neck}
+ g.rim.scale.setScalar(1-.88*neck);g.rim.position.z=-.08*neck;g.knot.visible=tied&&neck>.8;g.knot.position.z=-.08*neck;g.sack.material.opacity=tied?.3:.25;g.sack.material.color.copy(WHITE).lerp(BLOOD,.45*g.dead/Math.max(1,g.load));
+ g.g.visible=!tied||g.ph==='tie';
  _a.set(P.x+.22,.62,P.z-.05);g.g.position.copy(_a);g.g.lookAt(tip);g.g.scale.set(1,1,Math.max(.2,_a.distanceTo(tip)));g.a.rotation.y=open*.05;g.b.rotation.y=-open*.05;g.gm.scale.z=1/g.g.scale.z;
  if(g.held){const c=g.held;c.x=tip.x;c.y=Math.max(0,tip.y-.04);c.z=tip.z;c.sq=1;c.yaw+=dt*3;c.roll=Math.sin(time*26+c.ph)*.3}
- const fast=g.ph==='up'||g.ph==='down'||g.ph==='hit';
- g.in.forEach((c,i)=>{const a=i*2.4+Math.sin(time*3+c.ph)*.3;_a.set(Math.cos(a)*.075,.07+(i>>2)*.08+Math.abs(Math.sin(time*(fast?20:8)+c.ph))*.015+Math.max(0,1-c.t/.2)*.2,Math.sin(a)*.075);g.bag.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.yaw+=dt*3*Math.sin(c.ph*3);c.roll=Math.sin(time*13+c.ph)*.4;c.sq=1;c.panic=1});
- if(g.in.length&&Math.random()<dt*(tied?5:.9))AU.squeal(pick(g.in).type,tied?1.2:.6);
+ for(const c of g.in){bagSlot(c.bagI,_a);_a.y+=Math.abs(Math.sin(time*(g.ph==='press'?24:9)+c.ph))*.008*(1-g.pressure*.6);g.bag.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.sc=.52*size;c.sq=Math.max(.2,sqy);c.yaw=Math.sin(c.ph)*2+c.ph;c.roll=Math.sin(time*13+c.ph)*.25;c.panic=1}
+ let n=0;for(const r of g.remains){solidAt(g.solid,n++,r.x,r.y*.75,r.z,.031,.014,.04,r.color,0,r.a,.2);solidAt(g.solid,n++,r.x+.014,r.y*.75+.01,r.z-.01,.013,.009,.024,n%7===0?BONE:SKINC,0,r.a,1)}solidEnd(g.solid,n);
+ if(g.in.length&&Math.random()<dt*(g.ph==='press'?2.2:.7))AU.squeal(pick(g.in).type,.6);
+ if(footOn){g.foot.visible=g.leg.visible=true;applyBoot(g.foot,{x:hx,y:footY,z:footZ,hu:footTilt,yaw:0,roll:-.025});g.foot.localToWorld(_a.set(0,.2,.085));_b.set(P.x+.15,1.05,P.z+.12).sub(_a).normalize().multiplyScalar(.07).add(_a);between(g.leg,_a,_b)}
 }
-const tongLocked=()=>TG.ph==='tie'||TG.ph==='up'||TG.ph==='down'||TG.ph==='hit';
+const tongLocked=()=>['tie','ready','lift','down','press','peel','back','done'].includes(TG.ph);
 
 /* ───────── 배수구 ───────── */
 const DRAINS=[[-2.4,-2.6],[0,-2.6],[2.4,-2.6],[-1.2,.6],[1.2,.6]];
@@ -1897,7 +1959,7 @@ function washUpdate(dt,act){
 }
 
 const tool2Locked=()=>handLocked()||tongLocked()||VC.gr>0;
-function tools2Reset(){TG.held=null;TG.in.length=0;TG.dead=0;TG.ph='idle';TG.tgt=null}
+function tools2Reset(){tongDrop();TG.t=0;TG.armed=false}
 
 /* ───────── 사무실 · 예술활동증명 · 창작준비금 ───────── */
 const OFZ=-1.06;
@@ -1962,7 +2024,7 @@ function spawnInitial(){
  while(made<n){const cx=rnd(-XB+.4,XB-.4),cz=rnd(ZN+.5,ZF-.6);if(Math.hypot(cx-P.x,cz-P.z)<.6)continue;herd(cx,cz,pick(act).type,5+(Math.random()*5|0))}
 }
 function resetRoom(){
- handReset();creatures.length=0;drops.length=0;chunks.length=0;ST.ph='idle';ST.pins.length=0;SH.carry.length=0;SH.ph='idle';SH.tossN=0;SH.load=0;SH.lc.length=0;SH.binN=0;vacClear();TK.load=0;AU.loop('grind',false);tools2Reset();clearThreads();inkClear();bootR.userData.res.length=0;bootL.userData.res.length=0;
+ handReset();creatures.length=0;drops.length=0;chunks.length=0;ST.ph='idle';ST.pins.length=0;SH.carry.length=0;SH.ph='idle';SH.tossN=0;SH.load=0;SH.lc.length=0;SH.binN=SH.binLv=SH.binDrain=0;SH.binPieces.length=0;solidEnd(SH.binSolid,0);solidEnd(SH.binEyes,0);vacClear();TK.load=0;AU.loop('grind',false);tools2Reset();clearThreads();inkClear();bootR.userData.res.length=0;bootL.userData.res.length=0;
  P.x=0;P.z=.8;creators.forEach(c=>c.timer=rnd(3,7));spawnInitial();
 }
 function nextZone(){if(!S.paid)return;S.zone++;S.prog=0;S.paid=false;resetRoom();roomTarget(S.zone);save();updateHUD(true);toast('창작 교실 증설 · '+S.zone+'구역',3.5);AU.chime()}
@@ -1983,7 +2045,7 @@ function setTool(id){if(!S.owned.includes(id)||S.tool===id)return;if(stompLocked
 const fine=window.matchMedia&&matchMedia('(pointer:fine)').matches;
 let hintN=0;
 function setHint(){
- const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'내려치고, 계속 누르면 퍼담습니다',tong:'집어서 봉투에 담고, 봉투가 차면 눌러서 내려칩니다',mop:'누른 채 앞으로 밀어 배수구로 보냅니다',trim:'누르는 동안 잘라 냅니다',wash:'누르는 동안 물을 쏩니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다',truck:'누르는 동안 수거합니다'}[S.tool];
+ const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'내려치고, 계속 누르면 퍼담습니다',tong:TG.ph==='idle'||TG.ph==='reach'||TG.ph==='carry'?'집어서 봉투에 모읍니다':'손을 뗐다 다시 꾹 누르면 봉투를 발로 눌러 압착합니다',mop:'누른 채 앞으로 밀어 배수구로 보냅니다',trim:'누르는 동안 잘라 냅니다',wash:'누르는 동안 물을 쏩니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다',truck:'누르는 동안 수거합니다'}[S.tool];
  $('hinttxt').textContent=fine?'WASD 이동 · 스페이스나 마우스를 '+verb:'왼쪽 화면: 이동 · 오른쪽 화면: '+verb;
  $('hint').style.opacity=1;hintN=6;
 }
