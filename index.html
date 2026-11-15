@@ -119,6 +119,24 @@ button:disabled{opacity:.45;cursor:default}
 @media(max-height:560px) and (max-width:899px){.int-paper{display:flex;flex-direction:column;align-items:stretch}.int-person{order:0}.int-meta{order:1}.int-work{order:3;flex:none}.int-files{order:4}#candidate-approve{order:2;flex:none;min-height:42px}}
 
 #interview[hidden]{display:none}
+#candidate-stage{height:clamp(160px,27vh,285px)}
+.int-queue{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;white-space:nowrap;background:#f9f8f0e8;padding:2px 10px;border-radius:5px}
+#candidate-position{position:static;transform:none;background:none;padding:0;font-size:10px;letter-spacing:.06em}
+#candidate-rejected{font-size:11px;color:#934c42;min-height:32px;padding:3px 0;font-weight:700}
+.int-person h3{font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:.01em}.int-person small{font-size:10px}.int-seal.denied{color:#914c43;border-color:#ad6b60}
+.int-meta{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:11px;min-height:28px}
+#candidate-field{font:inherit;color:var(--ink);background:#fffdf4;border:1px solid #babdab;border-radius:4px;min-height:32px;min-width:90px;padding:3px 8px}
+.int-work{grid-template-columns:92px 1fr;margin:8px 0;padding:8px 0;gap:10px}.int-work b{font-size:13px}.int-work p{font-size:11px;margin-top:4px}
+.int-result{background:#eaf0e7;border-left:3px solid #718369;padding:9px 11px;margin:8px 0;color:#4d6247;font-size:12px;line-height:1.5}.int-result.denied{background:#f1e7de;border-left-color:#a45e50;color:#83483f}.int-result b{font-size:13px}.int-result p{margin:4px 0 0;font-size:11px}
+.int-circumstances{margin:10px 0 12px;font-size:11px;line-height:1.5}.int-circumstances div{display:grid;grid-template-columns:85px 1fr;gap:9px;margin:4px 0}.int-circumstances dt{color:#878a7f}.int-circumstances dd{margin:0;color:#4f564a;word-break:keep-all}
+.int-files{margin:8px 0 0}.int-files summary{min-height:30px;font-size:11px}.int-files p{font-size:11px;margin:6px 0}
+#candidate-approve:disabled{background:#d8d6c9;border-color:#c6c6b7;color:#74786b;opacity:1}
+.int-chosen{flex-wrap:nowrap;justify-content:flex-start;gap:8px;max-width:684px;margin:0 auto 6px;height:34px;min-height:34px}.int-chosen small{flex:none;white-space:nowrap;font-size:11px}.int-selected-list{display:flex;gap:5px;min-width:0;flex:1;align-items:center;overflow-x:auto;overscroll-behavior:contain;scrollbar-width:thin}.int-selected-list button{flex:none;white-space:nowrap;font-variant-numeric:tabular-nums;min-height:30px}.int-selected-list .empty{white-space:nowrap}
+@media(min-width:900px){#candidate-stage{height:100%}.int-work{grid-template-columns:125px 1fr}.int-work b{font-size:15px}.int-work p,.int-result p,.int-circumstances{font-size:12px}.int-person h3{font-size:25px}.int-result{margin:12px 0;padding:12px}.int-result b{font-size:14px}}
+@media(max-width:350px){.int-circumstances div{grid-template-columns:73px 1fr;gap:6px}.int-result{padding:8px}.int-work{grid-template-columns:76px 1fr}.int-queue{gap:8px;padding:2px 8px}}
+@media(max-height:560px) and (max-width:899px){#candidate-stage{height:100%}.int-person{order:0}.int-meta{order:1}.int-result{order:2;flex:none}.int-work{order:3;grid-template-columns:70px 1fr}.int-circumstances{order:4;flex:none}#candidate-approve{order:5}.int-files{order:6}.int-chosen{height:30px;min-height:30px}.int-person h3{font-size:18px}}
+#interview[hidden]{display:none}
+
 </style>
 </head>
 <body>
@@ -159,7 +177,7 @@ button:disabled{opacity:.45;cursor:default}
 </div>
 <section class="ov" id="interview" role="dialog" aria-modal="true" aria-labelledby="interview-title" hidden>
  <header class="int-head"><div><small>한국창작인복지재단</small><h2 id="interview-title">입주자 배정</h2></div><button id="interview-back">작업장으로</button></header>
- <div id="candidate-stage" aria-label="입주 대상자들이 의자에 앉아 기다리고 있습니다"><button class="int-arrow" id="candidate-prev" aria-label="이전 대상자">‹</button><button class="int-arrow" id="candidate-next" aria-label="다음 대상자">›</button><span id="candidate-position"></span></div>
+ <div id="candidate-stage" aria-label="입주 대상자들이 의자에 앉아 기다리고 있습니다"><button class="int-arrow" id="candidate-prev" aria-label="이전 대상자">‹</button><button class="int-arrow" id="candidate-next" aria-label="다음 대상자">›</button><div class="int-queue"><span id="candidate-position"></span><button id="candidate-rejected">미승인 확인 ›</button></div></div>
  <article class="int-paper" id="candidate-paper"></article>
  <footer class="int-bottom"><div class="int-chosen" id="interview-chosen" aria-live="polite"></div><button id="interview-enter" disabled>작업실로</button></footer>
 </section>
@@ -196,23 +214,31 @@ const TOOLS=[
 
 const GRANT=3000,GRANT_T=96,SUPPORT_UNIT=100,SUPPORT_T=14,ACTIVITY_T=90;
 const AP=[
- {"name":"권도윤","type":4,"field":"문학","title":"창문을 닫은 뒤","work":"시 7편 · 문예지 게재본","recT":"문예지 발표 7편","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"원고료 48만 원 / 연","inc":"no","mid":62,"ev":"발표 지면 7건 · 원고료 입금내역","papers":[["작업 공간","월세방 책상"],["생활비","교정 아르바이트"]],"income":"근로·사업소득과 본인 재산 반영","plan":"다음 호 원고 3편. 현재 초고 작성 중.","art":"pages","kind":"예술활동증명 (일반)","desk":4},
- {"name":"한서진","type":4,"field":"분야 선택","title":"접어서 건네는 문장","work":"봉제한 문장 84점 · 건넨 날짜 기록","recT":"문장·천·전달 기록 84건","crit":"접수 분야별 발표 실적","rec":"out","incT":"판매 수입 없음","inc":"no","mid":53,"ev":"천에 적은 원고 · 전달 기록 · 설치 사진","papers":[["작업 방식","하루 한 문장을 천에 꿰매서 건넴"],["작업 공간","퇴근 후 식탁"]],"income":"근로소득과 본인 재산 반영","plan":"받은 사람이 다시 접어 다른 사람에게 건넵니다.","art":"stitch","choices":[{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"문장 84점 / 인정 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"},{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치 사진 12건 / 전시 확인 0건","note":"전시 기간·장소 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
- {"name":"문가을","type":1,"field":"미술","title":"오후의 방","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":18,"ev":"전시 도록 · 대관 계약서 · 결제 확인서","papers":[["대관료 결제자","모"],["작업실 사용","부 소유 공간 / 사용료 없음"],["생활비 부담","가족"]],"income":"본인 소득·재산 산정","plan":"같은 공간에서 다음 연작을 준비합니다.","art":"paint","kind":"예술활동증명 (일반)","desk":1},
- {"name":"오태경","type":2,"field":"공예","title":"남은 흙의 무게","work":"도자 26점 · 제작 과정","recT":"단체전 4회","crit":"개인전 1회 또는 단체전 5회","rec":"no","incT":"작품 판매 96만 원 / 연","inc":"no","mid":38,"ev":"도록 4건 · 판매 영수증 · 작업 사진","papers":[["다음 전시","참가비 미납 / 접수 취소"],["제작 기록","현재 26번째 작업 진행"]],"income":"본인 소득·재산 산정","plan":"남은 흙으로 다음 것을 만듭니다.","art":"clay","kind":"예술활동증명 (일반)"},
- {"name":"설예린","type":3,"field":"음악","title":"새벽의 실내","work":"음원 3곡 · 악보와 녹음 기록","recT":"음원 3곡 발매","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"음원 정산 8만 원 / 연","inc":"no","mid":77,"ev":"음원 유통 확인서 · 크레딧 · 정산내역","papers":[["녹음 공간","시간제 대여"],["현재 작업","네 번째 곡 녹음 대기"]],"income":"본인 소득·재산 산정","plan":"남겨둔 녹음부터 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":3},
- {"name":"진하람","type":3,"field":"분야 선택","title":"계단이 되돌려주는 목소리","work":"발걸음으로 소리가 달라지는 구조물","recT":"설치물 1점 / 작동 기록 18건","crit":"접수 분야별 발표 실적","rec":"out","incT":"작동 관람 무료 / 수입 없음","inc":"no","mid":49,"ev":"구조물 사진 · 회로도 · 작동 영상 · 소리 기록","papers":[["재료","폐목재·압력판·녹음된 목소리"],["참여 방식","지나가는 사람이 밟으면 소리가 이어짐"]],"income":"본인 소득·재산 산정","plan":"한 계단을 더 연결합니다.","art":"hybrid","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치물 1점 / 전시 확인 0건","note":"전시 개최 확인서 보완","rec":"out"},{"field":"음악","crit":"음원 3곡 또는 공연 3회","recT":"소리 기록 18건 / 발매 음원 0곡","note":"발매 정보·공연 실적 보완","rec":"out"},{"field":"공연","crit":"공연 참여 3편","recT":"작동 영상 18건 / 출연 확인 0편","note":"공연명·출연 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
- {"name":"백이수","type":0,"field":"만화","title":"다녀왔습니다","work":"밤마다 한 장씩 그린 만화","recT":"개인 계정 연재 640회","crit":"연재 계약·기간 또는 단행본 발행 확인","rec":"out","incT":"그림 수입 55만 원 / 연","inc":"no","mid":44,"ev":"연재 화면 · 원본 파일 · 업로드 기록","papers":[["연재 계약","없음"],["작업 시간","퇴근 후 00:30~02:00"]],"income":"근로소득과 본인 재산 반영","plan":"641화를 그리고 있습니다.","art":"comic","kind":"예술활동증명 (일반)"},
- {"name":"차유나","type":0,"field":"분야 선택","title":"없어진 가게의 지도","work":"사라진 간판을 찾아 걸으며 고치는 지도","recT":"현장 기록 47건 / 지도 갱신 47회","crit":"접수 분야별 발표 실적","rec":"out","incT":"열람 무료 / 수입 없음","inc":"no","mid":63,"ev":"지도 · 간판 채록 · 이동 기록","papers":[["완성본","현장 변화에 따라 계속 갱신"],["배포","골목에 부착 / 주소 없이 전달"]],"income":"본인 소득·재산 산정","plan":"철거된 자리에 남은 이름을 더 적습니다.","art":"map","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"지도 47개 판 / 전시 확인 0회","note":"전시명·기간 확인 보완","rec":"out"},{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"채록 47건 / 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
- {"name":"남기현","type":2,"field":"공예","title":"손에 맞게 고친 것들","work":"손잡이를 바꾸며 남긴 제작 기록","recT":"수선·제작 39건 / 전시 확인 0건","crit":"개인전 1회 또는 단체전 5회","rec":"out","incT":"재료비 정산 31만 원 / 연","inc":"no","mid":58,"ev":"제작 전후 사진 · 사용자 메모","papers":[["작업 장소","수선 작업대"],["작품 보관","사용하는 사람에게 전달"]],"income":"근로·사업소득과 본인 재산 반영","plan":"잡기 어렵다는 손잡이를 다시 깎고 있습니다.","art":"clay","kind":"예술활동증명 (일반)"},
- {"name":"육지안","type":4,"field":"문학","title":"돌아오는 길","work":"수필집 1권 · 원고 수정본","recT":"문학 작품집 1권","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"인세 19만 원 / 연","inc":"no","mid":71,"ev":"판권지 · 출판 계약 · 인세 정산서","papers":[["작업 공간","도서관 열람석"],["초고","다음 작품 32매"]],"income":"본인 소득·재산 산정","plan":"열람실이 닫히기 전까지 원고를 씁니다.","art":"pages","kind":"예술활동증명 (일반)","desk":9},
- {"name":"변소율","type":1,"field":"미술","title":"불을 끄기 전","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":124,"ev":"전시 도록 · 급여명세서 · 임대차 계약서","papers":[["급여명세","야간근로·연장근로 수당 포함"],["주거·작업실","월세 / 본인 부담"],["대관료","할부 납부 중"]],"income":"근로소득과 본인 재산 반영","plan":"다음 전시 대관일에 맞춰 야간근무를 바꿨습니다.","art":"paint","worker":true,"kind":"예술활동증명 (일반)"},
- {"name":"마도현","type":3,"field":"음악","title":"남아 있는 소리","work":"공연 3편 · 합주 녹음","recT":"공연 3편 참여","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"공연료 42만 원 / 연","inc":"no","mid":35,"ev":"공연 포스터 · 출연 확인 · 합주 녹음","papers":[["합주실","시간제 공동 대여"],["현재 작업","다음 공연 편곡 중"]],"income":"본인 소득·재산 산정","plan":"합주실 예약 시간에 맞춰 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":8},
- {"name":"도해원","type":0,"field":"만화","title":"작은 칸의 하루","work":"연재 만화 24화 · 원본 스케치","recT":"계약 연재 24회","crit":"연재 계약·기간 확인","rec":"ok","incT":"원고료 72만 원 / 연","inc":"no","mid":68,"ev":"연재 계약서 · 게재 확인","papers":[["작업 공간","집 안 작은 책상"],["생활비","편집 보조"]],"income":"본인 소득·재산 산정","plan":"다음 회차를 이어갑니다.","art":"comic","desk":0},
- {"name":"정은서","type":2,"field":"공예","title":"잠깐 빌린 모양","work":"사용하며 형태가 변하는 그릇 18점","recT":"단체전 5회","crit":"단체전 5회","rec":"ok","incT":"판매 24만 원 / 연","inc":"no","mid":57,"ev":"전시 확인서 5건 · 작품 사진","papers":[["작업 공간","공동 공방"],["전시 참가비","재료비와 분할 납부"]],"income":"본인 소득·재산 산정","plan":"그릇의 변화를 기록합니다.","art":"clay","desk":2},
- {"name":"윤시온","type":3,"field":"음악","title":"한 사람이 지나갈 때","work":"압력판·폐목재·발걸음에 반응하는 목소리","recT":"음원 3곡 발매","crit":"음원 3곡","rec":"ok","incT":"음원 정산 0원","inc":"no","mid":41,"ev":"소리 부분 발췌 · 3개 트랙 유통 확인","papers":[["전체 작업","구조물·이동 경로·녹음된 목소리"],["등록 제목","한 사람이 지나갈 때 Ⅰ / Ⅱ / Ⅲ"],["작업 공간","공유 작업실"]],"income":"본인 소득·재산 산정","plan":"소리와 계단을 연결합니다.","art":"hybrid","desk":13}
+ {"type":4,"field":"문학","title":"창문을 닫은 뒤","work":"시 7편 · 문예지 게재본","recT":"문예지 발표 7편","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"원고료 48만 원 / 연","inc":"no","mid":62,"ev":"발표 지면 7건 · 원고료 입금내역","papers":[["작업 공간","월세방 책상"],["생활비","교정 아르바이트"]],"income":"근로·사업소득과 본인 재산 반영","plan":"다음 호 원고 3편. 현재 초고 작성 중.","art":"pages","kind":"예술활동증명 (일반)","desk":4},
+ {"type":4,"field":"분야 선택","title":"접어서 건네는 문장","work":"봉제한 문장 84점 · 건넨 날짜 기록","recT":"문장·천·전달 기록 84건","crit":"접수 분야별 발표 실적","rec":"out","incT":"판매 수입 없음","inc":"no","mid":53,"ev":"천에 적은 원고 · 전달 기록 · 설치 사진","papers":[["작업 방식","하루 한 문장을 천에 꿰매서 건넴"],["작업 공간","퇴근 후 식탁"]],"income":"근로소득과 본인 재산 반영","plan":"받은 사람이 다시 접어 다른 사람에게 건넵니다.","art":"stitch","choices":[{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"문장 84점 / 인정 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"},{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치 사진 12건 / 전시 확인 0건","note":"전시 기간·장소 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
+ {"type":1,"field":"미술","title":"오후의 방","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":18,"ev":"전시 도록 · 대관 계약서 · 결제 확인서","papers":[["대관료 결제자","모"],["작업실 사용","부 소유 공간 / 사용료 없음"],["생활비 부담","가족"]],"income":"본인 소득·재산 산정","plan":"같은 공간에서 다음 연작을 준비합니다.","art":"paint","kind":"예술활동증명 (일반)","desk":1},
+ {"type":2,"field":"공예","title":"남은 흙의 무게","work":"도자 26점 · 제작 과정","recT":"단체전 4회","crit":"개인전 1회 또는 단체전 5회","rec":"no","incT":"작품 판매 96만 원 / 연","inc":"no","mid":38,"ev":"도록 4건 · 판매 영수증 · 작업 사진","papers":[["다음 전시","참가비 미납 / 접수 취소"],["제작 기록","현재 26번째 작업 진행"]],"income":"본인 소득·재산 산정","plan":"남은 흙으로 다음 것을 만듭니다.","art":"clay","kind":"예술활동증명 (일반)"},
+ {"type":3,"field":"음악","title":"새벽의 실내","work":"음원 3곡 · 악보와 녹음 기록","recT":"음원 3곡 발매","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"음원 정산 8만 원 / 연","inc":"no","mid":77,"ev":"음원 유통 확인서 · 크레딧 · 정산내역","papers":[["녹음 공간","시간제 대여"],["현재 작업","네 번째 곡 녹음 대기"]],"income":"본인 소득·재산 산정","plan":"남겨둔 녹음부터 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":3},
+ {"type":3,"field":"분야 선택","title":"계단이 되돌려주는 목소리","work":"발걸음으로 소리가 달라지는 구조물","recT":"설치물 1점 / 작동 기록 18건","crit":"접수 분야별 발표 실적","rec":"out","incT":"작동 관람 무료 / 수입 없음","inc":"no","mid":49,"ev":"구조물 사진 · 회로도 · 작동 영상 · 소리 기록","papers":[["재료","폐목재·압력판·녹음된 목소리"],["참여 방식","지나가는 사람이 밟으면 소리가 이어짐"]],"income":"본인 소득·재산 산정","plan":"한 계단을 더 연결합니다.","art":"hybrid","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치물 1점 / 전시 확인 0건","note":"전시 개최 확인서 보완","rec":"out"},{"field":"음악","crit":"음원 3곡 또는 공연 3회","recT":"소리 기록 18건 / 발매 음원 0곡","note":"발매 정보·공연 실적 보완","rec":"out"},{"field":"공연","crit":"공연 참여 3편","recT":"작동 영상 18건 / 출연 확인 0편","note":"공연명·출연 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
+ {"type":0,"field":"만화","title":"다녀왔습니다","work":"밤마다 한 장씩 그린 만화","recT":"개인 계정 연재 640회","crit":"연재 계약·기간 또는 단행본 발행 확인","rec":"out","incT":"그림 수입 55만 원 / 연","inc":"no","mid":44,"ev":"연재 화면 · 원본 파일 · 업로드 기록","papers":[["연재 계약","없음"],["작업 시간","퇴근 후 00:30~02:00"]],"income":"근로소득과 본인 재산 반영","plan":"641화를 그리고 있습니다.","art":"comic","kind":"예술활동증명 (일반)"},
+ {"type":0,"field":"분야 선택","title":"없어진 가게의 지도","work":"사라진 간판을 찾아 걸으며 고치는 지도","recT":"현장 기록 47건 / 지도 갱신 47회","crit":"접수 분야별 발표 실적","rec":"out","incT":"열람 무료 / 수입 없음","inc":"no","mid":63,"ev":"지도 · 간판 채록 · 이동 기록","papers":[["완성본","현장 변화에 따라 계속 갱신"],["배포","골목에 부착 / 주소 없이 전달"]],"income":"본인 소득·재산 산정","plan":"철거된 자리에 남은 이름을 더 적습니다.","art":"map","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"지도 47개 판 / 전시 확인 0회","note":"전시명·기간 확인 보완","rec":"out"},{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"채록 47건 / 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
+ {"type":2,"field":"공예","title":"손에 맞게 고친 것들","work":"손잡이를 바꾸며 남긴 제작 기록","recT":"수선·제작 39건 / 전시 확인 0건","crit":"개인전 1회 또는 단체전 5회","rec":"out","incT":"재료비 정산 31만 원 / 연","inc":"no","mid":58,"ev":"제작 전후 사진 · 사용자 메모","papers":[["작업 장소","수선 작업대"],["작품 보관","사용하는 사람에게 전달"]],"income":"근로·사업소득과 본인 재산 반영","plan":"잡기 어렵다는 손잡이를 다시 깎고 있습니다.","art":"clay","kind":"예술활동증명 (일반)"},
+ {"type":4,"field":"문학","title":"돌아오는 길","work":"수필집 1권 · 원고 수정본","recT":"문학 작품집 1권","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"인세 19만 원 / 연","inc":"no","mid":71,"ev":"판권지 · 출판 계약 · 인세 정산서","papers":[["작업 공간","도서관 열람석"],["초고","다음 작품 32매"]],"income":"본인 소득·재산 산정","plan":"열람실이 닫히기 전까지 원고를 씁니다.","art":"pages","kind":"예술활동증명 (일반)","desk":9},
+ {"type":1,"field":"미술","title":"불을 끄기 전","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":124,"ev":"전시 도록 · 급여명세서 · 임대차 계약서","papers":[["급여명세","야간근로·연장근로 수당 포함"],["주거·작업실","월세 / 본인 부담"],["대관료","할부 납부 중"]],"income":"근로소득과 본인 재산 반영","plan":"다음 전시 대관일에 맞춰 야간근무를 바꿨습니다.","art":"paint","worker":true,"kind":"예술활동증명 (일반)"},
+ {"type":3,"field":"음악","title":"남아 있는 소리","work":"공연 3편 · 합주 녹음","recT":"공연 3편 참여","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"공연료 42만 원 / 연","inc":"no","mid":35,"ev":"공연 포스터 · 출연 확인 · 합주 녹음","papers":[["합주실","시간제 공동 대여"],["현재 작업","다음 공연 편곡 중"]],"income":"본인 소득·재산 산정","plan":"합주실 예약 시간에 맞춰 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":8},
+ {"type":0,"field":"만화","title":"작은 칸의 하루","work":"연재 만화 24화 · 원본 스케치","recT":"계약 연재 24회","crit":"연재 계약·기간 확인","rec":"ok","incT":"원고료 72만 원 / 연","inc":"no","mid":68,"ev":"연재 계약서 · 게재 확인","papers":[["작업 공간","집 안 작은 책상"],["생활비","편집 보조"]],"income":"본인 소득·재산 산정","plan":"다음 회차를 이어갑니다.","art":"comic","desk":0},
+ {"type":2,"field":"공예","title":"잠깐 빌린 모양","work":"사용하며 형태가 변하는 그릇 18점","recT":"단체전 5회","crit":"단체전 5회","rec":"ok","incT":"판매 24만 원 / 연","inc":"no","mid":57,"ev":"전시 확인서 5건 · 작품 사진","papers":[["작업 공간","공동 공방"],["전시 참가비","재료비와 분할 납부"]],"income":"본인 소득·재산 산정","plan":"그릇의 변화를 기록합니다.","art":"clay","desk":2},
+ {"type":3,"field":"음악","title":"한 사람이 지나갈 때","work":"압력판·폐목재·발걸음에 반응하는 목소리","recT":"음원 3곡 발매","crit":"음원 3곡","rec":"ok","incT":"음원 정산 0원","inc":"no","mid":41,"ev":"소리 부분 발췌 · 3개 트랙 유통 확인","papers":[["전체 작업","구조물·이동 경로·녹음된 목소리"],["등록 제목","한 사람이 지나갈 때 Ⅰ / Ⅱ / Ⅲ"],["작업 공간","공유 작업실"]],"income":"본인 소득·재산 산정","plan":"소리와 계단을 연결합니다.","art":"hybrid","desk":13},
+ {"type":0,"desk":5,"field":"만화","title":"여섯 칸의 저녁","work":"잡지 연재 8회 · 작업 원고","recT":"잡지 연재 8회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":88,"ev":"게재 확인서 · 편집 계약","papers":[["생활비","편집 보조 근로소득"],["작업 시간","퇴근 후"]],"art":"comic"},
+ {"type":1,"desk":6,"field":"미술","title":"지워진 자리","work":"회화 9점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":46,"ev":"전시 확인서 · 도록","papers":[["작업 공간","공동 작업실"],["대관료","기존 작품 판매대금"]],"art":"paint"},
+ {"type":2,"desk":7,"field":"공예","title":"손이 지나간 면","work":"도자 21점 · 제작 기록","recT":"단체전 5회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":72,"ev":"도록 5건 · 출품 확인","papers":[["작업 공간","공방 시간제 대여"],["참가비","본인 납부"]],"art":"clay"},
+ {"type":0,"desk":10,"field":"만화","title":"돌아오는 버스","work":"단행본 1권 · 연재 원고","recT":"단행본 1권 발행","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":56,"ev":"판권지 · 출판 계약","papers":[["생활비","삽화 작업 수입"],["작업 공간","월세방 책상"]],"art":"comic"},
+ {"type":1,"desk":11,"field":"미술","title":"창가의 선","work":"판화 16점 · 전시 기록","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":83,"ev":"전시 도록 · 개최 확인","papers":[["생활비","인쇄소 근로소득"],["작업실","공동 사용 / 비용 분담"]],"art":"paint"},
+ {"type":2,"desk":12,"field":"공예","title":"가벼운 그릇","work":"도자 13점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":64,"ev":"전시 계약 · 도록","papers":[["작업 공간","공유 공방"],["대관료","분할 납부 완료"]],"art":"clay"},
+ {"type":4,"desk":14,"field":"문학","title":"다음 문장","work":"시 6편 · 원고 수정본","recT":"문예지 발표 6편","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":92,"ev":"발표 지면 · 원고료 내역","papers":[["생활비","교정 아르바이트"],["작업 공간","도서관 열람석"]],"art":"pages"}
 ];
 const ELIGIBLE=AP.map((a,i)=>i).filter(i=>Number.isInteger(AP[i].desk)&&(AP[i].rec==='ok'||AP[i].inc==='ok')&&AP[i].mid<=120);
+const teamSize=z=>Math.min(15,4+z*2);
 const quota=z=>Math.min(260,50+(z-1)*30);
 function proofFor(id,record={}){
  const a=AP[id];if(!a)return {pass:false};const route=a.choices?a.choices[record.k]:a;
@@ -229,8 +255,9 @@ function loadSave(){
    d.advance=clamp(+r.advance||0,0,1e6);
    if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid','spent','more'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999),k:Number.isInteger(v.k)&&AP[k].choices?.[v.k]?v.k:-1}}
    if(Array.isArray(r.grants))for(let k=0;k<3;k++){const g=r.grants[k];if(g&&AP[g.a]&&d.ap[g.a]&&['paid','spent'].includes(d.ap[g.a].s)&&!d.grants.some(q=>q&&q.a===g.a)){const left=clamp(+g.left||0,0,GRANT_T);d.grants[k]={a:g.a,left,receipt:Number.isFinite(g.receipt)?clamp(g.receipt,0,2):2};d.ap[g.a].s=left>0?'paid':'spent'}}
-   if(Array.isArray(r.team)){const team=[...new Set(r.team.filter(id=>ELIGIBLE.includes(id)))];if(team.length>=3&&team.length<=5)d.team=team}
-   if(d.paid&&r.draft&&r.draft.zone===d.zone+1&&Array.isArray(r.draft.ids)){d.draft={zone:d.zone+1,ids:[...new Set(r.draft.ids.filter(id=>ELIGIBLE.includes(id)))].slice(0,Math.min(5,3+Math.floor((d.zone-1)/3))),focus:ELIGIBLE.includes(r.draft.focus)?r.draft.focus:ELIGIBLE[0]}}
+   if(Array.isArray(r.team)){const team=[...new Set(r.team.filter(id=>ELIGIBLE.includes(id)))];if(team.length>=3&&team.length<=15)d.team=team}
+   if(r.draft&&Array.isArray(r.draft.ids)&&((d.team&&d.team.length<teamSize(d.zone)&&r.draft.zone===d.zone)||(d.paid&&r.draft.zone===d.zone+1))){d.draft={zone:r.draft.zone,ids:[...new Set(r.draft.ids.filter(id=>ELIGIBLE.includes(id)))].slice(0,teamSize(r.draft.zone)),focus:Number.isInteger(r.draft.focus)&&AP[r.draft.focus]?r.draft.focus:2}}
+
    if(r.support&&r.support.zone===d.zone&&Number.isFinite(r.support.t)&&r.support.t>=0&&r.support.t<SUPPORT_T&&Array.isArray(r.support.ids)){
     const ids=[...new Set(r.support.ids.filter(i=>Number.isInteger(i)&&i>=0&&i<30&&(!d.team||d.team.some(id=>AP[id].desk===i))))];if(ids.length)d.support={t:r.support.t,zone:d.zone,ids}}
    for(const k in d.ap){const a=d.ap[k];if(a.s==='paid'&&!d.grants.some(g=>g&&g.a===+k))a.s='cert';if(a.s==='cert'&&!proofFor(+k,a).pass)a.s='more'}
@@ -485,7 +512,7 @@ let XB=3.9,ZN=-4.35,ZF=4.3; // 생물이 돌아다니는 범위 (구역이 오�
 const ROOM={tx:3.9,tn:-4.35,tf:4.3,wb:null,wl:null,wr:null,ww:[],sp:null,ln:[],hz:null,note:null,drains:[]};
 const DESKS=[[0,0],[0,-1.7],[0,1.7],[1,.3],[3,.3],[2,.85],[1,-2.4],[3,-2.4],[0,-3.4],[0,3.4],[2,-.85],[3,3],[1,3],[2,2.55],[2,-2.55]].map((d,i)=>{const ry=d[0]*Math.PI/2;return{side:d[0],off:d[1],homeSide:d[0],homeOff:d[1],x:0,z:0,ry,fx:Math.sin(ry),fz:Math.cos(ry),type:i%5}});
 function deskPos(){for(let i=0;i<DESKS.length;i++){const d=DESKS[i];let side=d.homeSide??d.side,off=d.homeOff??d.off;
- if(S.team){const at=S.team.findIndex(id=>AP[id].desk===i);if(at>=0)[side,off]=[[0,0],[1,.3],[3,.3],[2,-.85],[2,.85]][at]}
+ if(S.team){const at=S.team.findIndex(id=>AP[id].desk===i);if(at>=0)[side,off]=[[0,0],[1,0],[3,0],[2,0],[0,-1.65],[0,1.65],[2,-1.65],[2,1.65],[1,-1.65],[3,-1.65],[1,1.65],[3,1.65],[0,-3.2],[0,3.2],[2,3.2]][at]}
  d.side=side;d.off=off;d.ry=side*Math.PI/2;d.fx=Math.sin(d.ry);d.fz=Math.cos(d.ry);
  if(side===0){d.x=off;d.z=ZN-.5}else if(side===1){d.x=-(XB+.52);d.z=off}else if(side===2){d.x=off;d.z=ZF+.52}else{d.x=XB+.52;d.z=off}
 }}
@@ -743,8 +770,8 @@ function updateCreators(dt){
   if(d.seat!=null){
    gs=S.grants[d.seat];on=!S.team&&!!gs&&AP[gs.a].type===c.type;if(!on)gs=null;c.sl=damp(c.sl,on?1:0,5,dt);const q=ss(c.sl);c.g.visible=q>.02;
    c.g.position.set(d.x-d.fx*(1-q)*1.1,0,d.z-d.fz*(1-q)*1.1);c.g.scale.setScalar(.35+.65*q);
-   if(gs){c.tag.visible=true;creatorTag(c,AP[gs.a].name);}
-  }else{c.g.visible=creatorActive(c);const id=teamApplicant(c);c.tag.visible=id!=null;if(id!=null)creatorTag(c,AP[id].name);}
+   if(gs){c.tag.visible=true;creatorTag(c,applicantLabel(gs.a));}
+  }else{c.g.visible=creatorActive(c);const id=teamApplicant(c);c.tag.visible=id!=null;if(id!=null)creatorTag(c,applicantLabel(id));}
   if(!c.g.visible)continue;
   if(gs&&started&&!paused)gs.receipt=Math.min(2,(gs.receipt??2)+dt);
   const si=started&&S.support?S.support.ids.indexOf(c.i):-1,ft=si>=0?S.support.t-si*.022:gs&&gs.receipt<2?gs.receipt:-1,prev=ft-dt;
@@ -2104,67 +2131,88 @@ function washUpdate(dt,act){
 const tool2Locked=()=>handLocked()||tongLocked()||VC.gr>0;
 function tools2Reset(){tongDrop();TG.t=0;TG.armed=false}
 
-/* 다음 작업실 배정: 적격 통보를 받은 사람만 호출한다. */
+/* 접수된 작업과 사전 판정은 함께 보여 주고, 배정은 판정 범위 안에서만 한다. */
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const IV={open:false,sel:0,scene:null,camera:null,actors:[],x:0,t:0,rect:null};
-const teamSize=z=>Math.min(5,3+Math.floor((z-2)/3));
+const applicantLabel=id=>'접수 '+String(id+1).padStart(3,'0');
+const REVIEW_ORDER=[2,10,5,14,3,13,1,0,6,12,7,9,8,4,11,15,16,17,18,19,20,21];
 function teamApplicant(c){return S.team?.find(id=>AP[id].desk===c.i)}
 function creatorActive(c){return S.team?teamApplicant(c)!=null:c.d.seat==null?c.i<Math.min(NREG,2+S.zone*2):!!S.grants[c.d.seat]&&AP[S.grants[c.d.seat].a].type===c.type}
-function draftForZone(){if(!S.draft||S.draft.zone!==S.zone+1)S.draft={zone:S.zone+1,ids:[],focus:ELIGIBLE[(S.zone-1)%ELIGIBLE.length]};return S.draft}
-function interviewOrder(){const offset=(S.zone-1)%ELIGIBLE.length;return ELIGIBLE.slice(offset).concat(ELIGIBLE.slice(0,offset))}
+function needsReassignment(){return !!S.team&&S.team.length<teamSize(S.zone)}
+function targetWorkshop(){return needsReassignment()?S.zone:S.zone+1}
+function draftForZone(){const zone=targetWorkshop();if(!S.draft||S.draft.zone!==zone)S.draft={zone,ids:zone===S.zone?S.team.slice():[],focus:interviewOrder()[0]};return S.draft}
+function interviewOrder(){const offset=((S.zone-1)*2)%REVIEW_ORDER.length;return REVIEW_ORDER.slice(offset).concat(REVIEW_ORDER.slice(0,offset))}
+function applicantReview(id){
+ const a=AP[id],r=a.choices?a.choices[Math.max(0,apS(id).k)]||a.choices[0]:a,activity=r.rec==='ok'||a.inc==='ok',income=a.mid<=120,pass=ELIGIBLE.includes(id);
+ let reason='',facts=[];
+ if(!income){reason='소득인정액 기준 초과';facts=[a.recT+' · 예술활동증명 완료','소득인정액 '+a.mid+'% / 기준 120% 이하']}
+ else if(!activity){reason=a.choices?'해당 분야의 발표 증빙 없음':a.rec==='no'?'공개 발표 실적 미달':'공개 발표 증빙 불인정';facts=[r.recT,r.note||'인정 기준: '+r.crit];if(!a.choices)facts.push(a.incT+' / 수입 기준 연 120만 원')}
+ else facts=[a.recT,'소득인정액 '+a.mid+'% / 기준 120% 이하'];
+ return {pass,activity,income,reason,facts,field:r.field};
+}
 function buildInterview(){
  if(IV.scene)return;
  const s=IV.scene=new THREE.Scene();s.background=lin(0xe9e8e1);s.environment=scene.environment;
  s.add(new THREE.HemisphereLight(0xffffff,0xafa99a,.6));const light=new THREE.DirectionalLight(0xfff3e0,.65);light.position.set(-3,6,4);s.add(light);
- addMesh(s,BX(30,.04,8),M(0xd5d1c4,.95),5,-.025,-1,false);addMesh(s,BX(30,4,.05),M(0xe9e8e1,.95),5,2,-2,false);
+ addMesh(s,BX(50,.04,8),M(0xd5d1c4,.95),10,-.025,-1,false);addMesh(s,BX(50,4,.05),M(0xe9e8e1,.95),10,2,-2,false);
  IV.camera=new THREE.PerspectiveCamera(40,1,.06,50);
- for(const id of ELIGIBLE){const a=AP[id],c=buildDesk({x:0,z:0,ry:0,type:a.type,interview:true},a.desk,s);c.applicant=id;c.nod=0;
+ for(const id of REVIEW_ORDER){const a=AP[id],c=buildDesk({x:0,z:0,ry:0,type:a.type,interview:true},a.desk??(id%3)*5+a.type,s);c.applicant=id;c.nod=0;
   const folder=addMesh(c.g,BX(.28,.018,.21),M(0xe3dbc3,.85),0,.61,-.29);folder.rotation.x=.17;
   const label=new THREE.Mesh(new THREE.PlaneGeometry(.22,.13),M(0xf9f6ed,.9));label.rotation.x=-Math.PI/2+.17;label.position.set(0,.624,-.29);c.g.add(label);
-  const seal=addMesh(c.g,BX(.072,.006,.05),M(0x407b61,.85),.065,.632,-.24);seal.rotation.x=.17;c.seal=seal;
+  const seal=addMesh(c.g,BX(.072,.006,.05),M(ELIGIBLE.includes(id)?0x407b61:0xa34d42,.85),.065,.632,-.24);seal.rotation.x=.17;c.seal=seal;
   const shadow=new THREE.Mesh(new THREE.CircleGeometry(.42,32),new THREE.MeshBasicMaterial({color:0x55584e,transparent:true,opacity:.11,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.set(0,.002,-.35);shadow.scale.y=1.6;c.g.add(shadow);
   IV.actors.push(c);
  }
 }
 function layoutInterview(){if(!IV.open)return;const r=$('candidate-stage').getBoundingClientRect();IV.rect={x:r.left,y:r.top,w:Math.max(1,r.width),h:Math.max(1,r.height)};if(IV.camera){IV.camera.aspect=IV.rect.w/IV.rect.h;IV.camera.updateProjectionMatrix()}}
 function openInterview(){
- if(!started||paused||!S.paid||stompLocked()||shovelLocked()||tool2Locked())return false;
+ if(!started||paused||(!S.paid&&!needsReassignment())||stompLocked()||shovelLocked()||tool2Locked())return false;
  paused=true;releaseAll();buildInterview();const d=draftForZone();IV.open=true;IV.sel=d.focus;IV.x=interviewOrder().indexOf(IV.sel)*.91;IV.t=0;
- $('hud').style.display='none';$('interview').hidden=false;renderInterview();layoutInterview();save();AU.wake();$('candidate-approve').focus();return true;
+ $('hud').style.display='none';$('interview').hidden=false;renderInterview();layoutInterview();save();AU.wake();$('candidate-next').focus();return true;
 }
 function closeInterview(){if(!IV.open)return;IV.open=false;$('interview').hidden=true;$('hud').style.display='block';paused=false;last=0;renderer.setViewport(0,0,W,H);save();$('next').focus()}
-function focusCandidate(delta){if(!IV.open)return;const order=interviewOrder(),i=order.indexOf(IV.sel);IV.sel=order[(i+delta+order.length)%order.length];draftForZone().focus=IV.sel;AU.wake();AU.tick();save();renderInterview();$('candidate-paper').scrollTop=0}
+function showCandidate(id){if(!IV.open||!AP[id])return;IV.sel=id;draftForZone().focus=id;AU.wake();AU.tick();save();renderInterview();$('candidate-paper').scrollTop=0}
+function focusCandidate(delta){if(!IV.open)return;const order=interviewOrder(),i=order.indexOf(IV.sel);showCandidate(order[(i+delta+order.length)%order.length])}
+function nextRejected(){const order=interviewOrder(),i=order.indexOf(IV.sel);for(let n=1;n<=order.length;n++){const id=order[(i+n)%order.length];if(!ELIGIBLE.includes(id)){showCandidate(id);return}}}
 function chooseCandidate(id){
  if(!IV.open||!ELIGIBLE.includes(id))return false;AU.wake();const d=draftForZone(),i=d.ids.indexOf(id);
  if(i>=0)d.ids.splice(i,1);else{if(d.ids.length>=teamSize(d.zone))return false;d.ids.push(id);const c=IV.actors.find(c=>c.applicant===id);if(c)c.nod=1;AU.thwack()}
  save();renderInterview();return true;
 }
 function renderInterview(){
- const d=draftForZone(),a=AP[IV.sel],chosen=d.ids.includes(IV.sel),need=teamSize(d.zone),order=interviewOrder();
- $('interview-title').textContent=d.zone+'구역 · 입주자 배정';$('candidate-position').textContent=(order.indexOf(IV.sel)+1)+' / '+order.length;
- const detail=$('candidate-paper');detail.innerHTML='<div class="int-person"><div><small>대상자 '+String(1041+IV.sel*37).padStart(5,'0')+'</small><h3>'+esc(a.name)+'</h3></div><div class="int-seal">적격<br>지급 대상</div></div>'
-  +'<div class="int-meta"><span>접수 분야 <b>'+esc(a.field)+'</b></span><span>예술활동증명 완료</span></div>'
+ const d=draftForZone(),a=AP[IV.sel],r=applicantReview(IV.sel),chosen=d.ids.includes(IV.sel),need=teamSize(d.zone),order=interviewOrder();
+ $('interview-title').textContent=d.zone+'구역 · '+(d.zone===S.zone?'추가 배정':'입주자 배정');$('candidate-position').textContent=(order.indexOf(IV.sel)+1)+' / '+order.length;
+ $('candidate-rejected').textContent='미승인 '+(AP.length-ELIGIBLE.length)+'건 ›';
+ const route=a.choices?'<label for="candidate-field">접수 분야</label><select id="candidate-field">'+a.choices.map((v,i)=>'<option value="'+i+'"'+((apS(IV.sel).k<0?0:apS(IV.sel).k)===i?' selected':'')+'>'+esc(v.field)+'</option>').join('')+'</select>':'<span>접수 분야 <b>'+esc(r.field)+'</b></span>';
+ const circumstances=a.papers.slice(0,3).map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd></div>').join('');
+ $('candidate-paper').innerHTML='<div class="int-person"><div><small>신청서</small><h3>'+applicantLabel(IV.sel)+'</h3></div><div class="int-seal'+(r.pass?'':' denied')+'">'+(r.pass?'적격<br>지급 대상':'부적격<br>미승인')+'</div></div>'
+  +'<div class="int-meta">'+route+'</div>'
   +'<div class="int-work">'+workImage(a)+'<div><b>'+esc(a.title)+'</b><p>'+esc(a.work)+'</p></div></div>'
-  +'<button id="candidate-approve" aria-pressed="'+chosen+'"'+(!chosen&&d.ids.length>=need?' disabled':'')+'>'+(chosen?'배정 승인됨 · 취소':'배정 승인')+'</button>'
-  +'<details class="int-files"><summary>첨부 서류</summary><dl><dt>확인 실적</dt><dd>'+esc(a.recT)+'</dd><dt>제출 자료</dt><dd>'+esc(a.ev)+'</dd>'+a.papers.map(([k,v])=>'<dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd>').join('')+'<dt>소득인정액</dt><dd>기준 중위소득 '+a.mid+'% · 적합</dd></dl></details>';
+  +'<section class="int-result'+(r.pass?'':' denied')+'" aria-label="사전 심사 결과"><b>'+(r.pass?'승인 완료':esc(r.reason))+'</b><p>'+r.facts.map(esc).join('<br>')+'</p></section>'
+  +'<dl class="int-circumstances">'+circumstances+'</dl>'
+  +'<button id="candidate-approve" aria-pressed="'+chosen+'"'+(!r.pass||!chosen&&d.ids.length>=need?' disabled':'')+'>'+(r.pass?(chosen?'배정 승인됨 · 취소':d.ids.length>=need?'배정 인원 충족':'배정 승인'):'미승인 · 배정 불가')+'</button>'
+  +'<details class="int-files"><summary>제출 증빙</summary><p>'+esc(a.ev)+'</p></details>';
  $('candidate-approve').onclick=()=>chooseCandidate(IV.sel);
- $('interview-chosen').innerHTML='<small>배정 '+d.ids.length+' / '+need+'</small>'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+esc(AP[id].name)+' 배정 취소">'+esc(AP[id].name)+' ×</button>').join('')+(d.ids.length?'':'<span class="empty">배정 대기</span>');
+ const select=$('candidate-field');if(a.choices&&select)select.onchange=()=>{apS(IV.sel).k=+select.value;save();renderInterview()};
+ $('interview-chosen').innerHTML='<small>배정 '+d.ids.length+' / '+need+'</small><div class="int-selected-list">'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+applicantLabel(id)+' 배정 취소">'+String(id+1).padStart(3,'0')+' ×</button>').join('')+(d.ids.length?'':'<span class="empty">배정 대기</span>')+'</div>';
  $('interview-chosen').querySelectorAll('button').forEach(b=>b.onclick=()=>chooseCandidate(+b.dataset.id));
- $('interview-enter').disabled=d.ids.length!==need;$('interview-enter').textContent=d.ids.length===need?need+'명과 작업실로':'입주자 '+need+'명 배정';
+ $('interview-enter').disabled=d.ids.length!==need;$('interview-enter').textContent=d.ids.length===need?need+'명과 '+(d.zone===S.zone?'작업 계속하기':'작업실로'):'입주자 '+need+'명 배정';
  layoutInterview();
 }
 function enterNextWorkshop(){
- if(!IV.open||!S.paid||!S.draft||S.draft.zone!==S.zone+1)return false;
+ if(!IV.open||(!S.paid&&!needsReassignment())||!S.draft||S.draft.zone!==targetWorkshop())return false;
  const d=S.draft;if(d.ids.length!==teamSize(d.zone)||new Set(d.ids).size!==d.ids.length||!d.ids.every(id=>ELIGIBLE.includes(id)))return false;
- S.team=d.ids.slice();S.zone=d.zone;S.prog=0;S.paid=false;S.draft=null;S.grants=[null,null,null];S.funds.fill(ACTIVITY_T);
+ const current=d.zone===S.zone,old=S.team||[];S.team=d.ids.slice();S.draft=null;
+ if(current){for(const id of S.team)if(!old.includes(id))S.funds[AP[id].desk]=ACTIVITY_T;resetSupport()}
+ else{S.zone=d.zone;S.prog=0;S.paid=false;S.grants=[null,null,null];S.funds.fill(ACTIVITY_T)}
  IV.open=false;$('interview').hidden=true;$('hud').style.display='block';paused=false;last=0;renderer.setViewport(0,0,W,H);
- roomTarget(S.zone,true);resetRoom();updateCreators(0);save();updateHUD(true);setHint();AU.wake();AU.chime();$('gl').focus();return true;
+ roomTarget(S.zone,true);if(!current)resetRoom();updateCreators(0);save();updateHUD(true);setHint();AU.wake();AU.chime();$('gl').focus();return true;
 }
 function drawInterview(dt){
  const order=interviewOrder(),d=draftForZone();IV.t+=dt;IV.x=damp(IV.x,order.indexOf(IV.sel)*.91,7,dt);
  for(const c of IV.actors){c.g.position.x=order.indexOf(c.applicant)*.91;c.nod=Math.max(0,c.nod-dt*1.8);const k=Math.sin(c.nod*Math.PI),focus=c.applicant===IV.sel;
   c.head.rotation.set(.03+.18*k+Math.sin(IV.t*1.6+c.i)*.012,focus?0:Math.sin(IV.t*.3+c.i)*.09,0);c.head.position.y=1.075-.028*k;
-  c.seal.visible=d.ids.includes(c.applicant);
+  c.seal.visible=!ELIGIBLE.includes(c.applicant)||d.ids.includes(c.applicant);
   for(const h of c.hands){_a.set(h.s*.12,.64+Math.sin(IV.t*1.7+c.i)*.002,-.29);armIK(h,_a)}
  }
  const r=IV.rect;if(!r)return;const cam=IV.camera,dist=Math.max(2.45,1.35/(2*Math.tan(cam.fov*Math.PI/360)*cam.aspect));
@@ -2203,12 +2251,12 @@ let toastT=0,hudKey='';
 function toast(s,sec=2.6){$('toast').textContent=s;$('toast').classList.add('on');toastT=sec}
 function updateHUD(force){
  const supportPhase=S.support?(S.support.t>=11.5?2:1):0,recipients=supportRecipients().length,cost=recipients*SUPPORT_UNIT,credit=S.money<cost&&supportCredit();
- const key=[Math.round(S.money),S.prog,S.zone,S.paid,S.tool,S.owned.length,S.muted,supportPhase,recipients,credit,Math.ceil(S.advance)].join('|');if(!force&&key===hudKey)return;hudKey=key;
+ const key=[Math.round(S.money),S.prog,S.zone,S.paid,S.tool,S.owned.length,S.muted,supportPhase,recipients,credit,Math.ceil(S.advance),S.team?.length].join('|');if(!force&&key===hudKey)return;hudKey=key;
  $('supportbtn').disabled=!!supportPhase||S.money<cost&&!credit||!recipients;$('supportbtn').classList.toggle('running',!!supportPhase);
  $('supportlabel').textContent=supportPhase===2?'숨 고르는 중':supportPhase?'지급 완료':credit?'지원금 선지급':'창작지원금';$('supportcost').textContent=supportPhase?'전원 지급':credit?'부족분 수당에서 상계':'전원 · '+won(cost);
  $('supportbtn').setAttribute('aria-label',supportPhase?'전원에게 창작지원금을 지급했습니다':credit?'지원금 '+won(cost)+' 지급, 부족분 '+won(cost-S.money)+'은 이후 수당에서 상계':'현재 구역 전원에게 창작지원금 '+won(cost)+' 지급');
  $('money').textContent=won(S.money);$('ztxt').textContent=S.zone+'구역 · 처리 '+S.prog+' / '+quota(S.zone);$('zbar').style.width=(S.prog/quota(S.zone)*100)+'%';
- $('next').style.display=S.paid?'block':'none';$('hud').classList.toggle('has-next',S.paid);
+ const more=needsReassignment();$('next').textContent=more?'인원 추가 배정':'다음 구역으로';$('next').style.display=S.paid||more?'block':'none';$('hud').classList.toggle('has-next',S.paid||more);
  $('shopbtn').classList.toggle('can',TOOLS.some(t=>!S.owned.includes(t.id)&&S.money>=t.price));
  $('snd').style.opacity=S.muted?.4:1;
  const ch=$('chips');
@@ -2257,7 +2305,7 @@ function bind(){
   keys[e.code]=true;
   if(e.code.startsWith('Digit')){const t=TOOLS[+e.code.slice(5)-1];if(t)setTool(t.id)}
   if(e.code==='KeyB'||e.code==='KeyE')openShop();
-  if(e.code==='Enter'&&S.paid){e.preventDefault();nextZone()}});
+  if(e.code==='Enter'&&(S.paid||needsReassignment())){e.preventDefault();nextZone()}});
  addEventListener('keyup',e=>{keys[e.code]=false});
  addEventListener('blur',()=>{if(started&&!paused)pauseGame();else releaseAll()});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(started&&!paused)pauseGame();else{releaseAll();AU.sleep()}save()}});
@@ -2266,7 +2314,7 @@ function bind(){
  $('start').onclick=()=>{if(started)return;started=true;paused=false;$('intro').hidden=true;$('hud').style.display='block';AU.wake();updateHUD(true);setHint();$('gl').focus()};
  $('snd').onclick=()=>{AU.wake();S.muted=!S.muted;AU.mute(S.muted);save();updateHUD(true)};
  $('supportbtn').onclick=startSupport;
- $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('shopx').onclick=closeShop;$('next').onclick=nextZone;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('interview-enter').onclick=enterNextWorkshop;
+ $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('shopx').onclick=closeShop;$('next').onclick=nextZone;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-rejected').onclick=nextRejected;$('interview-enter').onclick=enterNextWorkshop;
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
  $('reset').onclick=()=>{if(!confirm('수당과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand'],tool:'hand',muted:m,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
  $('howto').innerHTML=fine?'이동: WASD 또는 방향키<br>작업: 스페이스 또는 마우스를 누르고 있기<br>장비 바꾸기: 숫자 키 1~9 · 장비 보급: B<br>다음 구역: Enter · 입주자 배정':'이동: 화면 왼쪽을 누른 자리에서 끌기<br>작업: 화면 오른쪽을 누르고 있기<br>장비 바꾸기: 왼쪽 위 장비 이름<br>구역 완료 후 다음 작업실의 입주자를 배정합니다';
