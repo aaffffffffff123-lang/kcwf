@@ -766,12 +766,65 @@ function inkify(mat){mat.onBeforeCompile=sh=>{
  };return mat}
 const shade=(hex,k)=>new THREE.Color(hex).multiplyScalar(k).getHex();
 let bodyMat,droolMat,bulgeGeo;
+
+/* ───────── 공인 예술인의 LED 완장 ───────── */
+const ARTIST_LED={assets:null,t:{value:0}};
+// 고정 윤곽: 운영체제의 필기체 폰트와 외부 폰트 로딩에 의존하지 않는다.
+const ARTIST_SCRIPT="M23 9C46 2 57 0 76 0C144 0 191 36 322 186C401 186 460 185 499 182C497 170 495 158 494 146C492 136 489 115 486 93C484 74 481 56 480 52C477 35 475 19 475 9C475 -4 485 -13 498 -13C502 -13 529 -8 579 1L636 11C643 12 654 14 671 17L687 41C646 38 621 36 613 36C573 36 562 46 562 81C562 145 601 425 633 584L619 594C589 563 587 562 566 562C553 562 548 563 509 569C464 576 438 579 418 579C372 579 324 556 277 510C224 459 201 415 201 362C201 338 204 322 215 293L289 333C273 380 268 403 268 426C268 483 311 517 384 517C395 517 408 516 421 515L445 512C459 511 469 510 476 509C492 507 501 507 528 505L355 281C313 227 248 151 221 125C181 86 151 72 105 72C88 72 79 73 61 79ZM353 227 546 480 505 227ZM662 1C715 0 715 0 721 0C773 0 863 2 893 4L967 42C945 43 924 43 924 43L866 44L835 45C948 158 954 167 986 295C1000 295 1005 289 1011 261C1054 81 1082 0 1123 -61C1166 -125 1225 -156 1304 -156C1360 -156 1394 -144 1450 -103L1401 -42C1369 -101 1341 -124 1302 -124C1254 -124 1211 -75 1169 25C1143 88 1116 167 1071 310C1128 328 1151 339 1182 360C1229 391 1256 437 1256 484C1256 547 1207 581 1115 581C1103 581 1078 580 1057 579L1065 611L974 568C810 541 723 464 723 347C723 321 726 304 737 267L821 310C812 344 810 360 810 384C810 432 825 470 856 499C884 524 912 535 976 543L961 483C940 400 920 323 900 239C858 70 831 44 701 45ZM1050 551H1082C1143 551 1169 528 1169 473C1169 422 1142 375 1100 349C1070 331 1046 324 992 318ZM1388 0C1629 0 1644 2 1725 47L1727 55C1682 49 1620 45 1565 45C1557 45 1540 46 1519 47C1596 112 1621 148 1638 224L1716 537C1846 526 1847 526 1868 526C1915 526 1922 536 1946 634L1933 649C1892 579 1887 574 1851 574C1841 574 1819 575 1788 576C1642 583 1626 584 1591 584C1416 584 1286 489 1286 361C1286 328 1293 301 1311 266L1386 315C1367 363 1363 379 1363 407C1363 464 1389 506 1438 529C1464 541 1498 546 1554 546C1576 546 1580 546 1644 541L1563 215C1527 68 1508 43 1423 39ZM1813 0C1867 1 1867 1 1894 1C1914 1 1914 1 2008 0H2048L2084 25L1991 32C2009 118 2073 369 2120 542L2178 548L2213 573H2179L2060 572C2034 572 2017 572 1983 573L1948 548L2038 542C2019 461 1981 309 1923 85C1921 78 1914 55 1908 32L1849 25ZM2160 102 2116 -2C2151 -49 2197 -71 2263 -71C2416 -71 2566 53 2566 181C2566 222 2551 243 2476 301C2403 358 2391 375 2391 418C2391 484 2440 539 2499 539C2541 539 2556 521 2567 457L2633 504C2627 558 2597 586 2544 586C2441 586 2324 473 2324 373C2324 327 2344 296 2403 250C2471 196 2489 169 2489 123C2489 44 2414 -24 2327 -24C2284 -24 2240 -5 2213 25C2192 48 2184 69 2176 113ZM2740 0C2981 0 2996 2 3077 47L3079 55C3034 49 2972 45 2917 45C2909 45 2892 46 2871 47C2948 112 2973 148 2990 224L3068 537C3198 526 3199 526 3220 526C3267 526 3274 536 3298 634L3285 649C3244 579 3239 574 3203 574C3193 574 3171 575 3140 576C2994 583 2978 584 2943 584C2768 584 2638 489 2638 361C2638 328 2645 301 2663 266L2738 315C2719 363 2715 379 2715 407C2715 464 2741 506 2790 529C2816 541 2850 546 2906 546C2928 546 2932 546 2996 541L2915 215C2879 68 2860 43 2775 39Z";
+function artistBandArt(mask=false){
+ const c=document.createElement('canvas');c.width=1024;c.height=512;const g=c.getContext('2d');
+ const frame=new Path2D('M78 68H946Q984 68 984 106V406Q984 444 946 444H78Q40 444 40 406V106Q40 68 78 68Z');
+ const flourish=new Path2D('M75 336C16 352 35 405 98 383C145 367 134 310 148 258C164 198 184 136 212 98C230 72 256 87 240 112C229 128 211 126 202 120M892 330C969 353 982 400 925 412C831 432 584 385 348 411C223 426 138 468 96 434C69 412 98 395 132 410M780 100C853 75 923 95 947 121');
+ const star=(x,y,r)=>{g.beginPath();g.moveTo(x,y-r);g.quadraticCurveTo(x+r*.13,y-r*.12,x+r,y);g.quadraticCurveTo(x+r*.13,y+r*.12,x,y+r);g.quadraticCurveTo(x-r*.13,y+r*.12,x-r,y);g.quadraticCurveTo(x-r*.13,y-r*.12,x,y-r);g.fill()};
+ if(!mask){
+  const fabric=g.createLinearGradient(0,68,0,444);fabric.addColorStop(0,'#242541');fabric.addColorStop(.4,'#12162d');fabric.addColorStop(1,'#1c1d38');g.fillStyle=fabric;g.fill(frame);
+  g.save();g.clip(frame);g.strokeStyle='#81809b18';g.lineWidth=1;for(let y=80;y<444;y+=5){g.beginPath();g.moveTo(40,y);g.lineTo(984,y);g.stroke()}g.restore();
+ }
+ g.save();g.strokeStyle=mask?'#00ff00':'#ff77bc';g.lineWidth=7;g.shadowColor=mask?'#00ff00':'#ff369a';g.shadowBlur=23;g.stroke(frame);g.shadowBlur=0;g.lineWidth=2;g.strokeStyle=mask?'#00ff00':'#ffe2f1';g.stroke(frame);g.restore();
+ const gold=g.createLinearGradient(0,120,0,370);gold.addColorStop(0,'#ffedbe');gold.addColorStop(.38,'#d5a55d');gold.addColorStop(.52,'#fff2cb');gold.addColorStop(.76,'#cf9848');gold.addColorStop(1,'#ffe8a5');
+ g.fillStyle=mask?'#ff0000':gold;g.strokeStyle=mask?'#ff0000':gold;
+ g.save();g.translate(91,350);g.scale(.27,-.35);const letters=new Path2D(ARTIST_SCRIPT);g.fill(letters);g.lineWidth=2.5;g.stroke(letters);g.restore();
+ g.lineWidth=mask?4:3.8;g.lineCap='round';g.stroke(flourish);
+ g.fillStyle=mask?'#0000ff':'#ffe4aa';star(951,144,23);star(70,390,15);star(900,109,9);
+ return c;
+}
+function artistBandAssets(){
+ if(ARTIST_LED.assets)return ARTIST_LED.assets;
+ const map=new THREE.CanvasTexture(artistBandArt()),mask=new THREE.CanvasTexture(artistBandArt(true));map.encoding=THREE.sRGBEncoding;map.anisotropy=mask.anisotropy=4;
+ const faceMat=new THREE.MeshBasicMaterial({map,transparent:true,side:THREE.DoubleSide,depthWrite:false});
+ faceMat.onBeforeCompile=sh=>{
+  sh.uniforms.uArtistTime=ARTIST_LED.t;sh.uniforms.uArtistMask={value:mask};
+  sh.fragmentShader='uniform float uArtistTime; uniform sampler2D uArtistMask;\n'+sh.fragmentShader;
+  sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
+   vec3 artistMask=texture2D(uArtistMask,vUv).rgb;
+   float cycle=mod(uArtistTime,6.4);
+   float run=clamp((cycle-.4)/1.7,0.,1.);
+   float shine=exp(-pow((vUv.x-(run*1.3-.15))/.075,2.))*step(.4,cycle)*(1.-step(2.1,cycle));
+   float twinkle=exp(-pow((cycle-2.18)/.24,2.));
+   float neon=.3+.09*sin(uArtistTime*1.65)+.42*shine;
+   diffuseColor.rgb+=artistMask.r*vec3(1.,.68,.27)*(.07+1.35*shine);
+   diffuseColor.rgb+=artistMask.g*vec3(1.,.035,.34)*neon;
+   diffuseColor.rgb+=artistMask.b*vec3(1.,.83,.53)*(.1+1.7*twinkle);
+  `);
+ };
+ const sleeve=merge([part(CY(.058,.060,.106,16),0x171a31),part(new THREE.TorusGeometry(.059,.003,5,18),0xd0ad64,0,.053,0,1,1,1,Math.PI/2),part(new THREE.TorusGeometry(.061,.003,5,18),0xd0ad64,0,-.053,0,1,1,1,Math.PI/2)]);
+ const sleeveMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.57,metalness:.15});
+ const face=new THREE.PlaneGeometry(.208,.104,12,1),p=face.attributes.position;
+ for(let i=0;i<p.count;i++){const x=p.getX(i);p.setZ(i,.069-.012*Math.pow(x/.104,2))}face.computeVertexNormals();
+ return ARTIST_LED.assets={sleeve,sleeveMat,face,faceMat,map,mask};
+}
+function artistArmband(parent){
+ const a=artistBandAssets(),g=new THREE.Group();g.name='artist-led-armband';
+ g.add(new THREE.Mesh(a.sleeve,a.sleeveMat));const face=new THREE.Mesh(a.face,a.faceMat);face.name='artist-led-lettering';g.add(face);parent.add(g);return g;
+}
+
 const _ik1=new THREE.Vector3(),_ik2=new THREE.Vector3();
 function armIK(h,H){ // 어깨-팔꿈치-손목
  const a=.25,b=.25,mx=(a+b)*.985;_ik1.subVectors(H,h.sh);let dl=_ik1.length();if(dl>mx){H.copy(h.sh).addScaledVector(_ik1,mx/dl);dl=mx}_ik1.multiplyScalar(1/dl);
  const x=(a*a-b*b+dl*dl)/(2*dl),hh=Math.sqrt(Math.max(0,a*a-x*x));
  _ik2.set(h.s*.8,-.4,-.5);_ik2.addScaledVector(_ik1,-_ik2.dot(_ik1)).normalize().multiplyScalar(hh).addScaledVector(_ik1,x).add(h.sh);
- between(h.up,h.sh,_ik2);between(h.fo,_ik2,H);h.el.position.copy(_ik2);h.hand.position.copy(H)}
+ between(h.up,h.sh,_ik2);between(h.fo,_ik2,H);h.el.position.copy(_ik2);h.hand.position.copy(H);
+ if(h.band){h.band.position.copy(h.sh).lerp(_ik2,.52);_ik1.subVectors(h.sh,_ik2).normalize();h.band.quaternion.setFromUnitVectors(UP,_ik1)}}
 function drool(c,u){ // 책상 앞판을 타고 흐르는 진물
  const dr=c.drool;if(u!=null){const i=clamp(Math.round((u+.5)/.2),0,5);dr.L[i]=Math.min(.3,dr.L[i]+rnd(.012,.03))}
  for(let k=0;k<6;k++){const L=dr.L[k];D.position.set(dr.u[k],.75-L*.5,.377);D.rotation.set(0,0,0);D.scale.set(L>0?.016+L*.02:0,L*.5+.008,.012);D.updateMatrix();dr.im.setMatrixAt(k,D.matrix)}
@@ -931,7 +984,7 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d
   if(L.tat){const p=fg.attributes.position,c=fg.attributes.color;for(let i=0;i<p.count;i++){const yb=Math.floor((p.getY(i)+.5)*6.999),ai=Math.round(Math.atan2(p.getZ(i),p.getX(i))/TAU*8+8)%8;if(yb<6&&(yb*7+ai*3+idx+(s>0?2:0))%5<3)c.setXYZ(i,lerp(skc.r,INKC.r,.8),lerp(skc.g,INKC.g,.8),lerp(skc.b,INKC.b,.8))}}
   const fo=addMesh(g,fg,bodyMat),el=addMesh(g,tint(SP(8,6),L.short?L.top:L.top),bodyMat);el.scale.setScalar(.046);
   const hand=addMesh(g,tint(SP(8,6),SKIN),bodyMat);hand.scale.set(.042,.03,.055);
-  hands.push({up,fo,el,hand,s,sh:new THREE.Vector3(s*.21,.95,-.41),base:ty===4&&wk==null?new THREE.Vector3(s*.06,.875,-.175):new THREE.Vector3(s*.16,.805,-.07)})}
+  hands.push({up,fo,el,hand,s,band:s>0&&(certified||d.interview&&ELIGIBLE.includes(d.ap))?artistArmband(g):null,sh:new THREE.Vector3(s*.21,.95,-.41),base:ty===4&&wk==null?new THREE.Vector3(s*.06,.875,-.175):new THREE.Vector3(s*.16,.805,-.07)})}
  if(d.interview)return {g,head,hands,i:idx,type:ty};
  // 완성 직전에 부풀어 오르는 작품
  const wy=[.778,.79,.8,.815,.778][ty];
@@ -3588,6 +3641,7 @@ function frame(now){
  if(document.hidden){last=0;return}
  const raw=last?(now-last)/1000:.016;last=now;const dt=Math.min(.034,Math.max(.001,raw));
  if(started&&!paused){if(raw>.045)slow++;else slow=Math.max(0,slow-1);if(slow>80&&pr>1){pr=Math.max(1,pr-.5);renderer.setPixelRatio(pr);renderer.setSize(W,H,false);slow=0}}
+ if(!paused||IV.open)ARTIST_LED.t.value+=dt;
  if(IV.open){drawInterview(dt);return}
  if(!paused){if(hitstop>0){hitstop-=raw}else sim(dt)}
  drawCreatures();drawBits();inkFlush();updatePops(paused?0:dt);if(started){updateHUD(false);updateAct2()}
