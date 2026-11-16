@@ -346,7 +346,7 @@ const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
 
 /* ───────── 소리 ───────── */
 let started=false,paused=false;
-const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,mi:0,
+const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,mi:0,voiceLevel:.5,
  init(){if(this.c)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
   try{const c=this.c=new AC(),comp=c.createDynamicsCompressor();comp.threshold.value=-16;comp.knee.value=10;comp.ratio.value=6;comp.attack.value=.002;comp.release.value=.15;
    this.out=c.createGain();this.out.gain.value=S.muted?0:1;this.out.connect(comp);comp.connect(c.destination);
@@ -415,7 +415,7 @@ const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,m
     const done=b=>{if(b)this.sb[ty][j]=b};oc.oncomplete=e=>done(e.renderedBuffer);const pr=oc.startRendering();if(pr&&pr.then)pr.then(done).catch(()=>{})}catch(e){}})}},
  squeal(type,k=1,delay=0,dur=0,muf=false){if(!this.ok)return;const c=this.c,now=c.currentTime,t=now+delay,dest=muf&&this.muf||this.fx;
   this.screams=this.screams.filter(s=>s.end>now);if(this.screams.length>=(fine?5:3)||t<this.sqT+.025)return;this.sqT=t;
-  const v=(type===5?.05:.085)*Math.min(1.5,k)*(muf?1.7:1),long=dur>=.4,b=this.sb&&this.sb[type]&&this.sb[type][long?1:0];let g,end;
+  const v=this.voiceLevel*(type===5?.05:.085)*Math.min(1.5,k)*(muf?1.7:1),long=dur>=.4,b=this.sb&&this.sb[type]&&this.sb[type][long?1:0];let g,end;
   if(b){const s=c.createBufferSource();g=c.createGain();s.buffer=b;const rate=long?clamp(.68/dur,.8,1.3)*rnd(.95,1.05):rnd(.85,1.2)*(.92+.16*k);s.playbackRate.value=rate;
    end=t+b.duration/rate;g.gain.setValueAtTime(v,t);if(dur&&end>t+dur){end=t+dur;g.gain.setValueAtTime(v,end-.03);g.gain.linearRampToValueAtTime(.0001,end)}
    s.connect(g);g.connect(dest);s.start(t);s.stop(end+.02)}
@@ -439,7 +439,7 @@ const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,m
  // 갈비가 하나씩 나가는 소리
  rib(k=1){this.crackle(1+(Math.random()*2|0),.8*k,0,700,1700,.04);this.noise('lowpass',600,200,.9,.05,.3*k)},
  // 목이 눌려 새는 소리
- choke(type,k=1,dur=.16){if(!this.ok||this.full(.3,dur))return;const c=this.c,t=c.currentTime,base=[1280,1080,860,1560,1180,990,620][type]*.34*rnd(.85,1.15),o=c.createOscillator(),l=c.createOscillator(),lg=c.createGain(),am=c.createGain(),f=c.createBiquadFilter(),g=c.createGain();
+ choke(type,k=1,dur=.16){if(!this.ok||this.full(.3,dur))return;k*=this.voiceLevel;const c=this.c,t=c.currentTime,base=[1280,1080,860,1560,1180,990,620][type]*.34*rnd(.85,1.15),o=c.createOscillator(),l=c.createOscillator(),lg=c.createGain(),am=c.createGain(),f=c.createBiquadFilter(),g=c.createGain();
   o.type='sawtooth';o.frequency.setValueAtTime(base*1.2,t);o.frequency.exponentialRampToValueAtTime(base*.7,t+dur);
   l.type='square';l.frequency.setValueAtTime(rnd(34,52),t);l.frequency.linearRampToValueAtTime(rnd(14,22),t+dur);lg.gain.value=.5;am.gain.value=.5;l.connect(lg);lg.connect(am.gain);
   f.type='bandpass';f.Q.value=2.2;f.frequency.setValueAtTime(1700,t);f.frequency.exponentialRampToValueAtTime(800,t+dur);
@@ -448,7 +448,7 @@ const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,m
  // 터지는 게 아니라 손안에서 눌려 꺼지는 소리
  crushIn(k=1){this.crackle(5,.9*k,0,520,1300,.034);this.noise('lowpass',900,140,.8,.3,.6*k,.02);this.squelch(.9*k);this.tone('sine',120,48,.16,.5*k,.03);this.bubble(rnd(160,220),.2*k,.16);this.bubble(rnd(120,170),.16*k,.26)},
  // 봐 준다고 좋아하는 소리: 짧게 두 번 올라가는 콧소리
- coo(type,k=1){if(!this.ok)return;const b=[1280,1080,860,1560,1180,990,620][type]*.42*rnd(.94,1.06);for(let i=0;i<2;i++){const d=i*.115,f=b*(1+.2*i);this.tone('triangle',f,f*1.34,.09,.05*k,d);this.tone('sine',f*2,f*2.7,.07,.02*k,d)}},
+ coo(type,k=1){if(!this.ok)return;k*=this.voiceLevel;const b=[1280,1080,860,1560,1180,990,620][type]*.42*rnd(.94,1.06);for(let i=0;i<2;i++){const d=i*.115,f=b*(1+.2*i);this.tone('triangle',f,f*1.34,.09,.05*k,d);this.tone('sine',f*2,f*2.7,.07,.02*k,d)}},
  // 피 섞인 기침: 젖은 숨이 두 번 터진다
  cough(k=1){for(let i=0;i<2;i++){const d=i*.09;this.noise('bandpass',rnd(900,1300),480,1.6,.055,.36*k,d);this.noise('lowpass',700,200,.9,.05,.2*k,d);this.bubble(rnd(260,420),.1*k,d+.02)}},
  // 가는 뼈가 꺾이는 소리 (팔)
@@ -1826,12 +1826,12 @@ function plant(b,pose){
  for(const c of creatures){if(c.st!=='walk'&&c.st!=='flee')continue;if(Math.hypot(c.x-pose.x,c.z-pose.z)<.1){c.st='maim';c.t=0;c.life=rnd(5,9);c.sq=.25;c.panic=1;stamp(c.x,c.z,c.r*5,c.r*5,0,1,0,c.ink,1);AU.squeal(c.type,.9);AU.squelch(.45)}}
 }
 
-/* ───────── 맨손: 위에서 덮쳐 쥐기 → 얼굴 앞에 들이대기(봐 주는 줄 알고 좋아함) → 조이기(뚝 다섯 번, 입으로 속이 밀려 나옴) → 터짐(아직 살아 있음)
+/* ───────── 맨손: 위에서 덮쳐 쥐기 → 집던 거리에서 들어 올리기(봐 주는 줄 알고 좋아함) → 조이기(뚝 다섯 번, 입으로 속이 밀려 나옴) → 터짐(아직 살아 있음)
    → 주먹을 세워 고쳐 쥐고, 엄지로 머리를 검지 위에 눌러 으깨기(여기서 죽음) → 펴 보기(납작하게 눌어붙은 잔해) → 털기 ───────── */
 const HSC=1.25,SQ_T=1.6,WR_T=.9,STG=[.2,.38,.55,.71,.86,1]; // 쥔 개체 확대 · 조이는 시간 · 끝까지 짜는 시간 · 뚝이 나는 압력
 const SLIDE=.35,VZA=.542,CRK=.62,HEADC=new THREE.Vector3(0,.78,.92); // 고쳐 쥘 때 주먹 안으로 미끄러져 들어가는 길이 · 머리가 눌리는 바닥(검지 윗면) 높이 · 머리가 내려앉는 때 · 머리 중심 (모두 개체 좌표)
 const HG={g:null,arm:null,sleeve:null,fingers:[],tb:null,t1:null,t2:null,ph:'idle',t:0,p:0,q:0,hold:0,near:0,stage:0,dmg:0,c:null,target:null,
- pos:new THREE.Vector3(),from:new THREE.Vector3(),to:new THREE.Vector3(),rest:new THREE.Vector3(),quat:new THREE.Quaternion(),qFrom:new THREE.Quaternion(),
+ pos:new THREE.Vector3(),from:new THREE.Vector3(),to:new THREE.Vector3(),rest:new THREE.Vector3(),work:new THREE.Vector3(AIMX,.86,-AIMZ),quat:new THREE.Quaternion(),qFrom:new THREE.Quaternion(),
  grip:0,wet:0,gloss:0,drip:0,sqT:0,beatT:0,wetT:0,seepT:0,tearT:0,twT:0,twN:0,bc:[],vel:new THREE.Vector3(),last:new THREE.Vector3(),
  burst:0,bt:0,w:0,gone:0,g0:.7,s0:0,crk:0,th:-1,thT:-1,scr:0,joy:0,brS:1,eyS:1,wasAct:false,skip:0,cough:0,ooze:[0,0,0,0,0],oozeT:0,wrT:0,cooT:0,alive:false,shed:false,hang:0};
 const HERO={g:null,body:null,eyes:null,geo:[],on:false,fall:false,c:null,R:.05,s0:.05,v:new THREE.Vector3(),w:new THREE.Vector3(),sw:new THREE.Vector3(),sv:new THREE.Vector3(),from:new THREE.Vector3(),qFrom:new THREE.Quaternion(),slot:new THREE.Vector3(),
@@ -2297,16 +2297,13 @@ function handPose(g,trem,scr=0,th=0){ // g: 0 편 손 · .7 쥔 손 · 1 조인 
   h.tb.quaternion.slerp(_qb,scr);a1=lerp(a1,b1,scr);a2=lerp(a2,b2,scr)}
  h.t1.rotation.x=a1;h.t2.rotation.x=a2;
 }
-const HFAR=1.75,camPt=(x,y,z,o)=>o.set(x*HFAR,y*HFAR,z*HFAR).applyMatrix4(camera.matrixWorld); // HFAR: 쥔 손을 눈에서 떨어뜨리는 배율. 화면 속 자리는 그대로 두고 크기만 줄인다
-function handFacePos(n,out,q){ // 쥔 것의 머리가 화면 가운데쯤 오도록 손 자리를 잡는다. n: 0 들고만 있음 · 1 얼굴 앞에 바짝
- const H=HERO,R=H.R;
- if(portrait)camPt(0,lerp(-.05,-.004,n),lerp(-.29,-.19,n),out);else camPt(lerp(.03,0,n),lerp(-.06,-.022,n),lerp(-.25,-.165,n),out);
- return out.sub(_h.set(H.slot.x+.92*R,H.slot.y-.78*R,H.slot.z).applyQuaternion(q))}
-const headOff=(q,o)=>o.set(HERO.slot.x+.92*HERO.R,HERO.slot.y-.78*HERO.R,HERO.slot.z).applyQuaternion(q); // 손에서 본 쥔 것의 머리 자리
-function wringPose(){ // 터진 뒤 누르고 있는 만큼 주먹을 세운다. 머리 자리는 곧게 옮겨 가고 손이 그 둘레로 돈다(도는 동안 머리가 화면 아래로 빠지지 않게)
+// 들어 올린 뒤에는 집던 앞뒤 거리를 유지한다. 이동하면 플레이어와 함께 움직인다.
+function handWorkPoint(out,dy=0){return out.set(P.x+HG.work.x,HG.work.y+dy,P.z+HG.work.z)}
+const headOff=(q,o)=>o.set(HERO.slot.x+.92*HERO.R,HERO.slot.y-.78*HERO.R,HERO.slot.z).applyQuaternion(q);
+function handHoldPos(out,q){return handWorkPoint(out).sub(headOff(q,_h))}
+function wringPose(){ // 머리 자리는 고정하고, 그 둘레로 손목만 돌려 고쳐 쥔다.
  const h=HG,wr=ss(h.w/.42);_qc.copy(camera.quaternion).multiply(HQ.face);_qb.copy(camera.quaternion).multiply(HQ.wring);h.quat.copy(_qc).slerp(_qb,wr);
- handFacePos(1,_a,_qc).add(headOff(_qc,_h));(portrait?camPt(.012,-.06,-.31,_b):camPt(.02,-.02,-.2,_b)).add(headOff(_qb,_h));
- h.pos.lerpVectors(_a,_b,wr).sub(headOff(h.quat,_h));return wr}
+ handHoldPos(h.pos,h.quat);return wr}
 function handRelease(kill=true){
  const h=HG,c=h.c;
  if(c&&!c.dead){c.y=0;c.sq=c.sqT=1;c.roll=0;c.x=clamp(P.x+AIMX,-XB,XB);c.z=clamp(P.z-AIMZ,ZN,ZF);c.t=0;
@@ -2380,9 +2377,9 @@ function handUpdate(dt,act){
  }else if(h.ph==='scoop'){ // 손바닥이 등을 덮고 손가락이 배 밑으로 감긴다
   const u=ss(h.t/.2);grip=lerp(.02,.7,u);h.quat.copy(HQ.grab);scr=u;
   H.g.position.lerpVectors(H.from,H.slot,u);H.g.quaternion.copy(H.qFrom).slerp(HQ.slot,u);H.g.scale.setScalar(lerp(H.s0,H.R,u));H.ph+=dt*22;H.amp=damp(H.amp,.7,8,dt);
-  if(h.t>=.2){h.from.copy(h.pos);h.qFrom.copy(h.quat);h.ph='lift';h.t=0}
- }else if(h.ph==='lift'){ // 얼굴 앞으로 들어 올린다. 드디어 봐 주는 줄 알고 두 팔을 내민다
-  const u=ss(h.t/.42);cq(HQ.carry,_qb);handFacePos(0,h.to,_qb);h.pos.lerpVectors(h.from,h.to,u);h.pos.y+=Math.sin(u*Math.PI)*.03;h.quat.copy(h.qFrom).slerp(_qb,u);grip=.7;scr=1;
+  if(h.t>=.2){h.work.set(clamp(h.pos.x-P.x,-.02,.02),.86,h.pos.z-P.z);h.from.copy(h.pos);h.qFrom.copy(h.quat);h.ph='lift';h.t=0}
+ }else if(h.ph==='lift'){ // 집던 거리에서 위로 들어 올린다. 드디어 봐 주는 줄 알고 두 팔을 내민다
+  const u=ss(h.t/.42);cq(HQ.carry,_qb);handHoldPos(h.to,_qb);h.pos.lerpVectors(h.from,h.to,u);h.pos.y+=Math.sin(u*Math.PI)*.03;h.quat.copy(h.qFrom).slerp(_qb,u);grip=.7;scr=1;
   H.ph+=dt*13;H.amp=damp(H.amp,.4,6,dt);
   if(h.stage){H.nodT=.2;H.lollT=-h.brS*.4;heroReach(dt,0,0)}else{h.joy=u;U.uC.value.x=1.5+.2*u;H.nodT=-.16;H.lollT=.25*Math.sin(time*3.1);heroReach(dt,u>.45?1:0,u>.45?1:0)}
   if(h.t>=.42){if(h.burst){h.ph='regrip';h.from.copy(h.pos);h.qFrom.copy(h.quat);h.g0=.7;h.s0=1;H.from.copy(H.g.position);H.qFrom.copy(H.g.quaternion)}else h.ph='hold';h.t=0}
@@ -2390,7 +2387,7 @@ function handUpdate(dt,act){
   const c=h.c;scr=1;
   if(!h.burst){
    h.near=damp(h.near,act?1:0,act?7:3.5,dt);h.hold=damp(h.hold,act?1:0,act?14:5,dt);
-   const n=ss(h.near);cq(HQ.carry,_qa);cq(HQ.face,_qb);h.quat.copy(_qa).slerp(_qb,n);handFacePos(n,h.pos,h.quat);
+   const n=ss(h.near);cq(HQ.carry,_qa);cq(HQ.face,_qb);h.quat.copy(_qa).slerp(_qb,n);handHoldPos(h.pos,h.quat);
    // 조여 들어간다: 버티다가 뚝, 버티다가 뚝
    if(act&&h.near>.35&&h.t>.22)h.p=Math.min(1,h.p+dt/SQ_T);
    const s0=h.stage?STG[h.stage-1]:0,s1=STG[h.stage],su=clamp((h.p-s0)/(s1-s0),0,1);h.q=s0+(s1-s0)*(su<.78?.3*su/.78:.3+.7*ss((su-.78)/.22));
@@ -2452,7 +2449,7 @@ function handUpdate(dt,act){
   if(Math.random()<dt*12){h.g.localToWorld(_a.set(rnd(-.04,.03),.03,rnd(-.04,-.01)));drop(_a.x,_a.y-.02,_a.z,rnd(-.05,.05),-.1,rnd(-.05,.05),rnd(.002,.004),U.uInk.value)}
   if(h.t>=.45){h.ph='open';h.t=0;h.from.copy(h.pos);h.qFrom.copy(h.quat);h.g0=1.3;AU.peel(.35);heroHide();remShow()}
  }else if(h.ph==='open'){ // 손을 펴 본다. 죽은 것은 납작하게 눌어붙어 있고, 덜 죽은 것은 손바닥에서 꿈틀거린다
-  const u=ss(h.t/.55);portrait?camPt(0,-.085,-.27,h.to):camPt(.01,-.066,-.23,h.to);h.pos.lerpVectors(h.from,h.to,u);cq(HQ.show,_qb);h.quat.copy(h.qFrom).slerp(_qb,u);
+  const u=ss(h.t/.55);handWorkPoint(h.to,-.025);h.pos.lerpVectors(h.from,h.to,u);cq(HQ.show,_qb);h.quat.copy(h.qFrom).slerp(_qb,u);
   grip=lerp(h.g0,.1,ss(h.t/.5));skinU.uGrip.value=damp(skinU.uGrip.value,0,6,dt);scr=1-ss(h.t/.3);
   for(let i=0;i<5;i++)h.ooze[i]=Math.max(0,h.ooze[i]-dt*3);
   if(h.alive){const c=h.c;
@@ -2475,8 +2472,8 @@ function handUpdate(dt,act){
   if(h.t>=.28){h.ph='hold';h.t=0;h.gone=0;heroSeat(H.g.position);H.g.quaternion.copy(HQ.slot)}
  }else if(h.ph==='shed'){ // 손을 뒤집어 털어 낸다
   const k=h.skip?1.7:1,t=h.t*k,u=ss(t/.34);_qa.setFromAxisAngle(_e.set(0,0,1),2.5*u);h.quat.copy(h.qFrom).multiply(_qa);
-  // 가로 화면에서는 뒤집으면서 손을 조금 들어 올린다(눌어붙은 것이 매달리는 게 화면 아래로 잘리지 않게)
-  if(portrait)camPt(h.alive?0:.04*u,h.alive?-.085:lerp(-.085,-.03,u),h.alive?-.27:lerp(-.27,-.33,u),h.to);else camPt(.01,h.alive?-.066:lerp(-.066,.012,u),h.alive?-.23:lerp(-.23,-.29,u),h.to);
+  // 같은 거리에서 조금 들어 올려 턴다. 잔해를 보여 줄 때도 얼굴 앞으로 당기지 않는다.
+  handWorkPoint(h.to,h.alive?-.025:lerp(-.025,.03,u));if(!h.alive){h.to.x+=.035*u;h.to.z-=.04*u;}
   h.pos.lerpVectors(h.from,h.to,Math.min(1,t/.2));h.pos.y-=Math.sin(Math.min(1,t/.3)*Math.PI)*.03+.02*u;grip=.1+.1*u;
   if(h.alive){ // 덜 죽은 것은 그대로 바닥에 떨어져 기어 다닌다
    if(!h.shed&&t>=.2){h.shed=true;const ink=U.uInk.value;for(let q=0;q<(fine?9:6);q++)thread(2,H.g,rnd(-.25,.25),.6,rnd(-.6,.5),h.g,rnd(-.03,.03),.016,rnd(-.035,.03),ink,rnd(.0007,.0015),rnd(.03,.2),rnd(.006,.02));
