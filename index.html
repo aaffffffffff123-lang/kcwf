@@ -346,7 +346,7 @@ const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
 
 /* ───────── 소리 ───────── */
 let started=false,paused=false;
-const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,mi:0,voiceLevel:.5,
+const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,mi:0,voiceLevel:.25,
  init(){if(this.c)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
   try{const c=this.c=new AC(),comp=c.createDynamicsCompressor();comp.threshold.value=-16;comp.knee.value=10;comp.ratio.value=6;comp.attack.value=.002;comp.release.value=.15;
    this.out=c.createGain();this.out.gain.value=S.muted?0:1;this.out.connect(comp);comp.connect(c.destination);
