@@ -519,6 +519,8 @@ const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,m
  stopReactions(){const voices=this.reactionVoices.splice(0);for(const v of voices){try{v.src.stop();v.gain.disconnect()}catch(e){}}this.reactionNext={cheer:0,clap:0,whistle:0}},
  tick(){this.tone('sine',880,880,.04,.06)},
  clang(k=1){this.noise('bandpass',3400,1500,3,.09,.5*k);this.tone('triangle',930,610,.22,.2*k);this.tone('sine',1870,1500,.3,.08*k);this.tone('sine',92,38,.3,1*k);this.noise('lowpass',900,140,.7,.2,.75*k)},
+ // 삽날 접촉: 짧은 쇳소리 뒤로 바닥을 때리는 저음이 남는다.
+ shovelSlam(){this.noise('highpass',2600,1600,.8,.028,.45);this.tone('triangle',640,210,.12,.28);this.tone('sine',125,42,.26,.95);this.tone('triangle',200,65,.075,.4);this.noise('lowpass',1800,160,.8,.17,.7)},
  splat(k=1){this.noise('bandpass',1100,260,1.1,.26,.7*k);for(let i=0;i<5;i++)this.bubble(rnd(180,520),.3*k,i*.022+.01);this.noise('highpass',2800,2000,.7,.05,.3*k)},
  plop(){this.tone('sine',rnd(300,380),110,.1,.2);this.bubble(rnd(240,340),.16,.05);this.noise('bandpass',700,300,1.5,.09,.14)},
  crunch(){if(!this.ok)return;this.noise('bandpass',rnd(600,1100),200,2.5,.09,.6);this.tone('sawtooth',rnd(140,220),55,.08,.3);this.bubble(rnd(300,600),.3,.02);this.noise('highpass',3000,2400,.7,.03,.22)},
@@ -1864,11 +1866,11 @@ function updateBody(dt,mx,mz){
  reticle.visible=started&&(S.tool==='boot'&&!TD.on&&(ST.ph==='idle'||ST.ph==='back')||S.tool==='hand'&&HG.ph==='idle');reticle.position.set(P.x+AIMX,.006,P.z-AIMZ);
  // 카메라: 지그시 밟을 때와 구를 때는 발밑을 더 내려다본다
  camX=damp(camX,TD.on||ST.ph==='idle'||ST.ph==='back'?0:(ST.T.x-P.x)*.75-.03,6,dt);
- shake=Math.max(0,shake-dt*7);
+ shake=Math.max(0,shake-dt*7);SH.kick=damp(SH.kick,0,22,dt);const shovelKick=S.tool==='shovel'?SH.kick:0;
  const eye=CAM.eye,basePitch=portrait?CAM.pp:CAM.pl,tk=ss(TD.k),bk=ss(TG.k); // bk: 묶은 봉투를 밟는 동안
  const bob=Math.sin(walkPh*2)*.008*moveK;
- camera.position.set(P.x+camX+(Math.random()-.5)*.006*shake,eye-.3*lean-CAM.te*tk-CAM.be*bk+bob-shake*.006+TD.bob,P.z-.02*lean-CAM.bz*bk);
- camera.rotation.set(lerp(basePitch-.05*lean-CAM.sp*look-(portrait?CAM.tp:CAM.tl)*tk-(portrait?CAM.bp:CAM.bl-TG.zp)*bk,portrait?-.3:-.17,ss(introK)),0,0,'YXZ');
+ camera.position.set(P.x+camX+(Math.random()-.5)*.006*shake,eye-.3*lean-CAM.te*tk-CAM.be*bk+bob-shake*.006+TD.bob-.045*shovelKick,P.z-.02*lean-CAM.bz*bk);
+ camera.rotation.set(lerp(basePitch-.05*lean-CAM.sp*look-(portrait?CAM.tp:CAM.tl)*tk-(portrait?CAM.bp:CAM.bl-TG.zp)*bk,portrait?-.3:-.17,ss(introK))-.035*shovelKick,0,0,'YXZ');
  {const fov=(portrait?CAM.fp:CAM.fl)-((portrait?CAM.bfp:CAM.bfl)+TG.zm)*bk;if(Math.abs(camera.fov-fov)>.02){camera.fov=fov;camera.updateProjectionMatrix()}}
  if(!started)introK=1;else introK=Math.max(0,introK-dt/1.0);
  sun.position.set(P.x-1.4,6,P.z+.4);sun.target.position.set(P.x,0,P.z-2);sun.target.updateMatrixWorld();
@@ -2717,8 +2719,9 @@ function lensUpdate(dt){
 // 날을 들면 날 밑면에 눌어붙은 사체와 바닥 사이로 실이 늘어나 끊긴다. 긁으면 날 폭대로 긁힌 자국이 나고, 날 위에 곤죽이 쌓인다
 // 통에 털 때는 날을 기울여 쏟고 테두리에 두 번 쳐서 털어 낸다. 산 채로 들어간 것은 통 벽을 기어오르다 다음 삽에 파묻힌다
 const SHW=.17,SHD=.3; // 날 반폭 · 날 길이 (날 끝 가운데가 원점, 자루 쪽이 +z)
+const SHSWING={height:1.24,raise:.26,drop:.095,rx:.88,rz:-.12,side:.04,reach:1.05};
 const _sq=new THREE.Quaternion(),_sv=new THREE.Vector3(),_se=new THREE.Euler();
-const SH={g:null,bin:null,pulp:null,gu:null,ph:'idle',t:0,carry:[],load:0,lean:0,pose:{x:0,y:0,z:0,rx:0,ry:0,rz:0},from:null,T:new THREE.Vector3(),
+const SH={g:null,bin:null,pulp:null,gu:null,ph:'idle',t:0,carry:[],load:0,lean:0,kick:0,pose:{x:0,y:0,z:0,rx:0,ry:0,rz:0},from:null,T:new THREE.Vector3(),
  hits:0,stickT:.14,pins:[],fresh:[],stuck:[],seeds:[],heap:[],heapS:null,heapK:null,heapE:null,fall:[],fallS:null,fallE:null,binned:[],crushT:0,
  lastX:0,lastZ:0,scraping:false,ridge:0,ridgeC:null,bang:0,dumped:false,oozeT:0,sndT:0,
  tossN:0,binN:0,binLv:0,binDrain:0,binPieces:[],binSolid:null,binEyes:null,binC:new THREE.Color(.5,.42,.12)};
@@ -2748,7 +2751,9 @@ function buildBin(){
  const body=merge([part(new THREE.CylinderGeometry(.17,.14,.3,20,1,true),0x2f6fd0,0,.17,0),part(new THREE.TorusGeometry(.17,.014,8,24),0x1b2f6b,0,.32,0,1,1,1,Math.PI/2,0,0),part(CY(.14,.14,.02,20),0x1b2f6b,0,.03,0),part(BX(.2,.04,.012),0xffd21f,0,.2,.162)]);
  const m=new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,envMapIntensity:.5,side:THREE.DoubleSide}));m.castShadow=true;m.receiveShadow=true;g.add(m);
  const p=new THREE.Mesh(lump(new THREE.CylinderGeometry(.158,.15,.03,18,1),.05,6),new THREE.MeshStandardMaterial({roughness:.1,envMapIntensity:1}));p.visible=false;g.add(p);SH.pulp=p;
+ const pv=p.geometry.attributes.position;let radius=0,bottom=0;for(let i=0;i<pv.count;i++){radius=Math.max(radius,Math.hypot(pv.getX(i),pv.getZ(i)));bottom=Math.min(bottom,pv.getY(i))}p.userData.radius=radius;p.userData.bottom=bottom;
  SH.binSolid=solidBatch(g,240);SH.binEyes=solidBatch(g,24,eyeIM.geometry,.3);
+ for(const m of[SH.binSolid,SH.binEyes]){m.geometry.computeBoundingSphere();const b=m.geometry.boundingSphere;m.userData.bound=b.radius+b.center.length()}
  g.visible=false;scene.add(g);SH.bin=g;
 }
 function binAdd(n,col){
@@ -2758,17 +2763,21 @@ function binAdd(n,col){
   s.binPieces.push({color,eye:k===3,seed:rnd(0,TAU),settle:rnd(.045,.09)});if(s.binPieces.length>224)s.binPieces.shift()}
 }
 const binTop=()=>.045+.105*SH.binLv+.018; // 통 안 곤죽 윗면 높이
+// 통은 아래가 좁은 20각형이다. 원의 반지름 대신 벽 면까지의 거리와 여유 폭을 쓴다.
+const binInnerRadius=y=>lerp(.14,.17,clamp((y-.02)/.3,0,1))*Math.cos(Math.PI/20)-.007;
 function binContents(dt){
  const s=SH;
  if(s.binN>=72&&!s.binDrain)s.binDrain=1.8;
  if(s.binDrain){s.binDrain=Math.max(0,s.binDrain-dt);if(!s.binDrain){s.binN=0;s.binPieces.length=0;AU.flush();for(const c of s.binned)if(!c.dead)killCreature(c,'bin');s.binned.length=0}}
  s.binLv=damp(s.binLv,Math.min(1,s.binN/72),s.binN?7:3,dt);
  s.pulp.visible=s.binLv>.02;s.pulp.position.y=.045+.105*s.binLv;s.pulp.material.color.copy(s.binC).lerp(GUT,.35);s.pulp.material.roughness=.55;
+ const scale=binInnerRadius(s.pulp.position.y+s.pulp.userData.bottom)/s.pulp.userData.radius;s.pulp.scale.set(scale,1,scale);
  let a=0,b=0;
- for(let i=0;i<s.binPieces.length;i++){const e=s.binPieces[i],layer=i/16|0,th=i*2.39996,rr=Math.sqrt(frac(i*.618+.13))*.125;
+ for(let i=0;i<s.binPieces.length;i++){const e=s.binPieces[i],layer=i/16|0,th=i*2.39996;
   e.settle*=Math.exp(-dt*12);const y=.064+Math.min(.22,layer*.017)+Math.sin(e.seed)*.008+e.settle;
-  if(e.eye&&b<24)solidAt(s.binEyes,b++,Math.cos(th)*rr,y+.008,Math.sin(th)*rr,.012,.012,.012,WHITE,0,e.seed,.4);
-  else{const k=i%5,sz=k===0?.032:.019;solidAt(s.binSolid,a++,Math.cos(th)*rr,y,Math.sin(th)*rr,k===1?.012:.023,k===0?.009:.014,sz,e.color,Math.sin(e.seed)*.4,e.seed,.25*Math.cos(e.seed))}}
+  const eye=e.eye&&b<24,k=i%5,sx=eye?.012:k===1?.012:.023,sy=eye?.012:k===0?.009:.014,sz=eye?.012:k===0?.032:.019,cy=y+(eye?.008:0),m=eye?s.binEyes:s.binSolid;
+  const bound=m.userData.bound*Math.max(sx,sy,sz),rr=Math.sqrt(frac(i*.618+.13))*Math.max(0,binInnerRadius(cy-bound)-bound);
+  solidAt(m,eye?b++:a++,Math.cos(th)*rr,cy,Math.sin(th)*rr,sx,sy,sz,eye?WHITE:e.color,eye?0:Math.sin(e.seed)*.4,e.seed,eye?.4:.25*Math.cos(e.seed))}
  solidEnd(s.binSolid,a);solidEnd(s.binEyes,b);
 }
 function binSplash(k=1){const b=SH.bin.position;for(let i=0;i<Math.round(5*k);i++)drop(b.x+rnd(-.08,.08),.32,b.z+rnd(-.08,.08),rnd(-.5,.5),rnd(.8,1.8),rnd(-.5,.5),rnd(.008,.016),SH.binC)}
@@ -2800,7 +2809,7 @@ function shovelBegin(){
  const s=SH;let tx=P.x+.05,tz=P.z-.86,best=null,bd=.32;
  for(const c of creatures){if(busy(c)||c.dead)continue;const d=Math.hypot(c.x-tx,c.z-tz);if(d<bd){bd=d;best=c}}
  if(best){tx=lerp(tx,best.x,.8);tz=lerp(tz,best.z,.8)}
- s.T.set(tx,0,tz);s.ph='raise';s.t=0;s.from=Object.assign({},s.pose);AU.whoosh();
+ s.T.set(tx,0,tz);s.ph='raise';s.t=0;s.from=Object.assign({},s.pose);
 }
 function stainNear(x,z,r){let a=0,c=null;for(const t of INK.stains){if(Math.abs(t.x-x)<r&&Math.abs(t.z-z)<r&&t.a>0){a+=t.a;if(t.c)c=t.c}}return a>.3&&c?{a,c}:null}
 function bladeRect(){const p=SH.pose;return{cx:p.x,cz:p.z+SHD/2}}
@@ -2818,6 +2827,7 @@ function bladeSqueeze(col,k){ // 날 밑에 고여 있던 피가 네 변으로 �
 const _be={x:0,z:0,nx:0,nz:0};
 function slamImpact(){
  const s=SH,{cx,cz}=bladeRect(),inR=(x,z)=>Math.abs(x-cx)<SHW&&Math.abs(z-cz)<SHD/2;
+ AU.shovelSlam(); // 여러 대상의 반응음이 음성 슬롯을 채우기 전에 접촉음을 먼저 확보한다.
  let n=0,first=null;s.pins.length=0;s.fresh.length=0;s.seeds.length=0;
  for(const c of creatures){if(busy(c)||c.dead)continue;const dx=c.x-cx,dz=c.z-cz;if(Math.abs(dx)>SHW+.14||Math.abs(dz)>SHD/2+.14)continue;
   const fx=Math.sin(c.yaw),fz=Math.cos(c.yaw),ci=inR(c.x,c.z),hi=inR(c.x+fx*c.r*1.25,c.z+fz*c.r*1.25),ti=inR(c.x-fx*c.r*1.5,c.z-fz*c.r*1.5);
@@ -2838,11 +2848,12 @@ function slamImpact(){
  // 이미 있던 사체는 더 납작해진다
  for(const k of chunks)if(k.kind===1&&k.rest&&k.fade==null&&!k.stick&&Math.abs(k.x-cx)<SHW+.02&&Math.abs(k.z-cz)<SHD/2+.02&&k.sy>.0025){k.sy*=.6;k.sx*=1.1;k.sz*=1.1;s.fresh.push(k)}
  const pool=stainNear(cx,cz,.2),hit=n+s.pins.length;
+ s.kick=hit?1.1:.9;camera.position.y-=.045*s.kick;camera.rotation.x-=.035*s.kick;
+ hitstop=Math.max(hitstop,hit?.075:.045);shake=Math.max(shake,hit?1.4:.95);buzz(hit?[24,18,12]:18);
  if(hit){AU.cut();stamp(cx,cz,SHW*2.3,SHD*1.2,0,1,7,(first||s.pins[0]).ink,1);if(pool)bladeSqueeze(pool.c,.7);
-  AU.clang(.7);AU.smack(Math.min(1.3,.65+n*.08));AU.crackle(Math.min(16,3+n*3),1,.01,900,3000,.013);hitstop=.07;shake=1.3;buzz(18+Math.min(30,hit*3));
+  AU.smack(Math.min(1.3,.65+n*.08));AU.crackle(Math.min(16,3+n*3),1,.01,900,3000,.013);
   bootGore(s.g,(first||s.pins[0]).ink,.06+.012*Math.min(10,hit))}
- else if(pool){bladeSqueeze(pool.c,1);AU.clang(.7);AU.smack(.55);shake=.75;bootGore(s.g,pool.c,.03)}
- else{AU.clang(.7);shake=.6}
+ else if(pool){bladeSqueeze(pool.c,1);AU.smack(.55);bootGore(s.g,pool.c,.03)}
  s.hits=n;s.stickT=.14+(s.pins.length?.2:n?.06:0);s.oozeT=0;
 }
 function pinnedUpdate(dt){ // 날에 깔린 채 머리를 내놓은 것: 버둥대고, 입과 날 가장자리로 피가 샌다
@@ -2925,19 +2936,19 @@ function shovelUpdate(dt,act){
   for(const c of s.binned)if(!c.dead)killCreature(c,'none');s.binned.length=0;
   for(const k of s.stuck.slice())bladeDrop(k);
   if(s.heap.length||s.fall.length){s.heap.length=0;s.fall.length=0;solidEnd(s.heapS,0);solidEnd(s.heapK,0);solidEnd(s.heapE,0);solidEnd(s.fallS,0);solidEnd(s.fallE,0)}
-  if(s.ph!=='idle')clearThreads(4);s.load=0;s.ph='idle';s.lean=0;s.scraping=false;AU.loop('scrape',false);return}
+  if(s.ph!=='idle')clearThreads(4);s.load=0;s.ph='idle';s.lean=s.kick=0;s.scraping=false;AU.loop('scrape',false);return}
  s.t+=dt;const p=s.pose;
  // 삽은 오른쪽, 통은 왼쪽 앞. 세로 화면에서도 통 전체와 삽날 사이를 비운다.
  const bx=P.x-Math.min(.66,W/H*.55),bz=P.z-1.35;s.bin.position.set(bx,0,bz);
  binContents(dt);binnedUpdate(dt);
  {const u=s.gu;if(u.uGore.value>0){u.uGoreWet.value=Math.max(.35,u.uGoreWet.value-dt*.06);u.uGore.value=Math.max(0,u.uGore.value-dt*.003)}} // 날에 묻은 피는 번들거리다 마른다
  if(s.ph==='idle'){shovelIdle(p);s.lean=0;if(act&&started)shovelBegin()}
- else if(s.ph==='raise'){ // 날을 표적 위로 들어 올린다. 날 끝을 살짝 숙여 바닥을 겨눈다
-  const u=Math.min(1,s.t/.2),e=ss(u);p.x=lerp(s.from.x,s.T.x,e);p.z=lerp(s.from.z,s.T.z-.11,e);p.y=lerp(s.from.y,.46,eo(u));p.rx=lerp(s.from.rx,.34,e);p.ry=lerp(s.from.ry,0,e);p.rz=lerp(s.from.rz,0,e);s.lean=-.08*e;
+ else if(s.ph==='raise'){ // 어깨 위까지 크게 치켜들고, 꼭대기에서 40ms 힘을 모은다.
+  const u=Math.min(1,s.t/SHSWING.raise),e=ss(Math.min(1,u/.84));p.x=lerp(s.from.x,P.x+SHSWING.side,e);p.z=lerp(s.from.z,P.z-SHSWING.reach,e);p.y=lerp(s.from.y,SHSWING.height,e);p.rx=lerp(s.from.rx,SHSWING.rx,e);p.ry=lerp(s.from.ry,0,e);p.rz=lerp(s.from.rz,SHSWING.rz,e);s.lean=-.08*e;
   if(u>=.5&&s.stuck.length&&Math.random()<dt*4)bladeDrop(pick(s.stuck));
-  if(u>=1){s.ph='slam';s.t=0}}
- else if(s.ph==='slam'){const u=Math.min(1,s.t/.065);p.x=s.T.x;p.z=lerp(s.T.z-.11,s.T.z-.15,u);p.y=lerp(.46,0,u*u);p.rx=lerp(.34,0,u*u);p.ry=p.rz=0;s.lean=.35*u;if(u>=1){p.y=0;p.rx=0;slamImpact();s.ph='stick';s.t=0}}
- else if(s.ph==='stick'){p.y=0;p.rx=0;p.x=s.T.x+Math.sin(time*90)*.004*Math.max(0,1-s.t/.1);s.lean=.35;pinnedUpdate(dt);
+  if(u>=1){s.ph='slam';s.t=0;AU.noise('bandpass',650,2800,.8,SHSWING.drop,.4)}}
+ else if(s.ph==='slam'){const u=Math.min(1,s.t/SHSWING.drop),e=u*u*u;p.x=lerp(P.x+SHSWING.side,s.T.x,e);p.z=lerp(P.z-SHSWING.reach,s.T.z-.15,e);p.y=lerp(SHSWING.height,0,e);p.rx=lerp(SHSWING.rx,0,e);p.ry=0;p.rz=lerp(SHSWING.rz,0,e);s.lean=.35*e;if(u>=1){p.y=0;p.rx=0;slamImpact();s.ph='stick';s.t=0}}
+ else if(s.ph==='stick'){p.y=0;p.rx=-.028*Math.abs(Math.sin(s.t*70))*Math.exp(-s.t*24);p.x=s.T.x+Math.sin(s.t*95)*.006*Math.exp(-s.t*24);s.lean=.35;pinnedUpdate(dt);
   if(s.t>s.stickT){const kills=s.seeds.length;liftOff();s.from=Object.assign({},p);s.t=0;s.ph=act?'pull':kills?'show':'back'}}
  else if(s.ph==='show'){ // 날을 오른쪽 위로 들어 비켜 준다: 깔린 자리가 드러나고, 날 밑면과 바닥 사이로 실이 길게 늘어나 끊긴다. 날에서는 피가 떨어진다
   const u=Math.min(1,s.t/.26),e=ss(u);p.x=lerp(s.from.x,s.T.x+.3,e);p.y=lerp(s.from.y,.26,eo(u))+Math.sin(time*7)*.004*e;p.z=lerp(s.from.z,s.T.z-.12,e);p.rx=lerp(s.from.rx,-.22,e);p.ry=lerp(s.from.ry,.25,e);p.rz=lerp(s.from.rz,-.42,e);
@@ -2975,8 +2986,9 @@ function shovelUpdate(dt,act){
   if(u>=1){s.ph='bang';s.t=0;s.bang=0}}
  else if(s.ph==='bang'){ // 테두리에 두 번 쳐서 털어 낸다
   const K=.16,k=s.t/K,i=Math.floor(k),f=k-i;
-  if(i<2){const d=Math.sin(f*Math.PI);Object.assign(p,bladeOver(.1,1,1.18-.2*d,.5+.07*d,tmpP));if(i>=s.bang&&f>.92){s.bang=i+1;bladeShake()}}
-  else{Object.assign(p,bladeOver(.1,1,1.18,.5,tmpP));s.ph='back';s.t=0;s.from=Object.assign({},p);fadeThreads(4)}}
+  if(i<2){const d=Math.sin(f*Math.PI);Object.assign(p,bladeOver(.1,1,1.18-.2*d,.5+.07*d,tmpP))}
+  else{Object.assign(p,bladeOver(.1,1,1.18,.5,tmpP));s.ph='back';s.t=0;s.from=Object.assign({},p);fadeThreads(4)}
+  while(s.bang<2&&k>=s.bang+.92){s.bang++;bladeShake()}} // 프레임이 접촉 구간을 건너뛰어도 두 번 모두 턴다.
  else if(s.ph==='back'){const u=Math.min(1,s.t/.2),e=ss(u);shovelIdle(tmpP);if(s.hits&&Math.random()<dt*40)drop(p.x+rnd(-.16,.16),p.y+.01,p.z+rnd(0,.3),rnd(-.1,.1),0,rnd(-.1,.1),rnd(.006,.012),BLOOD);
   p.x=lerp(s.from.x,tmpP.x,e);p.y=lerp(s.from.y,tmpP.y,e)+Math.sin(u*Math.PI)*.05;p.z=lerp(s.from.z,tmpP.z,e);p.rx=lerp(s.from.rx,.3,e);p.rz=lerp(s.from.rz,0,e);p.ry=lerp(s.from.ry,-.06,e);
   if(s.stuck.length&&u>.35&&Math.random()<dt*3)bladeDrop(pick(s.stuck)); // 들어 올리는 사이 눌어붙어 있던 것이 떨어져 나간다
@@ -3788,7 +3800,7 @@ function spawnInitial(){
  while(made<n){const cx=rnd(-XB+.4,XB-.4),cz=rnd(ZN+.5,ZF-.6);if(Math.hypot(cx-P.x,cz-P.z)<.6)continue;herd(cx,cz,pick(act).type,5+(Math.random()*5|0))}
 }
 function resetRoom(){
- resetSupport();handReset();creatures.length=0;drops.length=0;chunks.length=0;for(const F of FT){F.ph='idle';F.pins.length=0;F.stuck.length=0;F.fresh.length=0;F.seeds.length=0}TD.on=false;TD.k=0;SH.carry.length=0;SH.ph='idle';SH.tossN=0;SH.load=0;SH.heap.length=0;SH.fall.length=0;SH.binned.length=0;SH.pins.length=0;SH.stuck.length=0;SH.seeds.length=0;SH.fresh.length=0;SH.crushT=0;SH.scraping=false;SH.gu.uGore.value=0;for(const m of[SH.heapS,SH.heapK,SH.heapE,SH.fallS,SH.fallE])solidEnd(m,0);SH.binN=SH.binLv=SH.binDrain=0;SH.binPieces.length=0;solidEnd(SH.binSolid,0);solidEnd(SH.binEyes,0);vacClear();AU.loop('grind',false);tools2Reset();clearThreads();inkClear();for(const b of[bootR,bootL,TG.F[0].boot,TG.F[1].boot]){b.userData.res.length=0;b.userData.gu.uGore.value=0}
+ resetSupport();handReset();creatures.length=0;drops.length=0;chunks.length=0;for(const F of FT){F.ph='idle';F.pins.length=0;F.stuck.length=0;F.fresh.length=0;F.seeds.length=0}TD.on=false;TD.k=0;SH.carry.length=0;SH.ph='idle';SH.kick=0;SH.tossN=0;SH.load=0;SH.heap.length=0;SH.fall.length=0;SH.binned.length=0;SH.pins.length=0;SH.stuck.length=0;SH.seeds.length=0;SH.fresh.length=0;SH.crushT=0;SH.scraping=false;SH.gu.uGore.value=0;for(const m of[SH.heapS,SH.heapK,SH.heapE,SH.fallS,SH.fallE])solidEnd(m,0);SH.binN=SH.binLv=SH.binDrain=0;SH.binPieces.length=0;solidEnd(SH.binSolid,0);solidEnd(SH.binEyes,0);vacClear();AU.loop('grind',false);tools2Reset();clearThreads();inkClear();for(const b of[bootR,bootL,TG.F[0].boot,TG.F[1].boot]){b.userData.res.length=0;b.userData.gu.uGore.value=0}
  P.x=0;P.z=.8;creators.forEach(c=>{c.timer=rnd(3,7);c.selfRest=c.restMix=0});spawnInitial();
 }
 function nextZone(){return openInterview()}
