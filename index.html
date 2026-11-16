@@ -153,6 +153,48 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 @media(max-height:560px) and (max-width:899px){#candidate-stage{height:100%}.int-person{order:0}.int-meta{order:1}.int-result{order:2;flex:none}.int-work{order:3;grid-template-columns:70px 1fr}.int-circumstances{order:4;flex:none}#candidate-approve{order:5}.int-files{order:6}.int-chosen{height:30px;min-height:30px}.int-person h3{font-size:18px}}
 #interview[hidden]{display:none}
 
+/* 대문: 기관 로고, 슬로건, 입장 동선을 분리한다. */
+#intro{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;background:#fafbfe;color:#20243a;overflow-y:auto;overscroll-behavior:contain}
+#intro[hidden]{display:none}
+.intro-wrap{width:min(1120px,100%);margin:0 auto;padding-left:42px;padding-right:42px}
+.intro-header{flex:none;background:#fff;border-bottom:1px solid #e8eaf0}
+.intro-header .intro-wrap{min-height:100px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.intro-brand{display:flex;align-items:center;gap:15px;color:#33358b;flex:none}
+.intro-mark{width:68px;height:48px;display:block;flex:none}.intro-mark svg{width:100%;height:100%;display:block}
+.intro-brand b{display:block;font-size:23px;font-weight:750;letter-spacing:-.055em;line-height:1.3}
+.intro-brand small{display:block;font-size:8px;letter-spacing:.075em;margin-top:4px;font-weight:600;color:#767c8d}
+.intro-arcade{color:#757a8a;text-decoration:none;font-size:12px;white-space:nowrap}.intro-arcade span{margin-left:14px}
+.intro-main{flex:1;display:flex;flex-direction:column}
+.intro-hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(115deg,#343487 0%,#49459e 66%,#4e51a0 100%);flex:1;display:flex;align-items:center;min-height:410px}
+.intro-hero .intro-wrap{position:relative;padding-top:56px;padding-bottom:52px;display:flex;align-items:center;justify-content:space-between}
+.intro-copy{position:relative;z-index:1}.intro-eyebrow{font-size:12px;letter-spacing:.16em;color:#d1d4f1;margin:0 0 24px;font-weight:500}
+#intro h1{font-size:clamp(42px,4.7vw,64px);line-height:1.28;font-weight:350;letter-spacing:-.06em;margin:0 0 28px;word-break:keep-all}
+#intro h1 strong{font-weight:750}
+.intro-description{font-size:15px;line-height:1.85;color:#e3e4f4;letter-spacing:-.025em;margin:0 0 12px;word-break:keep-all}.intro-description:last-child{margin-bottom:0}
+.intro-emblem{position:absolute;right:28px;top:50%;transform:translateY(-50%);width:350px;color:#ced5fa;opacity:.19;pointer-events:none}
+.intro-emblem svg{display:block;width:100%;height:auto}
+.intro-entry{display:flex;align-items:center;justify-content:space-between;gap:30px;min-height:158px;padding-top:28px;padding-bottom:24px}
+.intro-entry h2{font-size:22px;letter-spacing:-.045em;font-weight:750;margin:0 0 9px}.intro-entry p{font-size:13px;line-height:1.65;color:#787e8e;margin:0;word-break:keep-all}
+.intro-action{width:222px;flex:none;position:relative;padding-bottom:18px}
+#intro #start{min-height:56px;border-radius:3px;background:#393d90;font-size:15px;box-shadow:none;justify-content:space-between;padding:0 23px;font-weight:650}
+#intro #start::after{content:'→';font-size:25px;font-weight:400}#intro #start:disabled::after{content:'…'}
+#intro #load{font-size:11px;line-height:1.5;margin-top:7px;min-height:0;position:absolute;top:56px;left:0;right:0;color:#797f90}
+.intro-footer{display:flex;justify-content:space-between;align-items:center;min-height:60px;flex:none;border-top:1px solid #e2e5ed;color:#9a9dab;font-size:10px;letter-spacing:.02em}
+@media(min-width:1600px){.intro-wrap{width:1240px}.intro-hero .intro-wrap{padding-top:80px;padding-bottom:80px}}
+@media(max-width:759px){.intro-wrap{padding-left:25px;padding-right:25px}.intro-header .intro-wrap{min-height:80px;gap:8px}.intro-mark{width:48px;height:34px}.intro-brand{gap:9px}.intro-brand b{font-size:18px}.intro-brand small{font-size:6px;letter-spacing:.04em}.intro-arcade{font-size:10px}.intro-arcade span{margin-left:2px}.intro-hero{min-height:330px}.intro-hero .intro-wrap{padding-top:36px;padding-bottom:34px}.intro-eyebrow{font-size:10px;margin-bottom:20px}.intro-description{font-size:13px;line-height:1.8}.intro-emblem{right:-52px;top:48%;width:205px;opacity:.1}#intro h1{font-size:43px;margin-bottom:22px}.intro-entry{gap:18px;min-height:0;flex-direction:column;align-items:stretch;padding-top:25px;padding-bottom:25px}.intro-entry h2{font-size:19px;margin-bottom:5px}.intro-entry p{font-size:11px}.intro-action{width:100%;padding-bottom:14px}#intro #start{min-height:50px}#intro #load{top:50px}.intro-footer{min-height:43px}.intro-wide-break{display:none}}
+@media(max-width:359px){.intro-wrap{padding-left:20px;padding-right:20px}.intro-brand b{font-size:16px}.intro-brand small{font-size:5.5px}.intro-mark{width:40px}.intro-arcade{font-size:9px}#intro h1{font-size:38px}.intro-description{font-size:12px}}
+@media(max-height:600px) and (min-width:760px){.intro-header .intro-wrap{min-height:72px}.intro-hero{min-height:310px}.intro-hero .intro-wrap{padding-top:30px;padding-bottom:28px}#intro h1{font-size:44px;margin-bottom:16px}.intro-eyebrow{margin-bottom:15px}.intro-description{font-size:13px}.intro-entry{min-height:124px}.intro-footer{min-height:42px}}
+/* 심사: 백분율 대신 실제 금액과 초과액을 먼저 보여준다. */
+.int-income{padding:15px 0 12px;border-top:1px solid #d9d9cf;border-bottom:1px solid #d9d9cf;margin:10px 0}
+.int-income-top{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;color:#757b70}.int-income-top span:last-child{font-size:10px}
+.int-income-amount{font-size:29px;font-weight:800;letter-spacing:-.045em;font-variant-numeric:tabular-nums;line-height:1.3;margin:6px 0 10px;color:#354c3b}.int-income-amount small{font-size:11px;font-weight:500;letter-spacing:0;margin-left:5px;color:#7c8278}
+.int-income.over .int-income-amount{color:#944b3f}
+.int-income-track{height:7px;background:#e3e3d8;position:relative;margin-right:1px}.int-income-track i{height:100%;display:block;background:#728b72}.int-income.over .int-income-track i{background:#b77564}.int-income-track::after{position:absolute;content:'';top:-4px;bottom:-4px;left:76.92715%;width:2px;background:#4c514b}
+.int-income-caption{display:flex;justify-content:space-between;margin:9px 0 0;gap:8px;font-size:11px;color:#757b70}.int-income-caption b{color:#4a664a}.int-income.over .int-income-caption b{color:#944b3f}
+.int-wages{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:12px;font-size:10px;line-height:1.6;color:#7d8179}.int-wages span{white-space:nowrap}.int-wages b{font-weight:600;color:#485044;margin-left:4px}
+@media(min-width:900px){.int-income-amount{font-size:36px}.int-income-top,.int-income-top span:last-child,.int-wages{font-size:11px}}
+@media(max-height:560px) and (max-width:899px){.int-income{order:1;flex:none}.int-income-amount{font-size:26px}}
+
 </style>
 </head>
 <body>
@@ -175,14 +217,25 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
  <button id="act2" hidden><b></b><small></small><i>Q</i></button>
 </div>
 <div class="ov" id="intro">
- <div class="ic">
-  <div class="org"><div class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 19H35M21.5 19V49M41 19H68M54.5 19V49M76 15 89 49" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></div>한국창작인복지재단</div>
-  <h1>한국창작인<br>복지재단</h1>
-  <p><b>모든 사람은 예술가입니다.</b><br>누구나 감상자가 아닌 창작 주체로 살아갈 때, 노동에서 소외되지 않는 삶이 시작됩니다. 한국창작인복지재단은 전 국민의 창작 활동을 지원합니다.<br>창작이 멈추지 않도록 작업장은 늘 비워 둡니다.</p>
-  <button class="pri" id="start" disabled>준비 중</button>
-  <div id="load">작업장을 준비하고 있습니다.</div>
-  <div class="foot">한국창작인복지재단 · <a href="../">혐규오락실</a></div>
- </div>
+ <header class="intro-header"><div class="intro-wrap">
+  <div class="intro-brand"><span class="intro-mark" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 19H35M21.5 19V49M41 19H68M54.5 19V49M76 15 89 49" fill="none" stroke="currentColor" stroke-width="9" stroke-linejoin="miter"/></svg></span><span><b>한국창작인복지재단</b><small>KOREAN CREATIVE WORKERS FOUNDATION</small></span></div>
+  <a class="intro-arcade" href="../arcade/">혐규오락실 <span aria-hidden="true">↗</span></a>
+ </div></header>
+ <main class="intro-main">
+  <section class="intro-hero" aria-labelledby="intro-title"><div class="intro-wrap">
+   <div class="intro-copy"><p class="intro-eyebrow">전 국민 창작활동 지원</p>
+    <h1 id="intro-title">모든 사람은<br><strong>예술가입니다.</strong></h1>
+    <p class="intro-description">누구나 감상자가 아닌 창작 주체로 살아갈 때,<br class="intro-wide-break"> 노동에서 소외되지 않는 삶이 시작됩니다.</p>
+    <p class="intro-description">한국창작인복지재단은<br>전 국민의 창작 활동을 지원합니다.</p>
+   </div>
+   <div class="intro-emblem" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 19H35M21.5 19V49M41 19H68M54.5 19V49M76 15 89 49" fill="none" stroke="currentColor" stroke-width="9" stroke-linejoin="miter"/></svg></div>
+  </div></section>
+  <section class="intro-entry intro-wrap" aria-label="시민창작교실 입장">
+   <div><h2>시민창작교실</h2><p>창작이 멈추지 않도록 작업장은 늘 비워 둡니다.</p></div>
+   <div class="intro-action"><button class="pri" id="start" disabled>준비 중</button><div id="load" role="status">작업장을 준비하고 있습니다.</div></div>
+  </section>
+ </main>
+ <footer class="intro-footer intro-wrap"><span>한국창작인복지재단</span><span>KCWF</span></footer>
 </div>
 <div class="ov" id="shop" hidden>
  <section class="panel" role="dialog" aria-modal="true" aria-labelledby="shop-title">
@@ -248,32 +301,35 @@ const TOOLS=[
 
 const GRANT=3000,GRANT_T=96,SUPPORT_UNIT=100,SUPPORT_T=14,ACTIVITY_T=90;
 const AP=[
- {"type":4,"field":"문학","title":"창문을 닫은 뒤","work":"시 7편 · 문예지 게재본","recT":"문예지 발표 7편","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"원고료 48만 원 / 연","inc":"no","mid":36,"ev":"발표 지면 7건 · 원고료 입금내역","papers":[["일","교정 아르바이트 주 3일"],["월 소득","92만 원"],["거주·작업실","월세방 책상 / 월세 48만 원"]],"income":"근로·사업소득과 본인 재산 반영","plan":"다음 호 원고 3편. 현재 초고 작성 중.","art":"pages","kind":"예술활동증명 (일반)","desk":4,"wk":5},
- {"type":4,"field":"분야 선택","title":"접어서 건네는 문장","work":"봉제한 문장 84점 · 건넨 날짜 기록","recT":"문장·천·전달 기록 84건","crit":"접수 분야별 발표 실적","rec":"out","incT":"판매 수입 없음","inc":"no","mid":84,"ev":"천에 적은 원고 · 전달 기록 · 설치 사진","papers":[["직장","봉제 공장 재단 보조 / 주 5일 전일제"],["작업 방식","하루 한 문장을 천에 꿰매서 건넴"],["작업 공간","퇴근 후 식탁"]],"income":"근로소득과 본인 재산 반영","plan":"받은 사람이 다시 접어 다른 사람에게 건넵니다.","art":"stitch","choices":[{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"문장 84점 / 인정 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"},{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치 사진 12건 / 전시 확인 0건","note":"전시 기간·장소 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)","wk":4},
- {"type":1,"field":"미술","title":"오후의 방","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":0,"ev":"전시 도록 · 대관 계약서 · 결제 확인서","papers":[["대관료 결제자","모"],["거주·작업실","부 소유 건물 / 사용료 없음"],["본인 소득","없음 / 생활비 가족 부담"]],"income":"본인 소득·재산 산정","plan":"같은 공간에서 다음 연작을 준비합니다.","art":"paint","kind":"예술활동증명 (일반)","desk":1},
- {"type":2,"field":"공예","title":"남은 흙의 무게","work":"도자 26점 · 제작 과정","recT":"단체전 5회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 96만 원 / 연","inc":"no","mid":137,"ev":"도록 5건 · 판매 영수증 · 급여명세서","papers":[["직장","자동차 부품 공장 / 2교대 전일제"],["월 급여","352만 원 (교대·특근수당 포함)"],["작업 시간","비번일 / 공방 시간제 대여"]],"income":"본인 소득·재산 산정","plan":"남은 흙으로 다음 것을 만듭니다.","art":"clay","kind":"예술활동증명 (일반)","wk":4},
- {"type":3,"field":"음악","title":"새벽의 실내","work":"음원 3곡 · 악보와 녹음 기록","recT":"음원 3곡 발매","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"음원 정산 8만 원 / 연","inc":"no","mid":0,"ev":"음원 유통 확인서 · 크레딧 · 정산내역","papers":[["유학","보스턴 4년 / 학비 부모 부담"],["거주·작업실","자택 방음실 / 부 시공"],["본인 소득","음원 정산 7천 원 / 월"]],"income":"본인 소득·재산 산정","plan":"남겨둔 녹음부터 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":3},
- {"type":3,"field":"분야 선택","title":"계단이 되돌려주는 목소리","work":"발걸음으로 소리가 달라지는 구조물","recT":"설치물 1점 / 작동 기록 18건","crit":"접수 분야별 발표 실적","rec":"out","incT":"작동 관람 무료 / 수입 없음","inc":"no","mid":88,"ev":"구조물 사진 · 회로도 · 작동 영상 · 소리 기록","papers":[["직장","건물 시설관리 / 격일 근무"],["재료","폐목재·압력판·녹음된 목소리"],["참여 방식","지나가는 사람이 밟으면 소리가 이어짐"]],"income":"본인 소득·재산 산정","plan":"한 계단을 더 연결합니다.","art":"hybrid","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치물 1점 / 전시 확인 0건","note":"전시 개최 확인서 보완","rec":"out"},{"field":"음악","crit":"음원 3곡 또는 공연 3회","recT":"소리 기록 18건 / 발매 음원 0곡","note":"발매 정보·공연 실적 보완","rec":"out"},{"field":"공연","crit":"공연 참여 3편","recT":"작동 영상 18건 / 출연 확인 0편","note":"공연명·출연 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)","wk":0},
- {"type":0,"field":"만화","title":"다녀왔습니다","work":"밤마다 한 장씩 그린 만화","recT":"개인 계정 연재 640회","crit":"연재 계약·기간 또는 단행본 발행 확인","rec":"out","incT":"그림 수입 55만 원 / 연","inc":"no","mid":84,"ev":"연재 화면 · 원본 파일 · 업로드 기록","papers":[["직장","급식실 조리원 / 주 5일 전일제"],["연재 계약","없음 / 개인 계정 640회"],["작업 시간","21:30~23:30 / 출근 05:40"]],"income":"근로소득과 본인 재산 반영","plan":"641화를 그리고 있습니다.","art":"comic","kind":"예술활동증명 (일반)","wk":3},
- {"type":0,"field":"분야 선택","title":"없어진 가게의 지도","work":"사라진 간판을 찾아 걸으며 고치는 지도","recT":"현장 기록 47건 / 지도 갱신 47회","crit":"접수 분야별 발표 실적","rec":"out","incT":"열람 무료 / 수입 없음","inc":"no","mid":96,"ev":"지도 · 간판 채록 · 이동 기록","papers":[["직장","택배 배송 / 주 6일"],["완성본","현장 변화에 따라 계속 갱신"],["배포","골목에 부착 / 주소 없이 전달"]],"income":"본인 소득·재산 산정","plan":"철거된 자리에 남은 이름을 더 적습니다.","art":"map","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"지도 47개 판 / 전시 확인 0회","note":"전시명·기간 확인 보완","rec":"out"},{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"채록 47건 / 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"}],"kind":"예술활동증명 (일반)","wk":2},
- {"type":2,"field":"공예","title":"손에 맞게 고친 것들","work":"손잡이를 바꾸며 남긴 제작 기록","recT":"생활공예 단체전 5회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"재료비 정산 31만 원 / 연","inc":"no","mid":84,"ev":"전시 확인서 5건 · 제작 전후 사진 · 급여명세서","papers":[["직장","마트 계산원 / 주 40시간 전일제"],["월 급여","216만 원 (최저임금)"],["작업 시간","퇴근 후 수선 작업대"]],"income":"근로·사업소득과 본인 재산 반영","plan":"잡기 어렵다는 손잡이를 다시 깎고 있습니다.","art":"clay","kind":"예술활동증명 (일반)","wk":1},
- {"type":4,"field":"문학","title":"돌아오는 길","work":"수필집 1권 · 원고 수정본","recT":"문학 작품집 1권","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"인세 19만 원 / 연","inc":"no","mid":0,"ev":"판권지 · 출판 계약 · 인세 정산서","papers":[["출판 비용","자비 출판 / 결제자 부"],["거주·작업실","모 명의 주택 / 서재"],["본인 소득","인세 1만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"열람실이 닫히기 전까지 원고를 씁니다.","art":"pages","kind":"예술활동증명 (일반)","desk":9},
- {"type":1,"field":"미술","title":"불을 끄기 전","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":131,"ev":"전시 도록 · 급여명세서 · 임대차 계약서","papers":[["직장","물류센터 야간 / 주 5일 전일제"],["월 급여","336만 원 (야간·연장수당 포함)"],["대관료","할부 납부 중 / 본인 부담"]],"income":"근로소득과 본인 재산 반영","plan":"다음 전시 대관일에 맞춰 야간근무를 바꿨습니다.","art":"paint","worker":true,"kind":"예술활동증명 (일반)","wk":0},
- {"type":3,"field":"음악","title":"남아 있는 소리","work":"공연 3편 · 합주 녹음","recT":"공연 3편 참여","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"공연료 42만 원 / 연","inc":"no","mid":1,"ev":"공연 포스터 · 출연 확인 · 합주 녹음","papers":[["악기","부모 구입 / 본인 명의 재산 아님"],["거주·작업실","본가 지하 합주실 / 방음 공사 완료"],["본인 소득","공연료 3만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"합주실 예약 시간에 맞춰 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":8},
- {"type":0,"field":"만화","title":"작은 칸의 하루","work":"연재 만화 24화 · 원본 스케치","recT":"계약 연재 24회","crit":"연재 계약·기간 확인","rec":"ok","incT":"원고료 72만 원 / 연","inc":"no","mid":2,"ev":"연재 계약서 · 게재 확인","papers":[["생활비","부모 송금 / 월 250만 원"],["거주·작업실","부 명의 오피스텔 / 임차료 없음"],["본인 소득","원고료 6만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"다음 회차를 이어갑니다.","art":"comic","desk":0},
- {"type":2,"field":"공예","title":"잠깐 빌린 모양","work":"사용하며 형태가 변하는 그릇 18점","recT":"단체전 5회","crit":"단체전 5회","rec":"ok","incT":"판매 24만 원 / 연","inc":"no","mid":1,"ev":"전시 확인서 5건 · 작품 사진","papers":[["생활비","가족 카드 사용"],["거주·작업실","본가 별채 / 가마 설치"],["본인 소득","판매 2만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"그릇의 변화를 기록합니다.","art":"clay","desk":2},
- {"type":3,"field":"음악","title":"한 사람이 지나갈 때","work":"압력판·폐목재·발걸음에 반응하는 목소리","recT":"음원 3곡 발매","crit":"음원 3곡","rec":"ok","incT":"음원 정산 0원","inc":"no","mid":0,"ev":"소리 부분 발췌 · 3개 트랙 유통 확인","papers":[["생활비","부모 송금 / 월 180만 원"],["거주·작업실","공유 작업실 / 이용료 부모 납부"],["본인 소득","음원 정산 0원"]],"income":"본인 소득·재산 산정","plan":"소리와 계단을 연결합니다.","art":"hybrid","desk":13},
- {"type":0,"desk":5,"field":"만화","title":"여섯 칸의 저녁","work":"잡지 연재 8회 · 작업 원고","recT":"잡지 연재 8회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":0,"ev":"게재 확인서 · 편집 계약","papers":[["생활비","배우자 급여 / 조사 대상 아님"],["거주·작업실","배우자 명의 아파트"],["본인 소득","없음"]],"art":"comic"},
- {"type":1,"desk":6,"field":"미술","title":"지워진 자리","work":"회화 9점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":0,"ev":"전시 확인서 · 도록","papers":[["대관료 결제자","모"],["거주·작업실","조부 소유 상가 3층 / 사용료 없음"],["본인 소득","없음"]],"art":"paint"},
- {"type":2,"desk":7,"field":"공예","title":"손이 지나간 면","work":"도자 21점 · 제작 기록","recT":"단체전 5회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":0,"ev":"도록 5건 · 출품 확인","papers":[["생활비","부모 송금 / 월 200만 원"],["거주·작업실","가족 회사 창고 일부 / 사용료 없음"],["본인 소득","없음"]],"art":"clay"},
- {"type":0,"desk":10,"field":"만화","title":"돌아오는 버스","work":"단행본 1권 · 연재 원고","recT":"단행본 1권 발행","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":29,"ev":"판권지 · 출판 계약","papers":[["일","삽화 외주"],["월 소득","74만 원"],["거주·작업실","월세방 책상 / 보증금 300만 원"]],"art":"comic","wk":5},
- {"type":1,"desk":11,"field":"미술","title":"창가의 선","work":"판화 16점 · 전시 기록","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":0,"ev":"전시 도록 · 개최 확인","papers":[["유학","파리 2년 / 학비 부모 부담"],["거주·작업실","부 명의 건물 / 증여 예정"],["본인 소득","없음"]],"art":"paint"},
- {"type":2,"desk":12,"field":"공예","title":"가벼운 그릇","work":"도자 13점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":2,"ev":"전시 계약 · 도록","papers":[["차량","부 명의 / 본인 재산 아님"],["거주·작업실","모 명의 주택 1층 공방"],["본인 소득","판매 4만 원 / 월"]],"art":"clay"},
- {"type":4,"desk":14,"field":"문학","title":"다음 문장","work":"시 6편 · 원고 수정본","recT":"문예지 발표 6편","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":2,"ev":"발표 지면 · 원고료 내역","papers":[["생활비","모 명의 상가 임대수익에서 지급"],["거주·작업실","본가"],["본인 소득","원고료 5만 원 / 월"]],"art":"pages"}
+ {"type":4,"field":"문학","title":"창문을 닫은 뒤","work":"시 7편 · 문예지 게재본","recT":"문예지 발표 7편","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"원고료 48만 원 / 연","inc":"no","ev":"발표 지면 7건 · 원고료 입금내역","papers":[["거주","부 소유 주택 / 주거비 없음"],["작업실","모 소유 상가 / 사용료 없음"],["생활비","가족 카드 / 본인 원고료 월 4만 원"]],"income":"근로·사업소득과 본인 재산 반영","plan":"다음 호 원고 3편. 현재 초고 작성 중.","art":"pages","kind":"예술활동증명 (일반)","desk":4,"monthly":40000},
+ {"type":4,"field":"분야 선택","title":"접어서 건네는 문장","work":"봉제한 문장 84점 · 건넨 날짜 기록","recT":"문장·천·전달 기록 84건","crit":"접수 분야별 발표 실적","rec":"out","incT":"판매 수입 없음","inc":"no","ev":"천에 적은 원고 · 전달 기록 · 설치 사진","papers":[["직장","봉제 공장 / 연장·토요일 특근"],["작업 방식","하루 한 문장을 천에 꿰매서 건넴"],["작업 공간","퇴근 후 식탁"]],"income":"근로소득과 본인 재산 반영","plan":"받은 사람이 다시 접어 다른 사람에게 건넵니다.","art":"stitch","choices":[{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"문장 84점 / 인정 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"},{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치 사진 12건 / 전시 확인 0건","note":"전시 기간·장소 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)","wk":4,"monthly":3120000,"wages":[["기본급",2240000],["연장수당",640000],["특근수당",240000]]},
+ {"type":1,"field":"미술","title":"오후의 방","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","ev":"전시 도록 · 대관 계약서 · 결제 확인서","papers":[["대관료 결제자","모"],["거주·작업실","부 소유 건물 / 사용료 없음"],["본인 소득","없음 / 생활비 가족 부담"]],"income":"본인 소득·재산 산정","plan":"같은 공간에서 다음 연작을 준비합니다.","art":"paint","kind":"예술활동증명 (일반)","desk":1,"monthly":0},
+ {"type":2,"field":"공예","title":"남은 흙의 무게","work":"도자 26점 · 제작 과정","recT":"단체전 5회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 96만 원 / 연","inc":"no","ev":"도록 5건 · 판매 영수증 · 급여명세서","papers":[["직장","자동차 부품 공장 / 2교대 전일제"],["근무","연장·특근 포함 / 본인 생활비 부담"],["작업 시간","비번일 / 공방 시간제 대여"]],"income":"본인 소득·재산 산정","plan":"남은 흙으로 다음 것을 만듭니다.","art":"clay","kind":"예술활동증명 (일반)","wk":4,"monthly":3520000,"wages":[["기본급",2300000],["교대수당",540000],["특근수당",680000]]},
+ {"type":3,"field":"음악","title":"새벽의 실내","work":"음원 3곡 · 악보와 녹음 기록","recT":"음원 3곡 발매","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"음원 정산 8만 원 / 연","inc":"no","ev":"음원 유통 확인서 · 크레딧 · 정산내역","papers":[["유학","보스턴 4년 / 학비 부모 부담"],["거주·작업실","자택 방음실 / 부 시공"],["본인 소득","음원 정산 7천 원 / 월"]],"income":"본인 소득·재산 산정","plan":"남겨둔 녹음부터 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":3,"monthly":6667},
+ {"type":3,"field":"분야 선택","title":"계단이 되돌려주는 목소리","work":"발걸음으로 소리가 달라지는 구조물","recT":"설치물 1점 / 작동 기록 18건","crit":"접수 분야별 발표 실적","rec":"out","incT":"작동 관람 무료 / 수입 없음","inc":"no","ev":"구조물 사진 · 회로도 · 작동 영상 · 소리 기록","papers":[["직장","시설관리 / 야간·연장근무"],["재료","폐목재·압력판·녹음된 목소리"],["참여 방식","지나가는 사람이 밟으면 소리가 이어짐"]],"income":"본인 소득·재산 산정","plan":"한 계단을 더 연결합니다.","art":"hybrid","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치물 1점 / 전시 확인 0건","note":"전시 개최 확인서 보완","rec":"out"},{"field":"음악","crit":"음원 3곡 또는 공연 3회","recT":"소리 기록 18건 / 발매 음원 0곡","note":"발매 정보·공연 실적 보완","rec":"out"},{"field":"공연","crit":"공연 참여 3편","recT":"작동 영상 18건 / 출연 확인 0편","note":"공연명·출연 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)","wk":0,"monthly":3180000,"wages":[["기본급",2260000],["야간수당",540000],["연장수당",380000]]},
+ {"type":0,"field":"만화","title":"다녀왔습니다","work":"밤마다 한 장씩 그린 만화","recT":"개인 계정 연재 640회","crit":"연재 계약·기간 또는 단행본 발행 확인","rec":"out","incT":"그림 수입 55만 원 / 연","inc":"no","ev":"연재 화면 · 원본 파일 · 업로드 기록","papers":[["직장","급식실 / 연장·주말 대체근무"],["연재 계약","없음 / 개인 계정 640회"],["작업 시간","21:30~23:30 / 출근 05:40"]],"income":"근로소득과 본인 재산 반영","plan":"641화를 그리고 있습니다.","art":"comic","kind":"예술활동증명 (일반)","wk":3,"monthly":3095000,"wages":[["기본급",2300000],["연장수당",545000],["휴일수당",250000]]},
+ {"type":0,"field":"분야 선택","title":"없어진 가게의 지도","work":"사라진 간판을 찾아 걸으며 고치는 지도","recT":"현장 기록 47건 / 지도 갱신 47회","crit":"접수 분야별 발표 실적","rec":"out","incT":"열람 무료 / 수입 없음","inc":"no","ev":"지도 · 간판 채록 · 이동 기록","papers":[["직장","배송 직원 / 주 6일·연장근무"],["완성본","현장 변화에 따라 계속 갱신"],["배포","골목에 부착 / 주소 없이 전달"]],"income":"본인 소득·재산 산정","plan":"철거된 자리에 남은 이름을 더 적습니다.","art":"map","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"지도 47개 판 / 전시 확인 0회","note":"전시명·기간 확인 보완","rec":"out"},{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"채록 47건 / 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"}],"kind":"예술활동증명 (일반)","wk":2,"monthly":3420000,"wages":[["기본급",2420000],["연장수당",700000],["휴일수당",300000]]},
+ {"type":2,"field":"공예","title":"손에 맞게 고친 것들","work":"손잡이를 바꾸며 남긴 제작 기록","recT":"생활공예 단체전 5회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"재료비 정산 31만 원 / 연","inc":"no","ev":"전시 확인서 5건 · 제작 전후 사진 · 급여명세서","papers":[["직장","마트 / 연장·휴일근무"],["근무","연장·특근 포함 / 본인 생활비 부담"],["작업 시간","퇴근 후 수선 작업대"]],"income":"근로·사업소득과 본인 재산 반영","plan":"잡기 어렵다는 손잡이를 다시 깎고 있습니다.","art":"clay","kind":"예술활동증명 (일반)","wk":1,"monthly":3085000,"wages":[["기본급",2156880],["연장수당",678120],["휴일수당",250000]]},
+ {"type":4,"field":"문학","title":"돌아오는 길","work":"수필집 1권 · 원고 수정본","recT":"문학 작품집 1권","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"인세 19만 원 / 연","inc":"no","ev":"판권지 · 출판 계약 · 인세 정산서","papers":[["출판 비용","자비 출판 / 결제자 부"],["거주·작업실","모 명의 주택 / 서재"],["본인 소득","인세 1만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"집 서재에서 다음 원고를 씁니다.","art":"pages","kind":"예술활동증명 (일반)","desk":9,"monthly":15833},
+ {"type":1,"field":"미술","title":"불을 끄기 전","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","ev":"전시 도록 · 급여명세서 · 임대차 계약서","papers":[["직장","물류센터 야간 / 주 5일 전일제"],["근무","연장·특근 포함 / 본인 생활비 부담"],["대관료","할부 납부 중 / 본인 부담"]],"income":"근로소득과 본인 재산 반영","plan":"다음 전시 대관일에 맞춰 야간근무를 바꿨습니다.","art":"paint","worker":true,"kind":"예술활동증명 (일반)","wk":0,"monthly":3360000,"wages":[["기본급",2240000],["야간수당",620000],["연장수당",500000]]},
+ {"type":3,"field":"음악","title":"남아 있는 소리","work":"공연 3편 · 합주 녹음","recT":"공연 3편 참여","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"공연료 42만 원 / 연","inc":"no","ev":"공연 포스터 · 출연 확인 · 합주 녹음","papers":[["악기","부모 구입 / 본인 명의 재산 아님"],["거주·작업실","본가 지하 합주실 / 방음 공사 완료"],["본인 소득","공연료 3만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"합주실 예약 시간에 맞춰 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":8,"monthly":35000},
+ {"type":0,"field":"만화","title":"작은 칸의 하루","work":"연재 만화 24화 · 원본 스케치","recT":"계약 연재 24회","crit":"연재 계약·기간 확인","rec":"ok","incT":"원고료 72만 원 / 연","inc":"no","ev":"연재 계약서 · 게재 확인","papers":[["생활비","부모 송금 / 월 250만 원"],["거주·작업실","부 명의 오피스텔 / 임차료 없음"],["본인 소득","원고료 6만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"다음 회차를 이어갑니다.","art":"comic","desk":0,"monthly":60000},
+ {"type":2,"field":"공예","title":"잠깐 빌린 모양","work":"사용하며 형태가 변하는 그릇 18점","recT":"단체전 5회","crit":"단체전 5회","rec":"ok","incT":"판매 24만 원 / 연","inc":"no","ev":"전시 확인서 5건 · 작품 사진","papers":[["생활비","가족 카드 사용"],["거주·작업실","본가 별채 / 가마 설치"],["본인 소득","판매 2만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"그릇의 변화를 기록합니다.","art":"clay","desk":2,"monthly":20000},
+ {"type":3,"field":"음악","title":"한 사람이 지나갈 때","work":"압력판·폐목재·발걸음에 반응하는 목소리","recT":"음원 3곡 발매","crit":"음원 3곡","rec":"ok","incT":"음원 정산 0원","inc":"no","ev":"소리 부분 발췌 · 3개 트랙 유통 확인","papers":[["생활비","부모 송금 / 월 180만 원"],["거주·작업실","공유 작업실 / 이용료 부모 납부"],["본인 소득","음원 정산 0원"]],"income":"본인 소득·재산 산정","plan":"소리와 계단을 연결합니다.","art":"hybrid","desk":13,"monthly":0},
+ {"type":0,"desk":5,"field":"만화","title":"여섯 칸의 저녁","work":"잡지 연재 8회 · 작업 원고","recT":"잡지 연재 8회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","ev":"게재 확인서 · 편집 계약","papers":[["생활비","배우자 급여 / 조사 대상 아님"],["거주·작업실","배우자 명의 아파트"],["본인 소득","없음"]],"art":"comic","monthly":0},
+ {"type":1,"desk":6,"field":"미술","title":"지워진 자리","work":"회화 9점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","ev":"전시 확인서 · 도록","papers":[["대관료 결제자","모"],["거주·작업실","조부 소유 상가 3층 / 사용료 없음"],["본인 소득","없음"]],"art":"paint","monthly":0},
+ {"type":2,"desk":7,"field":"공예","title":"손이 지나간 면","work":"도자 21점 · 제작 기록","recT":"단체전 5회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","ev":"도록 5건 · 출품 확인","papers":[["생활비","부모 송금 / 월 200만 원"],["거주·작업실","가족 회사 창고 일부 / 사용료 없음"],["본인 소득","없음"]],"art":"clay","monthly":0},
+ {"type":0,"desk":10,"field":"만화","title":"돌아오는 버스","work":"단행본 1권 · 연재 원고","recT":"단행본 1권 발행","crit":"공개 발표 확인","rec":"ok","incT":"인세 14만 4천 원 / 연","inc":"no","ev":"판권지 · 출판 계약","papers":[["거주","부 명의 아파트 / 주거비 없음"],["작업실","가족 소유 오피스텔"],["생활비","가족 부담 / 본인 인세 월 1만 2천 원"]],"art":"comic","monthly":12000},
+ {"type":1,"desk":11,"field":"미술","title":"창가의 선","work":"판화 16점 · 전시 기록","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","ev":"전시 도록 · 개최 확인","papers":[["유학","파리 2년 / 학비 부모 부담"],["거주·작업실","부 명의 건물 / 증여 예정"],["본인 소득","없음"]],"art":"paint","monthly":0},
+ {"type":2,"desk":12,"field":"공예","title":"가벼운 그릇","work":"도자 13점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","ev":"전시 계약 · 도록","papers":[["차량","부 명의 / 본인 재산 아님"],["거주·작업실","모 명의 주택 1층 공방"],["본인 소득","판매 4만 원 / 월"]],"art":"clay","monthly":40000},
+ {"type":4,"desk":14,"field":"문학","title":"다음 문장","work":"시 6편 · 원고 수정본","recT":"문예지 발표 6편","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","ev":"발표 지면 · 원고료 내역","papers":[["생활비","모 명의 상가 임대수익에서 지급"],["거주·작업실","본가"],["본인 소득","원고료 5만 원 / 월"]],"art":"pages","monthly":50000}
 ];
+// 가상 신청인. 월 금액은 극중 설정이며 모든 본인 재산은 공제 범위 안이다.
+const INCOME_LIMIT=3077086,INCOME_MEDIAN=2564238;
+for(const a of AP)a.mid=a.monthly/INCOME_MEDIAN*100;
 // 선정: 본인 소득인정액이 기준 중위소득 120% 이하일 것. 소득이 낮을수록 배점이 크고(30% 이하 8 · 60% 이하 7 · 90% 이하 6 · 120% 이하 5), 처음 받는 사람은 4점을 더해 높은 점수부터 뽑는다
 const INC_PT=m=>m<=30?8:m<=60?7:m<=90?6:5,AP_PT=a=>INC_PT(a.mid)+4,AP_CUT=11;
-const ELIGIBLE=AP.map((a,i)=>i).filter(i=>Number.isInteger(AP[i].desk)&&(AP[i].rec==='ok'||AP[i].inc==='ok')&&AP[i].mid<=120&&AP_PT(AP[i])>=AP_CUT);
+const ELIGIBLE=AP.map((a,i)=>i).filter(i=>Number.isInteger(AP[i].desk)&&(AP[i].rec==='ok'||AP[i].inc==='ok')&&AP[i].monthly<=INCOME_LIMIT&&AP_PT(AP[i])>=AP_CUT);
 const REJECTED=[10,6,3,7,1,8,5]; // 미승인자: 이 순서로 시민 책상에 앉는다
 const teamSize=z=>Math.min(15,4+z*2);
 const quota=z=>Math.min(260,50+(z-1)*30);
@@ -741,7 +797,7 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d
   {top:0xf6f4ee,apron:[0xc98a3c,0x6f8f5e,0xb5563a][v],pants:0x59633b,cuff:0x717c4a,sock:0xb4b8c0,shoe:0x7a4a26,hair:[0x3a2a1c,0x8a4f26,0x1d1c22][v],short:1,tat:1},
   {top:[0x8a4fe0,0xff6a3d,0x12b08a][v],pants:0x8fb6e6,cuff:0xc4dbf3,sock:0xffffff,shoe:0xf4f4f4,acc:[0xb6f23a,0xff4f9a,0xffd21f][v],hair:[0xf5e9b5,0xf7a8c8,0xa8e6dc][v],hat:[0xff5a1f,0xffffff,0x1f4fd8][v],short:0,tat:0},
   {top:0x1d1d24,pants:[0x8a5230,0x5c3a66,0x3f6a45][v],cuff:[0x9c6340,0x70497c,0x4f7f56][v],sock:0xe8a51a,shoe:0x6a1f22,hat:[0xa01f30,0x1f3f9a,0x2a2a30][v],hair:0x34302c,short:0,tat:0}
- ][ty],L=wk!=null?lookW(wk,v):LH;
+ ][ty],L=wk!=null?lookW(wk,v):{...LH,top:[0xe5d9bf,0x27374b,0xf3e9d8,0x796487,0x252633][ty],pants:[0xf2eee4,0xe2cda8,0xbba57b,0xf3ecdf,0xc5a78a][ty],cuff:[0xf2eee4,0xe2cda8,0xbba57b,0xf3ecdf,0xc5a78a][ty],shoe:ty===3?0xf6f2e9:0x30201b,short:0,tat:0};
  // 작업실 책상과 면담용 의자는 같은 인물 모델을 사용한다.
  if(!d.interview){
   A(BX(1.36,certified?.09:.035,.74),certified?0x78503a:WOOD,0,certified?.725:.7525,0);
@@ -783,13 +839,13 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d
   else if(wk===4){const p=fr(.72,.003),q=fr(.88,.004);for(const s of[-1,1])A(BX(.09,.075,.012),shade(L.top,.8),s*.09,p[0],p[1],1,1,1,TQ,0,0);A(BX(.062,.028,.012),0xf2c230,-.09,q[0],q[1],1,1,1,TQ,0,0)} // 가슴 주머니 · 명찰
   else{const p=fr(.5,.004);A(BX(.2,.1,.012),shade(L.top,.84),0,p[0],p[1],1,1,1,TQ,0,0)}
  }else{
- if(ty===0)for(const t of[.14,.36,.58,.8]){const p=ax(t),r=lerp(.165,.185,t)+.004;A(CY(r,r,.038,12),L.stripe,0,p[1],p[2],1,1,1,TQ,0,0)}
- if(ty===1){const p=fr(.72,.002);for(const s of[-1,1])A(BX(.085,.085,.012),shade(L.top,.78),s*.09,p[0],p[1],1,1,1,TQ,0,0);
-  for(let k=0;k<7;k++){const t=rnd(.2,.9),q=fr(t,.004);A(SP(6,5),pick([0xe8402a,0xf7b500,0xffffff,0xf0569a,0x1faa59]),rnd(-.13,.13),q[0],q[1],rnd(.014,.03),rnd(.014,.03),.006,TQ,0,0)}
-  for(let k=0;k<5;k++)A(SP(6,5),pick([0xe8402a,0xf7b500,0x2563eb,0xf0569a]),pick([-1,1])*rnd(.08,.16),.6,rnd(-.5,-.22),rnd(.015,.03),.008,rnd(.015,.03))}
- if(ty===2){const p=fr(.46,.008),q=fr(.3,.02);A(BX(.31,.4,.016),L.apron,0,p[0],p[1],1,1,1,TQ,0,0);A(BX(.16,.1,.012),shade(L.apron,.8),0,q[0],q[1],1,1,1,TQ,0,0);
-  const u=fr(1,.01);for(const s of[-1,1])G([s*.12,u[0],u[1]],[s*.05,1.0,-.45],.012,.012,L.apron,5)}
- if(ty===3){A(lump(SP(8,6),.1,3),L.top,0,.99,-.53,.17,.1,.11);const p=fr(.3,.006);A(BX(.22,.11,.014),shade(L.top,.84),0,p[0],p[1],1,1,1,TQ,0,0);const q=fr(.95,.004),q2=fr(.62,.008);for(const s of[-1,1])G([s*.035,q[0],q[1]],[s*.04,q2[0],q2[1]],.006,.006,W,4)}
+  // 재단된 재킷, 밝은 셔츠, 넓은 옷깃과 금장 단추.
+  const cream=0xfaf4e7,gold=0xc5a15c;
+  for(const side of[-1,1]){const q=fr(.72,.018);A(BX(.09,.27,.018),cream,side*.063,q[0],q[1],1,1,1,TQ,0,side*.23)}
+  for(const t of[.2,.4,.6]){const q=fr(t,.027);A(SP(7,5),gold,.035,q[0],q[1],.013,.013,.009)}
+  const q=fr(.9,.035);A(BX(.085,.035,.013),cream,-.11,q[0],q[1],1,1,1,TQ,0,-.15);
+  if(ty===1||ty===4){const q=fr(.88,.04);A(SP(10,6),ty===1?0xb3846a:0xa7b9ae,0,q[0],q[1],.13,.035,.035,TQ,0,0);A(BX(.065,.18,.018),ty===1?0xb3846a:0xa7b9ae,.065,q[0]-.085,q[1]-.035,1,1,1,TQ,0,-.2)}
+  else{const q=fr(.82,.033);A(new THREE.TorusGeometry(.075,.009,5,16,PI),gold,0,q[0],q[1],1,.8,1,TQ,0,PI);A(SP(8,6),0xf9f2d2,0,q[0]-.065,q[1]+.02,.018,.025,.013)}
  }
  if(wk==null&&ty===4)G([0,.97,-.41],[0,1.035,-.325],.068,.062,L.top,10);else G([0,.97,-.41],[0,1.035,-.325],.05,.046,SKIN,8);
  // 머리 (따로 움직인다)
@@ -808,6 +864,8 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d
  else if(ty===2){Hd(lump(SP(10,8),.06,4),L.hair,0,.03,-.02,.118,.115,.122);Hd(SP(8,6),L.hair,0,.145,-.07,.05,.045,.05);Hd(lump(SP(10,8),.1,4),L.hair,0,-.08,.05,.1,.088,.085);stache()}
  else if(ty===3){Hd(lump(SP(10,8),.1,5),L.hair,0,.035,-.01,.124,.118,.128);Hd(SP(7,5),L.hair,.03,.075,.09,.075,.035,.045);Hd(new THREE.TorusGeometry(.13,.013,6,16,PI),L.hat,0,0,-.005);for(const s of[-1,1]){Hd(CY(.052,.052,.04,14),L.hat,s*.13,-.005,-.005,1,1,1,0,0,PI/2);Hd(CY(.04,.04,.046,12),K,s*.126,-.005,-.005,1,1,1,0,0,PI/2)}}
  else{Hd(lump(SP(10,8),.06,4),L.hair,0,0,-.035,.122,.13,.11);Hd(SP(12,7),L.hat,.018,.108,-.015,.152,.045,.152,0,0,-.2);Hd(CY(.006,.006,.03,5),L.hat,.02,.152,-.015);glasses(.033,.0045,0xd9a520);stache()}
+ if(wk!=null){for(const side of[-1,1])Hd(SP(7,5),shade(SKIN,.7),side*.043,-.009,.11,.023,.007,.006)}
+ else{for(const side of[-1,1])Hd(new THREE.TorusGeometry(.023,.005,5,10),0xd4b26b,side*.12,-.036,.015);}
  // 책상 위 물건 · 옆에 둔 물건
  const belong=(x,z)=>{ // 일터에서 들고 온 것
   if(wk===0){A(SP(12,8),L.helm,x,.085,z,.13,.1,.15);A(CY(.155,.155,.012,16),L.helm,x,.04,z+.02,1,1,1.12);A(lump(SP(10,8),.08,2),0x30384a,x-.04,.2,z-.3,.15,.2,.11);A(BX(.05,.2,.02),0x232a38,x-.04,.22,z-.19)} // 안전모 · 백팩
@@ -819,7 +877,11 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d
   else if(wk===4){A(CY(.04,.04,.24,10),0x9aa3ad,x+.03,.12,z+.12);A(CY(.042,.042,.04,10),0x23262d,x+.03,.26,z+.12);A(BX(.26,.2,.1),0x4a4f45,x-.03,.12,z-.16,1,1,1,-.15,.4,0);G([x-.14,.2,z-.12],[x+.06,.3,z-.24],.01,.01,0x33372f,4)} // 보온병 · 크로스백
   else{A(lump(SP(10,8),.08,3),0x58606f,x,.2,z,.16,.2,.12);A(BX(.1,.08,.03),0x444b58,x,.14,z+.11);for(const q of[-.07,.07])A(BX(.05,.2,.02),0x444b58,x+q,.24,z-.1)}}; // 낡은 백팩
  const sbag=(x,z,w,h,dp,col,band,ry=0)=>{A(BX(w,h,dp),col,x,h/2,z,1,1,1,0,ry,0);A(BX(w*1.012,h*.17,dp*1.03),band,x,h*.6,z,1,1,1,0,ry,0);A(new THREE.TorusGeometry(w*.2,.006,4,10,PI),band,x,h+.004,z,1,1,1,0,ry,0)}; // 쇼핑백
- const bought=(x,z,front)=>{const k=pid%3; // 사 들고 온 것
+ const bought=(x,z,front)=>{
+  const bx=x+.12,bz=z+.14,bag=[0x8b4928,0x191b24,0xefe3c9][pid%3];
+  A(BX(.25,.21,.1),bag,bx,.135,bz);A(BX(.255,.065,.106),shade(bag,.88),bx,.22,bz);
+  A(new THREE.TorusGeometry(.065,.012,5,14,PI),0xc8a562,bx,.245,bz);A(BX(.045,.035,.012),0xd7b56a,bx,.2,bz+.061);
+  const k=pid%3; // 사 들고 온 것
   if(k===0){sbag(x,z,.3,.34,.11,0xf26a1b,0x5a2d0c,.25);sbag(x-.04,z-.26,.24,.28,.1,0x1a1a1e,0xd9b24a,-.2);if(front)sbag(x+.04,z+front,.2,.22,.09,0xf7f4ec,0x1a1a1e,.5)}
   else if(k===1){sbag(x,z,.26,.3,.1,0x79d3c4,0xffffff,.2);if(front)sbag(x+.02,z+front,.22,.26,.1,0xf26a1b,0x5a2d0c,.45);[[0xe8501e,.1],[0xf7f4ec,.32],[0x1a1a1e,-.12]].forEach((q,i)=>{A(BX(.3,.11,.19),q[0],x-.05,.055+i*.11,z-.3,1,1,1,0,q[1],0);A(BX(.308,.032,.198),shade(q[0],i===2?1.6:.86),x-.05,.094+i*.11,z-.3,1,1,1,0,q[1],0)})}
   else{sbag(x,z,.24,.28,.1,0x1a1a1e,0xd9b24a,.2);if(front)sbag(x+.03,z+front,.2,.22,.09,0xf7f4ec,0x1a1a1e,.5);A(BX(.26,.46,.18),0xc9ced6,x-.03,.26,z-.28);for(let q=0;q<4;q++)A(BX(.264,.012,.184),0xa4abb6,x-.03,.1+q*.1,z-.28);for(const q of[-.07,.07])G([x-.03+q,.49,z-.28],[x-.03+q,.64,z-.28],.008,.008,K,4);A(BX(.17,.02,.03),K,x-.03,.645,z-.28)}};
@@ -3271,13 +3333,13 @@ function targetWorkshop(){return needsReassignment()&&!S.paid?S.zone:S.zone+1}
 function draftForZone(){const zone=targetWorkshop();if(!S.draft||S.draft.zone!==zone)S.draft={zone,ids:zone===S.zone?S.team.slice():[],focus:interviewOrder()[0]};return S.draft}
 function interviewOrder(){const offset=((S.zone-1)*2)%REVIEW_ORDER.length;return REVIEW_ORDER.slice(offset).concat(REVIEW_ORDER.slice(0,offset))}
 function applicantReview(id){
- const a=AP[id],r=a.choices?a.choices[Math.max(0,apS(id).k)]||a.choices[0]:a,activity=r.rec==='ok'||a.inc==='ok',income=a.mid<=120,pass=ELIGIBLE.includes(id);
- const own='본인 소득인정액 '+a.mid+'% / 기준 120% 이하',pts='소득 배점 '+INC_PT(a.mid)+'점 + 최초 선정 4점 = '+AP_PT(a)+'점 / 선정 '+AP_CUT+'점 이상';
+ const a=AP[id],r=a.choices?a.choices[Math.max(0,apS(id).k)]||a.choices[0]:a,activity=r.rec==='ok'||a.inc==='ok',income=a.monthly<=INCOME_LIMIT,pass=ELIGIBLE.includes(id);
+ const own='본인 월 소득인정액 '+won(a.monthly),pts='이번 회차 배점 '+AP_PT(a)+'점 / 선정 '+AP_CUT+'점 이상';
  let reason='',facts=[];
- if(activity&&!income){reason='소득인정액 기준 초과';facts=[a.recT+' · 예술활동증명 완료',own]}
+ if(!income){reason='소득 기준 '+won(a.monthly-INCOME_LIMIT)+' 초과';facts=[a.wages?'야간·연장·휴일수당을 포함한 근로소득 반영':own]}
  else if(activity&&AP_PT(a)<AP_CUT){reason='선정 점수 미달';facts=[a.recT+' · 예술활동증명 완료',own,pts]}
  else if(!activity){reason=a.choices?'해당 분야의 발표 증빙 없음':a.rec==='no'?'공개 발표 실적 미달':'공개 발표 증빙 불인정';facts=[r.recT,r.note||'인정 기준: '+r.crit];if(!a.choices)facts.push(a.incT+' / 수입 기준 연 120만 원')}
- else facts=[a.recT,own,pts];
+ else facts=['본인 소득·재산 산정 / 가족 소득·재산 제외'];
  return {pass,activity,income,reason,facts,field:r.field};
 }
 function buildInterview(){
@@ -3309,6 +3371,14 @@ function chooseCandidate(id){
  if(i>=0)d.ids.splice(i,1);else{if(d.ids.length>=teamSize(d.zone))return false;d.ids.push(id);const c=IV.actors.find(c=>c.applicant===id);if(c)c.nod=1;AU.thwack()}
  save();renderInterview();return true;
 }
+function incomePanel(a){
+ const over=a.monthly>INCOME_LIMIT,delta=Math.abs(a.monthly-INCOME_LIMIT),fill=Math.min(100,a.monthly/4000000*100);
+ return '<section class="int-income'+(over?' over':'')+'" aria-label="월 소득 심사"><div class="int-income-top"><span>본인 월 소득인정액</span><span>2026년 · 1인 기준</span></div>'
+  +'<div class="int-income-amount">'+won(a.monthly)+'<small>/ 월</small></div>'
+  +'<div class="int-income-track" aria-hidden="true"><i style="width:'+fill+'%"></i></div>'
+  +'<div class="int-income-caption"><span>기준 '+won(INCOME_LIMIT)+'</span><b>'+(over?won(delta)+' 초과':'기준 이내')+'</b></div>'
+  +(a.wages?'<div class="int-wages">'+a.wages.map(([label,value])=>'<span>'+esc(label)+'<b>'+won(value)+'</b></span>').join('')+'</div>':'')+'</section>';
+}
 function renderInterview(){
  const d=draftForZone(),a=AP[IV.sel],r=applicantReview(IV.sel),chosen=d.ids.includes(IV.sel),need=teamSize(d.zone),order=interviewOrder();
  $('interview-title').textContent=d.zone+'기 · '+(d.zone===S.zone?'추가 배정':'지원 대상 심사');$('candidate-position').textContent=(order.indexOf(IV.sel)+1)+' / '+order.length;
@@ -3317,6 +3387,7 @@ function renderInterview(){
  const circumstances=a.papers.slice(0,3).map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd></div>').join('');
  $('candidate-paper').innerHTML='<div class="int-person"><div><small>신청서</small><h3>'+applicantLabel(IV.sel)+'</h3></div><div class="int-seal'+(r.pass?'':' denied')+'">'+(r.pass?'적격<br>지급 대상':'부적격<br>미승인')+'</div></div>'
   +'<div class="int-meta">'+route+'</div>'
+  +incomePanel(a)
   +'<div class="int-work">'+workImage(a)+'<div><b>'+esc(a.title)+'</b><p>'+esc(a.work)+'</p></div></div>'
   +'<section class="int-result'+(r.pass?'':' denied')+'" aria-label="사전 심사 결과"><b>'+(r.pass?'승인 완료':esc(r.reason))+'</b><p>'+r.facts.map(esc).join('<br>')+'</p></section>'
   +'<dl class="int-circumstances">'+circumstances+'</dl>'
@@ -3551,6 +3622,3 @@ init();
 </script>
 </body>
 </html>
-
-
-
