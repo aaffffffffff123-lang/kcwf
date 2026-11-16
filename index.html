@@ -241,39 +241,40 @@ const TOOLS=[
  {id:'boot',name:'안전화',short:'안전화',price:300,desc:'밟아서 처리합니다. 길게 누르면 체중이 실리고, 구르기 버튼을 누르고 있으면 양발로 번갈아 밟습니다.'},
  {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:1200,desc:'한 번에 세 명까지 집어 64명까지 담습니다. 가득 차거나 밟기 버튼을 누르면 봉투를 묶어 놓고, 누르는 동안 밟습니다.'},
  {id:'shovel',name:'수거용 삽',short:'삽',price:2500,desc:'내려쳐서 처리한 다음 바닥을 긁어 수거통에 퍼담습니다.'},
- {id:'mop',name:'물밀대',short:'밀대',price:6000,desc:'앞으로 밀어서 모읍니다. 배수구 위로 밀면 철망 사이로 내려갑니다.'},
+ {id:'wash',name:'고압세척기',short:'세척기',price:4000,desc:'물줄기로 바닥 얼룩과 찌꺼기를 씻어 배수구로 보냅니다. 물줄기에 맞아도 처리되지 않고 밀려나기만 합니다.'},
  {id:'vac',name:'흡입 수거기',short:'흡입기',price:9000,desc:'96명까지 모아 담습니다. 가득 차거나 갈기 버튼을 누르면 롤러로 갈아 아래 통에 잘게 쌓습니다.'},
- {id:'trim',name:'예초기',short:'예초기',price:14000,desc:'누르는 동안 줄날이 돌아갑니다. 닿는 대로 잘라 냅니다.'},
- {id:'wash',name:'고압세척기',short:'세척기',price:19000,desc:'물줄기로 쓸어 보냅니다. 바닥 얼룩도 같이 씻깁니다.'},
- {id:'truck',name:'고압 수거차',short:'수거차',price:26000,desc:'롤러로 눌러 넓은 폭을 한꺼번에 처리합니다.'}
+ {id:'trim',name:'예초기',short:'예초기',price:14000,desc:'누르는 동안 줄날이 돌아갑니다. 닿는 대로 잘라 냅니다.'}
 ];
 
 const GRANT=3000,GRANT_T=96,SUPPORT_UNIT=100,SUPPORT_T=14,ACTIVITY_T=90;
 const AP=[
- {"type":4,"field":"문학","title":"창문을 닫은 뒤","work":"시 7편 · 문예지 게재본","recT":"문예지 발표 7편","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"원고료 48만 원 / 연","inc":"no","mid":62,"ev":"발표 지면 7건 · 원고료 입금내역","papers":[["작업 공간","월세방 책상"],["생활비","교정 아르바이트"]],"income":"근로·사업소득과 본인 재산 반영","plan":"다음 호 원고 3편. 현재 초고 작성 중.","art":"pages","kind":"예술활동증명 (일반)","desk":4},
- {"type":4,"field":"분야 선택","title":"접어서 건네는 문장","work":"봉제한 문장 84점 · 건넨 날짜 기록","recT":"문장·천·전달 기록 84건","crit":"접수 분야별 발표 실적","rec":"out","incT":"판매 수입 없음","inc":"no","mid":53,"ev":"천에 적은 원고 · 전달 기록 · 설치 사진","papers":[["작업 방식","하루 한 문장을 천에 꿰매서 건넴"],["작업 공간","퇴근 후 식탁"]],"income":"근로소득과 본인 재산 반영","plan":"받은 사람이 다시 접어 다른 사람에게 건넵니다.","art":"stitch","choices":[{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"문장 84점 / 인정 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"},{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치 사진 12건 / 전시 확인 0건","note":"전시 기간·장소 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
- {"type":1,"field":"미술","title":"오후의 방","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":18,"ev":"전시 도록 · 대관 계약서 · 결제 확인서","papers":[["대관료 결제자","모"],["작업실 사용","부 소유 공간 / 사용료 없음"],["생활비 부담","가족"]],"income":"본인 소득·재산 산정","plan":"같은 공간에서 다음 연작을 준비합니다.","art":"paint","kind":"예술활동증명 (일반)","desk":1},
- {"type":2,"field":"공예","title":"남은 흙의 무게","work":"도자 26점 · 제작 과정","recT":"단체전 4회","crit":"개인전 1회 또는 단체전 5회","rec":"no","incT":"작품 판매 96만 원 / 연","inc":"no","mid":38,"ev":"도록 4건 · 판매 영수증 · 작업 사진","papers":[["다음 전시","참가비 미납 / 접수 취소"],["제작 기록","현재 26번째 작업 진행"]],"income":"본인 소득·재산 산정","plan":"남은 흙으로 다음 것을 만듭니다.","art":"clay","kind":"예술활동증명 (일반)"},
- {"type":3,"field":"음악","title":"새벽의 실내","work":"음원 3곡 · 악보와 녹음 기록","recT":"음원 3곡 발매","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"음원 정산 8만 원 / 연","inc":"no","mid":77,"ev":"음원 유통 확인서 · 크레딧 · 정산내역","papers":[["녹음 공간","시간제 대여"],["현재 작업","네 번째 곡 녹음 대기"]],"income":"본인 소득·재산 산정","plan":"남겨둔 녹음부터 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":3},
- {"type":3,"field":"분야 선택","title":"계단이 되돌려주는 목소리","work":"발걸음으로 소리가 달라지는 구조물","recT":"설치물 1점 / 작동 기록 18건","crit":"접수 분야별 발표 실적","rec":"out","incT":"작동 관람 무료 / 수입 없음","inc":"no","mid":49,"ev":"구조물 사진 · 회로도 · 작동 영상 · 소리 기록","papers":[["재료","폐목재·압력판·녹음된 목소리"],["참여 방식","지나가는 사람이 밟으면 소리가 이어짐"]],"income":"본인 소득·재산 산정","plan":"한 계단을 더 연결합니다.","art":"hybrid","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치물 1점 / 전시 확인 0건","note":"전시 개최 확인서 보완","rec":"out"},{"field":"음악","crit":"음원 3곡 또는 공연 3회","recT":"소리 기록 18건 / 발매 음원 0곡","note":"발매 정보·공연 실적 보완","rec":"out"},{"field":"공연","crit":"공연 참여 3편","recT":"작동 영상 18건 / 출연 확인 0편","note":"공연명·출연 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
- {"type":0,"field":"만화","title":"다녀왔습니다","work":"밤마다 한 장씩 그린 만화","recT":"개인 계정 연재 640회","crit":"연재 계약·기간 또는 단행본 발행 확인","rec":"out","incT":"그림 수입 55만 원 / 연","inc":"no","mid":44,"ev":"연재 화면 · 원본 파일 · 업로드 기록","papers":[["연재 계약","없음"],["작업 시간","퇴근 후 00:30~02:00"]],"income":"근로소득과 본인 재산 반영","plan":"641화를 그리고 있습니다.","art":"comic","kind":"예술활동증명 (일반)"},
- {"type":0,"field":"분야 선택","title":"없어진 가게의 지도","work":"사라진 간판을 찾아 걸으며 고치는 지도","recT":"현장 기록 47건 / 지도 갱신 47회","crit":"접수 분야별 발표 실적","rec":"out","incT":"열람 무료 / 수입 없음","inc":"no","mid":63,"ev":"지도 · 간판 채록 · 이동 기록","papers":[["완성본","현장 변화에 따라 계속 갱신"],["배포","골목에 부착 / 주소 없이 전달"]],"income":"본인 소득·재산 산정","plan":"철거된 자리에 남은 이름을 더 적습니다.","art":"map","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"지도 47개 판 / 전시 확인 0회","note":"전시명·기간 확인 보완","rec":"out"},{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"채록 47건 / 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"}],"kind":"예술활동증명 (일반)"},
- {"type":2,"field":"공예","title":"손에 맞게 고친 것들","work":"손잡이를 바꾸며 남긴 제작 기록","recT":"수선·제작 39건 / 전시 확인 0건","crit":"개인전 1회 또는 단체전 5회","rec":"out","incT":"재료비 정산 31만 원 / 연","inc":"no","mid":58,"ev":"제작 전후 사진 · 사용자 메모","papers":[["작업 장소","수선 작업대"],["작품 보관","사용하는 사람에게 전달"]],"income":"근로·사업소득과 본인 재산 반영","plan":"잡기 어렵다는 손잡이를 다시 깎고 있습니다.","art":"clay","kind":"예술활동증명 (일반)"},
- {"type":4,"field":"문학","title":"돌아오는 길","work":"수필집 1권 · 원고 수정본","recT":"문학 작품집 1권","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"인세 19만 원 / 연","inc":"no","mid":71,"ev":"판권지 · 출판 계약 · 인세 정산서","papers":[["작업 공간","도서관 열람석"],["초고","다음 작품 32매"]],"income":"본인 소득·재산 산정","plan":"열람실이 닫히기 전까지 원고를 씁니다.","art":"pages","kind":"예술활동증명 (일반)","desk":9},
- {"type":1,"field":"미술","title":"불을 끄기 전","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":124,"ev":"전시 도록 · 급여명세서 · 임대차 계약서","papers":[["급여명세","야간근로·연장근로 수당 포함"],["주거·작업실","월세 / 본인 부담"],["대관료","할부 납부 중"]],"income":"근로소득과 본인 재산 반영","plan":"다음 전시 대관일에 맞춰 야간근무를 바꿨습니다.","art":"paint","worker":true,"kind":"예술활동증명 (일반)"},
- {"type":3,"field":"음악","title":"남아 있는 소리","work":"공연 3편 · 합주 녹음","recT":"공연 3편 참여","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"공연료 42만 원 / 연","inc":"no","mid":35,"ev":"공연 포스터 · 출연 확인 · 합주 녹음","papers":[["합주실","시간제 공동 대여"],["현재 작업","다음 공연 편곡 중"]],"income":"본인 소득·재산 산정","plan":"합주실 예약 시간에 맞춰 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":8},
- {"type":0,"field":"만화","title":"작은 칸의 하루","work":"연재 만화 24화 · 원본 스케치","recT":"계약 연재 24회","crit":"연재 계약·기간 확인","rec":"ok","incT":"원고료 72만 원 / 연","inc":"no","mid":68,"ev":"연재 계약서 · 게재 확인","papers":[["작업 공간","집 안 작은 책상"],["생활비","편집 보조"]],"income":"본인 소득·재산 산정","plan":"다음 회차를 이어갑니다.","art":"comic","desk":0},
- {"type":2,"field":"공예","title":"잠깐 빌린 모양","work":"사용하며 형태가 변하는 그릇 18점","recT":"단체전 5회","crit":"단체전 5회","rec":"ok","incT":"판매 24만 원 / 연","inc":"no","mid":57,"ev":"전시 확인서 5건 · 작품 사진","papers":[["작업 공간","공동 공방"],["전시 참가비","재료비와 분할 납부"]],"income":"본인 소득·재산 산정","plan":"그릇의 변화를 기록합니다.","art":"clay","desk":2},
- {"type":3,"field":"음악","title":"한 사람이 지나갈 때","work":"압력판·폐목재·발걸음에 반응하는 목소리","recT":"음원 3곡 발매","crit":"음원 3곡","rec":"ok","incT":"음원 정산 0원","inc":"no","mid":41,"ev":"소리 부분 발췌 · 3개 트랙 유통 확인","papers":[["전체 작업","구조물·이동 경로·녹음된 목소리"],["등록 제목","한 사람이 지나갈 때 Ⅰ / Ⅱ / Ⅲ"],["작업 공간","공유 작업실"]],"income":"본인 소득·재산 산정","plan":"소리와 계단을 연결합니다.","art":"hybrid","desk":13},
- {"type":0,"desk":5,"field":"만화","title":"여섯 칸의 저녁","work":"잡지 연재 8회 · 작업 원고","recT":"잡지 연재 8회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":88,"ev":"게재 확인서 · 편집 계약","papers":[["생활비","편집 보조 근로소득"],["작업 시간","퇴근 후"]],"art":"comic"},
- {"type":1,"desk":6,"field":"미술","title":"지워진 자리","work":"회화 9점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":46,"ev":"전시 확인서 · 도록","papers":[["작업 공간","공동 작업실"],["대관료","기존 작품 판매대금"]],"art":"paint"},
- {"type":2,"desk":7,"field":"공예","title":"손이 지나간 면","work":"도자 21점 · 제작 기록","recT":"단체전 5회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":72,"ev":"도록 5건 · 출품 확인","papers":[["작업 공간","공방 시간제 대여"],["참가비","본인 납부"]],"art":"clay"},
- {"type":0,"desk":10,"field":"만화","title":"돌아오는 버스","work":"단행본 1권 · 연재 원고","recT":"단행본 1권 발행","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":56,"ev":"판권지 · 출판 계약","papers":[["생활비","삽화 작업 수입"],["작업 공간","월세방 책상"]],"art":"comic"},
- {"type":1,"desk":11,"field":"미술","title":"창가의 선","work":"판화 16점 · 전시 기록","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":83,"ev":"전시 도록 · 개최 확인","papers":[["생활비","인쇄소 근로소득"],["작업실","공동 사용 / 비용 분담"]],"art":"paint"},
- {"type":2,"desk":12,"field":"공예","title":"가벼운 그릇","work":"도자 13점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":64,"ev":"전시 계약 · 도록","papers":[["작업 공간","공유 공방"],["대관료","분할 납부 완료"]],"art":"clay"},
- {"type":4,"desk":14,"field":"문학","title":"다음 문장","work":"시 6편 · 원고 수정본","recT":"문예지 발표 6편","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":92,"ev":"발표 지면 · 원고료 내역","papers":[["생활비","교정 아르바이트"],["작업 공간","도서관 열람석"]],"art":"pages"}
+ {"type":4,"field":"문학","title":"창문을 닫은 뒤","work":"시 7편 · 문예지 게재본","recT":"문예지 발표 7편","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"원고료 48만 원 / 연","inc":"no","mid":36,"ev":"발표 지면 7건 · 원고료 입금내역","papers":[["일","교정 아르바이트 주 3일"],["월 소득","92만 원"],["거주·작업실","월세방 책상 / 월세 48만 원"]],"income":"근로·사업소득과 본인 재산 반영","plan":"다음 호 원고 3편. 현재 초고 작성 중.","art":"pages","kind":"예술활동증명 (일반)","desk":4,"wk":5},
+ {"type":4,"field":"분야 선택","title":"접어서 건네는 문장","work":"봉제한 문장 84점 · 건넨 날짜 기록","recT":"문장·천·전달 기록 84건","crit":"접수 분야별 발표 실적","rec":"out","incT":"판매 수입 없음","inc":"no","mid":84,"ev":"천에 적은 원고 · 전달 기록 · 설치 사진","papers":[["직장","봉제 공장 재단 보조 / 주 5일 전일제"],["작업 방식","하루 한 문장을 천에 꿰매서 건넴"],["작업 공간","퇴근 후 식탁"]],"income":"근로소득과 본인 재산 반영","plan":"받은 사람이 다시 접어 다른 사람에게 건넵니다.","art":"stitch","choices":[{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"문장 84점 / 인정 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"},{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치 사진 12건 / 전시 확인 0건","note":"전시 기간·장소 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)","wk":4},
+ {"type":1,"field":"미술","title":"오후의 방","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":0,"ev":"전시 도록 · 대관 계약서 · 결제 확인서","papers":[["대관료 결제자","모"],["거주·작업실","부 소유 건물 / 사용료 없음"],["본인 소득","없음 / 생활비 가족 부담"]],"income":"본인 소득·재산 산정","plan":"같은 공간에서 다음 연작을 준비합니다.","art":"paint","kind":"예술활동증명 (일반)","desk":1},
+ {"type":2,"field":"공예","title":"남은 흙의 무게","work":"도자 26점 · 제작 과정","recT":"단체전 5회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 96만 원 / 연","inc":"no","mid":137,"ev":"도록 5건 · 판매 영수증 · 급여명세서","papers":[["직장","자동차 부품 공장 / 2교대 전일제"],["월 급여","352만 원 (교대·특근수당 포함)"],["작업 시간","비번일 / 공방 시간제 대여"]],"income":"본인 소득·재산 산정","plan":"남은 흙으로 다음 것을 만듭니다.","art":"clay","kind":"예술활동증명 (일반)","wk":4},
+ {"type":3,"field":"음악","title":"새벽의 실내","work":"음원 3곡 · 악보와 녹음 기록","recT":"음원 3곡 발매","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"음원 정산 8만 원 / 연","inc":"no","mid":0,"ev":"음원 유통 확인서 · 크레딧 · 정산내역","papers":[["유학","보스턴 4년 / 학비 부모 부담"],["거주·작업실","자택 방음실 / 부 시공"],["본인 소득","음원 정산 7천 원 / 월"]],"income":"본인 소득·재산 산정","plan":"남겨둔 녹음부터 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":3},
+ {"type":3,"field":"분야 선택","title":"계단이 되돌려주는 목소리","work":"발걸음으로 소리가 달라지는 구조물","recT":"설치물 1점 / 작동 기록 18건","crit":"접수 분야별 발표 실적","rec":"out","incT":"작동 관람 무료 / 수입 없음","inc":"no","mid":88,"ev":"구조물 사진 · 회로도 · 작동 영상 · 소리 기록","papers":[["직장","건물 시설관리 / 격일 근무"],["재료","폐목재·압력판·녹음된 목소리"],["참여 방식","지나가는 사람이 밟으면 소리가 이어짐"]],"income":"본인 소득·재산 산정","plan":"한 계단을 더 연결합니다.","art":"hybrid","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"설치물 1점 / 전시 확인 0건","note":"전시 개최 확인서 보완","rec":"out"},{"field":"음악","crit":"음원 3곡 또는 공연 3회","recT":"소리 기록 18건 / 발매 음원 0곡","note":"발매 정보·공연 실적 보완","rec":"out"},{"field":"공연","crit":"공연 참여 3편","recT":"작동 영상 18건 / 출연 확인 0편","note":"공연명·출연 확인서 보완","rec":"out"}],"kind":"예술활동증명 (일반)","wk":0},
+ {"type":0,"field":"만화","title":"다녀왔습니다","work":"밤마다 한 장씩 그린 만화","recT":"개인 계정 연재 640회","crit":"연재 계약·기간 또는 단행본 발행 확인","rec":"out","incT":"그림 수입 55만 원 / 연","inc":"no","mid":84,"ev":"연재 화면 · 원본 파일 · 업로드 기록","papers":[["직장","급식실 조리원 / 주 5일 전일제"],["연재 계약","없음 / 개인 계정 640회"],["작업 시간","21:30~23:30 / 출근 05:40"]],"income":"근로소득과 본인 재산 반영","plan":"641화를 그리고 있습니다.","art":"comic","kind":"예술활동증명 (일반)","wk":3},
+ {"type":0,"field":"분야 선택","title":"없어진 가게의 지도","work":"사라진 간판을 찾아 걸으며 고치는 지도","recT":"현장 기록 47건 / 지도 갱신 47회","crit":"접수 분야별 발표 실적","rec":"out","incT":"열람 무료 / 수입 없음","inc":"no","mid":96,"ev":"지도 · 간판 채록 · 이동 기록","papers":[["직장","택배 배송 / 주 6일"],["완성본","현장 변화에 따라 계속 갱신"],["배포","골목에 부착 / 주소 없이 전달"]],"income":"본인 소득·재산 산정","plan":"철거된 자리에 남은 이름을 더 적습니다.","art":"map","choices":[{"field":"미술","crit":"개인전 1회 또는 단체전 5회","recT":"지도 47개 판 / 전시 확인 0회","note":"전시명·기간 확인 보완","rec":"out"},{"field":"문학","crit":"문예지 5편 또는 작품집 1권","recT":"채록 47건 / 발행정보 0건","note":"발행처·판권 정보 보완","rec":"out"}],"kind":"예술활동증명 (일반)","wk":2},
+ {"type":2,"field":"공예","title":"손에 맞게 고친 것들","work":"손잡이를 바꾸며 남긴 제작 기록","recT":"생활공예 단체전 5회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"재료비 정산 31만 원 / 연","inc":"no","mid":84,"ev":"전시 확인서 5건 · 제작 전후 사진 · 급여명세서","papers":[["직장","마트 계산원 / 주 40시간 전일제"],["월 급여","216만 원 (최저임금)"],["작업 시간","퇴근 후 수선 작업대"]],"income":"근로·사업소득과 본인 재산 반영","plan":"잡기 어렵다는 손잡이를 다시 깎고 있습니다.","art":"clay","kind":"예술활동증명 (일반)","wk":1},
+ {"type":4,"field":"문학","title":"돌아오는 길","work":"수필집 1권 · 원고 수정본","recT":"문학 작품집 1권","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"인세 19만 원 / 연","inc":"no","mid":0,"ev":"판권지 · 출판 계약 · 인세 정산서","papers":[["출판 비용","자비 출판 / 결제자 부"],["거주·작업실","모 명의 주택 / 서재"],["본인 소득","인세 1만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"열람실이 닫히기 전까지 원고를 씁니다.","art":"pages","kind":"예술활동증명 (일반)","desk":9},
+ {"type":1,"field":"미술","title":"불을 끄기 전","work":"회화 12점 · 개인전 기록","recT":"개인전 1회","crit":"개인전 1회 또는 단체전 5회","rec":"ok","incT":"작품 판매 0원","inc":"no","mid":131,"ev":"전시 도록 · 급여명세서 · 임대차 계약서","papers":[["직장","물류센터 야간 / 주 5일 전일제"],["월 급여","336만 원 (야간·연장수당 포함)"],["대관료","할부 납부 중 / 본인 부담"]],"income":"근로소득과 본인 재산 반영","plan":"다음 전시 대관일에 맞춰 야간근무를 바꿨습니다.","art":"paint","worker":true,"kind":"예술활동증명 (일반)","wk":0},
+ {"type":3,"field":"음악","title":"남아 있는 소리","work":"공연 3편 · 합주 녹음","recT":"공연 3편 참여","crit":"음원 3곡 또는 공연 3회","rec":"ok","incT":"공연료 42만 원 / 연","inc":"no","mid":1,"ev":"공연 포스터 · 출연 확인 · 합주 녹음","papers":[["악기","부모 구입 / 본인 명의 재산 아님"],["거주·작업실","본가 지하 합주실 / 방음 공사 완료"],["본인 소득","공연료 3만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"합주실 예약 시간에 맞춰 이어갑니다.","art":"sound","kind":"예술활동증명 (일반)","desk":8},
+ {"type":0,"field":"만화","title":"작은 칸의 하루","work":"연재 만화 24화 · 원본 스케치","recT":"계약 연재 24회","crit":"연재 계약·기간 확인","rec":"ok","incT":"원고료 72만 원 / 연","inc":"no","mid":2,"ev":"연재 계약서 · 게재 확인","papers":[["생활비","부모 송금 / 월 250만 원"],["거주·작업실","부 명의 오피스텔 / 임차료 없음"],["본인 소득","원고료 6만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"다음 회차를 이어갑니다.","art":"comic","desk":0},
+ {"type":2,"field":"공예","title":"잠깐 빌린 모양","work":"사용하며 형태가 변하는 그릇 18점","recT":"단체전 5회","crit":"단체전 5회","rec":"ok","incT":"판매 24만 원 / 연","inc":"no","mid":1,"ev":"전시 확인서 5건 · 작품 사진","papers":[["생활비","가족 카드 사용"],["거주·작업실","본가 별채 / 가마 설치"],["본인 소득","판매 2만 원 / 월"]],"income":"본인 소득·재산 산정","plan":"그릇의 변화를 기록합니다.","art":"clay","desk":2},
+ {"type":3,"field":"음악","title":"한 사람이 지나갈 때","work":"압력판·폐목재·발걸음에 반응하는 목소리","recT":"음원 3곡 발매","crit":"음원 3곡","rec":"ok","incT":"음원 정산 0원","inc":"no","mid":0,"ev":"소리 부분 발췌 · 3개 트랙 유통 확인","papers":[["생활비","부모 송금 / 월 180만 원"],["거주·작업실","공유 작업실 / 이용료 부모 납부"],["본인 소득","음원 정산 0원"]],"income":"본인 소득·재산 산정","plan":"소리와 계단을 연결합니다.","art":"hybrid","desk":13},
+ {"type":0,"desk":5,"field":"만화","title":"여섯 칸의 저녁","work":"잡지 연재 8회 · 작업 원고","recT":"잡지 연재 8회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":0,"ev":"게재 확인서 · 편집 계약","papers":[["생활비","배우자 급여 / 조사 대상 아님"],["거주·작업실","배우자 명의 아파트"],["본인 소득","없음"]],"art":"comic"},
+ {"type":1,"desk":6,"field":"미술","title":"지워진 자리","work":"회화 9점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":0,"ev":"전시 확인서 · 도록","papers":[["대관료 결제자","모"],["거주·작업실","조부 소유 상가 3층 / 사용료 없음"],["본인 소득","없음"]],"art":"paint"},
+ {"type":2,"desk":7,"field":"공예","title":"손이 지나간 면","work":"도자 21점 · 제작 기록","recT":"단체전 5회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":0,"ev":"도록 5건 · 출품 확인","papers":[["생활비","부모 송금 / 월 200만 원"],["거주·작업실","가족 회사 창고 일부 / 사용료 없음"],["본인 소득","없음"]],"art":"clay"},
+ {"type":0,"desk":10,"field":"만화","title":"돌아오는 버스","work":"단행본 1권 · 연재 원고","recT":"단행본 1권 발행","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":29,"ev":"판권지 · 출판 계약","papers":[["일","삽화 외주"],["월 소득","74만 원"],["거주·작업실","월세방 책상 / 보증금 300만 원"]],"art":"comic","wk":5},
+ {"type":1,"desk":11,"field":"미술","title":"창가의 선","work":"판화 16점 · 전시 기록","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":0,"ev":"전시 도록 · 개최 확인","papers":[["유학","파리 2년 / 학비 부모 부담"],["거주·작업실","부 명의 건물 / 증여 예정"],["본인 소득","없음"]],"art":"paint"},
+ {"type":2,"desk":12,"field":"공예","title":"가벼운 그릇","work":"도자 13점 · 전시 사진","recT":"개인전 1회","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":2,"ev":"전시 계약 · 도록","papers":[["차량","부 명의 / 본인 재산 아님"],["거주·작업실","모 명의 주택 1층 공방"],["본인 소득","판매 4만 원 / 월"]],"art":"clay"},
+ {"type":4,"desk":14,"field":"문학","title":"다음 문장","work":"시 6편 · 원고 수정본","recT":"문예지 발표 6편","crit":"공개 발표 확인","rec":"ok","incT":"예술활동 수입 기준 미달","inc":"no","mid":2,"ev":"발표 지면 · 원고료 내역","papers":[["생활비","모 명의 상가 임대수익에서 지급"],["거주·작업실","본가"],["본인 소득","원고료 5만 원 / 월"]],"art":"pages"}
 ];
-const ELIGIBLE=AP.map((a,i)=>i).filter(i=>Number.isInteger(AP[i].desk)&&(AP[i].rec==='ok'||AP[i].inc==='ok')&&AP[i].mid<=120);
+// 선정: 본인 소득인정액이 기준 중위소득 120% 이하일 것. 소득이 낮을수록 배점이 크고(30% 이하 8 · 60% 이하 7 · 90% 이하 6 · 120% 이하 5), 처음 받는 사람은 4점을 더해 높은 점수부터 뽑는다
+const INC_PT=m=>m<=30?8:m<=60?7:m<=90?6:5,AP_PT=a=>INC_PT(a.mid)+4,AP_CUT=11;
+const ELIGIBLE=AP.map((a,i)=>i).filter(i=>Number.isInteger(AP[i].desk)&&(AP[i].rec==='ok'||AP[i].inc==='ok')&&AP[i].mid<=120&&AP_PT(AP[i])>=AP_CUT);
+const REJECTED=[10,6,3,7,1,8,5]; // 미승인자: 이 순서로 시민 책상에 앉는다
 const teamSize=z=>Math.min(15,4+z*2);
 const quota=z=>Math.min(260,50+(z-1)*30);
 function proofFor(id,record={}){
@@ -282,11 +283,11 @@ function proofFor(id,record={}){
  return {...route,pass:route.rec==='ok'||a.inc==='ok'};
 }
 function loadSave(){
- const d={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand'],tool:'hand',muted:false,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null};
+ const d={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand'],tool:'hand',muted:false,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,wp:1};
  try{const r=JSON.parse(localStorage.getItem(KEY)||'null');
   if(r&&r.v===2){d.money=clamp(+r.money||0,0,1e9);d.total=clamp(Math.floor(+r.total||0),0,1e9);d.liters=clamp(+r.liters||0,0,1e9);
    d.zone=clamp(Math.floor(+r.zone||1),1,999);d.prog=clamp(Math.floor(+r.prog||0),0,quota(d.zone));d.paid=!!r.paid&&d.prog>=quota(d.zone);
-   if(Array.isArray(r.owned)&&r.owned.includes('glue')){d.money+=4000;d.rf=true}d.owned=TOOLS.map(t=>t.id).filter(id=>id==='hand'||Array.isArray(r.owned)&&r.owned.includes(id));d.tool=d.owned.includes(r.tool)?r.tool:'hand';d.muted=!!r.muted;d.ofn=!!r.ofn;
+   if(Array.isArray(r.owned)){for(const[id,pay]of[['glue',4000],['mop',6000],['truck',26000]])if(r.owned.includes(id)){d.money+=pay;d.rf=true}if(r.owned.includes('wash')&&!r.wp){d.money+=15000;d.rf=true}}d.owned=TOOLS.map(t=>t.id).filter(id=>id==='hand'||Array.isArray(r.owned)&&r.owned.includes(id));d.tool=d.owned.includes(r.tool)?r.tool:'hand';d.muted=!!r.muted;d.ofn=!!r.ofn;
    if(Array.isArray(r.funds))d.funds=d.funds.map((v,i)=>Number.isFinite(r.funds[i])?clamp(r.funds[i],0,ACTIVITY_T):v);
    d.advance=clamp(+r.advance||0,0,1e6);
    if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid','spent','more'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999),k:Number.isInteger(v.k)&&AP[k].choices?.[v.k]?v.k:-1}}
@@ -577,12 +578,13 @@ function inkFlush(){
 /* ───────── 작업장 ───────── */
 let XB=3.9,ZN=-4.35,ZF=4.3; // 생물이 돌아다니는 범위 (구역이 오를수록 넓어진다)
 const ROOM={tx:3.9,tn:-4.35,tf:4.3,wb:null,wl:null,wr:null,ww:[],sp:null,ln:[],hz:null,note:null,drains:[]};
-const DESKS=[[0,0],[0,-1.7],[0,1.7],[1,.3],[3,.3],[2,.85],[1,-2.4],[3,-2.4],[0,-3.4],[0,3.4],[2,-.85],[3,3],[1,3],[2,2.55],[2,-2.55]].map((d,i)=>{const ry=d[0]*Math.PI/2;return{side:d[0],off:d[1],homeSide:d[0],homeOff:d[1],x:0,z:0,ry,fx:Math.sin(ry),fz:Math.cos(ry),type:i%5}});
+const DESKS=[[0,0],[0,-1.7],[0,1.7],[1,.3],[3,.3],[2,.85],[1,-2.4],[3,-2.4],[0,-3.4],[0,3.4],[2,-.85],[3,3],[1,3],[2,2.55],[2,-2.55]].map((d,i)=>{const ry=d[0]*Math.PI/2;return{side:d[0],off:d[1],homeSide:d[0],homeOff:d[1],x:0,z:0,ry,fx:Math.sin(ry),fz:Math.cos(ry),type:i%5,ap:AP.findIndex(a=>a.desk===i)}});
+for(const d of DESKS)d.wk=AP[d.ap]?.wk;
 // 기존 저장의 예술가 자리 번호는 유지하고 시민 자리는 뒤에 붙인다.
 const NREG=DESKS.length;
 [[1,-1.05],[1,1.65],[3,1.65]].forEach((q,k)=>{for(let ty=0;ty<5;ty++){const ry=q[0]*Math.PI/2;DESKS.push({side:q[0],off:q[1],x:0,z:0,ry,fx:Math.sin(ry),fz:Math.cos(ry),type:ty,seat:k})}});
 const CIVIC_START=DESKS.length;
-for(let i=0;i<18;i++)DESKS.push({citizen:true,civicIndex:i,side:0,off:0,x:0,z:0,ry:0,fx:0,fz:1,type:i%5});
+for(let i=0;i<18;i++){const ap=REJECTED[i];DESKS.push({citizen:true,civicIndex:i,side:0,off:0,x:0,z:0,ry:0,fx:0,fz:1,type:ap!=null?AP[ap].type:i%5,ap:ap??-1,wk:ap!=null?AP[ap].wk:(i*2+1)%5})} // 시민은 모두 일하다 온 차림
 function artistDeskIds(){
  if(S.team)return S.team.map(id=>AP[id].desk);
  const ids=Array.from({length:Math.min(NREG,2+S.zone*2)},(_,i)=>i);
@@ -718,19 +720,28 @@ function drool(c,u){ // 책상 앞판을 타고 흐르는 진물
  const dr=c.drool;if(u!=null){const i=clamp(Math.round((u+.5)/.2),0,5);dr.L[i]=Math.min(.3,dr.L[i]+rnd(.012,.03))}
  for(let k=0;k<6;k++){const L=dr.L[k];D.position.set(dr.u[k],.75-L*.5,.377);D.rotation.set(0,0,0);D.scale.set(L>0?.016+L*.02:0,L*.5+.008,.012);D.updateMatrix();dr.im.setMatrixAt(k,D.matrix)}
  dr.im.instanceMatrix.needsUpdate=true}
-function buildDesk(d,idx,target=scene){const ty=d.type,v=(idx/5|0)%3,certified=!d.citizen&&!d.interview;
+// 일하다 온 차림. 0 현장 조끼 · 1 매장 조끼 · 2 배달 바람막이 · 3 조리 위생복 · 4 공장 작업복 · 5 낡은 평상복
+const LW=[ // 배열로 적은 값은 사람 갈래(v)마다 다르다
+ {top:[0x7b8494,0x4f6288,0x8d8a72],vest:[0xc8f23a,0xff7a1a,0xc8f23a],pants:[0x26324f,0x3a3d45,0x4a4234],sock:0x26262b,shoe:0x2a2522,sole:0x8d7b55,hair:[0x1e1a18,0x2b211c,0x3a2a1c],helm:[0xf4f2ea,0xf2c230,0xf4f2ea],short:1},
+ {top:0xf4f4ee,vest:[0x1f9d57,0xd8402f,0x2f66c4],pants:[0x1d1d23,0x2a2d38,0x1d1d23],sock:0x1d1d23,shoe:0x8c8f97,sole:0xcfc8b3,hair:[0x2b211c,0x1c1a19,0x4a3020],short:1},
+ {top:[0x24272e,0x1e2f5c,0x2d4a3c],pants:[0x30333b,0x23262d,0x3b3f49],sock:0x17171a,shoe:0x5a4636,sole:0x2a2622,hair:[0x1c1a19,0x33261c,0x1c1a19],short:0},
+ {top:0xf1f4f6,apron:[0x2d6fd6,0xe0608a,0x23408a],pants:0xe9edf0,sock:0xf1f4f6,shoe:0xf6f6f0,sole:0xd8dcd6,hair:0x2b2320,short:0},
+ {top:[0x3f5f86,0x6b7480,0x55683f],pants:[0x3f5f86,0x6b7480,0x55683f],sock:0x1f1f24,shoe:0x211d1b,sole:0x6f6a5c,hair:0x221d1a,hat:[0x2c4466,0x4d5560,0x3d4c2c],short:0},
+ {top:[0x8b93a1,0xa0685a,0x6c8a76],pants:[0x4f6fa0,0x3a3d45,0xb3a487],sock:0xe8e6dd,shoe:0x9a9488,sole:0xd6cfbc,hair:[0x2a221d,0x1c1a19,0x4a3020],short:0}
+].map(l=>({cuff:l.pants,tat:0,...l})),lookW=(wk,v)=>{const o={};for(const k in LW[wk]){const x=LW[wk][k];o[k]=Array.isArray(x)?x[v]:x}return o};
+function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d.ap].desk==null?(d.ap%3)*5+ty:idx,v=(pid/5|0)%3,certified=!d.citizen&&!d.interview; // wk: 일하다 온 차림 번호(없으면 차려입은 쪽) · pid: 심사실과 작업실에서 같은 사람으로 보이게 하는 번호(책상이 있는 신청인은 책상 번호 그대로)
  if(!bodyMat){bodyMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.66,envMapIntensity:.35});droolMat=new THREE.MeshStandardMaterial({roughness:.1,envMapIntensity:1.1});bulgeGeo=lump(SP(14,10),.1,3)}
  const g=new THREE.Group();g.position.set(d.x,0,d.z);g.rotation.y=d.ry;target.add(g);
  const ps=[],hp=[],A=(...a)=>ps.push(part(...a)),Hd=(...a)=>hp.push(part(...a)),G=(...a)=>ps.push(seg(...a));
  const WOOD=0xe9c38a,WOODD=0xcf9f5e,STEEL=0x7f8a9c,K=0x1b1a20,W=0xffffff,PI=Math.PI;
- const SKIN=[0xf0c6a0,0xdba77e,0xf4d2b3,0xc48a5f,0xefc19a][(idx*3+ty)%5],SKD=shade(SKIN,.8);
- const L=[
+ const SKIN=[0xf0c6a0,0xdba77e,0xf4d2b3,0xc48a5f,0xefc19a][(pid*3+ty)%5],SKD=shade(SKIN,.8);
+ const LH=[
   {top:0xf4f1e6,stripe:[0x1d2a5c,0xc2362b,0x1f6b4a][v],pants:0x1e1f26,cuff:0x3a3c46,sock:0xffffff,shoe:0x15151a,hat:[0xe8a51a,0xd0482c,0x2f8a62][v],hair:0x2b2320,short:1,tat:1},
   {top:[0x2c5fc4,0x2f7a55,0x2c5fc4][v],pants:0xd8c39a,cuff:0xefe2c4,sock:0xe2563b,shoe:0xf1ede2,hat:[0x6f7a3c,0xe6d3a3,0xe2563b][v],hair:0x5a3a22,short:0,tat:0},
   {top:0xf6f4ee,apron:[0xc98a3c,0x6f8f5e,0xb5563a][v],pants:0x59633b,cuff:0x717c4a,sock:0xb4b8c0,shoe:0x7a4a26,hair:[0x3a2a1c,0x8a4f26,0x1d1c22][v],short:1,tat:1},
   {top:[0x8a4fe0,0xff6a3d,0x12b08a][v],pants:0x8fb6e6,cuff:0xc4dbf3,sock:0xffffff,shoe:0xf4f4f4,acc:[0xb6f23a,0xff4f9a,0xffd21f][v],hair:[0xf5e9b5,0xf7a8c8,0xa8e6dc][v],hat:[0xff5a1f,0xffffff,0x1f4fd8][v],short:0,tat:0},
   {top:0x1d1d24,pants:[0x8a5230,0x5c3a66,0x3f6a45][v],cuff:[0x9c6340,0x70497c,0x4f7f56][v],sock:0xe8a51a,shoe:0x6a1f22,hat:[0xa01f30,0x1f3f9a,0x2a2a30][v],hair:0x34302c,short:0,tat:0}
- ][ty];
+ ][ty],L=wk!=null?lookW(wk,v):LH;
  // 작업실 책상과 면담용 의자는 같은 인물 모델을 사용한다.
  if(!d.interview){
   A(BX(1.36,certified?.09:.035,.74),certified?0x78503a:WOOD,0,certified?.725:.7525,0);
@@ -754,12 +765,24 @@ function buildDesk(d,idx,target=scene){const ty=d.type,v=(idx/5|0)%3,certified=!
   G([kx,.52,-.15],[kx,.18,-.1],.07,.09,L.pants,8);A(CY(.094,.094,.05,10),L.cuff,kx,.175,-.1);
   G([kx,.155,-.1],[kx,.06,-.08],.036,.034,L.sock,6);
   const z=-.04;
-  if(ty===2){A(BX(.1,.026,.25),0xc9a36a,kx,.013,z+.03);A(SP(8,6),L.sock,kx,.055,z+.03,.045,.034,.105);A(BX(.108,.014,.045),L.shoe,kx,.08,z);A(BX(.108,.014,.045),L.shoe,kx,.072,z+.085)}
+  if(wk===3){G([kx,.33,-.1],[kx,.07,-.08],.066,.06,L.shoe,8);A(BX(.11,.02,.27),L.sole,kx,.01,z+.03);A(SP(10,7),L.shoe,kx,.058,z+.035,.058,.052,.13)} // 장화
+  else if(wk!=null){A(BX(.108,.022,.262),L.sole,kx,.011,z+.03);A(SP(10,7),L.shoe,kx,.056,z+.03,.054,.048,.126);
+   if(wk===0||wk===4)A(SP(8,6),shade(L.shoe,1.4),kx,.05,z+.118,.05,.04,.05);else A(BX(.1,.008,.06),shade(L.shoe,.7),kx,.086,z+.02)} // 안전화 앞코 · 닳은 운동화
+  else if(ty===2){A(BX(.1,.026,.25),0xc9a36a,kx,.013,z+.03);A(SP(8,6),L.sock,kx,.055,z+.03,.045,.034,.105);A(BX(.108,.014,.045),L.shoe,kx,.08,z);A(BX(.108,.014,.045),L.shoe,kx,.072,z+.085)}
   else if(ty===3){A(BX(.115,.045,.27),W,kx,.0225,z+.03);A(SP(10,7),L.shoe,kx,.075,z+.035,.056,.05,.125);A(BX(.118,.016,.1),L.acc,kx,.05,z-.04);A(SP(6,5),L.acc,kx,.1,z+.1,.03,.02,.04)}
   else{A(BX(.1,.014,.245),ty===1?0xf7f3e8:0x0f0f12,kx,.007,z+.03);A(SP(10,7),L.shoe,kx,.05,z+.03,.05,.042,.12);if(ty===1)A(SP(8,6),W,kx,.04,z+.115,.048,.034,.045)}}
  // 상체: 책상 위로 잔뜩 굽힌 자세
  const TQ=.6,ax=t=>[0,lerp(.6,.95,t),lerp(-.66,-.42,t)],fr=(t,o)=>{const p=ax(t),r=lerp(.165,.185,t)+o;return[p[1]-Math.sin(TQ)*r,p[2]+Math.cos(TQ)*r]};
  G(ax(0),ax(1),.165,.185,L.top,12);A(SP(10,8),L.top,0,.95,-.42,.235,.09,.13);
+ if(wk!=null){
+  if(wk<2){G(ax(.06),ax(.94),.176,.196,L.vest,12); // 조끼
+   if(wk===0)for(const t of[.3,.6]){const p=ax(t),r=lerp(.176,.196,t)+.003;A(CY(r,r,.034,12),0xe8edf2,0,p[1],p[2],1,1,1,TQ,0,0)} // 반사띠
+   else{const p=fr(.74,.016);A(BX(.075,.045,.008),0xffffff,.085,p[0],p[1],1,1,1,TQ,0,0)}} // 명찰
+  else if(wk===2){A(SP(10,8),0x5d6676,0,.957,-.42,.24,.082,.136);const a=fr(.15,.004),b=fr(.97,.004);G([0,a[0],a[1]],[0,b[0],b[1]],.007,.007,0xd9dde3,4)} // 어깨 덧감 · 지퍼
+  else if(wk===3){const p=fr(.44,.008);A(BX(.3,.42,.014),L.apron,0,p[0],p[1],1,1,1,TQ,0,0);const u=fr(1,.01);for(const s of[-1,1])G([s*.11,u[0],u[1]],[s*.05,1.0,-.45],.011,.011,L.apron,5)} // 비닐 앞치마
+  else if(wk===4){const p=fr(.72,.003),q=fr(.88,.004);for(const s of[-1,1])A(BX(.09,.075,.012),shade(L.top,.8),s*.09,p[0],p[1],1,1,1,TQ,0,0);A(BX(.062,.028,.012),0xf2c230,-.09,q[0],q[1],1,1,1,TQ,0,0)} // 가슴 주머니 · 명찰
+  else{const p=fr(.5,.004);A(BX(.2,.1,.012),shade(L.top,.84),0,p[0],p[1],1,1,1,TQ,0,0)}
+ }else{
  if(ty===0)for(const t of[.14,.36,.58,.8]){const p=ax(t),r=lerp(.165,.185,t)+.004;A(CY(r,r,.038,12),L.stripe,0,p[1],p[2],1,1,1,TQ,0,0)}
  if(ty===1){const p=fr(.72,.002);for(const s of[-1,1])A(BX(.085,.085,.012),shade(L.top,.78),s*.09,p[0],p[1],1,1,1,TQ,0,0);
   for(let k=0;k<7;k++){const t=rnd(.2,.9),q=fr(t,.004);A(SP(6,5),pick([0xe8402a,0xf7b500,0xffffff,0xf0569a,0x1faa59]),rnd(-.13,.13),q[0],q[1],rnd(.014,.03),rnd(.014,.03),.006,TQ,0,0)}
@@ -767,27 +790,54 @@ function buildDesk(d,idx,target=scene){const ty=d.type,v=(idx/5|0)%3,certified=!
  if(ty===2){const p=fr(.46,.008),q=fr(.3,.02);A(BX(.31,.4,.016),L.apron,0,p[0],p[1],1,1,1,TQ,0,0);A(BX(.16,.1,.012),shade(L.apron,.8),0,q[0],q[1],1,1,1,TQ,0,0);
   const u=fr(1,.01);for(const s of[-1,1])G([s*.12,u[0],u[1]],[s*.05,1.0,-.45],.012,.012,L.apron,5)}
  if(ty===3){A(lump(SP(8,6),.1,3),L.top,0,.99,-.53,.17,.1,.11);const p=fr(.3,.006);A(BX(.22,.11,.014),shade(L.top,.84),0,p[0],p[1],1,1,1,TQ,0,0);const q=fr(.95,.004),q2=fr(.62,.008);for(const s of[-1,1])G([s*.035,q[0],q[1]],[s*.04,q2[0],q2[1]],.006,.006,W,4)}
- if(ty===4)G([0,.97,-.41],[0,1.035,-.325],.068,.062,L.top,10);else G([0,.97,-.41],[0,1.035,-.325],.05,.046,SKIN,8);
+ }
+ if(wk==null&&ty===4)G([0,.97,-.41],[0,1.035,-.325],.068,.062,L.top,10);else G([0,.97,-.41],[0,1.035,-.325],.05,.046,SKIN,8);
  // 머리 (따로 움직인다)
  Hd(SP(14,10),SKIN,0,0,0,.112,.125,.118);
  for(const s of[-1,1]){Hd(SP(6,5),SKD,s*.112,-.005,-.005,.02,.032,.024);Hd(SP(6,5),K,s*.043,.012,.107,.013,.017,.01)}
  Hd(SP(6,5),SKD,0,-.02,.118,.02,.026,.028);
  const glasses=(r,tb,col)=>{for(const s of[-1,1]){Hd(new THREE.TorusGeometry(r,tb,5,14),col,s*.044,.01,.114);hp.push(seg([s*(.044+r),.012,.112],[s*.113,.014,.0],tb*.7,tb*.7,col,4))}Hd(BX(.03,tb*1.4,tb*1.4),col,0,.014,.118)};
  const stache=()=>Hd(SP(6,5),L.hair,0,-.052,.112,.046,.014,.016);
- if(ty===0){Hd(SP(12,8),L.hat,0,.05,-.006,.121,.115,.127);Hd(CY(.125,.128,.05,16),shade(L.hat,.8),0,.032,-.006,1,1,1.03);Hd(SP(8,6),L.hair,0,-.03,-.065,.1,.07,.07);glasses(.031,.008,K);Hd(SP(6,5),L.hair,0,-.105,.085,.034,.03,.03)}
+ if(wk!=null){Hd(lump(SP(10,8),.06,4),L.hair,0,.03,-.02,.118,.115,.122);
+  if(wk===1||(v===1&&(wk===2||wk===5)))Hd(SP(8,6),L.hair,0,-.02,-.125,.052,.05,.05); // 묶은 머리
+  else if(wk===3){Hd(lump(SP(12,8),.05,3),0xffffff,0,.055,-.012,.134,.108,.138);Hd(CY(.118,.12,.03,16),0xe6eef5,0,.03,-.008)} // 위생모
+  else if(wk===4){Hd(SP(12,8),L.hat,0,.052,-.006,.122,.108,.128);Hd(BX(.15,.014,.1),shade(L.hat,.8),0,.05,.13)} // 작업모
+  else if(wk===5&&v===0)Hd(SP(8,6),L.hair,0,-.03,-.065,.1,.07,.07)}
+ else if(ty===0){Hd(SP(12,8),L.hat,0,.05,-.006,.121,.115,.127);Hd(CY(.125,.128,.05,16),shade(L.hat,.8),0,.032,-.006,1,1,1.03);Hd(SP(8,6),L.hair,0,-.03,-.065,.1,.07,.07);glasses(.031,.008,K);Hd(SP(6,5),L.hair,0,-.105,.085,.034,.03,.03)}
  else if(ty===1){Hd(lump(SP(10,8),.08,4),L.hair,0,-.035,-.05,.12,.125,.1);Hd(CY(.102,.12,.078,16),L.hat,0,.11,-.005);Hd(CY(.126,.205,.05,18),shade(L.hat,.86),0,.055,-.005);stache()}
  else if(ty===2){Hd(lump(SP(10,8),.06,4),L.hair,0,.03,-.02,.118,.115,.122);Hd(SP(8,6),L.hair,0,.145,-.07,.05,.045,.05);Hd(lump(SP(10,8),.1,4),L.hair,0,-.08,.05,.1,.088,.085);stache()}
  else if(ty===3){Hd(lump(SP(10,8),.1,5),L.hair,0,.035,-.01,.124,.118,.128);Hd(SP(7,5),L.hair,.03,.075,.09,.075,.035,.045);Hd(new THREE.TorusGeometry(.13,.013,6,16,PI),L.hat,0,0,-.005);for(const s of[-1,1]){Hd(CY(.052,.052,.04,14),L.hat,s*.13,-.005,-.005,1,1,1,0,0,PI/2);Hd(CY(.04,.04,.046,12),K,s*.126,-.005,-.005,1,1,1,0,0,PI/2)}}
  else{Hd(lump(SP(10,8),.06,4),L.hair,0,0,-.035,.122,.13,.11);Hd(SP(12,7),L.hat,.018,.108,-.015,.152,.045,.152,0,0,-.2);Hd(CY(.006,.006,.03,5),L.hat,.02,.152,-.015);glasses(.033,.0045,0xd9a520);stache()}
  // 책상 위 물건 · 옆에 둔 물건
+ const belong=(x,z)=>{ // 일터에서 들고 온 것
+  if(wk===0){A(SP(12,8),L.helm,x,.085,z,.13,.1,.15);A(CY(.155,.155,.012,16),L.helm,x,.04,z+.02,1,1,1.12);A(lump(SP(10,8),.08,2),0x30384a,x-.04,.2,z-.3,.15,.2,.11);A(BX(.05,.2,.02),0x232a38,x-.04,.22,z-.19)} // 안전모 · 백팩
+  else if(wk===1){A(lump(SP(10,8),.14,5),0x17171a,x,.11,z+.04,.13,.12,.12);A(SP(6,5),0x17171a,x,.24,z+.04,.03,.045,.03); // 검은 비닐봉지
+   const B=d.interview?[x-.08,.02,z-.28]:[x+.06,.02,z-.22],T=d.interview?[x-.18,.86,z-.35]:[x+.155,.86,z-.26],U=t=>[lerp(B[0],T[0],t),lerp(B[1],T[1],t),lerp(B[2],T[2],t)]; // 장우산: 심사실은 의자 등받이에, 작업실은 책상 옆면에 기대 세운다
+   G(U(0),U(.08),.004,.006,0x9aa3ad,5);G(U(.08),U(.78),.012,.03,0x2a5bd7,8);G(U(.56),U(.6),.031,.032,0x1f3f9a,8);G(U(.78),U(.86),.006,.006,0x9aa3ad,5);G(U(.86),U(1),.013,.013,K,6);A(new THREE.TorusGeometry(.028,.011,5,10,PI),K,T[0],T[1],T[2]+.028,1,1,1,0,PI/2,0)}
+  else if(wk===2){A(BX(.32,.34,.3),0x1fb5a0,x,.17,z);A(BX(.325,.022,.305),0x178f7e,x,.33,z);A(BX(.324,.045,.01),0xe8edf2,x,.2,z+.151);A(SP(12,8),0x23262d,x,.43,z,.13,.11,.15);A(SP(8,6),0x9fb7cc,x,.42,z+.09,.095,.055,.06)} // 보온 가방 · 헬멧
+  else if(wk===3){A(BX(.24,.2,.15),0x3a6ad1,x,.1,z+.05);A(BX(.245,.03,.155),0x2b55b0,x,.19,z+.05);A(new THREE.TorusGeometry(.07,.008,4,10,PI),0x2b55b0,x,.2,z+.05);A(CY(.035,.035,.2,10),0xdfe4ea,x+.02,.1,z-.2);A(CY(.037,.037,.03,10),0x2d6fd6,x+.02,.21,z-.2)} // 도시락 가방 · 물병
+  else if(wk===4){A(CY(.04,.04,.24,10),0x9aa3ad,x+.03,.12,z+.12);A(CY(.042,.042,.04,10),0x23262d,x+.03,.26,z+.12);A(BX(.26,.2,.1),0x4a4f45,x-.03,.12,z-.16,1,1,1,-.15,.4,0);G([x-.14,.2,z-.12],[x+.06,.3,z-.24],.01,.01,0x33372f,4)} // 보온병 · 크로스백
+  else{A(lump(SP(10,8),.08,3),0x58606f,x,.2,z,.16,.2,.12);A(BX(.1,.08,.03),0x444b58,x,.14,z+.11);for(const q of[-.07,.07])A(BX(.05,.2,.02),0x444b58,x+q,.24,z-.1)}}; // 낡은 백팩
+ const sbag=(x,z,w,h,dp,col,band,ry=0)=>{A(BX(w,h,dp),col,x,h/2,z,1,1,1,0,ry,0);A(BX(w*1.012,h*.17,dp*1.03),band,x,h*.6,z,1,1,1,0,ry,0);A(new THREE.TorusGeometry(w*.2,.006,4,10,PI),band,x,h+.004,z,1,1,1,0,ry,0)}; // 쇼핑백
+ const bought=(x,z,front)=>{const k=pid%3; // 사 들고 온 것
+  if(k===0){sbag(x,z,.3,.34,.11,0xf26a1b,0x5a2d0c,.25);sbag(x-.04,z-.26,.24,.28,.1,0x1a1a1e,0xd9b24a,-.2);if(front)sbag(x+.04,z+front,.2,.22,.09,0xf7f4ec,0x1a1a1e,.5)}
+  else if(k===1){sbag(x,z,.26,.3,.1,0x79d3c4,0xffffff,.2);if(front)sbag(x+.02,z+front,.22,.26,.1,0xf26a1b,0x5a2d0c,.45);[[0xe8501e,.1],[0xf7f4ec,.32],[0x1a1a1e,-.12]].forEach((q,i)=>{A(BX(.3,.11,.19),q[0],x-.05,.055+i*.11,z-.3,1,1,1,0,q[1],0);A(BX(.308,.032,.198),shade(q[0],i===2?1.6:.86),x-.05,.094+i*.11,z-.3,1,1,1,0,q[1],0)})}
+  else{sbag(x,z,.24,.28,.1,0x1a1a1e,0xd9b24a,.2);if(front)sbag(x+.03,z+front,.2,.22,.09,0xf7f4ec,0x1a1a1e,.5);A(BX(.26,.46,.18),0xc9ced6,x-.03,.26,z-.28);for(let q=0;q<4;q++)A(BX(.264,.012,.184),0xa4abb6,x-.03,.1+q*.1,z-.28);for(const q of[-.07,.07])G([x-.03+q,.49,z-.28],[x-.03+q,.64,z-.28],.008,.008,K,4);A(BX(.17,.02,.03),K,x-.03,.645,z-.28)}};
  if(!d.interview){
  if(certified)A(CY(.03,.036,.03,10),STEEL,.56,.785,.29);
- if(ty===0){for(let k=0;k<3;k++)A(BX(.3,.004,.22),W,-.1+k*.14,.775+k*.004,.05+k*.03,1,1,1,0,rnd(-.4,.4),0);A(CY(.045,.04,.1,10),0x1f4fd8,.5,.82,-.12);for(let k=0;k<3;k++)A(CY(.006,.006,.16,5),[0x161d33,0xe2563b,0x2f9e6b][k],.49+k*.012,.9,-.12,1,1,1,0,0,(k-1)*.2);
+ if(wk!=null){ // 일하다 온 사람의 책상: 만드는 도구만 있고, 옆에는 일터에서 들고 온 것
+  if(ty===0){for(let k=0;k<3;k++)A(BX(.3,.004,.22),W,-.1+k*.14,.775+k*.004,.05+k*.03,1,1,1,0,rnd(-.4,.4),0);A(CY(.045,.04,.1,10),0x1f4fd8,.5,.82,-.12);for(let k=0;k<3;k++)A(CY(.006,.006,.16,5),[0x161d33,0xe2563b,0x2f9e6b][k],.49+k*.012,.9,-.12,1,1,1,0,0,(k-1)*.2)}
+  else if(ty===1){A(BX(.42,.012,.32),W,0,.78,.06,1,1,1,0,.12,0);[0xe8402a,0x2563eb,0xf7b500,0x1faa59].forEach((c,k)=>{A(CY(.04,.04,.07,10),c,-.5+k*.1,.805,-.16);A(SP(8,6),c,rnd(-.14,.14),.79,rnd(-.03,.15),rnd(.03,.06),.008,rnd(.03,.05))})}
+  else if(ty===2){A(CY(.17,.17,.03,20),STEEL,0,.785,.04);A(lump(SP(12,9),.08),0xc96a45,0,.87,.04,.1,.085,.1);A(SP(10,7),0xc96a45,.42,.8,-.1,.07,.04,.07);A(CY(.04,.05,.08,12),0xcfe6f2,-.5,.81,-.1)}
+  else if(ty===3){A(BX(.72,.035,.19),W,0,.79,.06);A(BX(.72,.02,.09),K,0,.815,.005);A(BX(.74,.05,.06),0x2b6fe0,0,.795,-.07);A(BX(.07,.008,.14),K,-.46,.777,-.12,1,1,1,0,.3,0)}
+  else{A(BX(.3,.014,.22),0x2f3a55,0,.778,-.02);A(BX(.28,.006,.2),W,0,.788,-.02);G([.1,.797,-.09],[.19,.797,.04],.006,.006,K,5);for(let k=0;k<4;k++)A(BX(.3,.005,.4),W,.4,.775+k*.006,-.05,1,1,1,0,rnd(-.1,.1),0);for(let k=0;k<3;k++)A(lump(SP(8,6),.2,2),W,-.3-k*.09,.81,.2-k*.12,.045,.045,.045)}
+  belong(-.86,.1)}
+ else if(ty===0){for(let k=0;k<3;k++)A(BX(.3,.004,.22),W,-.1+k*.14,.775+k*.004,.05+k*.03,1,1,1,0,rnd(-.4,.4),0);A(CY(.045,.04,.1,10),0x1f4fd8,.5,.82,-.12);for(let k=0;k<3;k++)A(CY(.006,.006,.16,5),[0x161d33,0xe2563b,0x2f9e6b][k],.49+k*.012,.9,-.12,1,1,1,0,0,(k-1)*.2);
   A(CY(.036,.029,.1,10),0xf4f1e6,-.52,.82,-.08);A(CY(.038,.034,.045,10),0xb07a45,-.52,.815,-.08);A(CY(.038,.038,.012,10),K,-.52,.876,-.08);
   A(BX(.3,.34,.05),0xefe6cf,-.86,.18,.22,1,1,1,-.12,.3,0);A(BX(.15,.15,.056),L.hat,-.86,.19,.22,1,1,1,-.12,.3,0);A(new THREE.TorusGeometry(.09,.008,4,12,PI),0xefe6cf,-.86,.34,.2,1,1,1,-.12,.3,0)}
  else if(ty===1){A(BX(.42,.012,.32),W,0,.78,.06,1,1,1,0,.12,0);[0xe8402a,0x2563eb,0xf7b500,0x1faa59].forEach((c,k)=>{A(CY(.04,.04,.07,10),c,-.5+k*.1,.805,-.16);A(SP(8,6),c,rnd(-.14,.14),.79,rnd(-.03,.15),rnd(.03,.06),.008,rnd(.03,.05))});
   A(CY(.04,.036,.075,12),W,.5,.81,-.1);A(new THREE.TorusGeometry(.04,.006,5,14),0x1f4fd8,.5,.848,-.1,1,1,1,PI/2,0,0);
-  A(CY(.13,.1,.2,12),0xc96a45,-.9,.1,.12);for(let k=0;k<5;k++){const a=k*1.3,h=.42+k*.07,r=.1+k*.02;G([-.9,.2,.12],[-.9+Math.cos(a)*r,h,.12+Math.sin(a)*r],.008,.006,0x2a6a3a,4);A(SP(8,5),k%2?0x2f9e4f:0x1f7a44,-.9+Math.cos(a)*(r+.05),h+.01,.12+Math.sin(a)*(r+.05),.11,.012,.085,.2,-a,.25)}}
+  A(CY(.13,.1,.2,12),0xc96a45,-.9,.1,-.6);for(let k=0;k<5;k++){const a=k*1.3,h=.42+k*.07,r=.1+k*.02;G([-.9,.2,-.6],[-.9+Math.cos(a)*r,h,-.6+Math.sin(a)*r],.008,.006,0x2a6a3a,4);A(SP(8,5),k%2?0x2f9e4f:0x1f7a44,-.9+Math.cos(a)*(r+.05),h+.01,-.6+Math.sin(a)*(r+.05),.11,.012,.085,.2,-a,.25)}}
  else if(ty===2){A(CY(.17,.17,.03,20),STEEL,0,.785,.04);A(lump(SP(12,9),.08),0xc96a45,0,.87,.04,.1,.085,.1);A(SP(10,7),0xc96a45,.42,.8,-.1,.07,.04,.07);
   A(CY(.04,.05,.08,12),0xcfe6f2,-.5,.81,-.1);A(CY(.055,.02,.055,12),0xf6f4ee,-.5,.88,-.1);A(BX(.012,.05,.012),0xf6f4ee,-.44,.88,-.1);
   A(CY(.04,.032,.06,10),0xe2563b,-.5,.8,.2);A(SP(8,6),0x2f9e4f,-.5,.87,.2,.032,.05,.032);A(SP(6,5),0x2f9e4f,-.47,.88,.2,.014,.024,.014)}
@@ -803,7 +853,9 @@ function buildDesk(d,idx,target=scene){const ty=d.type,v=(idx/5|0)%3,certified=!
   for(let k=0;k<4;k++)A(BX(.3,.005,.4),W,.4,.775+k*.006,-.05,1,1,1,0,rnd(-.1,.1),0);for(let k=0;k<3;k++)A(lump(SP(8,6),.2,2),W,-.3-k*.09,.81,.2-k*.12,.045,.045,.045);
   A(BX(.13,.075,.05),K,-.5,.81,-.15,1,1,1,0,.4,0);A(BX(.13,.02,.052),0xc9ced6,-.5,.85,-.15,1,1,1,0,.4,0);A(CY(.03,.03,.05,12),K,-.488,.81,-.122,1,1,1,PI/2,0,-.4);
   A(BX(.3,.34,.05),0xefe6cf,-.86,.18,.2,1,1,1,-.12,.3,0);A(BX(.17,.05,.056),K,-.86,.22,.2,1,1,1,-.12,.3,0);A(BX(.17,.05,.056),L.hat,-.86,.14,.2,1,1,1,-.12,.3,0)}
+ if(wk==null&&certified)bought(-.84,ty===1?-.02:-.44,ty===2?.62:0); // 지원받는 쪽: 책상 옆에 사 들고 온 것
  }
+ else if(wk!=null)belong(.38,-.5);else bought(.38,-.5,.42); // 심사실: 의자 옆에 내려놓은 것
  const body=new THREE.Mesh(merge(ps),bodyMat);body.castShadow=true;body.receiveShadow=true;g.add(body);
  const head=new THREE.Mesh(merge(hp),bodyMat);head.castShadow=true;head.position.set(0,1.075,-.285);head.rotation.order='YXZ';g.add(head);
  const mouth=new THREE.Group();mouth.position.set(0,-.065,.145);head.add(mouth);mouth.visible=false;
@@ -817,7 +869,7 @@ function buildDesk(d,idx,target=scene){const ty=d.type,v=(idx/5|0)%3,certified=!
   if(L.tat){const p=fg.attributes.position,c=fg.attributes.color;for(let i=0;i<p.count;i++){const yb=Math.floor((p.getY(i)+.5)*6.999),ai=Math.round(Math.atan2(p.getZ(i),p.getX(i))/TAU*8+8)%8;if(yb<6&&(yb*7+ai*3+idx+(s>0?2:0))%5<3)c.setXYZ(i,lerp(skc.r,INKC.r,.8),lerp(skc.g,INKC.g,.8),lerp(skc.b,INKC.b,.8))}}
   const fo=addMesh(g,fg,bodyMat),el=addMesh(g,tint(SP(8,6),L.short?L.top:L.top),bodyMat);el.scale.setScalar(.046);
   const hand=addMesh(g,tint(SP(8,6),SKIN),bodyMat);hand.scale.set(.042,.03,.055);
-  hands.push({up,fo,el,hand,s,sh:new THREE.Vector3(s*.21,.95,-.41),base:ty===4?new THREE.Vector3(s*.06,.875,-.175):new THREE.Vector3(s*.16,.805,-.07)})}
+  hands.push({up,fo,el,hand,s,sh:new THREE.Vector3(s*.21,.95,-.41),base:ty===4&&wk==null?new THREE.Vector3(s*.06,.875,-.175):new THREE.Vector3(s*.16,.805,-.07)})}
  if(d.interview)return {g,head,hands,i:idx,type:ty};
  // 완성 직전에 부풀어 오르는 작품
  const wy=[.778,.79,.8,.815,.778][ty];
@@ -1048,18 +1100,15 @@ function spawnCreature(type,x,z,o={}){
  creatures.push(c);return c;
 }
 const herdC=new Map();
-const EY={x:0,z:0,r:.12,w:.34,two:0}; // two: 구르는 동안 두 발이 디디는 자리의 좌우 간격(0이면 한 곳)
+const EY={x:0,z:0,r:.12,w:.34,two:0,on:1}; // two: 구르는 동안 두 발이 디디는 자리의 좌우 간격(0이면 한 곳) · on: 눈 달린 장비를 들고 있다(0이면 모이지 않는다)
 function eyeSpot(){ // 장비에 붙은 눈이 있는 자리. 관객인 줄 알고 여기로 모인다
  const t=S.tool;let x=P.x+.1,z=P.z-.72,r=.12,w=.36;
- EY.two=0;
+ EY.two=0;EY.on=t==='wash'?0:1;
  if(t==='boot'&&TD.on){x=P.x;z=P.z-TDZ;r=.012;w=.15;EY.two=.135} // 구르는 동안에는 두 발이 디디는 자리로 파고든다
- else if(t==='tong'){if(TG.neck>.5&&TG.hang<.3){x=TG.bag.position.x;z=TG.bag.position.z;r=TG.fr+.05;w=.3}else{x=P.x+.06;z=P.z-.78;r=.08;w=.34}} // 묶어 놓으면 봉투 둘레로 모여든다
+ else if(t==='tong'){x=TG.bag.position.x;z=TG.bag.position.z;r=Math.max(TG.fr,.1)+.05;w=.3} // 눈이 붙은 봉투 둘레로 모여든다 (담는 동안에도, 묶어 놓은 뒤에도)
  else if(t==='shovel'){x=P.x+.07;z=P.z-.86;r=.06;w=.3}
- else if(t==='mop'){x=P.x+.05;z=P.z-1.08;r=.05;w=.28}
  else if(t==='vac'){x=P.x+.04;z=P.z-.97;r=.12;w=.3}
  else if(t==='trim'){x=P.x+.05;z=P.z-.95;r=.05;w=.3}
- else if(t==='wash'){x=P.x+.08;z=P.z-1.5;r=.05;w=.3}
- else if(t==='truck'){x=P.x;z=P.z-1.7;r=.1;w=.4}
  EY.x=x;EY.z=z;EY.r=r;EY.w=w}
 function updateCreatures(dt){
  herdC.clear();eyeSpot();
@@ -1080,14 +1129,13 @@ function updateCreatures(dt){
    continue;
   }
   if(c.st==='pinned'||c.st==='carried'||c.st==='tank'||c.st==='held'||c.st==='bag')continue;
-  if(c.st==='pushed'){if(!MP.on||!c.pj){c.st='walk';c.t=0;c.dn=0}c.pj=0;continue}
   if(c.st==='washed'){if(!c.wj){c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1.5;c.y=0}c.wj=0;continue}
   if(c.st==='stump'){ // 몸통만 남아 꿈틀댄다
    c.y=0;c.yaw+=Math.sin(time*11+c.ph)*dt*5;c.roll=Math.sin(time*23+c.ph)*.35;c.panic=1;c.sq=damp(c.sq,1,10,dt);
    c.tr-=dt;if(c.tr<=0){c.tr=.25;stamp(c.x+rnd(-.03,.03),c.z+rnd(-.03,.03),.09,.09,0,1,6,c.ink,.8)}
    if(Math.random()<dt*1.1)AU.squeal(c.type,.7);if(c.t>c.life)killCreature(c,'bleed');continue}
   if(c.st==='tossed'){c.vy-=9.8*dt;c.x+=c.vx*dt;c.y+=c.vy*dt;c.z+=c.vz*dt;c.roll+=dt*9;c.sq=1;if(c.t>.42){if(SH.tossN){AU.dump(SH.tossN);SH.tossN=0;binSplash()}binAdd(1,c.ink);killCreature(c,'shovel')}continue}
-  if(c.st==='sucked'){if(!VC.on&&!TK.on){c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1;c.str=1;c.y=0}c.sqT=1;c.sq=damp(c.sq,1,10,dt);continue}
+  if(c.st==='sucked'){if(!VC.on){c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1;c.str=1;c.y=0}c.sqT=1;c.sq=damp(c.sq,1,10,dt);continue}
   c.y=0;
   let sp=0;
   if(c.st==='walk'){
@@ -1096,7 +1144,7 @@ function updateCreatures(dt){
    // 봐 달라고 다가와서 올려다본다
    c.beg=0;{let ex=EY.x;if(EY.two){if(!c.ts||Math.abs(c.x-EY.x)>.12)c.ts=c.x>EY.x?1:-1;ex+=c.ts*EY.two}else c.ts=0; // 구르는 발 둘 중 가까운 쪽으로
     const ax=ex-c.x,az=EY.z-c.z,ad=Math.hypot(ax,az);
-    if(ad<3.4){const want=Math.atan2(ax,az);c.yaw+=Math.atan2(Math.sin(want-c.yaw),Math.cos(want-c.yaw))*Math.min(1,dt*5);if(EY.two&&ad<2.4)sp=Math.max(sp,c.spd*2.4);if(ad<EY.r+c.tough*EY.w){c.beg=1;sp=0}}}
+    if(EY.on&&ad<3.4){const want=Math.atan2(ax,az);c.yaw+=Math.atan2(Math.sin(want-c.yaw),Math.cos(want-c.yaw))*Math.min(1,dt*5);if(EY.two&&ad<2.4)sp=Math.max(sp,c.spd*2.4);if(ad<EY.r+c.tough*EY.w){c.beg=1;sp=0}}}
    const h=herdC.get(c.herd);
    if(h&&h.n>1){const hx=h.x/h.n-c.x,hz=h.z/h.n-c.z,d=Math.hypot(hx,hz);if(d>.22){const want=Math.atan2(hx,hz);c.yaw+=Math.atan2(Math.sin(want-c.yaw),Math.cos(want-c.yaw))*dt*2.2}}
    if(c.x<-XB+.25||c.x>XB-.25||c.z<ZN+.25||c.z>ZF-.25){const want=Math.atan2(-c.x,-c.z);c.yaw+=Math.atan2(Math.sin(want-c.yaw),Math.cos(want-c.yaw))*dt*4}
@@ -1116,7 +1164,7 @@ function updateCreatures(dt){
    // 지나간 자리에 진물
    c.tr-=dt;if(c.tr<=0){c.tr=rnd(.3,.55);const m=c.st==='maim',w=m?.1:.052;stamp(c.x,c.z,w,w,0,1,6,m?c.ink:T.trL[c.gi][Math.min(3,c.age/14|0)],m?.85:.56)}}
   // 서 있는 발·차량 피하기
-  const pdx=c.x-P.x,pdz=c.z-(P.z-.08),pd=Math.hypot(pdx,pdz),pr=S.tool==='truck'?0:.2;
+  const pdx=c.x-P.x,pdz=c.z-(P.z-.08),pd=Math.hypot(pdx,pdz),pr=.2;
   if(pd<pr&&pd>.001){c.x+=pdx/pd*(pr-pd)*.5;c.z+=pdz/pd*(pr-pd)*.5}
   if(TG.fr){const bp=TG.bag.position,qx=c.x-bp.x,qz=c.z-bp.z,qd=Math.hypot(qx,qz);if(qd<TG.fr&&qd>.001){const k=(TG.fr-qd)*.5/qd,sd=(qx*(EY.z-c.z)-qz*(EY.x-c.x)>0?1:-1)*c.spd*dt/qd;c.x+=qx*k-qz*sd;c.z+=qz*k+qx*sd;c.tr=Math.max(c.tr,.3)}} // 봉투가 놓인 자리는 비켜서 돌아간다
   c.x=clamp(c.x,-XB,XB);c.z=clamp(c.z,ZN,ZF);
@@ -1271,7 +1319,7 @@ function gooBurst(c,ex,ez,ox,oz,power){
 }
 function killCreature(c,cause,ex,ez,ox,oz){
  if(c.dead)return;c.dead=true;credit(c);earn(TYPES[c.type].pay,c.x,c.z,c.st==='tank'||cause==='hand'?c.y:.12);
- {const sr=cause==='boot'?(TD.on?.3:.5):cause==='slam'?.75:cause==='truck'||cause==='trim'?.5:cause==='crush'||cause==='drain'?.45:cause==='bleed'?.28:0;if(sr)startleNear(c.x,c.z,sr,cause==='bleed'||cause==='boot'&&TD.on?.5:1)}
+ {const sr=cause==='boot'?(TD.on?.3:.5):cause==='slam'?.75:cause==='trim'?.5:cause==='crush'||cause==='drain'?.45:cause==='bleed'?.28:0;if(sr)startleNear(c.x,c.z,sr,cause==='bleed'||cause==='boot'&&TD.on?.5:1)}
  if(cause==='boot'){
   stamp(c.x,c.z,c.r*8.6,c.r*8.6,Math.sin(c.yaw),Math.cos(c.yaw),Math.random()<.5?1:2,c.ink,1);
   gooBurst(c,ex,ez,ox,oz,1);corpse(c);gore(c,ox,oz,1);eyeball(c,ox,oz);if(Math.random()<.6)eyeball(c,ox*.4-oz,oz*.4+ox,.8);
@@ -1279,7 +1327,7 @@ function killCreature(c,cause,ex,ez,ox,oz){
  }else if(cause==='slam'){
   stamp(c.x,c.z,c.r*9.5,c.r*9.5,ox,oz,Math.random()<.5?1:2,c.ink,1);
   gooBurst(c,c.x,c.z,ox,oz,1.3);corpse(c,1.2);gore(c,ox,oz,1.3);eyeball(c,ox,oz,1.35);if(Math.random()<.75)eyeball(c,ox*.5-oz,oz*.5+ox,1.2);
- }else if(cause==='truck'){gooBurst(c,c.x,c.z,rnd(-.4,.4),-1,.8);eyeball(c,rnd(-.6,.6),-1,1.2);gore(c,rnd(-.5,.5),-1,1);AU.crackle(4,.8,0,700,1600,.03)}
+ }
  else if(cause==='bleed'){stamp(c.x,c.z,c.r*6.5,c.r*6.5,0,1,0,c.ink,1);corpse(c,.9);AU.bubble(rnd(190,280),.16)}
  else if(cause==='grind'){AU.crunch()}
  else if(cause==='trim'){gooBurst(c,c.x,c.z,ox,oz,1.5);gooBurst(c,c.x,c.z,-oz,ox,1.2);eyeball(c,ox,oz,1.4);eyeball(c,-ox,-oz,1.2);stamp(c.x,c.z,c.r*8,c.r*8,ox,oz,1,c.ink,1);gore(c,ox,oz,1.6);AU.slap(1);AU.slap(.7,.05);AU.crackle(2,.6,.02)}
@@ -1608,13 +1656,12 @@ function updateThreads(dt){
 
 /* ── 몸 전체 자세 ── */
 function updateBody(dt,mx,mz){
- const truck=S.tool==='truck';
  // 걷기
  const sp=Math.hypot(mx,mz);
  if(sp>.02){mvx=mx/sp;mvz=mz/sp}
  moveK=damp(moveK,sp>.02?1:0,10,dt);
  const prev=Math.cos(walkPh),prevL=Math.cos(walkPh+Math.PI);walkPh+=sp*dt/.36;
- if(sp>.02&&!truck&&!TD.on){const now=Math.cos(walkPh),nowL=Math.cos(walkPh+Math.PI);
+ if(sp>.02&&!TD.on){const now=Math.cos(walkPh),nowL=Math.cos(walkPh+Math.PI);
   if(prev>0&&now<=0)plant(bootR,curR);if(prevL>0&&nowL<=0)plant(bootL,curL)}
  // 왼발: 체중을 실으면 들림 (구르는 동안에는 구르기가 움직인다)
  const lw=ST.ph==='press'&&ST.p>.42?1:0;leftW=damp(leftW,lw,lw?9:12,dt);
@@ -1637,7 +1684,7 @@ function updateBody(dt,mx,mz){
  // 카메라: 지그시 밟을 때와 구를 때는 발밑을 더 내려다본다
  camX=damp(camX,TD.on||ST.ph==='idle'||ST.ph==='back'?0:(ST.T.x-P.x)*.75-.03,6,dt);
  shake=Math.max(0,shake-dt*7);
- const eye=truck?1.9:CAM.eye,basePitch=portrait?CAM.pp:CAM.pl,tk=ss(TD.k),bk=ss(TG.k); // bk: 묶은 봉투를 밟는 동안
+ const eye=CAM.eye,basePitch=portrait?CAM.pp:CAM.pl,tk=ss(TD.k),bk=ss(TG.k); // bk: 묶은 봉투를 밟는 동안
  const bob=Math.sin(walkPh*2)*.008*moveK;
  camera.position.set(P.x+camX+(Math.random()-.5)*.006*shake,eye-.3*lean-CAM.te*tk-CAM.be*bk+bob-shake*.006+TD.bob,P.z-.02*lean-CAM.bz*bk);
  camera.rotation.set(lerp(basePitch-.05*lean-CAM.sp*look-(portrait?CAM.tp:CAM.tl)*tk-(portrait?CAM.bp:CAM.bl-TG.zp)*bk,portrait?-.3:-.17,ss(introK)),0,0,'YXZ');
@@ -1649,6 +1696,7 @@ function plant(b,pose){
  if(S.tool==='hand'){AU.step(false);return}
  const res=b.userData.res;AU.step(res.length>0);
  if(res.length){stamp(pose.x,pose.z,.15,.36,-Math.sin(pose.yaw),-Math.cos(pose.yaw),4,res[res.length-1].color,.42+.05*res.length);if(Math.random()<.5)res.shift();bootGore(b,null,-.012)}
+ if(S.tool==='wash')return; // 씻는 장비를 든 동안에는 밟아 터뜨리지 않는다
  for(const c of creatures){if(c.st!=='walk'&&c.st!=='flee')continue;if(Math.hypot(c.x-pose.x,c.z-pose.z)<.1){c.st='maim';c.t=0;c.life=rnd(5,9);c.sq=.25;c.panic=1;stamp(c.x,c.z,c.r*5,c.r*5,0,1,0,c.ink,1);AU.squeal(c.type,.9);AU.squelch(.45)}}
 }
 
@@ -2741,37 +2789,6 @@ function vacUpdate(dt,act,go2){
  for(const s of v.streaks){s.d-=dt*2.4;s.a+=dt*3;if(s.d<.08){s.d=rnd(.5,.85);s.a=rnd(0,TAU)}s.m.position.set(v.mouth.x+Math.cos(s.a)*s.d,.03+(.85-s.d)*.03,v.mouth.z+Math.sin(s.a)*s.d);s.m.rotation.z=-s.a+Math.PI/2+.5;s.m.scale.set(1,s.d*1.6,1)}
 }
 
-/* ───────── 수거차 ───────── */
-const TK={g:null,roller:null,beacon:null,on:false,er:0,spin:0};
-function buildTruck(){
- const g=new THREE.Group();
- const stripe=canvasTex(256,32,(c,w,h)=>{c.fillStyle='#ffd21f';c.fillRect(0,0,w,h);c.fillStyle='#161d33';for(let x=-32;x<w;x+=32){c.beginPath();c.moveTo(x,h);c.lineTo(x+16,h);c.lineTo(x+32,0);c.lineTo(x+16,0);c.fill()}});stripe.wrapS=THREE.RepeatWrapping;
- const parts=[part(BX(.94,.3,.62),0xffc928,0,.34,-.08),part(BX(.8,.035,.44),0xe9a800,0,.505,-.1),part(BX(.96,.06,.03),0x1f4fd8,0,.36,-.395),part(BX(1.1,.2,.3),0x232733,0,.13,-1.18),part(BX(.09,.09,.72),0x232733,-.4,.24,-.74),part(BX(.09,.09,.72),0x232733,.4,.24,-.74),part(CY(.045,.045,.08,10),0x232733,-.32,.55,-.28)];for(let k=-1;k<=1;k++)parts.push(part(BX(.05,.012,.26),0x232733,k*.2,.525,-.08));
- const body=merge(parts),bm=new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.4,envMapIntensity:.6}));bm.castShadow=true;g.add(bm);g.add(new THREE.Mesh(body,outlineMat(.006)));
- const sp=new THREE.Mesh(new THREE.PlaneGeometry(1.1,.09),new THREE.MeshStandardMaterial({map:stripe,roughness:.5}));stripe.repeat.set(4,1);sp.rotation.x=-Math.PI/2;sp.position.set(0,.232,-1.2);g.add(sp);
- const rtex=canvasTex(64,64,(c)=>{c.fillStyle='#e9eef5';c.fillRect(0,0,64,64);c.fillStyle='#1f4fd8';for(let i=-64;i<64;i+=16){c.beginPath();c.moveTo(i,64);c.lineTo(i+8,64);c.lineTo(i+72,0);c.lineTo(i+64,0);c.fill()}});rtex.wrapS=rtex.wrapT=THREE.RepeatWrapping;rtex.repeat.set(2,6);
- const rg=new THREE.CylinderGeometry(.095,.095,1.06,16);rg.rotateZ(Math.PI/2);
- TK.roller=new THREE.Mesh(rg,new THREE.MeshStandardMaterial({map:rtex,roughness:.6}));TK.roller.position.set(0,.1,-1.36);TK.roller.castShadow=true;g.add(TK.roller);
- TK.beacon=new THREE.Mesh(SP(10,8),new THREE.MeshStandardMaterial({color:lin(0xff7a1a),emissive:lin(0xff5a00),emissiveIntensity:0,roughness:.3}));TK.beacon.scale.set(.05,.05,.05);TK.beacon.position.set(-.32,.61,-.28);g.add(TK.beacon);
- googly(g,0,.245,-1.06,.075,-.15,1.6);
- g.visible=false;scene.add(g);TK.g=g;
-}
-function truckUpdate(dt,act){
- const t=TK,on=S.tool==='truck';t.g.visible=on;const run=on&&act&&started;
- if(run!==t.on){t.on=run;AU.loop('truck',run)}
- if(!on)return;
- t.g.position.set(P.x+(run?Math.sin(time*60)*.003:0),0,P.z);
- if(run){t.spin+=dt*22;t.roller.rotation.x=-t.spin}
- t.beacon.material.emissiveIntensity=run?(Math.sin(time*14)>0?2.2:.2):0;
- const fz=P.z-1.36;
- for(const c of creatures){if(busy(c)||c.dead)continue;
-  const dx=c.x-P.x;if(Math.abs(dx)>.57+c.r)continue;
-  if(run&&c.z<fz+.14&&c.z>fz-.16-c.r){c.st='sucked';c.yaw=0;c.str=1.5;c.z+=dt*1.6;c.sq=.5;if(c.z>fz+.02){shake=Math.max(shake,.3);killCreature(c,'truck')}}
-  else if(c.z>fz-.14-c.r&&c.z<P.z+.3){if(c.z<fz+.2){c.z=fz-.14-c.r;c.panic=1}else{c.x=P.x+Math.sign(dx||1)*(.58+c.r)}}}
- if(run){for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];if(Math.abs(k.x-P.x)<.56&&k.z<fz+.15&&k.z>fz-.2){chunks.splice(i,1);S.liters+=.2;earn(5,k.x,k.z)}}
-  t.er-=dt;if(t.er<=0){t.er=.05;let got=0;for(let k=-1;k<=1;k++)got+=eraseAt(P.x+k*.36,fz+.08,.5,.4,1,5);if(got)earn(got*6,P.x,fz)}}
-}
-
 /* ───────── 예초기 ───────── */
 const TR={g:null,line:null,disc:null,on:false,spin:0};
 function buildTrim(){
@@ -2850,7 +2867,7 @@ function bagMat(side,print){
 function buildTong(){
  const g=new THREE.Group(),steel=new THREE.MeshStandardMaterial({color:lin(0x9fb0c2),roughness:.3,metalness:.6,envMapIntensity:1});
  for(const s of[-1,1]){const pv=new THREE.Group(),m=new THREE.Mesh(BX(.014,.014,1),steel);m.position.set(s*.012,0,.5);m.castShadow=true;pv.add(m);const tp=new THREE.Mesh(BX(.03,.02,.05),steel);tp.position.set(s*.012,0,.985);pv.add(tp);g.add(pv);if(s<0)TG.a=pv;else TG.b=pv}
- const gp=[];glove(gp,0,0,.02);const gm=new THREE.Mesh(merge(gp),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.65}));g.add(gm);TG.gm=gm;googly(gm,0,.052,.03,.024,-.2);
+ const gp=[];glove(gp,0,0,.02);const gm=new THREE.Mesh(merge(gp),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.65}));g.add(gm);TG.gm=gm; // 눈은 봉투에만 붙인다
  g.visible=false;scene.add(g);TG.g=g;
  // 봉투
  const bag=new THREE.Group(),V=BG_NR*BG_W1,geo=new THREE.BufferGeometry(),R=new Float32Array(V*3),U=new Float32Array(V*2),idx=[];
@@ -3125,7 +3142,7 @@ function tongUpdate(dt,act,a2,go2){
  g.sz=.94+.28*clamp((g.in.length+g.dead)/g.CAP,0,1);
  if(g.ph==='idle'){tip.set(P.x+.12,.3+Math.sin(time*2)*.004,P.z-.62);
   if(g.q2>0&&started&&g.in.length){g.q2=0;tongTie(true)} // 밟기 버튼: 담긴 만큼만 묶어서 바로 밟는다
-  else if(act&&started){let best=null,bd=.38;for(const c of creatures){if(busy(c)||c.dead)continue;const d=Math.hypot(c.x-(P.x+.05),c.z-(P.z-.82));if(d<bd){bd=d;best=c}}
+  else if(act&&started){let best=null,bd=g.fr+.36;for(const c of creatures){if(busy(c)||c.dead)continue;const d=Math.hypot(c.x-bx,c.z-bz);if(d<bd){bd=d;best=c}} // 봉투 둘레에 모인 것 가운데 가장 바짝 붙은 것부터
    g.tgts.length=0;
    if(best){g.tgts.push(best);const room=Math.min(3,g.CAP-g.in.length),near=[]; // 바로 옆에 붙어 있는 것들은 같이 집힌다 (세 마리까지)
     if(room>1){for(const c of creatures){if(c===best||busy(c)||c.dead)continue;const d=Math.hypot(c.x-best.x,c.z-best.z);if(d<.105)near.push([d,c])}near.sort((a,b)=>a[0]-b[0]);for(let i=0;i<near.length&&g.tgts.length<room;i++)g.tgts.push(near[i][1])}}
@@ -3208,32 +3225,6 @@ function buildDrains(){
 }
 const overDrain=(x,z,r)=>{for(const d of DRAINS)if(Math.abs(x-d[0])<r&&Math.abs(z-d[1])<r)return d;return null};
 
-/* ───────── 물밀대 ───────── */
-const MP={g:null,on:false};
-function buildMop(){
- const g=new THREE.Group(),ps=[seg([.05,.12,-.9],[.3,1.12,.25],.017,.017,0xcf9552,8),part(BX(.72,.05,.045),0x7f8a9c,.05,.1,-.9),part(BX(.74,.1,.014),0x1d1b24,.05,.05,-.925,1,1,1,-.15,0,0)];
- glove(ps,.165,.58,-.38);
- const m=new THREE.Mesh(merge(ps),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,envMapIntensity:.5}));m.castShadow=true;g.add(m);g.add(new THREE.Mesh(m.geometry,outlineMat(.0045)));
- googly(g,.05,.134,-.9,.034,-.2);
- g.visible=false;scene.add(g);MP.g=g;
-}
-function mopUpdate(dt,act){
- const on=S.tool==='mop',run=on&&act&&started;MP.g.visible=on;MP.on=run;AU.loop('squeak',run&&moveK>.2);
- if(!on)return;
- MP.g.position.set(P.x,run?0:.1,P.z);MP.g.rotation.x=run?0:-.06;
- if(!run)return;
- const bx=P.x+.05,bz=P.z-.92;
- for(const c of creatures){if(busy(c)||c.dead)continue;
-  if(Math.abs(c.x-bx)>.37+c.r*.3||c.z>bz+.05||c.z<bz-.34)continue;
-  c.st='pushed';c.pj=1;c.panic=1;c.y=0;if(c.z>bz-.05-c.r)c.z=bz-.05-c.r;c.sq=damp(c.sq,.85,8,dt);
-  const d=overDrain(c.x,c.z,.21);
-  if(d&&Math.abs(bz-d[1])<.36){c.dn=(c.dn||0)+dt;c.sq=Math.max(.12,1-c.dn/.32);if(Math.random()<dt*6)AU.squeal(c.type,1.3);if(c.dn>.32){killCreature(c,'drain');shake=Math.max(shake,.4)}}
-  else if(c.z<=ZN+.03&&bz<ZN+.16){killCreature(c,'crush',c.x,c.z,rnd(-.6,.6),1);AU.thwack();shake=Math.max(shake,.4)}}
- for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];if(Math.abs(k.x-bx)>.38||k.z>bz+.05||k.z<bz-.2)continue;k.z=Math.min(k.z,bz-.04);
-  if(overDrain(k.x,k.z,.2)){chunks.splice(i,1);S.liters+=.2;earn(5,k.x,k.z);AU.bubble(rnd(200,320),.12)}}
- if(moveK>.2){const got=eraseAt(bx,bz+.04,.76,.2,1,5);if(got)earn(got*6,bx,bz)}
-}
-
 /* ───────── 고압세척기 ───────── */
 const WS={g:null,jet:null,sheet:null,on:false,er:0};
 function buildWash(){
@@ -3243,8 +3234,7 @@ function buildWash(){
  const wm=new THREE.MeshBasicMaterial({color:0xe6f3ff,transparent:true,opacity:.5,depthWrite:false});
  WS.jet=new THREE.Mesh(CY(.06,.014,1,8),wm);g.add(WS.jet);between(WS.jet,_a.set(.12,.49,-.5),_b.set(.08,.02,-1.25));
  WS.sheet=new THREE.Mesh(new THREE.PlaneGeometry(.2,1.5),new THREE.MeshBasicMaterial({color:0xe6f3ff,transparent:true,opacity:.3,depthWrite:false}));WS.sheet.rotation.x=-Math.PI/2;WS.sheet.position.set(.08,.014,-1.95);g.add(WS.sheet);
- googly(g,.12,.54,-.42,.025,-.2);
- g.visible=false;scene.add(g);WS.g=g;
+ g.visible=false;scene.add(g);WS.g=g; // 처리하는 장비가 아니라서 눈을 붙이지 않는다
 }
 function washUpdate(dt,act){
  const w=WS,on=S.tool==='wash',run=on&&act&&started;w.g.visible=on;
@@ -3257,11 +3247,11 @@ function washUpdate(dt,act){
  const x0=P.x+.08,z0=P.z-1.1,z1=P.z-2.75;
  for(let i=0;i<3;i++)drop(x0+rnd(-.06,.06),.03,P.z-1.25-rnd(0,1.3),rnd(-.9,.9),rnd(.6,1.7),-rnd(.5,2.2),rnd(.006,.012),WATER,2);
  for(const c of creatures){if(busy(c)||c.dead)continue;if(Math.abs(c.x-x0)>.12+c.r||c.z>z0||c.z<z1)continue;
-  c.st='washed';c.wj=1;c.panic=1;c.jt=(c.jt||0)+dt;c.flay=Math.min(1,c.jt/.7);c.z-=dt*3.2;c.x+=(c.x-x0)*dt*1.2;c.yaw+=dt*9;c.sq=1;c.y=.02+Math.abs(Math.sin(time*20+c.ph))*.03;
-  if(Math.random()<dt*9)drop(c.x,.05,c.z,rnd(-.6,.6),rnd(.5,1.4),-rnd(1,2.5),rnd(.006,.012),c.ink);
-  if(Math.random()<dt*2.5)AU.squeal(c.type,1.1);
-  if(overDrain(c.x,c.z,.22)){killCreature(c,'drain')}
-  else if(c.z<=ZN+.03||c.jt>1.25){c.y=0;killCreature(c,'crush',c.x,c.z,rnd(-.6,.6),1);AU.thwack();shake=Math.max(shake,.35)}}
+  // 맞은 것은 죽지 않는다. 떠밀려 구르고, 뒤집어쓴 피가 씻겨 나간다 (다른 장비에 이미 터져 죽어 가던 것은 떠밀리기만 하고 그대로 죽어 간다)
+  const hurt=c.st==='maim'||c.st==='stump',red=hurt||c.flay>.04;c.panic=1;c.flay=Math.max(0,c.flay-dt*1.6);c.z=Math.max(ZN+.06,c.z-dt*2.6);c.x=clamp(c.x+(c.x-x0)*dt*1.2,-XB,XB);
+  if(!hurt){c.st='washed';c.wj=1;c.yaw+=dt*9;c.sq=1;c.y=.02+Math.abs(Math.sin(time*20+c.ph))*.03}
+  if(Math.random()<dt*9)drop(c.x,.05,c.z,rnd(-.6,.6),rnd(.5,1.4),-rnd(1,2.5),rnd(.006,.012),red?BLOOD:WATER,red?false:2);
+  if(Math.random()<dt*1.4)AU.squeal(c.type,.8)}
  for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];if(Math.abs(k.x-x0)>.14||k.z>z0||k.z<z1)continue;k.z-=dt*3;if(overDrain(k.x,k.z,.22)){chunks.splice(i,1);S.liters+=.2;earn(5,k.x,k.z)}}
  w.er-=dt;if(w.er<=0){w.er=.05;let got=0;for(let j=0;j<5;j++)got+=eraseAt(x0,P.z-1.25-j*.33,.3,.36,.7,5);if(got)earn(got*6,x0,P.z-1.6)}
 }
@@ -3282,10 +3272,12 @@ function draftForZone(){const zone=targetWorkshop();if(!S.draft||S.draft.zone!==
 function interviewOrder(){const offset=((S.zone-1)*2)%REVIEW_ORDER.length;return REVIEW_ORDER.slice(offset).concat(REVIEW_ORDER.slice(0,offset))}
 function applicantReview(id){
  const a=AP[id],r=a.choices?a.choices[Math.max(0,apS(id).k)]||a.choices[0]:a,activity=r.rec==='ok'||a.inc==='ok',income=a.mid<=120,pass=ELIGIBLE.includes(id);
+ const own='본인 소득인정액 '+a.mid+'% / 기준 120% 이하',pts='소득 배점 '+INC_PT(a.mid)+'점 + 최초 선정 4점 = '+AP_PT(a)+'점 / 선정 '+AP_CUT+'점 이상';
  let reason='',facts=[];
- if(!income){reason='소득인정액 기준 초과';facts=[a.recT+' · 예술활동증명 완료','소득인정액 '+a.mid+'% / 기준 120% 이하']}
+ if(activity&&!income){reason='소득인정액 기준 초과';facts=[a.recT+' · 예술활동증명 완료',own]}
+ else if(activity&&AP_PT(a)<AP_CUT){reason='선정 점수 미달';facts=[a.recT+' · 예술활동증명 완료',own,pts]}
  else if(!activity){reason=a.choices?'해당 분야의 발표 증빙 없음':a.rec==='no'?'공개 발표 실적 미달':'공개 발표 증빙 불인정';facts=[r.recT,r.note||'인정 기준: '+r.crit];if(!a.choices)facts.push(a.incT+' / 수입 기준 연 120만 원')}
- else facts=[a.recT,'소득인정액 '+a.mid+'% / 기준 120% 이하'];
+ else facts=[a.recT,own,pts];
  return {pass,activity,income,reason,facts,field:r.field};
 }
 function buildInterview(){
@@ -3294,7 +3286,7 @@ function buildInterview(){
  s.add(new THREE.HemisphereLight(0xffffff,0xafa99a,.6));const light=new THREE.DirectionalLight(0xfff3e0,.65);light.position.set(-3,6,4);s.add(light);
  addMesh(s,BX(50,.04,8),M(0xd5d1c4,.95),10,-.025,-1,false);addMesh(s,BX(50,4,.05),M(0xe9e8e1,.95),10,2,-2,false);
  IV.camera=new THREE.PerspectiveCamera(40,1,.06,50);
- for(const id of REVIEW_ORDER){const a=AP[id],c=buildDesk({x:0,z:0,ry:0,type:a.type,interview:true},a.desk??(id%3)*5+a.type,s);c.applicant=id;c.nod=0;
+ for(const id of REVIEW_ORDER){const a=AP[id],c=buildDesk({x:0,z:0,ry:0,type:a.type,interview:true,ap:id,wk:a.wk},a.desk??(id%3)*5+a.type,s);c.applicant=id;c.nod=0;
   const folder=addMesh(c.g,BX(.28,.018,.21),M(0xe3dbc3,.85),0,.61,-.29);folder.rotation.x=.17;
   const label=new THREE.Mesh(new THREE.PlaneGeometry(.22,.13),M(0xf9f6ed,.9));label.rotation.x=-Math.PI/2+.17;label.position.set(0,.624,-.29);c.g.add(label);
   const seal=addMesh(c.g,BX(.072,.006,.05),M(ELIGIBLE.includes(id)?0x407b61:0xa34d42,.85),.065,.632,-.24);seal.rotation.x=.17;c.seal=seal;
@@ -3411,7 +3403,7 @@ const fine=window.matchMedia&&matchMedia('(pointer:fine)').matches;
 let hintN=0;
 function setHint(){
  const collecting=TG.ph==='idle'||TG.ph==='reach'||TG.ph==='carry';
- const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'내려치고, 계속 누르면 퍼담습니다',tong:collecting?'누르고 있으면 집어서 봉투에 모읍니다':TG.armed?'누르고 있으면 묶은 봉투를 밟습니다':'뗐다가 다시 누르고 있으면 묶은 봉투를 밟습니다',mop:'누른 채 앞으로 밀어 배수구로 보냅니다',trim:'누르는 동안 잘라 냅니다',wash:'누르는 동안 물을 쏩니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다',truck:'누르는 동안 수거합니다'}[S.tool];
+ const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'내려치고, 계속 누르면 퍼담습니다',tong:collecting?'누르고 있으면 집어서 봉투에 모읍니다':TG.armed?'누르고 있으면 묶은 봉투를 밟습니다':'뗐다가 다시 누르고 있으면 묶은 봉투를 밟습니다',trim:'누르는 동안 잘라 냅니다',wash:'누르는 동안 물을 쏴 바닥을 씻어 냅니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다'}[S.tool];
  const more={boot:'누르고 있으면 양발로 구릅니다',tong:collecting?'담긴 만큼 바로 밟습니다':'',vac:'담긴 만큼 바로 갑니다'}[S.tool],b2={boot:'구르기',tong:'밟기',vac:'갈기'}[S.tool];
  $('hinttxt').textContent=(fine?'WASD 이동 · 스페이스나 마우스를 '+verb:'왼쪽 화면: 이동 · 오른쪽 화면: '+verb)+(more?(fine?' · Q나 오른쪽 클릭: ':' · '+b2+' 버튼: ')+more:'');
  $('hint').style.opacity=1;hintN=6;
@@ -3455,7 +3447,7 @@ function resumeGame(){$('pause').hidden=true;paused=false;last=0;AU.wake();$('gl
 
 /* ───────── 입력 ───────── */
 const keys={};let stickId=null,stickX=0,stickY=0,sx0=0,sy0=0,actIds=new Set(),mouseAct=false,mouseOn=false,mouse2=false,act2Ids=new Set(),was2=false;
-function releaseAll(){AU.stopReactions();for(const k in keys)keys[k]=false;stickId=null;stickX=stickY=0;actIds.clear();act2Ids.clear();mouseAct=mouseOn=mouse2=false;$('stick').style.display='none';AU.loop('scrape',false);AU.loop('vac',false);AU.loop('truck',false);AU.loop('grind',false);AU.loop('trim',false);AU.loop('wash',false);AU.loop('squeak',false);VC.on=false;TK.on=false;TR.on=false;WS.on=false}
+function releaseAll(){AU.stopReactions();for(const k in keys)keys[k]=false;stickId=null;stickX=stickY=0;actIds.clear();act2Ids.clear();mouseAct=mouseOn=mouse2=false;$('stick').style.display='none';AU.loop('scrape',false);AU.loop('vac',false);AU.loop('grind',false);AU.loop('trim',false);AU.loop('wash',false);AU.loop('squeak',false);VC.on=false;TR.on=false;WS.on=false}
 const acting=()=>mouseAct||actIds.size>0||!!keys.Space,acting2=()=>mouse2||act2Ids.size>0||!!keys.KeyQ;
 function bind(){
  const cv=$('gl');
@@ -3508,12 +3500,12 @@ function sim(dt){
  if(started&&!paused){mx=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+stickX;mz=(keys.KeyS||keys.ArrowDown?1:0)-(keys.KeyW||keys.ArrowUp?1:0)+stickY;
   let m=Math.hypot(mx,mz);if(m>1){mx/=m;mz/=m;m=1}if(m<.12){mx=mz=0}else{const k=Math.pow(m,1.4)/m;mx*=k;mz*=k}
   if(stompLocked()||shovelLocked()||tool2Locked())mx=mz=0;
-  const v=S.tool==='truck'?2.9:TD.on?.62:(S.tool==='trim'||S.tool==='mop')&&act?1.5:S.tool==='wash'&&act?1.1:S.tool==='vac'&&act?1.5:SH.ph==='hold'?1.3:2.3;mx*=v;mz*=v;
-  const pb=S.tool==='truck'?XB-.6:XB-.15;P.x=clamp(P.x+mx*dt,-pb,pb);P.z=clamp(P.z+mz*dt,ZN+(S.tool==='truck'?1.3:.95),ZF-.1);
+  const v=TD.on?.62:S.tool==='trim'&&act?1.5:S.tool==='wash'&&act?1.1:S.tool==='vac'&&act?1.5:SH.ph==='hold'?1.3:2.3;mx*=v;mz*=v;
+  const pb=XB-.15;P.x=clamp(P.x+mx*dt,-pb,pb);P.z=clamp(P.z+mz*dt,ZN+.95,ZF-.1);
   if((mx||mz||act||act2)&&hintN>0){hintN-=dt;if(hintN<=0)$('hint').style.opacity=0}}
  stompUpdate(dt,act,act2);
  updateBody(dt,mx,mz);updateGoogly();
- handUpdate(dt,act);shovelUpdate(dt,act);vacUpdate(dt,act,go2);truckUpdate(dt,act);trimUpdate(dt,act);tongUpdate(dt,act,act2,go2);washUpdate(dt,act);mopUpdate(dt,act);
+ handUpdate(dt,act);shovelUpdate(dt,act);vacUpdate(dt,act,go2);trimUpdate(dt,act);tongUpdate(dt,act,act2,go2);washUpdate(dt,act);
  updateSupport(dt);updateCreators(dt);updateCreatures(dt);
  updateThreads(dt);
  updateBits(dt);sweepDead();lensUpdate(dt);
@@ -3542,7 +3534,7 @@ function init(){
  const env=canvasTex(256,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#ffffff');gr.addColorStop(.45,'#e6ecf5');gr.addColorStop(.55,'#b9bfc9');gr.addColorStop(1,'#8f8a84');g.fillStyle=gr;g.fillRect(0,0,w,h);g.fillStyle='#ffffff';for(let i=0;i<4;i++)g.fillRect(14+i*64,8,36,14)});
  env.mapping=THREE.EquirectangularReflectionMapping;const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromEquirectangular(env).texture;env.dispose();pm.dispose();
  inkInit();buildRoom();buildCreatureGeo();buildFlocks();buildBits();
- bootR=buildBoot();bootL=buildBoot();buildLegs();buildThreads();buildHand();buildShovel();buildBin();buildVac();buildTruck();buildDrains();buildTrim();buildTong();buildMop();buildWash();lensInit();
+ bootR=buildBoot();bootL=buildBoot();buildLegs();buildThreads();buildHand();buildShovel();buildBin();buildVac();buildDrains();buildTrim();buildTong();buildWash();lensInit();
  roomTarget(S.zone,true);bind();resize();spawnInitial();sim(.016);drawCreatures();drawBits();inkFlush();renderer.render(scene,camera);
  $('start').disabled=false;$('start').textContent=S.total?'이어서 하기':'시작하기';$('load').textContent='';
  requestAnimationFrame(frame);
