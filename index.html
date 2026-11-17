@@ -2764,7 +2764,7 @@ function buildShovel(){
 }
 function buildBin(){
  const g=new THREE.Group();
- const body=merge([part(new THREE.CylinderGeometry(.17,.14,.3,20,1,true),0x2f6fd0,0,.17,0),part(new THREE.TorusGeometry(.17,.014,8,24),0x1b2f6b,0,.32,0,1,1,1,Math.PI/2,0,0),part(CY(.14,.14,.04,20),0x1b2f6b,0,.02,0),part(BX(.2,.04,.012),0xffd21f,0,.2,.162)]);
+ const body=merge([part(new THREE.CylinderGeometry(.17,.14,.3,20,1,true),0x2f6fd0,0,.17,0),part(new THREE.TorusGeometry(.17,.014,8,24),0x1b2f6b,0,.32,0,1,1,1,Math.PI/2,0,0),part(CY(.14,.14,.04,20),0x1b2f6b,0,.02,0)]);
  const m=new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,envMapIntensity:.5,side:THREE.DoubleSide}));m.castShadow=true;m.receiveShadow=true;g.add(m);
  const p=new THREE.Mesh(lump(new THREE.CylinderGeometry(.158,.15,.03,18,1),.05,6),new THREE.MeshStandardMaterial({roughness:.1,envMapIntensity:1}));p.visible=false;g.add(p);SH.pulp=p;
  const pv=p.geometry.attributes.position;let radius=0,bottom=0;for(let i=0;i<pv.count;i++){radius=Math.max(radius,Math.hypot(pv.getX(i),pv.getZ(i)));bottom=Math.min(bottom,pv.getY(i))}p.userData.radius=radius;p.userData.bottom=bottom;
@@ -2779,8 +2779,9 @@ function binAdd(n,col){
   s.binPieces.push({color,eye:k===3,seed:rnd(0,TAU),settle:rnd(.045,.09)});if(s.binPieces.length>224)s.binPieces.shift()}
 }
 const binTop=()=>.045+.105*SH.binLv+.018; // 통 안 곤죽 윗면 높이
-// 통은 아래가 좁은 20각형이다. 원의 반지름 대신 벽 면까지의 거리와 여유 폭을 쓴다.
-const binInnerRadius=y=>lerp(.14,.17,clamp((y-.02)/.3,0,1))*Math.cos(Math.PI/20)-.007;
+// 20각형 벽뿐 아니라 안쪽으로 돌출된 24각형의 두꺼운 테두리까지 피한다.
+// 입구보다 넓어지지 않는 공통 경계: 살아 있는 몸·눈·쌓인 조각에 모두 적용한다.
+const binInnerRadius=y=>Math.min(lerp(.14,.17,clamp((y-.02)/.3,0,1))*Math.cos(Math.PI/20),(.17-.014)*Math.cos(Math.PI/24))-.01;
 const binFloorBody=c=>SH.bin&&SH.bin.visible&&!c.dead&&!busy(c)&&c.st!=='sucked'&&c.y<.334;
 const binClearance=c=>.184+.008+TYPES[c.type].clearance*c.r*c.sc*Math.max(1,c.sq,Math.min(1.9,1/Math.sqrt(Math.max(.08,c.sq))));
 function avoidBin(c,dt){
