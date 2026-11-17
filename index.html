@@ -161,11 +161,13 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 .int-bottom{grid-column:1/-1;background:#f7f7f3;border-top:1px solid #d8ddd0;padding:12px max(24px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left))}
 .int-bottom-inner{max-width:920px;margin:auto}.int-chosen{display:flex;align-items:center;gap:12px;min-height:28px;margin-bottom:9px}.int-chosen small{font-size:12px;color:#65705c;white-space:nowrap;flex:none}.int-chosen small b{font-size:15px;color:#303d29}
 .int-selected-list{min-width:0;display:flex;gap:5px;overflow-x:auto;align-items:center;scrollbar-width:thin}.int-selected-list button{flex:none;min-height:28px;font-size:11px;padding:4px 8px;border:1px solid #d4dccc;border-radius:4px;background:#fff;color:#5c6b52}.int-selected-list .empty{font-size:11px;color:#939b8b;white-space:nowrap}
-.int-controls{display:grid;grid-template-columns:1fr 1.35fr 1.25fr;gap:10px}.int-controls button{min-height:58px;border-radius:7px;font-size:17px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:12px}.int-controls button:active{transform:translateY(1px)}
-#candidate-prev{background:#fff;color:#4d5945;border:1px solid #cbd3c2}#candidate-next{background:#2f4fd0;color:#fff;box-shadow:0 3px 0 #2039a0}#candidate-next span,#candidate-prev span{font-size:24px;font-weight:400}
+.int-controls{display:grid;grid-template-columns:48px minmax(0,1fr) minmax(0,1fr) 48px;gap:10px}.int-controls button{min-height:58px;border-radius:7px;font-size:17px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:12px}.int-controls button:active{transform:translateY(1px)}
+#candidate-prev,#candidate-next{background:#fff;color:#65705c;border:1px solid #d1d7cb;box-shadow:none}#candidate-next span,#candidate-prev span{font-size:24px;font-weight:400}
 #candidate-approve{background:#fff;color:#304c25;border:2px solid #728966}#candidate-approve[aria-pressed=true]{background:#e6efdf;border-color:#9aad8c;color:#4b6639}#candidate-approve:disabled{background:#e8eae4;border:1px solid #d8dcd1;color:#9aA18f;opacity:1}
+#candidate-reject{background:#fff;color:#8b463c;border:2px solid #af8176}#candidate-reject[aria-pressed=true]{background:#f3e4dd;border-color:#b88677;color:#874337}
+.int-controls #candidate-prev,.int-controls #candidate-next{min-width:44px;font-size:22px;font-weight:400}
 #interview-enter{margin-top:12px;width:100%;min-height:48px;border-radius:6px;background:#ffd21f;color:#343c27;font-size:15px;font-weight:800}#interview-enter[hidden]{display:none}
-@media(max-width:759px){#interview{grid-template-columns:1fr;grid-template-rows:auto minmax(150px,1fr) auto auto}.int-head{padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));padding-top:max(10px,env(safe-area-inset-top))}.int-head small{display:none}.int-head h2{font-size:17px}.int-head button{font-size:11px;min-height:36px;padding:7px 10px}#candidate-stage{grid-column:1;grid-row:2}.int-stage-count{top:10px;left:16px;font-size:10px}.int-stage-count span{font-size:12px}.int-paper{grid-column:1;grid-row:3;max-height:45dvh;padding:14px 20px 16px;border-left:0;border-top:1px solid #d8ddd1;justify-content:flex-start}.int-person h3{font-size:22px}.int-person small{font-size:10px;margin-bottom:2px}.int-seal{font-size:11px;padding:6px 9px}.int-income{margin-top:11px;padding:10px 0}.int-income-top{font-size:11px}.int-income-top span:last-child{font-size:10px}.int-income-amount{font-size:32px;margin:3px 0 5px}.int-income-amount small{font-size:11px}.int-income-caption{font-size:11px}.int-record{padding:12px 0;display:flex;align-items:baseline;gap:14px}.int-record span{font-size:11px;margin:0;flex:none}.int-record strong{font-size:15px}.int-result{font-size:12px;padding:8px 10px}.int-bottom{grid-row:4;padding:8px max(14px,env(safe-area-inset-right)) max(13px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}.int-chosen{min-height:26px;margin-bottom:7px;gap:10px}.int-chosen small{font-size:11px}.int-chosen small b{font-size:13px}.int-controls{gap:7px;grid-template-columns:.85fr 1.2fr 1.1fr}.int-controls button{min-height:54px;font-size:15px;gap:7px}#interview-enter{min-height:43px;margin-top:10px;font-size:13px}}
+@media(max-width:759px){#interview{grid-template-columns:1fr;grid-template-rows:auto minmax(150px,1fr) auto auto}.int-head{padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));padding-top:max(10px,env(safe-area-inset-top))}.int-head small{display:none}.int-head h2{font-size:17px}.int-head button{font-size:11px;min-height:36px;padding:7px 10px}#candidate-stage{grid-column:1;grid-row:2}.int-stage-count{top:10px;left:16px;font-size:10px}.int-stage-count span{font-size:12px}.int-paper{grid-column:1;grid-row:3;max-height:45dvh;padding:14px 20px 16px;border-left:0;border-top:1px solid #d8ddd1;justify-content:flex-start}.int-person h3{font-size:22px}.int-person small{font-size:10px;margin-bottom:2px}.int-seal{font-size:11px;padding:6px 9px}.int-income{margin-top:11px;padding:10px 0}.int-income-top{font-size:11px}.int-income-top span:last-child{font-size:10px}.int-income-amount{font-size:32px;margin:3px 0 5px}.int-income-amount small{font-size:11px}.int-income-caption{font-size:11px}.int-record{padding:12px 0;display:flex;align-items:baseline;gap:14px}.int-record span{font-size:11px;margin:0;flex:none}.int-record strong{font-size:15px}.int-result{font-size:12px;padding:8px 10px}.int-bottom{grid-row:4;padding:8px max(14px,env(safe-area-inset-right)) max(13px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}.int-chosen{min-height:26px;margin-bottom:7px;gap:10px}.int-chosen small{font-size:11px}.int-chosen small b{font-size:13px}.int-controls{gap:7px;grid-template-columns:44px minmax(0,1fr) minmax(0,1fr) 44px}.int-controls button{min-height:54px;font-size:15px;gap:7px}#interview-enter{min-height:43px;margin-top:10px;font-size:13px}}
 @media(max-height:740px) and (max-width:759px) and (orientation:portrait){.int-paper{padding:12px 16px}.int-person>div{display:flex;align-items:baseline;gap:9px}.int-person h3{order:-1;font-size:21px}.int-person small{margin:0}.int-income{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px 10px;margin-top:10px;padding:9px 0}.int-income-top span:last-child{display:none}.int-income-amount{font-size:30px;text-align:right;margin:0}.int-income-caption{grid-column:1/-1}.int-record{padding:10px 0}.int-result{padding:7px 9px}}
 @media(max-height:620px) and (max-width:759px) and (orientation:portrait){#interview{grid-template-rows:auto minmax(120px,1fr) minmax(0,auto) auto}.int-paper{max-height:40dvh;padding:10px 16px}.int-person h3{font-size:19px}.int-income{margin-top:8px;padding:8px 0}.int-income-amount{font-size:28px}.int-record{padding:9px 0}.int-controls button{min-height:48px}.int-bottom{padding-top:5px}}
 @media(max-height:560px) and (orientation:landscape){#interview{grid-template-columns:46% 54%;grid-template-rows:auto minmax(0,1fr) auto}.int-head{padding-top:7px;padding-bottom:7px}.int-head small{display:none}.int-head h2{font-size:16px}.int-head button{min-height:32px;padding:6px 10px}.int-paper{grid-column:2;grid-row:2;max-height:none;padding:14px 20px;justify-content:flex-start;border-top:0;border-left:1px solid #d8ddd1}.int-person h3{font-size:20px}.int-person small{font-size:10px}.int-seal{font-size:11px;padding:5px 8px}.int-income{margin-top:9px;padding:10px 0}.int-income-top{font-size:11px}.int-income-amount{font-size:30px;margin:3px 0 5px}.int-income-caption{font-size:11px}.int-record{padding:10px 0;display:flex;gap:12px;align-items:baseline}.int-record span{margin:0;flex:none;font-size:11px}.int-record strong{font-size:15px}.int-result{font-size:12px;padding:8px 10px}.int-bottom{grid-row:3;padding-top:6px;padding-bottom:8px}.int-bottom-inner{display:grid;grid-template-columns:minmax(110px,.75fr) minmax(300px,2fr);gap:8px 16px;align-items:center}.int-chosen{margin:0}.int-selected-list{display:none}.int-controls button{min-height:44px;font-size:14px}#interview-enter{grid-column:1/-1;margin:0;min-height:38px}.int-stage-count{top:10px;left:16px}}
@@ -339,7 +341,7 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
  <div id="candidate-stage" role="img" aria-label="현재 심사 중인 신청인"><div class="int-stage-count">신청인 <span id="candidate-position"></span></div></div>
  <article class="int-paper" id="candidate-paper" aria-live="polite" aria-atomic="true"></article>
  <footer class="int-bottom"><div class="int-bottom-inner"><div class="int-chosen" id="interview-chosen" aria-live="polite"></div>
-  <nav class="int-controls" aria-label="신청인 심사"><button id="candidate-prev" aria-label="이전 신청인"><span aria-hidden="true">←</span> 이전</button><button id="candidate-approve" aria-pressed="false">선정</button><button id="candidate-next" aria-label="다음 신청인">다음 <span aria-hidden="true">→</span></button></nav>
+  <nav class="int-controls" aria-label="신청인 심사"><button id="candidate-prev" aria-label="이전 신청인" title="이전 신청인"><span aria-hidden="true">←</span></button><button id="candidate-approve" aria-pressed="false">선정</button><button id="candidate-reject" aria-pressed="false">탈락</button><button id="candidate-next" aria-label="다음 신청인" title="다음 신청인"><span aria-hidden="true">→</span></button></nav>
   <button id="interview-enter" disabled hidden>작업실로</button>
  </div></footer>
 </section>
@@ -424,7 +426,7 @@ function proofFor(id,record={}){
  return {...route,pass:route.rec==='ok'||a.inc==='ok'};
 }
 function loadSave(){
- const d={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,wp:1,wf:1,exDone:0};
+ const d={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0};
  try{const r=JSON.parse(localStorage.getItem(KEY)||'null');
   if(r&&r.v===2){d.money=clamp(+r.money||0,0,1e9);d.total=clamp(Math.floor(+r.total||0),0,1e9);d.liters=clamp(+r.liters||0,0,1e9);
    d.zone=clamp(Math.floor(+r.zone||1),1,999);d.prog=clamp(Math.floor(+r.prog||0),0,quota(d.zone));d.paid=!!r.paid&&d.prog>=quota(d.zone);
@@ -434,8 +436,9 @@ function loadSave(){
    if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid','spent','more'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999),k:Number.isInteger(v.k)&&AP[k].choices?.[v.k]?v.k:-1}}
    if(Array.isArray(r.grants))for(let k=0;k<3;k++){const g=r.grants[k];if(g&&AP[g.a]&&d.ap[g.a]&&['paid','spent'].includes(d.ap[g.a].s)&&!d.grants.some(q=>q&&q.a===g.a)){const left=clamp(+g.left||0,0,GRANT_T);d.grants[k]={a:g.a,left,receipt:Number.isFinite(g.receipt)?clamp(g.receipt,0,2):2};d.ap[g.a].s=left>0?'paid':'spent'}}
    if(Array.isArray(r.team)){const team=[...new Set(r.team.filter(id=>ELIGIBLE.includes(id)))];if(team.length>=3&&team.length<=15)d.team=team}
-   if(r.draft&&Array.isArray(r.draft.ids)&&((d.team&&d.team.length<teamSize(d.zone)&&r.draft.zone===d.zone)||(d.paid&&r.draft.zone===d.zone+1))){d.draft={zone:r.draft.zone,ids:[...new Set(r.draft.ids.filter(id=>ELIGIBLE.includes(id)))].slice(0,teamSize(r.draft.zone)),focus:Number.isInteger(r.draft.focus)&&AP[r.draft.focus]?r.draft.focus:2}}
+   if(r.draft&&Array.isArray(r.draft.ids)&&((d.team&&d.team.length<teamSize(d.zone)&&r.draft.zone===d.zone)||(d.paid&&r.draft.zone===d.zone+1))){d.draft={zone:r.draft.zone,ids:[...new Set(r.draft.ids.filter(id=>ELIGIBLE.includes(id)))].slice(0,teamSize(r.draft.zone)),focus:Number.isInteger(r.draft.focus)&&AP[r.draft.focus]?r.draft.focus:2,rejected:[]};d.draft.rejected=Array.isArray(r.draft.rejected)?[...new Set(r.draft.rejected.filter(id=>Number.isInteger(id)&&AP[id]&&!d.draft.ids.includes(id)))]:[]}
 
+   if(Array.isArray(r.civic))d.civic=[...new Set(r.civic.filter(id=>Number.isInteger(id)&&AP[id]&&!d.team?.includes(id)))];
    if(r.support&&r.support.zone===d.zone&&Number.isFinite(r.support.t)&&r.support.t>=0&&r.support.t<SUPPORT_T&&Array.isArray(r.support.ids)){
     const ids=[...new Set(r.support.ids.filter(i=>Number.isInteger(i)&&i>=0&&i<30&&(!d.team||d.team.some(id=>AP[id].desk===i))))];if(ids.length)d.support={t:r.support.t,zone:d.zone,ids}}
    for(const k in d.ap){const a=d.ap[k];if(a.s==='paid'&&!d.grants.some(g=>g&&g.a===+k))a.s='cert';if(a.s==='cert'&&!proofFor(+k,a).pass)a.s='more'}
@@ -884,7 +887,8 @@ for(const d of DESKS)d.wk=AP[d.ap]?.wk;
 const NREG=DESKS.length;
 [[1,-1.05],[1,1.65],[3,1.65]].forEach((q,k)=>{for(let ty=0;ty<5;ty++){const ry=q[0]*Math.PI/2;DESKS.push({side:q[0],off:q[1],x:0,z:0,ry,fx:Math.sin(ry),fz:Math.cos(ry),type:ty,seat:k})}});
 const CIVIC_START=DESKS.length;
-for(let i=0;i<18;i++){const ap=REJECTED[i];DESKS.push({citizen:true,civicIndex:i,side:0,off:0,x:0,z:0,ry:0,fx:0,fz:1,type:ap!=null?AP[ap].type:i%5,ap:ap??-1,wk:ap!=null?AP[ap].wk:(i*2+1)%5})} // 시민은 모두 일하다 온 차림
+function civicApplicants(){return [...new Set([...(S.civic||[]),...REJECTED])].filter(id=>!S.team?.includes(id))}
+for(let i=0;i<18;i++){const ap=civicApplicants()[i];DESKS.push({citizen:true,civicIndex:i,side:0,off:0,x:0,z:0,ry:0,fx:0,fz:1,type:ap!=null?AP[ap].type:i%5,ap:ap??-1,wk:ap!=null?AP[ap].wk:(i*2+1)%5})} // 시민은 모두 일하다 온 차림
 function artistDeskIds(){
  if(S.team)return S.team.map(id=>AP[id].desk);
  const ids=Array.from({length:Math.min(NREG,2+S.zone*2)},(_,i)=>i);
@@ -1084,7 +1088,7 @@ const LW=[ // 배열로 적은 값은 사람 갈래(v)마다 다르다
  {top:[0x3f5f86,0x6b7480,0x55683f],pants:[0x3f5f86,0x6b7480,0x55683f],sock:0x1f1f24,shoe:0x211d1b,sole:0x6f6a5c,hair:0x221d1a,hat:[0x2c4466,0x4d5560,0x3d4c2c],short:0},
  {top:[0x8b93a1,0xa0685a,0x6c8a76],pants:[0x4f6fa0,0x3a3d45,0xb3a487],sock:0xe8e6dd,shoe:0x9a9488,sole:0xd6cfbc,hair:[0x2a221d,0x1c1a19,0x4a3020],short:0}
 ].map(l=>({cuff:l.pants,tat:0,...l})),lookW=(wk,v)=>{const o={};for(const k in LW[wk]){const x=LW[wk][k];o[k]=Array.isArray(x)?x[v]:x}return o};
-function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d.ap].desk==null?(d.ap%3)*5+ty:idx,v=(pid/5|0)%3,certified=!d.citizen&&!d.interview; // wk: 일하다 온 차림 번호(없으면 차려입은 쪽) · pid: 심사실과 작업실에서 같은 사람으로 보이게 하는 번호(책상이 있는 신청인은 책상 번호 그대로)
+function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0?(AP[d.ap].desk??(d.ap%3)*5+ty):idx,v=(pid/5|0)%3,certified=!d.citizen&&!d.interview; // wk: 일하다 온 차림 번호(없으면 차려입은 쪽) · pid: 심사실과 작업실에서 같은 사람으로 보이게 하는 번호(책상이 있는 신청인은 책상 번호 그대로)
  if(!bodyMat){bodyMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.66,envMapIntensity:.35});droolMat=new THREE.MeshStandardMaterial({roughness:.1,envMapIntensity:1.1});bulgeGeo=lump(SP(14,10),.1,3)}
  const g=new THREE.Group();g.position.set(d.x,0,d.z);g.rotation.y=d.ry;target.add(g);
  const ps=[],hp=[],A=(...a)=>ps.push(part(...a)),Hd=(...a)=>hp.push(part(...a)),G=(...a)=>ps.push(seg(...a));
@@ -1126,6 +1130,8 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d
   else if(ty===2){A(BX(.1,.026,.25),0xc9a36a,kx,.013,z+.03);A(SP(8,6),L.sock,kx,.055,z+.03,.045,.034,.105);A(BX(.108,.014,.045),L.shoe,kx,.08,z);A(BX(.108,.014,.045),L.shoe,kx,.072,z+.085)}
   else if(ty===3){A(BX(.115,.045,.27),W,kx,.0225,z+.03);A(SP(10,7),L.shoe,kx,.075,z+.035,.056,.05,.125);A(BX(.118,.016,.1),L.acc,kx,.05,z-.04);A(SP(6,5),L.acc,kx,.1,z+.1,.03,.02,.04)}
   else{A(BX(.1,.014,.245),ty===1?0xf7f3e8:0x0f0f12,kx,.007,z+.03);A(SP(10,7),L.shoe,kx,.05,z+.03,.05,.042,.12);if(ty===1)A(SP(8,6),W,kx,.04,z+.115,.048,.034,.045)}}
+ // 면담 때만 허리에서 상체가 움직인다. 의자·골반·발·소지품은 그대로 둔다.
+ const torsoStart=ps.length;
  // 상체: 책상 위로 잔뜩 굽힌 자세
  const TQ=.6,ax=t=>[0,lerp(.6,.95,t),lerp(-.66,-.42,t)],fr=(t,o)=>{const p=ax(t),r=lerp(.165,.185,t)+o;return[p[1]-Math.sin(TQ)*r,p[2]+Math.cos(TQ)*r]};
  G(ax(0),ax(1),.165,.185,L.top,12);A(SP(10,8),L.top,0,.95,-.42,.235,.09,.13);
@@ -1147,6 +1153,7 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d
   else{const q=fr(.82,.033);A(new THREE.TorusGeometry(.075,.009,5,16,PI),gold,0,q[0],q[1],1,.8,1,TQ,0,PI);A(SP(8,6),0xf9f2d2,0,q[0]-.065,q[1]+.02,.018,.025,.013)}
  }
  if(wk==null&&ty===4)G([0,.97,-.41],[0,1.035,-.325],.068,.062,L.top,10);else G([0,.97,-.41],[0,1.035,-.325],.05,.046,SKIN,8);
+ const torsoParts=d.interview?ps.splice(torsoStart):null;
  // 머리 (따로 움직인다)
  Hd(SP(14,10),SKIN,0,0,0,.112,.125,.118);
  for(const s of[-1,1]){Hd(SP(6,5),SKD,s*.112,-.005,-.005,.02,.032,.024);Hd(SP(6,5),K,s*.043,.012,.107,.013,.017,.01)}
@@ -1231,7 +1238,19 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d
   const fo=addMesh(g,fg,bodyMat),el=addMesh(g,tint(SP(8,6),L.short?L.top:L.top),bodyMat);el.scale.setScalar(.046);
   const hand=addMesh(g,tint(SP(8,6),SKIN),bodyMat);hand.scale.set(.042,.03,.055);
   hands.push({up,fo,el,hand,s,band:s>0&&(certified||d.interview&&ELIGIBLE.includes(d.ap))?artistArmband(g):null,sh:new THREE.Vector3(s*.21,.95,-.41),base:ty===4&&wk==null?new THREE.Vector3(s*.06,.875,-.175):new THREE.Vector3(s*.16,.805,-.07)})}
- if(d.interview)return {g,head,hands,i:idx,type:ty};
+ if(d.interview){
+  const upper=new THREE.Group(),rig=new THREE.Group();upper.position.set(0,.6,-.66);rig.position.set(0,-.6,.66);upper.add(rig);g.add(upper);
+  const torso=new THREE.Mesh(merge(torsoParts),bodyMat);torso.castShadow=true;rig.add(torso,head);
+  const smileGeo=new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(new THREE.Vector3(-.027,-.055,.112),new THREE.Vector3(0,-.07,.123),new THREE.Vector3(.031,-.049,.112)),10,.003,4,false);
+  const smile=new THREE.Mesh(smileGeo,M(0x6f382d,.9));smile.visible=false;head.add(smile);
+  for(const h of hands){rig.add(h.up,h.fo,h.el,h.hand);if(h.band)rig.add(h.band);
+   const parts=[part(SP(10,8),SKIN,0,.006,0,.04,.043,.032)];
+   for(let k=0;k<4;k++)parts.push(part(SP(7,5),SKIN,(k-1.5)*.018,.013,.025,.012,.027,.014));
+   parts.push(seg([-.028,.016,0],[-.044,.071,.007],.018,.015,SKIN,8),part(SP(8,6),SKIN,-.044,.073,.007,.015,.019,.015),part(SP(6,5),lin(SKIN).lerp(lin(0xf9e7dd),.55),-.045,.078,.019,.009,.011,.003));
+   const thumb=new THREE.Mesh(merge(parts),bodyMat);thumb.castShadow=true;thumb.visible=false;rig.add(thumb);h.thumb=thumb;
+  }
+  return {g,head,hands,upper,smile,i:idx,type:ty};
+ }
  // 완성 직전에 부풀어 오르는 작품
  const wy=[.778,.79,.8,.815,.778][ty];
  const bulge=new THREE.Mesh(bulgeGeo,new THREE.MeshStandardMaterial({color:lin(0xdba79c).lerp(lin(TYPES[ty].tints[v%TYPES[ty].tints.length]),.3),roughness:.12,envMapIntensity:1}));bulge.position.set(0,wy,.07);bulge.visible=false;bulge.castShadow=true;g.add(bulge);
@@ -1243,6 +1262,18 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0&&AP[d
  c.wait=0;
  c.envelope=buildSupportEnvelope();g.add(c.envelope);
  drool(c,null);creators.push(c);
+}
+function syncReviewCitizens(){
+ const roster=civicApplicants();
+ for(const c of creators.slice()){
+  if(!c.d.citizen)continue;const d=c.d,id=roster[d.civicIndex]??-1;if(d.ap===id)continue;
+  const pos=creators.indexOf(c),a=AP[id];d.ap=id;d.type=a?a.type:d.civicIndex%5;d.wk=a?a.wk:(d.civicIndex*2+1)%5;
+  // Dispose only this desk's resources; the workshop's shared assets stay alive.
+  scene.remove(c.g);const geos=new Set(),mats=new Set();c.g.traverse(m=>{if(m.geometry)geos.add(m.geometry);if(m.material)for(const v of(Array.isArray(m.material)?m.material:[m.material]))mats.add(v)});
+  const band=ARTIST_LED.assets,sharedG=[bulgeGeo,supportEnvelopeGeo,band?.sleeve,band?.face],sharedM=[bodyMat,droolMat,supportEnvelopeMat,supportEnvelopeMat?.userData.top,band?.sleeveMat,band?.faceMat];
+  for(const g of geos)if(!sharedG.includes(g))g.dispose();for(const m of mats)if(!sharedM.includes(m)){if(m.map)m.map.dispose();m.dispose()}
+  buildDesk(d,c.i);creators[pos]=creators.pop();
+ }
 }
 function creatorTag(c,text){if(!c.tag||c.tagText===text)return;c.tagText=text;const old=c.tag.material.map;c.tag.material.map=canvasTex(512,144,(g,w,h)=>{g.fillStyle='#eee3bd';g.fillRect(0,0,w,h);g.strokeStyle='#9e7c36';g.lineWidth=7;g.strokeRect(9,9,w-18,h-18);g.fillStyle='#393325';g.textAlign='center';g.textBaseline='middle';g.font='700 54px sans-serif';g.fillText(text,w/2,h/2,w-30)});c.tag.material.needsUpdate=true;if(old)old.dispose()}
 // 기본 배출과 지원금 배출은 같은 책상 → 모서리 → 바닥 경로를 쓴다.
@@ -4536,7 +4567,7 @@ function teamApplicant(c){return S.team?.find(id=>AP[id].desk===c.i)}
 function creatorActive(c){return c.d.citizen?c.d.civicIndex<artistCount():S.team?teamApplicant(c)!=null:c.d.seat==null?c.i<Math.min(NREG,2+S.zone*2):!!S.grants[c.d.seat]&&AP[S.grants[c.d.seat].a].type===c.type}
 function needsReassignment(){return !!S.team&&S.team.length<teamSize(S.zone)}
 function targetWorkshop(){return needsReassignment()&&!S.paid?S.zone:S.zone+1}
-function draftForZone(){const zone=targetWorkshop();if(!S.draft||S.draft.zone!==zone)S.draft={zone,ids:zone===S.zone?S.team.slice():[],focus:interviewOrder()[0]};return S.draft}
+function draftForZone(){const zone=targetWorkshop();if(!S.draft||S.draft.zone!==zone)S.draft={zone,ids:zone===S.zone?S.team.slice():[],rejected:[],focus:interviewOrder()[0]};return S.draft}
 function interviewOrder(){const offset=((S.zone-1)*2)%REVIEW_ORDER.length;return REVIEW_ORDER.slice(offset).concat(REVIEW_ORDER.slice(0,offset))}
 function applicantReview(id){
  const a=AP[id],r=a.choices?a.choices[Math.max(0,apS(id).k)]||a.choices[0]:a,activity=r.rec==='ok'||a.inc==='ok',income=a.monthly<=INCOME_LIMIT,pass=ELIGIBLE.includes(id);
@@ -4554,10 +4585,10 @@ function buildInterview(){
  s.add(new THREE.HemisphereLight(0xffffff,0xafa99a,.6));const light=new THREE.DirectionalLight(0xfff3e0,.65);light.position.set(-3,6,4);s.add(light);
  addMesh(s,BX(12,.04,8),M(0xd5d1c4,.95),0,-.025,-1,false);addMesh(s,BX(12,4,.05),M(0xe9e8e1,.95),0,2,-2,false);
  IV.camera=new THREE.PerspectiveCamera(32,1,.06,50);
- for(const id of REVIEW_ORDER){const a=AP[id],c=buildDesk({x:0,z:0,ry:0,type:a.type,interview:true,ap:id,wk:a.wk},a.desk??(id%3)*5+a.type,s);c.applicant=id;c.nod=0;
+ for(const id of REVIEW_ORDER){const a=AP[id],c=buildDesk({x:0,z:0,ry:0,type:a.type,interview:true,ap:id,wk:a.wk},a.desk??(id%3)*5+a.type,s);c.applicant=id;c.verdict=0;c.reactionT=9;c.pose={back:0,pitch:.03,yaw:0,roll:0,drop:0,hand:0,thumb:0};
   const folder=addMesh(c.g,BX(.28,.018,.21),M(0xe3dbc3,.85),0,.61,-.29);folder.rotation.x=.17;
   const label=new THREE.Mesh(new THREE.PlaneGeometry(.22,.13),M(0xf9f6ed,.9));label.rotation.x=-Math.PI/2+.17;label.position.set(0,.624,-.29);c.g.add(label);
-  const seal=addMesh(c.g,BX(.072,.006,.05),M(ELIGIBLE.includes(id)?0x407b61:0xa34d42,.85),.065,.632,-.24);seal.rotation.x=.17;c.seal=seal;
+  const seal=addMesh(c.g,BX(.072,.006,.05),M(0x407b61,.85),.065,.632,-.24);seal.rotation.x=.17;c.seal=seal;
   const shadow=new THREE.Mesh(new THREE.CircleGeometry(.42,32),new THREE.MeshBasicMaterial({color:0x55584e,transparent:true,opacity:.11,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.set(0,.002,-.35);shadow.scale.y=1.6;c.g.add(shadow);
   c.g.visible=false;IV.actors.push(c);
  }
@@ -4566,15 +4597,27 @@ function layoutInterview(){if(!IV.open)return;const r=$('candidate-stage').getBo
 function openInterview(){
  if(!started||paused||(!S.paid&&!needsReassignment())||stompLocked()||TD.on||shovelLocked()||tool2Locked())return false;
  paused=true;releaseAll();lensClear();buildInterview();const d=draftForZone();IV.open=true;IV.sel=d.focus;IV.t=0;
+ for(const c of IV.actors){c.verdict=d.ids.includes(c.applicant)?1:d.rejected.includes(c.applicant)?-1:0;c.reactionT=9;poseInterview(c,0,true)}
  $('hud').style.display='none';$('hud').inert=true;$('interview').hidden=false;renderInterview();layoutInterview();save();AU.wake();$('candidate-next').focus();return true;
 }
 function closeInterview(){if(!IV.open)return;IV.open=false;$('interview').hidden=true;$('hud').style.display='block';$('hud').inert=false;paused=false;last=0;renderer.setViewport(0,0,W,H);save();openSupportMenu()}
 function showCandidate(id){if(!IV.open||!AP[id])return;IV.sel=id;draftForZone().focus=id;AU.wake();AU.tick();save();renderInterview();$('candidate-paper').scrollTop=0}
 function focusCandidate(delta){if(!IV.open)return;const order=interviewOrder(),i=order.indexOf(IV.sel);showCandidate(order[(i+delta+order.length)%order.length])}
+function reactToVerdict(id,state){
+ const c=IV.actors.find(c=>c.applicant===id);if(c){c.verdict=state;c.reactionT=0}
+ AU.wake();if(state)AU.thwack();else AU.tick();save();renderInterview();
+}
 function chooseCandidate(id){
- if(!IV.open||!ELIGIBLE.includes(id))return false;AU.wake();const d=draftForZone(),i=d.ids.indexOf(id);
- if(i>=0)d.ids.splice(i,1);else{if(d.ids.length>=teamSize(d.zone))return false;d.ids.push(id);const c=IV.actors.find(c=>c.applicant===id);if(c)c.nod=1;AU.thwack()}
- save();renderInterview();return true;
+ if(!IV.open||!ELIGIBLE.includes(id))return false;const d=draftForZone(),i=d.ids.indexOf(id);
+ if(i>=0){d.ids.splice(i,1);reactToVerdict(id,0)}
+ else{if(d.ids.length>=teamSize(d.zone))return false;d.ids.push(id);d.rejected=d.rejected.filter(v=>v!==id);reactToVerdict(id,1)}
+ return true;
+}
+function rejectCandidate(id){
+ if(!IV.open||!AP[id])return false;const d=draftForZone(),i=d.rejected.indexOf(id);
+ if(i>=0){d.rejected.splice(i,1);reactToVerdict(id,0)}
+ else{d.ids=d.ids.filter(v=>v!==id);d.rejected.push(id);reactToVerdict(id,-1)}
+ return true;
 }
 function incomePanel(a){
  const over=a.monthly>INCOME_LIMIT;
@@ -4590,17 +4633,18 @@ function activityRecord(id){
  return a.recT;
 }
 function renderInterview(){
- const d=draftForZone(),a=AP[IV.sel],r=applicantReview(IV.sel),chosen=d.ids.includes(IV.sel),need=teamSize(d.zone),order=interviewOrder();
+ const d=draftForZone(),a=AP[IV.sel],r=applicantReview(IV.sel),chosen=d.ids.includes(IV.sel),rejected=d.rejected.includes(IV.sel),need=teamSize(d.zone),order=interviewOrder();
  $('interview-title').textContent=d.zone+'기 · '+(d.zone===S.zone?'추가 선정':'지원 대상 심사');$('candidate-position').textContent=(order.indexOf(IV.sel)+1)+' / '+order.length;
- $('candidate-stage').setAttribute('aria-label',applicantLabel(IV.sel)+' · '+(r.pass?'적격':'부적격')+' 신청인');
+ $('candidate-stage').setAttribute('aria-label',applicantLabel(IV.sel)+' · '+(chosen?'선정':rejected?'탈락':r.pass?'적격':'부적격')+' 신청인');
  for(const c of IV.actors)c.g.visible=c.applicant===IV.sel;
  const field=a.choices?a.choices.map(v=>v.field).join(' · '):r.field;
- $('candidate-paper').innerHTML='<div class="int-person"><div><small>'+esc(field)+'</small><h3>'+applicantLabel(IV.sel)+'</h3></div><span class="int-seal'+(r.pass?'':' denied')+'">'+(r.pass?'적격':'부적격')+'</span></div>'
+ $('candidate-paper').innerHTML='<div class="int-person"><div><small>'+esc(field)+'</small><h3>'+applicantLabel(IV.sel)+'</h3></div><span class="int-seal'+(rejected||!r.pass?' denied':'')+'" role="status">'+(chosen?'선정':rejected?'탈락':r.pass?'적격':'부적격')+'</span></div>'
   +incomePanel(a)
   +'<div class="int-record"><span>발표 실적</span><strong>'+esc(activityRecord(IV.sel))+'</strong></div>'
   +'<div class="int-result'+(r.pass?'':' denied')+'">'+(r.pass?'소득 기준 이내 · 발표 실적 인정':esc(r.reason))+'</div>';
  const approve=$('candidate-approve');approve.setAttribute('aria-pressed',String(chosen));approve.disabled=!r.pass||!chosen&&d.ids.length>=need;
  approve.textContent=r.pass?(chosen?'선정 취소':d.ids.length>=need?'인원 충족':'선정'):'선정 불가';
+ const reject=$('candidate-reject');reject.setAttribute('aria-pressed',String(rejected));reject.textContent=rejected?'탈락 취소':'탈락';
  $('interview-chosen').innerHTML='<small>선정 <b>'+d.ids.length+' / '+need+'명</b></small><div class="int-selected-list">'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+applicantLabel(id)+' 선정 취소">'+String(id+1).padStart(3,'0')+' ×</button>').join('')+(d.ids.length?'':'<span class="empty">선정할 신청인을 골라 주세요</span>')+'</div>';
  $('interview-chosen').querySelectorAll('button').forEach(b=>b.onclick=()=>chooseCandidate(+b.dataset.id));
  $('interview-enter').hidden=d.ids.length!==need;$('interview-enter').disabled=d.ids.length!==need;$('interview-enter').textContent=need+'명 선정 완료 · '+(d.zone===S.zone?'작업 계속하기':'작업실로')+' →';
@@ -4609,20 +4653,46 @@ function renderInterview(){
 function enterNextWorkshop(){
  if(!IV.open||(!S.paid&&!needsReassignment())||!S.draft||S.draft.zone!==targetWorkshop())return false;
  const d=S.draft;if(d.ids.length!==teamSize(d.zone)||new Set(d.ids).size!==d.ids.length||!d.ids.every(id=>ELIGIBLE.includes(id)))return false;
- const current=d.zone===S.zone,old=S.team||[];S.team=d.ids.slice();S.draft=null;
+ const current=d.zone===S.zone,old=S.team||[];S.team=d.ids.slice();S.civic=[...new Set([...d.rejected,...(current?S.civic:[])])].filter(id=>!S.team.includes(id));S.draft=null;syncReviewCitizens();
  if(current){for(const id of S.team)if(!old.includes(id))S.funds[AP[id].desk]=ACTIVITY_T;resetSupport()}
  else{S.zone=d.zone;S.prog=0;S.paid=false;S.grants=[null,null,null];S.funds.fill(ACTIVITY_T)}
  IV.open=false;$('interview').hidden=true;$('hud').style.display='block';$('hud').inert=false;paused=false;last=0;renderer.setViewport(0,0,W,H);
  roomTarget(S.zone,true);if(!current)resetRoom();updateCreators(0);save();updateHUD(true);setHint();AU.wake();AU.chime();$('gl').focus();return true;
 }
+// 판정 순간의 몸짓 뒤에도 태도가 남는다. 표정/손/허리를 한 좌표계에서 움직인다.
+function poseInterview(c,dt,snap=false){
+ const t=c.reactionT,kind=c.applicant%3,p=c.pose;
+ let back=-.09,pitch=.09,yaw=0,roll=0,drop=0,hand=0,thumb=0;
+ if(c.verdict===1){
+  const settle=ss(t/.62),nod=Math.sin(Math.PI*clamp((t-.24)/.65,0,1));
+  back=lerp(-.09,-.37,settle);pitch=lerp(.09,.15,settle)+(kind===1?.12:.33)*nod;yaw=(kind===2?-.12:.035)*settle;roll=(kind===2?-.055:.025)*settle;
+  if(kind===1)thumb=ss((t-.18)/.48)*(1-ss((t-1.5)/.55));
+ }else if(c.verdict===-1){
+  const sink=ss((t-.28)/.95),courtesy=kind===2?Math.sin(Math.PI*clamp((t-.18)/.5,0,1)):0;
+  back=lerp(-.09,kind===1?.22:.15,sink);pitch=lerp(.09,kind===0?.55:.43,sink)+.14*courtesy;drop=.018*sink;
+  yaw=(kind===1?.16:kind===2?-.1:0)*sink;roll=(kind===1?.05:-.025)*sink;hand=sink;
+ }
+ const a=snap?1:1-Math.exp(-dt*13),target={back,pitch,yaw,roll,drop,hand,thumb};
+ for(const key in target)p[key]=lerp(p[key],target[key],a);
+ c.upper.rotation.x=p.back;c.upper.position.y=.6-p.drop;
+ c.head.rotation.set(p.pitch+Math.sin(IV.t*1.6+c.i)*.009,p.yaw,p.roll);c.head.position.set(0,1.075,-.285);
+ c.smile.visible=c.verdict===1&&t>.3;
+ // The folder stays on the lap; relaxed hands never drop through the thighs.
+ c.upper.updateMatrix();
+ for(const h of c.hands){
+  _a.set(h.s*lerp(.105,.22,p.hand),lerp(.65,.565,p.hand),lerp(-.28,-.26,p.hand));
+  _a.sub(c.upper.position).applyAxisAngle(_b.set(1,0,0),-p.back).add(_b.set(0,.6,-.66));
+  if(h.s<0)_a.lerp(_b.set(-.28,.86,-.21),p.thumb);
+  armIK(h,_a);h.hand.visible=!(h.s<0&&p.thumb>.12);h.thumb.visible=!h.hand.visible;
+  if(h.thumb.visible){h.thumb.position.copy(h.hand.position);h.thumb.rotation.set(-p.back,-.12,-.12);h.thumb.scale.setScalar(1)}
+ }
+ c.seal.visible=c.verdict!==0;c.seal.material.color.setHex(c.verdict<0?0xa34d42:0x407b61).convertSRGBToLinear();
+}
 function drawInterview(dt){
- const d=draftForZone();IV.t+=dt;let actor=null;
+ IV.t+=dt;let actor=null;
  for(const c of IV.actors){
-  const focus=c.applicant===IV.sel;c.g.visible=focus;if(!focus)continue;actor=c;
-  c.g.position.x=0;c.nod=Math.max(0,c.nod-dt*1.8);const k=Math.sin(c.nod*Math.PI);
-  c.head.rotation.set(.03+.18*k+Math.sin(IV.t*1.6+c.i)*.012,0,0);c.head.position.y=1.075-.028*k;
-  c.seal.visible=!ELIGIBLE.includes(c.applicant)||d.ids.includes(c.applicant);
-  for(const h of c.hands){_a.set(h.s*.12,.64+Math.sin(IV.t*1.7+c.i)*.002,-.29);armIK(h,_a)}
+  c.reactionT=Math.min(9,c.reactionT+dt);const focus=c.applicant===IV.sel;c.g.visible=focus;if(!focus)continue;actor=c;
+  c.g.position.x=0;poseInterview(c,dt);
  }
  const r=IV.rect;if(!r||!actor)return;
  if(!actor.framing){actor.g.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(actor.g);actor.framing={center:box.getCenter(new THREE.Vector3()),size:box.getSize(new THREE.Vector3())}}
@@ -4973,7 +5043,7 @@ function bind(){
  $('start').onclick=()=>{if(started)return;started=true;paused=false;$('intro').hidden=true;$('hud').style.display='block';AU.wake();updateHUD(true);setHint();$('gl').focus()};
  $('snd').onclick=()=>{AU.wake();S.muted=!S.muted;AU.mute(S.muted);save();updateHUD(true)};
  $('supportbtn').onclick=openSupportMenu;$('supportx').onclick=closeSupportMenu;$('supportpay').onclick=payFromSupport;$('supportreview').onclick=reviewFromSupport;
- $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
+ $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('candidate-reject').onclick=()=>rejectCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
  $('supportmenu').addEventListener('pointerdown',e=>{if(e.target===$('supportmenu'))closeSupportMenu()});
  $('reset').onclick=()=>{if(!confirm('예산과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;exAbort();const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:m,wp:1,wf:1,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,exDone:0};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
