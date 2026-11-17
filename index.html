@@ -1247,7 +1247,20 @@ function poop(){ // 바나나처럼 휜 긴 똥에 다리가 달렸다
  eye(-.12,1.03,1.25,.07);eye(.12,1.03,1.25,.07);
  return{body:mergeX(b),eyes:merge(e)};
 }
-function buildCreatureGeo(){TYPES.forEach((T,i)=>{T.geo=T.id==='poop'?poop():human(i)})}
+// 실제 모델의 팔다리 최대 진폭·눈·뒤에 매단 작품까지 포함한 작은 충돌 외피.
+// 시작할 때만 정점을 읽고, 매 프레임에는 이 외피만 회전시킨다.
+function creatureBounds(T){
+ const boxes=Array.from({length:12},()=>[Infinity,Infinity,Infinity,-Infinity,-Infinity,-Infinity]);
+ const add=(x,y,z,dy=0,dz=0)=>{const b=boxes[clamp(Math.floor((z+3)*2.4),0,11)];b[0]=Math.min(b[0],x);b[1]=Math.min(b[1],y);b[2]=Math.min(b[2],z-dz);b[3]=Math.max(b[3],x);b[4]=Math.max(b[4],y+dy);b[5]=Math.max(b[5],z+dz)};
+ const p=T.geo.body.attributes.position,l=T.geo.body.attributes.aLimb;
+ for(let i=0;i<p.count;i++){const w=l.getY(i)*1.7;add(p.getX(i),p.getY(i),p.getZ(i),.14*w,.3*w)}
+ const e=T.geo.eyes.attributes.position;
+ for(let i=0;i<e.count;i++)add(EYEP[0]+(e.getX(i)-EYEP[0])*1.25,EYEP[1]+(e.getY(i)-EYEP[1])*1.25,EYEP[2]+(e.getZ(i)-EYEP[2])*1.25);
+ const hull=[];let radius=0;
+ for(const b of boxes){if(!Number.isFinite(b[0]))continue;for(const x of[b[0],b[3]])for(const y of[b[1],b[4]])for(const z of[b[2],b[5]]){hull.push(x,y,z);radius=Math.max(radius,Math.hypot(x,y,z))}}
+ T.binHull=new Float32Array(hull);T.clearance=radius;
+}
+function buildCreatureGeo(){TYPES.forEach((T,i)=>{T.geo=T.id==='poop'?poop():human(i);creatureBounds(T)})}
 function buildFlocks(){
  const eyeMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.15,envMapIntensity:.8});
  TYPES.forEach((T,ti)=>{
@@ -1335,7 +1348,7 @@ function updateCreatures(dt){
    c.sqT=.34;c.yaw+=Math.sin(time*9+c.ph)*dt*3;sp=.06+.06*Math.abs(Math.sin(time*5+c.ph));c.roll=Math.sin(time*38+c.ph)*.2;c.panic=1;c.tr-=dt*2;
    if(Math.random()<dt*.9)AU.squeal(c.type,.6);
    if(c.t>c.life){killCreature(c,'bleed');continue}}
-  if(sp){c.x+=Math.sin(c.yaw)*sp*dt;c.z+=Math.cos(c.yaw)*sp*dt;c.ph+=dt*(7+sp*14);
+  if(sp){avoidBin(c,dt);c.x+=Math.sin(c.yaw)*sp*dt;c.z+=Math.cos(c.yaw)*sp*dt;c.ph+=dt*(7+sp*14);
    // 지나간 자리에 진물
    c.tr-=dt;if(c.tr<=0){c.tr=rnd(.3,.55);const m=c.st==='maim',w=m?.1:.052;stamp(c.x,c.z,w,w,0,1,6,m?c.ink:T.trL[c.gi][Math.min(3,c.age/14|0)],m?.85:.56)}}
   // 서 있는 발·차량 피하기
@@ -1351,6 +1364,8 @@ function updateCreatures(dt){
   for(let j=i+1;j<n;j++){const b=creatures[j];if(busy(b))continue;
    const dx=b.x-a.x;if(dx>.13||dx<-.13)continue;const dz=b.z-a.z;if(dz>.13||dz<-.13)continue;
    const m=(a.r+b.r)*.92,d2=dx*dx+dz*dz;if(d2<m*m&&d2>1e-6){const d=Math.sqrt(d2),k=(m-d)/d*.5*.6;a.x-=dx*k;a.z-=dz*k;b.x+=dx*k;b.z+=dz*k}}}
+ // 서로 밀거나 착지·물줄기로 이동한 뒤에도 통 안으로 들어가지 못한다.
+ for(const c of creatures)resolveBin(c);
 }
 const D=new THREE.Object3D(),_em=new THREE.Matrix4();
 function drawCreatures(){
@@ -1372,6 +1387,7 @@ function drawCreatures(){
   else{c.pt+=((st==='fall'?(c.t>.3?1.15:0):st==='binned'?-1.35*Math.min(1,c.cl*2.5):c.beg&&(st==='walk'||st==='cower')?-.5:0)-c.pt)*(st==='fall'?.3:.14);D.position.set(c.x,c.y-c.pt*c.r*1.1,c.z)}
   D.rotation.set(c.pt,c.yaw,c.roll,'YXZ');
   D.scale.set(r*bx,r*sy,r*bx*sz);D.updateMatrix();
+  if(st==='binned'||st==='tossed')fitBinCreature(c,D);
   f.body.setMatrixAt(i,D.matrix);f.body.setColorAt(i,c.tint);f.an.array[i*4]=ph;f.an.array[i*4+1]=amp;f.an.array[i*4+2]=c.flay;f.an.array[i*4+3]=c.clip;
   // 눈은 얼굴 자리에서 부푼다
   const e=c.noeye?0:1+c.panic*.25+(st==='pinned'?(c.pr||0)*.7:0)+(c.gk||0)*.8+(st==='pinned'||st==='tank'||st==='bag'||st==='held'?.5:st==='maim'||st==='stump'?.3:0);D.scale.set(r*bx,r*Math.max(sy,.5),r*bx*sz);D.updateMatrix();
@@ -2748,7 +2764,7 @@ function buildShovel(){
 }
 function buildBin(){
  const g=new THREE.Group();
- const body=merge([part(new THREE.CylinderGeometry(.17,.14,.3,20,1,true),0x2f6fd0,0,.17,0),part(new THREE.TorusGeometry(.17,.014,8,24),0x1b2f6b,0,.32,0,1,1,1,Math.PI/2,0,0),part(CY(.14,.14,.02,20),0x1b2f6b,0,.03,0),part(BX(.2,.04,.012),0xffd21f,0,.2,.162)]);
+ const body=merge([part(new THREE.CylinderGeometry(.17,.14,.3,20,1,true),0x2f6fd0,0,.17,0),part(new THREE.TorusGeometry(.17,.014,8,24),0x1b2f6b,0,.32,0,1,1,1,Math.PI/2,0,0),part(CY(.14,.14,.04,20),0x1b2f6b,0,.02,0),part(BX(.2,.04,.012),0xffd21f,0,.2,.162)]);
  const m=new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,envMapIntensity:.5,side:THREE.DoubleSide}));m.castShadow=true;m.receiveShadow=true;g.add(m);
  const p=new THREE.Mesh(lump(new THREE.CylinderGeometry(.158,.15,.03,18,1),.05,6),new THREE.MeshStandardMaterial({roughness:.1,envMapIntensity:1}));p.visible=false;g.add(p);SH.pulp=p;
  const pv=p.geometry.attributes.position;let radius=0,bottom=0;for(let i=0;i<pv.count;i++){radius=Math.max(radius,Math.hypot(pv.getX(i),pv.getZ(i)));bottom=Math.min(bottom,pv.getY(i))}p.userData.radius=radius;p.userData.bottom=bottom;
@@ -2765,6 +2781,47 @@ function binAdd(n,col){
 const binTop=()=>.045+.105*SH.binLv+.018; // 통 안 곤죽 윗면 높이
 // 통은 아래가 좁은 20각형이다. 원의 반지름 대신 벽 면까지의 거리와 여유 폭을 쓴다.
 const binInnerRadius=y=>lerp(.14,.17,clamp((y-.02)/.3,0,1))*Math.cos(Math.PI/20)-.007;
+const binFloorBody=c=>SH.bin&&SH.bin.visible&&!c.dead&&!busy(c)&&c.st!=='sucked'&&c.y<.334;
+const binClearance=c=>.184+.008+TYPES[c.type].clearance*c.r*c.sc*Math.max(1,c.sq,Math.min(1.9,1/Math.sqrt(Math.max(.08,c.sq))));
+function avoidBin(c,dt){
+ if(!binFloorBody(c))return;
+ const b=SH.bin.position,dx=c.x-b.x,dz=c.z-b.z,d=Math.hypot(dx,dz),r=binClearance(c),fx=Math.sin(c.yaw),fz=Math.cos(c.yaw);
+ if(d>r+.24){c.binSide=0;return}
+ const nx=d>1e-6?dx/d:Math.sin(c.ph),nz=d>1e-6?dz/d:Math.cos(c.ph),toward=-(dx*fx+dz*fz);
+ if(toward<=0&&d>r+.025)return;
+ if(Math.abs(dx*fz-dz*fx)>r+.025&&d>r+.025)return;
+ if(!c.binSide){const cross=nx*(EY.z-b.z)-nz*(EY.x-b.x);c.binSide=Math.abs(cross)>.01?Math.sign(cross):Math.sin(c.ph)>=0?1:-1}
+ const out=Math.max(0,(r+.07-d)*10),tx=-nz*c.binSide+nx*out,tz=nx*c.binSide+nz*out,want=Math.atan2(tx,tz);
+ c.yaw+=Math.atan2(Math.sin(want-c.yaw),Math.cos(want-c.yaw))*Math.min(1,dt*18);
+}
+function resolveBin(c){
+ if(!binFloorBody(c))return;
+ const b=SH.bin.position,dx=c.x-b.x,dz=c.z-b.z,d=Math.hypot(dx,dz),r=binClearance(c);
+ if(d>=r)return;
+ const nx=d>1e-6?dx/d:Math.sin(c.ph),nz=d>1e-6?dz/d:Math.cos(c.ph);
+ c.x=b.x+nx*r;c.z=b.z+nz*r;
+}
+const _binHull=new Float64Array(12*8*3);
+function fitBinCreature(c,o){
+ if(!SH.bin.visible)return;
+ const b=SH.bin.position,h=TYPES[c.type].binHull,m=o.matrix.elements;let low=Infinity;
+ for(let i=0;i<h.length;i+=3){const x=h[i],y=h[i+1],z=h[i+2];
+  _binHull[i]=m[0]*x+m[4]*y+m[8]*z+m[12]-b.x;
+  _binHull[i+1]=m[1]*x+m[5]*y+m[9]*z+m[13]-b.y;
+  _binHull[i+2]=m[2]*x+m[6]*y+m[10]*z+m[14]-b.z;low=Math.min(low,_binHull[i+1])}
+ // 쏟는 도중 몸 전체가 테두리 위에 있을 때는 자유롭게 낙하한다.
+ if(c.st==='tossed'&&low>.34)return;
+ const dy=Math.max(0,.042-low);let dx=0,dz=0;
+ for(let pass=0;pass<12;pass++){let overlap=0;
+  for(let i=0;i<h.length;i+=3){const x=_binHull[i]+dx,z=_binHull[i+2]+dz,d=Math.hypot(x,z),lim=binInnerRadius(_binHull[i+1]+dy)-.002;
+   if(d>lim){const k=(d-lim)/d;dx-=x*k;dz-=z*k;overlap=Math.max(overlap,d-lim)}}
+  if(overlap<.0001)break;
+ }
+ // 몸 전체를 안쪽으로 옮긴다. 팔다리나 뒤에 달린 작품을 자르거나 줄이지 않는다.
+ o.position.x+=dx;o.position.y+=dy;o.position.z+=dz;o.updateMatrix();
+ c.x+=dx;c.y+=dy;c.z+=dz;if(c.st==='binned'){c.bx=c.x-b.x;c.bz=c.z-b.z}
+}
+
 function binContents(dt){
  const s=SH;
  if(s.binN>=72&&!s.binDrain)s.binDrain=1.8;
@@ -2784,7 +2841,7 @@ function binSplash(k=1){const b=SH.bin.position;for(let i=0;i<Math.round(5*k);i+
 // 산 채로 통에 들어간 것: 곤죽 위를 기어다니다 벽을 짚고 기어올라 테두리 위로 머리를 내민다. 다시 미끄러져 떨어진다
 function binLand(c){
  const s=SH;if(!s.bin.visible||s.binned.length>=16){binAdd(1,c.ink);killCreature(c,'bin');return}
- c.st='binned';c.bury=0;c.t=0;c.bx=rnd(-.07,.07);c.bz=rnd(-.07,.07);c.cl=0;c.clT=rnd(.8,2.6);c.sc=1;c.sq=1;c.panic=1;c.roll=0;c.yaw=rnd(0,TAU);s.binned.push(c);
+ c.st='binned';c.bury=0;c.t=0;c.bx=rnd(-.07,.07);c.bz=rnd(-.07,.07);c.cl=0;c.clT=rnd(.8,2.6);c.sc=1;c.sq=1;c.sqT=1;c.panic=1;c.roll=0;c.pt=0;c.beg=0;c.y=binTop();c.yaw=rnd(0,TAU);c.x=s.bin.position.x+c.bx;c.z=s.bin.position.z+c.bz;s.binned.push(c);
  binAdd(0,c.ink);AU.squelch(.35);AU.squeal(c.type,1,rnd(0,.05),rnd(.3,.5));if(s.tossN){AU.dump(s.tossN);s.tossN=0;binSplash()}
 }
 function binnedUpdate(dt){
