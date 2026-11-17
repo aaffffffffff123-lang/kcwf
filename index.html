@@ -1560,8 +1560,28 @@ function creatureBounds(T){
  T.binHull=new Float32Array(hull);T.clearance=radius;
 }
 function buildCreatureGeo(){TYPES.forEach((T,i)=>{T.geo=T.id==='poop'?poop():human(i);T.fg=[0,1,2,3].map(k=>k>2?(T.id==='poop'?poopTiny(true):humanTiny(i,true)):T.id==='poop'?poop(k,true):human(i,false,k,true));creatureBounds(T)})}
+// 접촉 중에는 바닥 개체가 쇠판을 관통하는 부분만 잘라 낸다. 판 아래와 가장자리 밖은 원래 깊이로 그린다.
+const bladeContact={active:{value:false},toLocal:{value:new THREE.Matrix4()}};
+function clipFloorAtBlade(shader){
+ shader.uniforms.uBladeContact=bladeContact.active;
+ shader.uniforms.uBladeLocal=bladeContact.toLocal;
+ shader.vertexShader=shader.vertexShader.replace('#include <common>',`#include <common>
+ uniform bool uBladeContact;
+ uniform mat4 uBladeLocal;
+ varying vec3 vBladePoint;`).replace('#include <project_vertex>',`#include <project_vertex>
+ vBladePoint=vec3(0.,-1.,0.);
+ #ifdef USE_INSTANCING
+ if(uBladeContact && instanceMatrix[3].y<0.16){
+  vBladePoint=(uBladeLocal * (modelMatrix * (instanceMatrix * vec4(transformed,1.)))).xyz;
+ }
+ #endif`);
+ shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vBladePoint;')
+  .replace('#include <clipping_planes_fragment>',`#include <clipping_planes_fragment>
+  if(vBladePoint.y>=0.002 && abs(vBladePoint.x)<=${SHW} && vBladePoint.z>=0. && vBladePoint.z<=${SHD}) discard;`);
+}
 function buildFlocks(){
  const eyeMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.15,envMapIntensity:.8});
+ eyeMat.onBeforeCompile=clipFloorAtBlade;
  TYPES.forEach((T,ti)=>{
   T.tintsL=T.tints.map(lin);
   T.gooL=T.tintsL.map(c=>T.id==='poop'?c.clone().lerp(DUNG,.45):c.clone().lerp(BLOOD,.78));
@@ -1577,7 +1597,7 @@ function buildFlocks(){
     'float cw=aAn.w;bool rv=cw>10.;if(rv)cw-=20.;'+
     'if(aPo.z>.001){float dd=rv?cw-transformed.z:transformed.z-cw,pk=aPo.z*(1.-smoothstep(0.,.5,dd)),bk=aPo.z*smoothstep(.2,.55,dd)*(1.-smoothstep(.75,1.4,dd));transformed.x*=1.+.55*pk+.2*bk;transformed.y=.48+(transformed.y-.48)*(1.-.7*pk+.25*bk);}'+ // 틈 바로 위는 납작하게 짓눌려 옆으로 퍼지고, 그 위는 밀려 올라온 속으로 부푼다
     'if(rv?transformed.z>cw:transformed.z<cw){vColor.xyz=vec3(.5,.03,.05);transformed.z=cw;if(aPo.z>.001){transformed.y=.48+(transformed.y-.48)*.06;transformed.x*=.35;}}'+
-    'if(aCl.x>-50.||aCl.y<50.){if(aLimb.z>.5){if(aRoot.z<aCl.x||aRoot.z>aCl.y)transformed=vec3(0.,.42,clamp(aRoot.z,aCl.x,aCl.y));}else if(position.z<aCl.x){transformed.z=aCl.x;transformed.x*=.9;vColor.xyz=vec3(.46,.03,.05);}else if(position.z>aCl.y){transformed.z=aCl.y;transformed.x*=.9;vColor.xyz=vec3(.46,.03,.05);}}')}; // 토막: 범위 밖 몸통은 시뻘건 단면으로 접히고, 뿌리가 범위 밖인 팔다리는 없어진다 // 날 밑에 깔린 쪽을 가장자리에 접는다 (w>10: 머리 쪽을 접는다). 롤러에 물린 개체는 넘어간 쪽을 얇게 짓눌린 띠로 접는다
+    'if(aCl.x>-50.||aCl.y<50.){if(aLimb.z>.5){if(aRoot.z<aCl.x||aRoot.z>aCl.y)transformed=vec3(0.,.42,clamp(aRoot.z,aCl.x,aCl.y));}else if(position.z<aCl.x){transformed.z=aCl.x;transformed.x*=.9;vColor.xyz=vec3(.46,.03,.05);}else if(position.z>aCl.y){transformed.z=aCl.y;transformed.x*=.9;vColor.xyz=vec3(.46,.03,.05);}}');clipFloorAtBlade(sh)}; // 토막: 범위 밖 몸통은 시뻘건 단면으로 접히고, 뿌리가 범위 밖인 팔다리는 없어진다 // 날 밑에 깔린 쪽을 가장자리에 접는다 (w>10: 머리 쪽을 접는다). 롤러에 물린 개체는 넘어간 쪽을 얇게 짓눌린 띠로 접는다
   const F={sn:0,lv:T.fg.map((G,k)=>{ // 화면에 보이는 크기로 고른다: 0 크게 보이는 것 · 1 · 2 · 3 아주 작게 보이는 것
    const an=new THREE.InstancedBufferAttribute(new Float32Array(CAP*4),4);an.setUsage(THREE.DynamicDrawUsage);G.body.setAttribute('aAn',an);
    const po=new THREE.InstancedBufferAttribute(new Float32Array(CAP*4),4);po.setUsage(THREE.DynamicDrawUsage);G.body.setAttribute('aPo',po);
@@ -1838,6 +1858,7 @@ function buildBits(){
   return merge(p)};
  const lm=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.3,envMapIntensity:.9});
  armIM=new THREE.InstancedMesh(limbGeo(false),lm,CHUNKCAP);legIM=new THREE.InstancedMesh(limbGeo(true),lm,CHUNKCAP);
+ for(const m of[chunkIM,skinIM,eyeIM,gutIM,armIM,legIM])m.material.onBeforeCompile=clipFloorAtBlade;
  for(const m of[skinIM,eyeIM,gutIM,armIM,legIM]){m.setColorAt(0,new THREE.Color(1,1,1));m.frustumCulled=false;m.count=0;m.castShadow=true;m.receiveShadow=true;scene.add(m)}
 }
 function drop(x,y,z,vx,vy,vz,r,color,bin=false){if(drops.length>=300)return;drops.push({x,y,z,vx,vy,vz,r,color,bin})}
@@ -3508,7 +3529,7 @@ function bladeShake(){ // 통 테두리에 날을 친다: 눌어붙어 있던 �
  AU.binBang(1);shake=Math.max(shake,.4);buzz(14);
 }
 function shovelUpdate(dt,act,a2,go2){
- const s=SH,g=s.g,on=S.tool==='shovel';g.visible=s.bin.visible=on;
+ const s=SH,g=s.g,on=S.tool==='shovel';g.visible=s.bin.visible=on;bladeContact.active.value=false;
  if(!on){if(s.carry.length){for(const c of s.carry){c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1;c.y=0}s.carry.length=0}
   for(const c of s.pins){if(c.legs){c.st='walk';killCreature(c,'slam',c.ex,c.ez,c.enx,c.enz)}else{c.st='maim';c.t=0;c.life=rnd(5,9);c.sq=.3}}s.pins.length=0;
   for(const c of s.mashed)c.pin=0;s.mashed.length=0;
@@ -3586,6 +3607,9 @@ function shovelUpdate(dt,act,a2,go2){
   if(s.stuck.length&&u>.35&&Math.random()<dt*3)bladeDrop(pick(s.stuck)); // 들어 올리는 사이 눌어붙어 있던 것이 떨어져 나간다
   if(act&&started&&u>.15){if(time-(s.lastSlam||-9)<1.2&&Math.hypot(s.T.x-P.x-.05,s.T.z-P.z+.86)<.3)shovelAgain();else shovelBegin()}else if(u>=1){s.ph='idle';fadeThreads(4)}}
  g.position.set(p.x,p.y,p.z);g.rotation.set(p.rx,p.ry,p.rz,'YXZ');g.updateMatrixWorld(true);
+ if(p.y<.22&&(s.ph==='slam'||s.ph==='stick'||s.ph==='lift'||s.ph==='show'||s.ph==='back'||s.ph==='pull')){
+  bladeContact.active.value=true;bladeContact.toLocal.value.copy(g.matrixWorld).invert();
+ }
  const ht=heapTop();
  s.carry.forEach((c,i)=>{_a.set(c.ox,ht-.012+c.oy,c.oz);g.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.roll=Math.sin(time*30+c.ph)*.25+p.rz*.6;c.sq=1;c.yaw+=dt*Math.sin(c.ph)*4});
  drawHeap(dt);
