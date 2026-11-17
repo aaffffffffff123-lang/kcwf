@@ -400,7 +400,7 @@ const TOOLS=[
  {id:'boot',name:'안전화',short:'안전화',price:300,desc:'밟아서 처리합니다. 길게 누르면 체중이 실리고, 구르기 버튼을 누르고 있으면 양발로 번갈아 밟습니다.'},
  {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:1200,desc:'한 번에 세 명까지 집어 64명까지 담습니다. 가득 차거나 밟기 버튼을 누르면 봉투를 묶어 놓고, 누르는 동안 밟습니다.'},
  {id:'shovel',name:'수거용 삽',short:'삽',price:2500,desc:'내려칠 때마다 더 짓이겨집니다. 누르고 있으면 계속 내려치고, 퍼담기 버튼을 누르는 동안 긁어 담았다가 떼면 수거통에 텁니다.'},
- {id:'vac',name:'흡입 수거기',short:'흡입기',price:9000,desc:'96명까지 모아 담습니다. 가득 차거나 갈기 버튼을 누르면 롤러로 갈아 아래 통에 잘게 쌓습니다. 갈리는 동안 같은 버튼을 꾹 누르면 가속합니다.'},
+ {id:'vac',name:'흡입 수거기',short:'흡입기',price:9000,desc:'96명까지 모아 담습니다. 가득 차거나 갈기 버튼을 누르면 롤러로 갈아 아래 통에 잘게 쌓습니다. 갈리는 동안 같은 버튼을 누르면 누름봉으로 찧어 밀어 넣고, 꾹 누르고 있으면 계속 찧습니다.'},
  {id:'trim',name:'예초기',short:'예초기',price:14000,desc:'누르는 동안 줄이 돕니다. 누른 채 좌우로 끌면 휘두르고, 줄 풀기 버튼을 누르면 헤드를 바닥에 쳐서 감긴 것을 털고 새 줄을 뺍니다.'}
 ];
 
@@ -534,6 +534,11 @@ const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,m
  slap(k=1,d=0){this.noise('bandpass',1000,320,1.5,.06,.6*k,d);this.noise('highpass',4200,4200,.8,.008,.3*k,d);this.noise('highpass',3800,3800,.8,.008,.2*k,d+.018)},
  rattle(){for(let i=0;i<3;i++)this.tone('square',rnd(650,950),rnd(280,360),.025,.1,i*.035);this.noise('lowpass',700,180,1,.25,.4,.04)},
  thwack(){this.tone('sine',220,70,.08,.6);this.noise('bandpass',1300,600,1.2,.05,.5);this.crackle(2,.6,.01)},
+ // 누름봉이 살덩이를 찍는다: 쇠 머리의 둔탁한 저음 · 젖은 소리 · 깔린 수만큼 뼈가 우두둑
+ pestle(n,k=1){if(!this.ok)return;this.tone('sine',100,36,.22,.95*k);this.noise('lowpass',1250,160,.85,.13,.72*k);this.noise('highpass',2700,1900,.8,.016,.2*k);
+  if(n>0){const m=Math.min(5,n);this.noise('bandpass',1050,280,1.2,.16,.38+.07*m);for(let i=0;i<1+Math.min(3,Math.round(m));i++)this.bubble(rnd(160,440),.2,.012+i*.022);this.crackle(Math.min(9,2+Math.round(m*1.6)),.85,.004,480,1300,.02)}},
+ // 빈 데를 찍었다: 쇠 머리가 롤러 날·바닥판을 때린다
+ pestleMiss(){this.tone('triangle',1180,720,.16,.18);this.tone('sine',2420,2080,.2,.06);this.noise('bandpass',3500,1700,3,.06,.38);this.tone('sine',118,48,.13,.5);this.noise('lowpass',800,150,.8,.09,.35)},
  // 한꺼번에 너무 많이 울리면 소리가 끊기므로 동시 발음 수를 묶어 둔다 (작은 소리부터 버린다)
  full(vol,len){const now=this.c.currentTime,m=fine?44:24;if(this.ve.length>=m*.6){this.ve=this.ve.filter(e=>e>now);if(this.ve.length>=m||(vol<.2&&this.ve.length>=m*.6))return true}this.ve.push(now+len);return false},
  // 목을 긁는 비명: 치솟다 갈라지고, 길게 끌다가 끊긴다
@@ -1782,7 +1787,7 @@ function fastXf(m,px,py,pz,rx,ry,rz,sx,sy,sz){const te=m.elements,a=Math.cos(rx)
 function drawOne(c,f){
   if(c.mc){if(c.st==='still'&&c.mcx===c.x&&c.mcz===c.z){const i=f.n++;f.body.instanceMatrix.array.set(c.mc,i*16);if(!f.tiny)f.eyes.instanceMatrix.array.set(c.me,i*16);const ca=f.body.instanceColor.array;ca[i*3]=c.tint.r;ca[i*3+1]=c.tint.g;ca[i*3+2]=c.tint.b;f.an.array.set(c.ma,i*4);f.po.array.set(c.mp,i*4);f.cu.array[i]=c.cut||0;f.cl.array[i*2]=-100;f.cl.array[i*2+1]=100;return}c.mc=null}
   const i=f.n++,r=c.hero?0:c.r*c.sc,st=c.st;
-  let sy=c.sq,bx=Math.min(1.9,1/Math.sqrt(Math.max(.08,sy))),sz=1,ph=c.ph,amp=0;
+  let sy=c.sq,bx=Math.min(c.pc&&st==='tank'?1.3:1.9,1/Math.sqrt(Math.max(.08,sy))),sz=1,ph=c.ph,amp=0;
   if(st==='walk'||st==='flee'){if(c.beg&&st==='walk'){ph=time*5+c.ph;amp=.45;c.roll=0}else{amp=st==='flee'?1.5:1;c.roll=Math.sin(c.ph)*.09}}
   else if(st==='still'){amp=0}
   else if(st==='watch'){ph=time*23+c.ph;amp=.09} // 덜덜 떤다
@@ -1797,16 +1802,17 @@ function drawOne(c,f){
   else if(st==='fall'){if(c.t>=0){ph=time*(c.t<.34?18:36)+c.ph;amp=1.3}}
   else if(st==='binned'){ph=time*(c.cl>0?10:6)+c.ph;amp=c.cl>0?1.3:.9}
   else if(st==='tank'&&!c.vic){const V=VC;
-   if(c.hold){ph=time*17+c.ph;amp=1.7} // 다리를 붙잡혀 끌려 내려가며 걷어찬다
+   if(c.pc){ph=time*(c.pc>=2?31:23)+c.ph;amp=c.pc>=3?0:c.pc>=2?.3:.6} // 누름봉에 짓눌린 채 팔다리를 떤다
+   else if(c.hold){ph=time*17+c.ph;amp=1.7} // 다리를 붙잡혀 끌려 내려가며 걷어찬다
    else if(c.cl>0){ph=time*12+c.ph;amp=1.4} // 겁에 질려 허우적대며 기어오른다
    else if(V.ph===1&&V.gr<VM){ph=time*5+c.ph;amp=.5} // 봐 달라고 손짓한다
    else{ph=time*(V.ph===1?9:7)+c.ph;amp=V.ph===1?1.15:.9}}
   else if(st!=='dazed'&&st!=='stump'){ph=time*34+c.ph;amp=1.5}
-  if(c.vic){const e=c.vic;ph=e.sw;amp=e.amp;bx=sy=1/Math.sqrt(e.sz);sz=e.sz/bx} // 롤러에 물린 개체: 자세는 흡입기가 정한다 (몸 길이 방향으로만 늘어난다)
+  if(c.vic){const e=c.vic;ph=e.sw;amp=e.amp;bx=sy=1/Math.sqrt(e.sz);sz=e.sz/bx;if(c.pc){sy*=c.sq;bx*=Math.min(1.3,1/Math.sqrt(c.sq))}} // 짓눌린 채 물린 것은 납작한 그대로 넘어간다 // 롤러에 물린 개체: 자세는 흡입기가 정한다 (몸 길이 방향으로만 늘어난다)
   if(st==='sucked'){sz=c.str;bx=1/Math.sqrt(c.str);sy*=bx}
   // 봐 달라고 몸을 일으킨다
   if(c.vic)D.position.set(c.x,c.y,c.z); // 롤러에 물려 똑바로 선 채(또는 머리부터 거꾸로) 끌려 내려간다
-  else if(st==='tank'){c.pt+=(c.tl-c.pt)*.2;D.rotation.set(c.pt,c.yaw,c.roll,'YXZ');_vo.set(0,.5*r,-.15*r).applyEuler(D.rotation);D.position.set(c.x-_vo.x,c.y-_vo.y,c.z-_vo.z);c.dox=D.position.x;c.doy=D.position.y;c.doz=D.position.z} // 호퍼 안: 아무렇게나 누운 채 몸 한가운데가 제자리에 온다
+  else if(st==='tank'){c.pt+=(c.tl-c.pt)*.2;D.rotation.set(c.pt,c.yaw,c.roll,'YXZ');_vo.set(0,.5*r*sy,-.15*r*bx*sz).applyEuler(D.rotation);D.position.set(c.x-_vo.x,c.y-_vo.y,c.z-_vo.z);c.dox=D.position.x;c.doy=D.position.y;c.doz=D.position.z} // 호퍼 안: 아무렇게나 누운 채 몸 한가운데가 제자리에 온다
   else{ptStep(c);D.position.set(c.x,c.y-c.pt*c.r*1.1,c.z)}
   const fast=!c.vic&&st!=='tank'&&st!=='binned'&&st!=='tossed';
   if(fast)fastXf(D.matrix,D.position.x,D.position.y,D.position.z,c.pt,c.yaw,c.roll,r*bx,r*sy,r*bx*sz);
@@ -1814,7 +1820,7 @@ function drawOne(c,f){
    D.scale.set(r*bx,r*sy,r*bx*sz);D.updateMatrix();
    if(st==='binned'||st==='tossed')fitBinCreature(c,D)}
   f.body.setMatrixAt(i,D.matrix);f.body.setColorAt(i,c.tint);f.an.array[i*4]=ph;f.an.array[i*4+1]=amp;f.an.array[i*4+2]=c.flay;f.an.array[i*4+3]=c.clip;
-  {const V=c.vic,o=f.po.array;if(V){o[i*4]=V.rl;o[i*4+1]=V.rr;o[i*4+2]=V.pk;o[i*4+3]=V.hb}else{const ar=st==='walk'||st==='shred';o[i*4]=ar?c.arL||0:0;o[i*4+1]=ar?c.arR||0:0;o[i*4+2]=0;o[i*4+3]=c.hb||0}} // hb: 고개를 젖힌(음수면 숙인) 정도 · arL/arR: 손을 뻗어 쳐든 정도
+  {const V=c.vic,o=f.po.array;if(V){o[i*4]=V.rl;o[i*4+1]=V.rr;o[i*4+2]=V.pk;o[i*4+3]=V.hb}else{const ar=st==='walk'||st==='shred'||st==='tank'&&c.pc>0;o[i*4]=ar?c.arL||0:0;o[i*4+1]=ar?c.arR||0:0;o[i*4+2]=0;o[i*4+3]=c.hb||0}} // hb: 고개를 젖힌(음수면 숙인) 정도 · arL/arR: 손을 뻗어 쳐든 정도
   f.cu.array[i]=c.cut||0;
   // 눈은 얼굴 자리에서 부푼다
   if(f.tiny){f.cl.array[i*2]=-100;f.cl.array[i*2+1]=100;return}
@@ -3624,8 +3630,11 @@ const shovelMoveLocked=()=>['pull','thrust','heave','dump','bang'].includes(SH.p
 const HR=.13,HH=.32,BH=.05,JR=.105,JH=.17,NIP=.024,JB=-.01-BH-JH; // 호퍼 반지름·높이, 롤러집 높이, 죽통 반지름·높이, 롤러가 맞물리는 높이, 죽통 바닥
 const RZ=.03,RC=.031,DZ=.052,DX=.098,DY=.05,DS=.3,JT=-.012-BH,NG=15,GC=2*JR/NG,PV=3.6e-6,LQ=.0006; // 롤러 축 위치·날 끝 반지름 · 롤러 둘레 바닥판(안쪽 끝·높이·기울기) · 죽통 입구 · 죽통 바닥 더미 격자 · 조각 하나 부피 · 한 명분 핏물 높이
 const VAC_LOW_SPEED=.70, VAC_DRAIN_TIME=.78;
+// 누름봉: 머리 반지름·두께 · 자루 길이 · 기다리는 높이(머리 밑면) · 가장 깊이 내려가는 높이(롤러 날 바로 위) · 내려찍기·짓누르기·들어 올리기 시간 · 들어 올리는 도중 다시 찍을 수 있는 때 · 짓눌린 것이 끌려 들어가는 빠르기
+const PE_R=.064,PE_TH=.028,PE_SH=.23,PE_YR=HH-.034,PE_YMIN=NIP+RC+.012,PE_DOWN=.065,PE_HIT=.055,PE_UP=.14,PE_TAP=.36,PE_FEED=11;
 const VC={g:null,on:false,lumps:[],curve:null,t:0,er:0,streaks:[],mouth:new THREE.Vector3(),tank:[],eat:[],bits:[],spl:[],can:null,pipe:null,rol:[],rolM:null,deckM:null,gr:0,grK:0,iv:.1,idleT:0,ph:0,pt:0,k:0,w:0,drive:VAC_LOW_SPEED,spin:0,lvN:0,flT:0,col:new THREE.Color(.5,.42,.12),CAP:96,minced:[],falls:[],minceSeq:0,minceMesh:null,crumbMesh:null,slurpT:0,voiceT:0,boneT:0,splT:0,crkT:0,eyeT:0,rest:new THREE.Vector3(-.17,.3,-.72),show:new THREE.Vector3(0,.86,-.79),TILT:.12,ZOOM:1.2,prints:[],marks:[],prT:0,chkT:0,mot:0,jo:0,joS:1,bog:0,noC:0,cooN:0,
- hf:new Float32Array(NG*NG),hfIn:new Uint8Array(NG*NG),hfMean:0,hfDirty:0,lq:0,L:0,L0:0,Lmax:0,film:0,stain:0,rip:[],ripOn:false,foam:[],dots:[],blup:[],flow:[],streams:[],liqTop:null,liqSide:null,liqM:null,liqSM:null,strM:null,filmM:null,filmMesh:null,foamC:new THREE.Color(),hiC:new THREE.Color()};
+ hf:new Float32Array(NG*NG),hfIn:new Uint8Array(NG*NG),hfMean:0,hfDirty:0,lq:0,L:0,L0:0,Lmax:0,film:0,stain:0,rip:[],ripOn:false,foam:[],dots:[],blup:[],flow:[],streams:[],liqTop:null,liqSide:null,liqM:null,liqSM:null,strM:null,filmM:null,filmMesh:null,foamC:new THREE.Color(),hiC:new THREE.Color(),
+ pg:null,pS:'ready',pT:0,pX:0,pX0:0,pXt:0,pZ:0,pY:0,pY0:0,pY1:0,pIn:0,pq:0,pLX:0,aPrev:false,pressT:0,pstain:0,gsm:0,stk:[],strs:[],pHit:[],pN:0,popT2:0,pHeadM:null,pBotM:null,gfilm:null,gfilmM:null}; // 누름봉: 상태·머리 자리(밑면 가운데)·들어온 정도·눌러 둔 찧기·밑면에 붙은 살점·늘어난 실·유리에 눌린 자국
 const PUPIL=new THREE.Color(.01,.008,.012),DECK0=lin(0x58606b),DECKB=lin(0x5a1216),FATC=lin(0xeedcc0),FOAMC=lin(0xe3aeb0),RAWC=lin(0xb24850),_vo=new THREE.Vector3();
 function buildVac(){
  const g=new THREE.Group();
@@ -3693,24 +3702,41 @@ function buildVac(){
   const glass=new THREE.Mesh(new THREE.CylinderGeometry(HR,HR,HH,26,1,true),gm());glass.position.y=HH/2;glass.renderOrder=5;can.add(glass);
   const jar=new THREE.Mesh(new THREE.CylinderGeometry(JR,JR,JH,22,1,true),gm());jar.material.opacity=.11;jar.position.y=JB+JH/2;jar.renderOrder=5;can.add(jar);
   googly(can,0,-.03,HR+.012,.028,1.45);
+  // 호퍼 유리 안쪽에 번지는 핏자국: 찧을수록 짙어진다
+  VC.gfilmM=new THREE.MeshStandardMaterial({color:0x4a0a0e,roughness:.25,envMapIntensity:.8,transparent:true,opacity:0,alphaMap:VC.filmM.alphaMap,depthWrite:false,side:THREE.DoubleSide});
+  VC.gfilm=new THREE.Mesh(new THREE.CylinderGeometry(HR-.0022,HR-.0022,1,30,1,true),VC.gfilmM);VC.gfilm.renderOrder=4;VC.gfilm.visible=false;VC.gfilm.position.y=DY+.1;VC.gfilm.scale.y=.2;can.add(VC.gfilm);
+  // 누름봉: 스테인리스 둥근 머리 · 긴 자루 · 주황 손잡이. 갈리는 동안만 통 위에서 내려온다 (원점은 머리 밑면 가운데)
+  {const pg=new THREE.Group();pg.visible=false;can.add(pg);VC.pg=pg;
+   VC.pHeadM=new THREE.MeshStandardMaterial({color:lin(0xd3dae2),roughness:.24,metalness:.72,envMapIntensity:1.2});
+   VC.pBotM=new THREE.MeshStandardMaterial({color:lin(0xb9c1ca),roughness:.32,metalness:.6,envMapIntensity:.9});
+   const head=new THREE.Mesh(new THREE.CylinderGeometry(PE_R-.001,PE_R-.0004,PE_TH*.55,30),VC.pHeadM);head.position.y=PE_TH*.725;head.castShadow=true;pg.add(head);
+   const band=new THREE.Mesh(new THREE.CylinderGeometry(PE_R-.0004,PE_R,PE_TH*.45,30,1,true),VC.pBotM);band.position.y=PE_TH*.225;pg.add(band); // 아래 띠: 밑면과 함께 피에 젖는다
+   const lip=new THREE.Mesh(new THREE.TorusGeometry(PE_R-.0028,.0032,6,30),VC.pHeadM);lip.rotation.x=Math.PI/2;lip.position.y=PE_TH;pg.add(lip);
+   const bot=new THREE.Mesh(new THREE.CircleGeometry(PE_R-.0004,30),VC.pBotM);bot.rotation.x=Math.PI/2;bot.position.y=-.0003;pg.add(bot);
+   const HY=PE_TH+.02+PE_SH,steel=[part(CY(.0115,.027,.022,16),0xffffff,0,PE_TH+.011,0),part(CY(.0105,.0105,PE_SH,12),0xffffff,0,PE_TH+.02+PE_SH/2,0)];
+   const shaft=new THREE.Mesh(merge(steel),new THREE.MeshStandardMaterial({color:lin(0xc9d0d8),roughness:.22,metalness:.75,envMapIntensity:1.2}));shaft.castShadow=true;pg.add(shaft);
+   const grip=[part(CY(.0185,.0185,.085,14),0xff8a1f,0,HY+.0425,0),part(CY(.021,.019,.012,14),0x1d1b24,0,HY,0),part(SP(14,8),0x1d1b24,0,HY+.088,0,.026,.012,.026),
+    part(SP(10,8),0xff5a1f,0,HY+.048,.004,.031,.046,.033),part(SP(8,6),0xff5a1f,-.02,HY+.058,.024,.013,.022,.013,.4,0,.3),part(CY(.036,.031,.075,10),0x24439e,0,HY+.086,.05,1,1,1,.95,0,0)]; // 장갑 낀 손이 손잡이를 움켜쥐고, 소매는 이쪽으로 나와 있다
+   const gm=new THREE.Mesh(merge(grip),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,envMapIntensity:.6}));gm.castShadow=true;pg.add(gm)}
   VC.pipe=addMesh(g,CY(.022,.022,1,8),new THREE.MeshStandardMaterial({color:lin(0x30343f),roughness:.5}));}
  googly(g,.05,.2,-.85,.036,-.2,1.12,3);
  g.visible=false;scene.add(g);VC.g=g;
 }
-function vacBit(x,y,z,vx,vy,vz,r,color,kind){if(VC.bits.length<120)VC.bits.push({x,y,z,vx,vy,vz,r,color,kind,t:0,b:0})}
+function vacBit(x,y,z,vx,vy,vz,r,color,kind,sp=.45,L=0){if(VC.bits.length<120)VC.bits.push({x,y,z,vx,vy,vz,r,color,kind,t:0,b:0,sp,L,rx:rnd(0,TAU),ry:rnd(0,TAU),wx:rnd(-16,16),wy:rnd(-16,16)})} // sp: 유리에 닿으면 튀어 붙을 확률 · L: 팔다리 토막(kind 3)의 반 길이
 function vacDrain(){const v=VC;v.hf.fill(0);v.hfMean=0;v.hfDirty=0;v.lq=0;v.rip.length=0;v.foam.length=0;v.dots.length=0;v.blup.length=0;v.flow.length=0} // 죽통을 비운 뒤: 더미·핏물·물결·거품을 다 없앤다
-function vacClear(){const v=VC;v.tank.length=0;v.eat.length=0;v.bits.length=0;v.spl.length=0;v.prints.length=0;v.marks.length=0;v.mot=0;v.jo=0;v.bog=0;v.noC=0;v.gr=0;v.ph=0;v.k=0;v.w=0;v.drive=VAC_LOW_SPEED;v.lvN=0;v.minceSeq=0;v.minced.length=0;v.falls.length=0;vacDrain();v.L=0;v.Lmax=0;v.film=0;v.stain=0;
+function vacClear(){const v=VC;v.tank.length=0;v.eat.length=0;v.bits.length=0;v.spl.length=0;v.prints.length=0;v.marks.length=0;v.stk.length=0;v.strs.length=0;v.pHit.length=0;v.gsm=0;v.pstain=0;v.pS='ready';v.pIn=0;v.pq=0;v.pressT=0;if(v.pg)v.pg.visible=false;if(v.gfilm)v.gfilm.visible=false;v.mot=0;v.jo=0;v.bog=0;v.noC=0;v.gr=0;v.ph=0;v.k=0;v.w=0;v.drive=VAC_LOW_SPEED;v.lvN=0;v.minceSeq=0;v.minced.length=0;v.falls.length=0;vacDrain();v.L=0;v.Lmax=0;v.film=0;v.stain=0;
  if(v.minceMesh){solidEnd(v.minceMesh,0);solidEnd(v.crumbMesh,0);v.liqTop.visible=v.liqSide.visible=v.filmMesh.visible=false;for(const s of v.streams)s.visible=false}}
 const VM=.55,VZ0=-1.62,VZH=1.33,VL=3.82,PRINTC=lin(0x5a0910); // 모터가 걸리는 때 · 발끝·정수리 높이(개체 좌표) · 끝까지 먹히는 길이 · 유리에 남는 손자국 색
 function vacEnter(c){ // 관을 타고 올라와 호퍼 위쪽 입구에서 튀어나와 떨어진다. 떨어진 자세 그대로 아무렇게나 쌓인다
- c.vr=c.r*.5;c.tp=new THREE.Vector3(HR-.04-c.vr,HH-.05,rnd(-.025,.025));c.tv=new THREE.Vector3(-rnd(.5,1),rnd(-.1,.3),rnd(-.3,.3));
+ c.vr=c.vr0=c.r*.5;c.pc=0;c.gp=0;c.sq=1;c.sqT=1;c.tp=new THREE.Vector3(HR-.04-c.vr,HH-.05,rnd(-.025,.025));c.tv=new THREE.Vector3(-rnd(.5,1),rnd(-.1,.3),rnd(-.3,.3));
  c.yw=rnd(0,TAU);c.lie=pick([0,0,.45,-.45,.85]);c.rl=pick([0,0,1.35,-1.35,2.9,-2.9]);c.tl=c.lie;c.kick=rnd(.3,1);c.wl=0;c.wg=0;c.ct=0;c.dox=null;c.vic=null;c.hold=null;c.drag=0;c.cl=0}
 // 호퍼 안: 서로 밀치며 쌓여 있다가, 맨 아래가 롤러 틈으로 끌려 들어가면 위에 얹힌 것들이 그만큼 내려앉는다
 function vacPile(dt){
  const v=VC,T=v.tank,n=T.length;if(!n)return;
  const grind=v.ph===1,w=v.w,h=Math.min(dt,.034)/2,ny=1/Math.sqrt(1+DS*DS),nt=DS*ny,pre=grind&&!v.mot,draw=grind&&v.mot;
+ const pd=!!v.pg&&v.pg.visible&&(v.pS==='down'||v.pS==='hit'),hx=v.pX,hz=v.pZ,hy=v.pY; // 누름봉 머리가 내려와 있다
  for(let s=0;s<2;s++){
-  for(const c of T){const p=c.tp,q=c.tv;c.px=p.x;c.py=p.y;c.pz=p.z;if(!c.hold)q.y-=9.8*h*(c.wl>0?1-c.wg:1);
+  for(const c of T){const p=c.tp,q=c.tv;c.px=p.x;c.py=p.y;c.pz=p.z;if(c.gp>0){const rd=Math.hypot(p.x,p.z)||1;q.x+=p.x/rd*3*h;q.z+=p.z/rd*3*h;q.y=-.05}else if(!c.hold)q.y-=9.8*h*(c.wl>0?1-c.wg:1); // 유리에 눌려 붙은 것은 붙은 채 천천히 미끄러져 내려간다
    if(c.wl>0){const rd=Math.hypot(p.x,p.z)||1;q.x+=p.x/rd*1.6*h;q.z+=p.z/rd*1.6*h;if(c.cl>0)q.y+=2.6*h;q.y=clamp(q.y,-.2,c.cl>0?.2:.05)} // 유리에 몸을 붙이고 기어오르다 미끄러진다. 겁에 질리면 훨씬 높이 기어오른다
    if(c.hold){const H=c.hold;q.x+=((H.x-p.x)*700-q.x*38)*h;q.y+=((H.y-p.y)*700-q.y*38)*h;q.z+=((H.z-p.z)*700-q.z*38)*h} // 다리를 붙잡혀 같이 끌려 내려간다
    else if(c.drag){q.z-=(p.z*40+q.z*4)*h;q.x-=p.x*2*h;q.y-=1.2*h} // 끝까지 매달려 있던 것도 틈 쪽으로 끌려 내려간다
@@ -3723,6 +3749,7 @@ function vacPile(dt){
      if(d2<rr*rr){const d=Math.sqrt(d2)||1e-4,k=(rr-d)/d*.3;pa.x-=dx*k;pa.y-=dy*k;pa.z-=dz*k;pb.x+=dx*k;pb.y+=dy*k;pb.z+=dz*k;if(dy>d*.5)b.ct|=4;else if(dy<-d*.5)a.ct|=4}}
     for(const e of v.eat){if(e.cy<0)continue;const dx=pa.x-e.cx,dy=pa.y-e.cy,dz=pa.z-e.cz,rr=a.vr+e.cr,d2=dx*dx+dy*dy+dz*dz; // 끌려 들어가는 몸뚱이를 딛고 있다
      if(d2<rr*rr){const d=Math.sqrt(d2)||1e-4,k=(rr-d)/d;pa.x+=dx*k;pa.y+=dy*k;pa.z+=dz*k;if(dy>d*.5)a.ct|=4}}}
+   if(pd)for(const c of T){const p=c.tp,r=c.vr,dx=p.x-hx,dz=p.z-hz,d2=dx*dx+dz*dz,R=PE_R+r*.55;if(d2<R*R&&p.y+r*.85>hy){const d=Math.sqrt(d2);if(d<PE_R-r*.3){p.y=hy-r*.85;c.ct|=4}else{const k=R/(d||1e-4);p.x=hx+dx*k;p.z=hz+dz*k}}} // 누름봉 머리: 밑면 아래는 눌러 내리고, 가장자리에 걸친 것은 바깥으로 밀어낸다
    for(const c of T){const p=c.tp,r=c.vr;
     const rd=Math.hypot(p.x,p.z),lim=HR-.007-r;if(rd>lim){p.x*=lim/rd;p.z*=lim/rd;c.ct|=8} // 유리벽
     if(p.y>HH-r)p.y=HH-r;
@@ -3745,15 +3772,15 @@ const _vq=new THREE.Quaternion(),_ve=new THREE.Euler(),_vv=new THREE.Vector3(),_
 function pileK(n){return n>30?.2:n>15?.35:n>6?.55:n>1?.8:1}
 function vacTake(c,o={}){ // 틈에 닿은 것을 날이 붙잡는다. 대부분 발부터, 더러는 머리부터 처박힌다
  const v=VC,i0=v.tank.indexOf(c);if(i0<0)return null;v.tank.splice(i0,1);
- const n=v.tank.length,g=pileK(n),last=!n,hf=!o.chain&&Math.random()<.27,re=c.r*.43,x=o.x!=null?o.x:clamp(c.tp.x,-.088,.088),p=new THREE.Vector3(),arms=c.type!==6;
+ const n=v.tank.length,g=pileK(n),last=!n&&!o.mash,hf=!o.chain&&!(c.pc>=2)&&Math.random()<(o.mash?.33:.27),re=c.r*.43,x=o.x!=null?o.x:clamp(c.tp.x,-.088,.088),p=new THREE.Vector3(),arms=c.type!==6;
  if(c.dox!=null)p.set(c.dox,c.doy,c.doz);else{p.copy(c.tp);v.can.localToWorld(p)}v.can.worldToLocal(p); // 지금 그려진 자리에서 출발한다
- const tmp=hf||!arms||o.chain?1:Math.random()<.22?0:Math.random()<.4?2:1; // 0 얼어붙음 · 1 악착같이 버팀 · 2 앞에 있는 놈을 붙잡고 버팀
+ const tmp=o.mash?0:hf||!arms||o.chain?1:Math.random()<.22?0:Math.random()<.4?2:1; // 0 얼어붙음 · 1 악착같이 버팀 · 2 앞에 있는 놈을 붙잡고 버팀
  const q0=new THREE.Quaternion().setFromEuler(_ve.set(c.pt||0,c.yaw||0,c.roll||0,'YXZ'));v.can.getWorldQuaternion(_vw);q0.premultiply(_vw.invert()); // 지금 자세(통 기준)
  const e={c,t:0,ph:'catch',x,x0:p.x,y0:p.y,z0:p.z,q0,q:new THREE.Quaternion(),ql:new THREE.Quaternion(),s:o.side||(c.tp.z>=0?1:-1),hf,re,arms,d:0,dg:0,g,last,tmp,
-  R:g<=.2?.12:(tmp===0?.85:tmp===2?1.3:1)*(.75+.5*c.tough)*g*(last?1.5:1),cT:g<=.2?.07:g<=.35?.1:.16,ft:0,str:1,tooth:rnd(.04,.1),hvA:0,hvR:0,hvT:0,
+  R:o.mash?.05:(g<=.2?.12:(tmp===0?.85:tmp===2?1.3:1)*(.75+.5*c.tough)*g*(last?1.5:1))*(v.pressT>0?.55:1),cT:o.mash?.06:g<=.2?.07:g<=.35?.1:.16,mash:!!o.mash,qy:1,ft:0,str:1,tooth:rnd(.04,.1),hvA:0,hvR:0,hvT:0,
   rl:.2,rr:.2,pk:.85,hb:0,sz:1,sw:c.ph,amp:0,clp:rnd(0,TAU),roll:0,yw:rnd(-.2,.2),yt:0,rear:0,jo:0,
-  grab:null,gT:0,scr:null,scrT:0,loud:g>=.55||Math.random()<.25,eye:false,cut:false,pel:false,chest:false,bit0:false,
-  hand:g>=.8&&!hf&&arms,keepL:Math.random()<.5,kick:hf||!arms?1:0,emitted:0,lq:0,bit:0,flow:null,cx:x,cy:-1,cz:0,cr:c.vr*.9,t0:0,d0:0,T:0,
+  grab:null,gT:0,scr:null,scrT:0,loud:o.mash?!c.pc&&Math.random()<.7:g>=.55||Math.random()<.25,eye:false,cut:false,pel:false,chest:false,bit0:false,
+  hand:!o.mash&&g>=.8&&!hf&&arms,keepL:Math.random()<.5,kick:hf||!arms?1:0,emitted:0,lq:0,bit:0,flow:null,cx:x,cy:-1,cz:0,cr:c.vr*.9,t0:0,d0:0,T:0,
   ox:p.x,oy:p.y,oz:p.z,ex:x,ey:NIP+RC,ez:0,wq:new THREE.Quaternion()};
  e.ez=e.s*RZ*.72;e.ql.copy(q0);v.can.getWorldQuaternion(_vw);e.wq.copy(_vw).multiply(q0);
  c.vic=e;c.wl=0;c.cl=0;c.hold=null;c.drag=0;c.sq=1;c.panic=1;
@@ -3765,7 +3792,7 @@ function vacSlip(c){ // 앞 유리에 매달렸다 놓친 자리에 피 묻은 �
  const k=clamp(c.flay*1.6+(v.lvN?.5:0),0,1);if(k<.35)return;v.prT=time+.1;
  v.prints.push({a:Math.atan2(p.z,p.x),y0:p.y+c.vr*.75,y1:p.y+c.vr*.75-rnd(.015,.045),t:0,T:rnd(.35,.75),life:rnd(6,9),w:c.vr*.62,col:PRINTC.clone().lerp(c.ink,.12),f:[0,1,2,3].map(()=>[rnd(.55,1),rnd(-.0005,.0005)]),n:Math.random()<.4?3:4})}
 // 물린 개체의 몸 좌표(lx,ly,lz) → 통 좌표
-function vicPt(e,lx,ly,lz,o){const k=1/Math.sqrt(e.sz);o.set(lx*e.re*k,ly*e.re*k,lz*e.re*e.sz).applyQuaternion(e.ql);o.x+=e.ox;o.y+=e.oy;o.z+=e.oz;return o}
+function vicPt(e,lx,ly,lz,o){const k=1/Math.sqrt(e.sz);o.set(lx*e.re*k,ly*e.re*k*(e.qy||1),lz*e.re*e.sz).applyQuaternion(e.ql);o.x+=e.ox;o.y+=e.oy;o.z+=e.oz;return o}
 function vacMark(x0,z0,x1,z1,c){const v=VC;if(v.marks.length>=64)v.marks.shift();v.marks.push({x0,z0,x1,z1,t:0,life:rnd(10,14),col:PRINTC.clone().lerp(c.ink,.18)})} // 바닥판에 남는 손톱자국
 function vacGrab(e){ // 앞에 있는 놈의 다리를 붙잡는다
  const v=VC;vicPt(e,0,.2,1.7,_vv);let best=null,bd=.07;
@@ -3800,7 +3827,7 @@ function vacVictim(e,dt){
  const feedDt=dt*v.drive; // 물려 들어가는 동작만 변속하고, 버둥거림과 방울 낙하는 실시간으로 둔다.
  e.t+=feedDt;let fin=false;
  if(!e.bit0)vacBite(e);
- if(e.ph==='catch'){const u=Math.min(1,e.t/e.cT);e.d=e.dg=(e.hf?.55:.5)*eo(u);if(u>=1){e.ph='fight';e.ft=0;if(e.tmp===2)vacGrab(e)}}
+ if(e.ph==='catch'){const u=Math.min(1,e.t/e.cT);e.d=e.dg=(e.hf?.55:.5)*eo(u);if(u>=1){if(e.mash)e.ph='limp';else{e.ph='fight';e.ft=0;if(e.tmp===2)vacGrab(e)}}}
  else if(e.ph==='fight'){e.ft+=feedDt;e.str=Math.max(.1,e.str-feedDt*.45/Math.max(.35,e.R));e.tooth-=dt*spin;
   if(e.tooth<=0){e.tooth=rnd(.22,.32);const dd=rnd(.55,.8);e.dg+=dd;vacYank(e);
    if(!e.hf){const k=e.tmp===0?0:e.grab?.95:.9;e.hvA=dd*k*e.str;e.hvR=e.hvA/.17;e.hvT=-.05;e.str=Math.max(.1,e.str-.03)}} // 확 끌려 넘어간 다음, 바닥판을 긁어 그만큼 기어 나온다
@@ -3812,7 +3839,7 @@ function vacVictim(e,dt){
     if(e.gT>.3&&Math.random()<dt*(1.2+1.4*b.tough)){b.hold=null;b.tv.y+=rnd(.5,.9);b.tv.z+=e.s*rnd(.2,.5);b.cl=rnd(1,2);e.grab=null;e.str*=.55;e.tmp=1;e.jo=1;e.rl=e.rr=1;AU.slap(.35);if(time>v.voiceT){v.voiceT=time+.1;AU.squeal(b.type,1,0,.25)}}}} // 걷어차서 떼어낸다
   if(e.hf){e.kick=Math.pow(Math.max(0,1-e.ft/Math.max(.3,e.R)),.8);if(e.ft>=e.R||e.d>=2.05){e.ph='limp';e.kick=0}} // 허공을 차던 다리가 점점 느려지다 멈춘다
   else if(e.d>=1.45||e.ft>=e.R)vacLose(e)}
- else if(e.ph==='limp'){e.dg+=feedDt*(e.g<=.35?3.2:1.5);e.tooth-=dt*spin;if(e.tooth<=0){e.tooth=rnd(.16,.25);e.dg+=rnd(.2,.35);vacYank(e)}e.d=damp(e.d,e.dg,30,dt);if(e.d>=VL-.01)fin=true}
+ else if(e.ph==='limp'){e.dg+=feedDt*(e.mash?PE_FEED:e.g<=.35?3.2:1.5);if(e.mash&&e.hf)e.kick=Math.max(0,e.kick-dt*1.6);e.tooth-=dt*spin;if(e.tooth<=0){e.tooth=rnd(.16,.25);e.dg+=rnd(.2,.35);vacYank(e)}e.d=damp(e.d,e.dg,30,dt);if(e.d>=VL-.01)fin=true}
  else if(e.ph==='lose'){const u=Math.min(1,(e.t-e.t0)/e.T);e.d=lerp(e.d0,2.98,u*u);if(u>=1){e.ph=e.hand?'hand':'end';e.t0=e.t;e.d0=e.d}}
  else if(e.ph==='hand'){const T=(.45+.3*e.g)*(e.last?1.15:1),u=Math.min(1,(e.t-e.t0)/T);e.d=lerp(e.d0,3.25,ss(u))-.06*Math.max(0,Math.sin(u*Math.PI*3));if(u>=1){e.ph='end';e.t0=e.t;e.d0=e.d;AU.slurp();if(time>v.boneT){v.boneT=time+.07;AU.snapBone(.45)}v.jo=Math.max(v.jo,.35)}} // 손끝으로 바닥판을 긁어 버티다
  else if(e.ph==='end'){const u=Math.min(1,(e.t-e.t0)/(e.g<=.2?.08:.12));e.d=lerp(e.d0,e.hand?4.2:VL,u*u);if(u>=1)fin=true} // 마지막엔 길게 뻗은 손끝까지 넘어간다
@@ -3821,17 +3848,19 @@ function vacVictim(e,dt){
  // 자세: 앞으로 기어 나오려고 바닥판을 긁는다
  const fight=e.ph==='fight',heave=fight&&e.hvA>0&&e.hvT>0;
  if(!e.hf&&e.arms){let tl,tr;
-  if(e.ph==='catch')tl=tr=.95; // 걸리는 순간 두 팔이 번쩍 들린다
+  if(e.ph==='catch')tl=tr=c.pc>=2?-.2:.95; // 걸리는 순간 두 팔이 번쩍 들린다 (짓눌린 것은 늘어진 채)
   else if(fight){if(e.tmp===0)tl=tr=-.35;else if(e.grab)tl=tr=heave?-.2:-.75;else if(heave)tl=tr=-.1;else{e.clp+=dt*7;tl=-.5-.4*Math.sin(e.clp);tr=-.5-.4*Math.sin(e.clp+Math.PI)}} // 손을 번갈아 앞으로 뻗어 바닥판을 긁는다. 끌려 넘어가는 동안에도 손톱을 세운 채 질질 끌려간다
   else if(e.ph==='lose'){const u=(e.t-e.t0)/e.T;if(u<.6)tl=tr=-.65;else{tl=.85+.15*Math.sin(time*15+c.ph);tr=.85+.15*Math.sin(time*15+c.ph+2.2)}} // 바닥판을 긁으며 쭉 끌려가다 끝내 놓치고 허공을 긁는다
+  else if(e.mash){const tw=.14*Math.sin(time*17+c.ph);tl=-.3+tw;tr=-.25-tw} // 밀려 들어가는 것은 팔이 늘어진 채 떤다
   else{const tw=.15*Math.max(0,Math.sin(time*17+c.ph))+.06*Math.sin(time*31+c.ph);tl=e.keepL?-1.2+tw:0;tr=e.keepL?0:-1.2+tw} // 한 팔만 바닥판 위로 길게 뻗어 손끝으로 긁는다
   const k=e.ph==='catch'?34:e.ph==='lose'?22:15;e.rl=damp(e.rl,tl,k,dt);e.rr=damp(e.rr,tr,k,dt)}
  else e.rl=e.rr=0;
  if(e.hf||!e.arms){if(!e.hf)e.kick=fight||e.ph==='catch'?1:e.ph==='lose'?.75:.25;e.sw+=dt*(5+11*e.kick);e.amp=1.8*e.kick}
  else if(fight&&e.tmp!==0){e.sw+=dt*(heave?16:9);e.amp=heave?1.7:.9} // 허우적대며 기어 나온다
  else if(e.ph==='hand'){e.sw+=dt*12;e.amp=.6}
+ else if(e.mash){e.sw+=dt*15;e.amp=c.pc>=3?0:.35}
  else{e.sw+=dt*6;e.amp=e.ph==='lose'?.5:0}
- e.hb=damp(e.hb,e.hf?0:e.ph==='catch'||e.ph==='lose'?.9:e.tmp===0?.5:fight?.25+.45*e.jo:0,12,dt); // 고개를 쳐들고 비명을 지른다
+ e.hb=damp(e.hb,e.hf||c.pc>=2?0:e.ph==='catch'||e.ph==='lose'?.9:e.tmp===0?.5:fight?.25+.45*e.jo:0,12,dt); // 고개를 쳐들고 비명을 지른다
  e.roll=damp(e.roll,e.hf?Math.sin(time*7+c.ph)*.25*e.kick:fight?.2*Math.sin(e.sw*.5):e.ph==='lose'?Math.sin(time*9+c.ph)*.3:0,6,dt);
  e.sz=damp(e.sz,e.ph==='catch'?1.1:fight?1+(heave?.24:.08)*e.str+(e.grab?.06:0):e.ph==='lose'?1.2:e.ph==='limp'?1.05:1.35,10,dt); // 붙잡고 버티는 만큼 몸이 앞뒤로 늘어난다
  {let rt=0;if(e.hf)rt=e.ph==='fight'||e.ph==='catch'?.35+.4*e.kick*Math.max(0,Math.sin(e.sw*.5)):0;
@@ -3840,13 +3869,13 @@ function vacVictim(e,dt){
   e.yt=damp(e.yt,fight?.24*Math.sin(e.sw*.45+c.ph):e.ph==='lose'?.3*Math.sin(time*8+c.ph):0,7,dt)} // 좌우로 몸부림친다
  e.pk=.8+.2*e.jo;e.jo=damp(e.jo,0,16,dt);
  vacMarks(e);
- c.flay=Math.max(c.flay,Math.min(.42,.06+e.d*.12));c.gk=clamp((e.d-(e.hf?0:.3))/2.3,0,1);c.panic=1;c.sq=1;
+ c.flay=Math.max(c.flay,Math.min(.42,.06+e.d*.12));c.gk=c.pc>=2?0:clamp((e.d-(e.hf?0:.3))/2.3,0,1);c.panic=1;c.sq=c.pc?damp(c.sq,c.sqT,25,dt):1;e.qy=c.pc?c.sq:1;
  // 놓는 자리: 롤러 꼭대기(e.ex,e.ey,e.ez)에서 몸이 롤러 너머로 접혀 들어간다. 몸은 바닥판 기울기를 따라 엎어져 있다
  const s=e.s,z=e.hf?VZH+.05-e.d:VZ0+e.d;
  e.ex=e.x;e.ey=NIP+RC+.0015;e.ez=s*RZ*.72;
  const yaw=(e.hf?(s>0?Math.PI:0):(s>0?0:Math.PI))+e.yw+e.yt,pitch=e.hf?.2+.5*e.rear:-.2-.85*e.rear;
  e.ql.setFromEuler(_ve.set(pitch,yaw,e.roll,'YXZ'));
- {const k=1/Math.sqrt(e.sz);_vv.set(0,.27*re*k,z*re*e.sz).applyQuaternion(e.ql);e.ox=e.ex-_vv.x;e.oy=e.ey-_vv.y;e.oz=e.ez-_vv.z} // 몸 좌표 (0,.27,z)가 롤러 꼭대기에 오게
+ {const k=1/Math.sqrt(e.sz);_vv.set(0,.27*re*k*e.qy,z*re*e.sz).applyQuaternion(e.ql);e.ox=e.ex-_vv.x;e.oy=e.ey-_vv.y;e.oz=e.ez-_vv.z} // 몸 좌표 (0,.27,z)가 롤러 꼭대기에 오게
  let ox=e.ox,oy=e.oy,oz=e.oz;
  if(e.ph==='catch'&&e.t<.08){const u=ss(e.t/.08);ox=lerp(e.x0,ox,u);oy=lerp(e.y0,oy,u);oz=lerp(e.z0,oz,u);e.q.copy(e.q0).slerp(e.ql,u);c.clip=-100} // 더미 속 자리에서 롤러 위로 확 끌려온다
  else{e.q.copy(e.ql);c.clip=e.hf?20+z:z}
@@ -3860,13 +3889,13 @@ function vacVictim(e,dt){
    const h=e.hm[i];if(!h){e.hm[i]={x:_vv.x,z:_vv.z};continue}
    if(Math.hypot(_vv.x-h.x,_vv.z-h.z)>.0035&&Math.abs(_vv.z)<Math.abs(h.z)){vacMark(h.x,h.z,_vv.x,_vv.z,c);h.x=_vv.x;h.z=_vv.z}}} // 앞으로 짚은 손이 롤러 쪽으로 끌려가면 그만큼 자국을 긋는다
  // 갈려 나오는 것: 롤러 밑으로 살점이 떨어지고, 덜컥일 때마다 핏물이 울컥 쏟아진다
- const q=e.d/VL;v.lq+=LQ*Math.max(0,q-e.lq);e.lq=Math.max(e.lq,q);
+ const q=e.d/VL;v.lq+=LQ*(e.mash?1.6:1)*Math.max(0,q-e.lq);e.lq=Math.max(e.lq,q);
  while(e.emitted<5&&q>=(e.emitted+.6)/5.4){vacMince(c,e.x);e.emitted++}
  if(e.flow){e.flow.k=1;e.flow.pulse=Math.max(0,e.flow.pulse-dt*5)}
  e.bit-=dt;if(e.bit<=0&&e.g>.2&&(fight||e.ph==='lose'||e.ph==='limp')){e.bit=rnd(.11,.18);const k=Math.random();vacBit(e.ex+rnd(-.01,.01),e.ey,e.ez,rnd(-.3,.3),rnd(.4,1.2),s*rnd(.05,.5),k<.76?rnd(.0022,.0048):rnd(.003,.005),k<.4||c.type===6?c.ink:k<.76?BLOOD:k<.88?BONE:k<.95?SKINC:c.tint,k<.76?0:1)}
  // 아직 롤러 밖에 남은 몸뚱이: 위에 얹힌 것들이 이걸 딛고 있다
  {const lz=e.hf?Math.min(z,.2)-.5:Math.max(z,-.4)+.5,lim=e.hf?z>-1.4:z<1.1;if(lim){vicPt(e,0,.5,lz,_vv);e.cx=_vv.x;e.cy=_vv.y;e.cz=_vv.z}else e.cy=-1}
- if(fin){while(e.emitted<5){vacMince(c,e.x);e.emitted++}v.lq+=LQ*Math.max(0,1-e.lq);if(e.flow)e.flow.end=1;if(e.grab){e.grab.hold=null;e.grab=null}
+ if(fin){while(e.emitted<5){vacMince(c,e.x);e.emitted++}v.lq+=LQ*(e.mash?1.6:1)*Math.max(0,1-e.lq);if(e.flow)e.flow.end=1;if(e.grab){e.grab.hold=null;e.grab=null}
   _a.set(e.x*1.6,HH+.04,0);cn.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.vic=null;killCreature(c,'grind');shake=Math.max(shake,.3);return true}
  return false}
 // 죽통 바닥에 쌓이는 더미: 칸마다 높이를 두고, 비탈이 가파르면 옆 칸으로 무너뜨린다
@@ -3944,10 +3973,104 @@ function vacLiquid(dt){
  // 비우고 나면 유리 안쪽에 핏물 자국이 남았다가 옅어진다
  v.filmMesh.visible=v.film>.01&&v.Lmax>.004;if(v.filmMesh.visible){const h=v.Lmax+.005;v.filmMesh.scale.y=h;v.filmMesh.position.y=JB+h/2;v.filmM.opacity=.5*v.film;v.filmM.color.copy(v.liqM.color)}
 }
+/* ── 누름봉: 갈리는 동안 위에서 내리찍는다
+   머리 밑에 깔린 것은 찍힐 때마다 망가진다 (1 납작해지며 팔이 꺾임 · 2 눈알이 튀어 나가고 팔다리 하나가 떨어져 나감 · 3 터져서 롤러로 끌려 들어감)
+   롤러에 걸려 버티던 것은 손을 놓치고 넘어가고, 찍을 때마다 맨 밑 것들이 롤러 틈으로 밀려 들어간다. 가장자리에 걸린 것은 유리에 눌려 붙었다 미끄러진다 ── */
+function pestleTop(x,z){const v=VC;let top=PE_YMIN; // 머리가 처음 닿는 높이: 머리 둘레 안에 든 것 중 가장 높은 몸 (조금 파고든다)
+ for(const c of v.tank){if(c.wl>0||c.gp>0||!(c.ct&23))continue;const dx=c.tp.x-x,dz=c.tp.z-z,R=PE_R+c.vr*.2;if(dx*dx+dz*dz<R*R){const t=c.tp.y+c.vr*.6;if(t>top)top=t}} // 유리에 매달린 것·튀어 오른 것은 지나쳐 더미 윗면에서 멈춘다
+ for(const e of v.eat){if(e.cy<0)continue;const dx=e.cx-x,dz=e.cz-z;if(dx*dx+dz*dz<PE_R*PE_R){const t=e.cy+e.cr*.45;if(t>top)top=t}}
+ return top}
+function pestleAim(){ // 찍을 자리: 롤러를 따라 좌우를 번갈아, 버티는 놈이 있으면 그 자리부터
+ const v=VC;let best=0,bs=-1e9;
+ for(let i=0;i<9;i++){const x=-.055+i*.01375;let s=rnd(0,.35)+Math.min(1.2,Math.abs(x-v.pLX)*14);
+  for(const c of v.tank){const dx=c.tp.x-x,dz=c.tp.z-v.pZ;if(dx*dx+dz*dz<(PE_R+.006)*(PE_R+.006))s+=1+(c.tp.y-NIP)*5+(c.pc&&c.pc<3?.4:0)}
+  for(const e of v.eat)if(!e.mash&&Math.abs(e.x-x)<PE_R*.85&&(e.ph==='catch'||e.ph==='fight'||e.ph==='hand'))s+=e.ph==='hand'?3:4+3*e.str;
+  if(s>bs){bs=s;best=x}}
+ return best}
+function pestleCrush(c,hx,hz,yb){const v=VC,k=Math.min(3,(c.pc||0)+1),a0=Math.atan2(c.tp.z-hz,c.tp.x-hx),arms=c.type!==6;
+ c.pc=k;c.cl=0;c.wl=0;c.hold=null;c.drag=0;c.gp=0;
+ if(k===1){c.flatR=Math.random()<.75?Math.PI:0;c.yw=Math.PI+rnd(-.7,.7);c.ftl=rnd(-.95,-.6);c.arL=arms?(Math.random()<.25?rnd(.5,.9):rnd(-1.25,-.3)):0;c.arR=arms?(Math.random()<.25?rnd(.5,.9):rnd(-1.25,-.3)):0} // 대개 뒤집혀 배를 드러낸 채 납작해지고 팔이 아무렇게나 꺾인다 (더미 위에서 이쪽으로 기울어 보인다)
+ else if(arms){c.arL=rnd(-1.25,-.5);c.arR=rnd(-1.25,-.5)}
+ c.sqT=k>=3?.3:k===2?.44:.6;c.sq=Math.min(c.sq,c.sqT+.1);c.vr=(c.vr0||c.vr)*(k>=3?.62:k===2?.74:.86);
+ c.flay=Math.max(c.flay||0,k>=3?.58:k===2?.4:.22);c.gk=k===1?1:0;c.tv.set(0,-.4,0);
+ for(let i=0,m=k>=3?6:k===2?4:2;i<m;i++){const a=a0+rnd(-1,1),sp=rnd(1.3,2.8);vacBit(c.tp.x,yb-.004,c.tp.z,Math.cos(a)*sp,rnd(.1,.8),Math.sin(a)*sp,rnd(.0022,.004),Math.random()<.78?BLOOD:c.ink,0,.75)} // 깔린 자리에서 바깥으로 피가 뿜어져 유리에 튄다
+ if(k===2&&!c.noeye&&c.type!==6){c.noeye=1;for(const sd of[-1,1]){const a=a0+sd*rnd(.35,1),sp=rnd(1.1,2);vacBit(c.tp.x,yb-.006,c.tp.z,Math.cos(a)*sp,rnd(.5,1.2),Math.sin(a)*sp,c.r*.086,WHITE,2)}if(time>v.eyeT){v.eyeT=time+.07;AU.eyePop(.55)}} // 두 번째에 눈알이 옆으로 튀어 나간다
+ if(k>=2&&arms){const left=[1,2,4,8].filter(b=>!((c.cut||0)&b));if(left.length){const b=pick(left),a=a0+rnd(-.8,.8),sp=rnd(.9,1.8);c.cut=(c.cut||0)|b;vacBit(c.tp.x,yb-.005,c.tp.z,Math.cos(a)*sp,rnd(.4,1),Math.sin(a)*sp,c.r*.047,SKINC.clone().lerp(c.tint,.45),3,0,c.r*(b<4?.13:.155))}} // 팔다리 하나가 떨어져 날아간다
+ if(k>=3){if(arms)c.cut=15;for(let i=0;i<3;i++){const a=rnd(0,TAU),sp=rnd(.6,1.5);vacBit(c.tp.x,yb-.004,c.tp.z,Math.cos(a)*sp,rnd(.3,.9),Math.sin(a)*sp,rnd(.003,.0055),pick([GUT,INTEST,BONE]),1)}if(time>v.popT2){v.popT2=time+.12;AU.burst(.42)}} // 세 번째에 터진다
+ if(k===1&&time>v.voiceT){v.voiceT=time+.08;AU.squeal(c.type,1.4,0,.17)}
+ else if(k===2&&time>v.chkT){v.chkT=time+.1;AU.choke(c.type,.8,.14)}}
+function pestleGlass(c){const v=VC,p=c.tp,rd=Math.hypot(p.x,p.z)||1; // 머리 가장자리와 유리 사이에 끼어 유리에 납작하게 눌린다
+ c.gp=rnd(.45,.75);c.pc=Math.max(c.pc||0,1);c.sqT=.45;c.flay=Math.max(c.flay||0,.12);c.ftl=rnd(-.95,-.6);c.arL=rnd(.6,1);c.arR=rnd(.6,1);v.gpT=time+rnd(.5,.9);c.gk=1;c.cl=0;c.wl=0;c.hold=null;c.drag=0;c.flatR=0;c.yw=c.yaw;
+ const lim=HR-.007-c.vr;p.x=p.x/rd*lim;p.z=p.z/rd*lim;
+ if(v.prints.length<9)v.prints.push({a:Math.atan2(p.z,p.x),y0:p.y+c.vr*.9,y1:p.y+c.vr*.9-rnd(.02,.05),t:0,T:rnd(.4,.8),life:rnd(6,9),w:c.vr*.62,col:PRINTC.clone().lerp(c.ink,.12),f:[0,1,2,3].map(()=>[rnd(.55,1),rnd(-.0005,.0005)]),n:Math.random()<.4?3:4}); // 유리를 짚었던 두 손이 핏자국을 끌며 미끄러진다
+ for(let i=0;i<2;i++)vacBit(p.x*.9,p.y,p.z*.9,p.x/rd*rnd(.6,1.2),rnd(.1,.5),p.z/rd*rnd(.6,1.2),rnd(.003,.0045),BLOOD,0,1);
+ if(time>v.voiceT){v.voiceT=time+.08;AU.squeal(c.type,1.3,0,.22)}}
+function pestleHit(x,yb,z){
+ const v=VC,T=v.tank,hit=[];let glass=0,smashed=0,rammed=0;v.pN++;v.pLX=x;v.pressT=.5;if(v.ph===1&&!v.mot&&v.gr>.3)v.gr=Math.max(v.gr,VM-.001); // 찍기 시작하면 모터도 바로 건다
+ for(const c of T){if(c.gp>0)continue;const dx=c.tp.x-x,dz=c.tp.z-z,d=Math.hypot(dx,dz);
+  if(d<PE_R+c.vr*.3&&c.tp.y+c.vr>yb-c.vr*1.25)hit.push(c); // 머리 밑에 깔린 맨 윗켜
+  else if(!glass&&time>(v.gpT||0)&&Math.random()<.5&&!c.pc&&d<PE_R+c.vr*1.6&&Math.abs(c.tp.y-yb)<c.vr*1.8&&Math.hypot(c.tp.x,c.tp.z)>HR-.014-c.vr*1.5){pestleGlass(c);glass++}}
+ hit.sort((a,b)=>b.tp.y-a.tp.y);if(hit.length>5)hit.length=5;
+ for(const c of hit)pestleCrush(c,x,z,yb);
+ for(const e of v.eat.slice()){if(Math.abs(e.x-x)>PE_R+.012)continue;const c=e.c; // 롤러에 걸려 버티던 것: 손을 놓치고 넘어간다
+  if(e.ph==='catch'||e.ph==='fight'){c.pc=Math.max(c.pc||0,1);c.sqT=Math.min(c.sqT||1,.58);c.flay=Math.max(c.flay,.3);AU.cutVoice(e.scr);e.scr=null;e.scrT=1e9;e.loud=false;e.hand=false;smashed++;
+   if(e.hf){e.ph='limp';e.kick=0;e.dg+=.5}else{vacLose(e);e.T*=.45}if(time>v.chkT){v.chkT=time+.1;AU.choke(c.type,.9,.16)}}
+  else if(e.ph==='hand'){e.ph='end';e.t0=e.t;e.d0=e.d;smashed++;if(time>v.boneT){v.boneT=time+.07;AU.snapBone(.6)}} // 바닥판을 긁던 손끝을 찍어 버린다
+  else if(e.ph==='limp')e.dg+=e.mash?.6:.8} // 넘어가는 중인 것은 더 깊이 밀어 넣는다
+ for(const c of T){if(c.wl>0&&Math.random()<.55){c.wl=0;vacSlip(c)} // 유리에 매달려 버티던 것들이 충격에 미끄러진다
+  if(!c.hold&&!(c.gp>0)&&Math.abs(c.tp.x-x)<PE_R+.03&&c.tp.y<yb){c.tv.y=Math.min(c.tv.y,-.7);c.tv.z-=Math.sign(c.tp.z)*.35}} // 찍힌 자리 밑 더미가 롤러 쪽으로 쑥 내려앉는다
+ if(v.mot&&v.ph===1){const n=T.length,K=n>48?8:n>24?6:n>8?5:3; // 맨 밑 것들이 롤러 틈으로 밀려 들어간다
+  const cand=T.filter(c=>!c.hold&&!(c.gp>0)&&Math.abs(c.tp.x-x)<PE_R+.012&&Math.abs(c.tp.z)<.075&&(c.ct&17||c.tp.y<NIP+.075)).sort((a,b)=>a.tp.y-(a.pc?.03:0)-b.tp.y+(b.pc?.03:0));
+  for(const c of cand){if(rammed>=K)break;const xx=clamp(c.tp.x,-.088,.088),sd=c.tp.z>=0?1:-1;if(v.eat.some(e=>e.s===sd&&Math.abs(e.x-xx)<.012))continue;vacTake(c,{mash:true});rammed++}}
+ const n=hit.length+smashed+glass;
+ if(n||rammed){AU.pestle(n+rammed*.5);if(n)buzz(9)}else AU.pestleMiss();
+ v.jo=Math.max(v.jo,n?.75:.5);v.joS=Math.random()<.5?-1:1;shake=Math.max(shake,n?.22+.03*Math.min(5,n):.13);if(n)hitstop=Math.max(hitstop,.02);
+ v.w+=2.6;v.bog*=.4;v.gsm=Math.min(1,v.gsm+(n?.05:.012));v.pstain=Math.min(1,v.pstain+(n?.14:.02));
+ if(n&&v.stk.length<7)for(let i=0,m=1+(Math.random()*2|0);i<m;i++){const a=rnd(0,TAU),r=Math.sqrt(Math.random())*PE_R*.8;v.stk.push({ox:Math.cos(a)*r,oz:Math.sin(a)*r,r:rnd(.0025,.005),col:pick([GUT,BLOOD,INTEST]).clone().lerp((hit[0]||{ink:BLOOD}).ink,.25),t:0,life:rnd(.4,1.4)})} // 머리 밑면에 살점이 눌어붙는다
+ v.pHit=hit.slice(0,4)}
+function pestleLift(){const v=VC;let n=0; // 들어 올리면 밑면과 짓이겨진 것 사이로 실이 늘어난다
+ for(const c of v.pHit){if(n>=6)break;if(!v.tank.includes(c))continue;
+  for(let j=0;j<(n?1:2)&&n<6;j++,n++){const ox=clamp(c.tp.x-v.pX+rnd(-.008,.008),-PE_R*.8,PE_R*.8),oz=clamp(c.tp.z-v.pZ+rnd(-.008,.008),-PE_R*.8,PE_R*.8);
+   v.strs.push({c,ox,oz,bx:c.tp.x,by:c.tp.y,bz:c.tp.z,L:rnd(.09,.19),r:rnd(.0018,.0032),col:BLOOD.clone().lerp(c.ink,.3).multiplyScalar(.85),t:0})}}
+ if(n){AU.unstick(.9);if(Math.random()<.5)AU.squelch(.35)}
+ v.pHit.length=0}
+function pestleStart(){const v=VC;v.pq=0;v.pS='down';v.pT=0;v.pY0=v.pY;v.pX0=v.pX;v.pZ=rnd(.018,.034);v.pXt=pestleAim();for(const s of v.strs)s.L=0} // 롤러 틈을 덮되 앞 유리 쪽으로 조금 당겨 찍어서 보이게 한다
+function pestleTap(main){const v=VC;if(!started||paused||S.tool!=='vac'||(EX.on&&EX.phase!=='run')||v.ph!==1||v.gr<=.06)return;v.pq=1} // 누른 순간 바로 한 번 찧게 해 둔다 (프레임 사이에 눌렀다 떼도 놓치지 않게)
+function pestleUpdate(dt,hold,tap,kk){
+ const v=VC,g=v.pg,live=v.ph===1;
+ v.pIn=damp(v.pIn,live&&kk>.4?1:0,live?10:7,dt);g.visible=v.pIn>.01;v.pressT=Math.max(0,v.pressT-dt);
+ if(!g.visible){v.pS='ready';v.pq=0;v.pY=PE_YR;v.pT=0;return}
+ if(tap&&live)v.pq=1;if(!live)v.pq=0;
+ const ok=live&&v.pIn>.9;v.pT+=dt;
+ if(v.pS==='ready'){v.pY=damp(v.pY,PE_YR,10,dt);if(ok&&(v.pq||hold))pestleStart()}
+ else if(v.pS==='down'){const u=Math.min(1,v.pT/PE_DOWN),y=lerp(v.pY0,PE_YMIN,u*u);v.pX=lerp(v.pX0,v.pXt,ss(Math.min(1,u*1.8)));
+  const top=pestleTop(v.pX,v.pZ);if(y<=top||u>=1){v.pY=Math.min(v.pY0,Math.max(top,PE_YMIN));v.pS='hit';v.pT=0;pestleHit(v.pX,v.pY,v.pZ)}else v.pY=y}
+ else if(v.pS==='hit'){v.pY=Math.max(PE_YMIN,v.pY-dt*.05);if(v.pT>=PE_HIT){v.pS='up';v.pT=0;v.pY1=v.pY;pestleLift()}}
+ else if(v.pS==='up'){const u=Math.min(1,v.pT/PE_UP);v.pY=lerp(v.pY1,PE_YR,ss(u));if(ok&&(v.pq&&u>=PE_TAP||hold&&u>=.85))pestleStart();else if(u>=1)v.pS='ready'}
+ g.position.set(v.pX,v.pY+(1-ss(v.pIn))*.45,v.pZ)} // 들어 올릴 때는 들러붙은 데서 천천히 떨어지다가 확 들린다 (그동안 실이 늘어난다)
+function pestleDraw(dt,grinding){const v=VC,cn=v.can;
+ // 머리 밑면과 짓이겨진 것 사이로 늘어나다 끊어지는 실
+ for(let i=v.strs.length-1;i>=0;i--){const s=v.strs[i];s.t+=dt;const tx=v.pX+s.ox,ty=v.pY-.0015,tz=v.pZ+s.oz;
+  if(s.c&&v.tank.includes(s.c)){s.bx=s.c.tp.x;s.by=s.c.tp.y+s.c.vr*.25;s.bz=s.c.tp.z}
+  const dx=tx-s.bx,dy=ty-s.by,dz=tz-s.bz,len=Math.hypot(dx,dy,dz);
+  if(len>s.L||s.t>1.2||!v.pg.visible){v.strs.splice(i,1);if(s.L>0){AU.fiber(.6);vacBit(tx,ty-.002,tz,0,-.1,0,s.r*1.5,s.col,0,0)}continue}
+  const st=len/Math.max(.001,s.L),sag=.005*st,N=4;let ax=s.bx,ay=s.by,az=s.bz; // 가운데가 가늘어지며 처지는 줄: 마디마다 길쭉한 방울을 줄 방향으로 눕혀 잇는다
+  for(let j=1;j<=N;j++){const u=j/N,sn=Math.sin(Math.PI*u),bx=s.bx+dx*u,by=s.by+dy*u-sag*sn,bz=s.bz+dz*u,ex=bx-ax,ey=by-ay,ez=bz-az,l=Math.hypot(ex,ey,ez)||1e-4,r=s.r*(1-.6*st*Math.sin(Math.PI*(j-.5)/N));
+   blobR((ax+bx)/2,(ay+by)/2,(az+bz)/2,r,r,l*.56,-Math.asin(clamp(ey/l,-1,1)),Math.atan2(ex,ez),s.col,cn);ax=bx;ay=by;az=bz}
+  blobAt(s.bx,s.by,s.bz,s.r*1.6,s.r*1.1,s.r*1.6,s.col,cn);blobAt(tx,ty,tz,s.r*1.5,s.r*1.2,s.r*1.5,s.col,cn)}
+ // 머리 밑면에 눌어붙은 살점: 잠깐 매달려 있다가 떨어진다
+ for(let i=v.stk.length-1;i>=0;i--){const b=v.stk[i];b.t+=dt;const x=v.pX+b.ox,y=v.pY-b.r*.4,z=v.pZ+b.oz;
+  if(b.t>b.life||!v.pg.visible){v.stk.splice(i,1);vacBit(x,y,z,0,-.05,0,b.r,b.col,1);continue}
+  blobAt(x,y,z,b.r,b.r*.55,b.r,b.col,cn)}
+ // 찧을수록 머리와 유리가 붉어지고, 다 비우면 서서히 옅어진다
+ if(!grinding){v.gsm=Math.max(0,v.gsm-dt/8);v.pstain=Math.max(0,v.pstain-dt/10)}
+ v.gfilm.visible=v.gsm>.01;if(v.gfilm.visible){v.gfilmM.opacity=.2*v.gsm;v.gfilmM.color.copy(v.liqM.color).multiplyScalar(.7)}
+ if(v.pg.visible){const q=v.pstain,k=Math.min(1,q*1.8);v.pBotM.color.setRGB(.485-.33*q,.533-.51*k,.591-.565*k);v.pBotM.roughness=.32-.2*q}} // 밑면·아래 띠가 검붉게 젖어 번들거린다
 function vacGrind(){
  const v=VC;if(!started||paused||S.tool!=='vac'||(EX.on&&EX.phase!=='run')||v.gr>0||!v.tank.length)return;
- v.drive=VAC_LOW_SPEED;v.gr=.0001;v.ph=1;v.pt=0;v.grK=0;v.idleT=0;v.noC=0;v.mot=0;v.bog=0;v.cooN=0;for(const c of v.tank){c.cl=0;c.drag=0;c.hold=null;c.wl=0}} // 통이 눈앞으로 올라오는 동안에는 모터가 아직 서 있다
-function vacUpdate(dt,act,pedal){
+ v.drive=VAC_LOW_SPEED;v.gr=.0001;v.ph=1;v.pt=0;v.grK=0;v.idleT=0;v.noC=0;v.mot=0;v.bog=0;v.cooN=0;for(const c of v.tank){c.cl=0;c.drag=0;c.hold=null;c.wl=0}
+ v.aPrev=false;v.pq=0;v.pS='ready';v.pT=0;v.pY=PE_YR;v.pX=0;v.pLX=rnd(-.04,.04);v.pressT=0;v.pN=0} // 빨아들이던 손을 그대로 누르고 있으면 통이 올라오자마자 찧기 시작한다 // 통이 눈앞으로 올라오는 동안에는 모터가 아직 서 있다
+function vacUpdate(dt,act,pedal,go2){
  const v=VC,on=S.tool==='vac';
  const grinding=v.gr>0,run=on&&act&&started&&!grinding,cn=v.can;v.g.visible=on;
  if(run!==v.on){v.on=run;AU.loop('vac',run);if(!run)for(const c of creatures)if(c.st==='sucked'){c.st='flee';c.t=0;c.fx=v.mouth.x;c.fz=v.mouth.z;c.fleeT=1;c.str=1}}
@@ -3963,20 +4086,25 @@ function vacUpdate(dt,act,pedal){
  _c.set(HR+.03,HH-.035,0).applyEuler(cn.rotation).add(cn.position);between(v.pipe,v.curve.getPoint(.47,_a),_c);v.pipe.scale.x=v.pipe.scale.z=Math.max(.001,1-kk*1.6); // 갈 때는 관을 빼고 통만 든다
  v.g.updateMatrixWorld(true);
  v.mouth.set(P.x+.04,.05,P.z-.97);
+ // 누름봉: 갈리는 동안 오른쪽 화면(스페이스·마우스 왼쪽)이나 찧기 버튼을 누를 때마다 한 번, 누르고 있으면 계속 찧는다
+ {const pA=act,tapA=pA&&!v.aPrev;v.aPrev=pA;v.pA=pA;pestleUpdate(dt,grinding&&v.ph===1&&(pA||pedal),grinding&&v.ph===1&&(tapA||go2&&v.gr>.06),kk)}
  for(const l of v.lumps){if(l.u<0){l.m.visible=false;continue}l.u+=dt*1.9;if(l.u>=(l.end||1)){l.u=-1;l.m.visible=false;continue}l.m.visible=true;v.curve.getPoint(l.u,l.m.position);l.m.scale.setScalar(.043*(1.25+.3*Math.sin(l.u*Math.PI)))}
  // 호퍼 안: 산 채로 쌓여 버둥댄다. 유리벽에 붙은 것은 기어오르려다 미끄러진다. 통이 눈앞에 오면 봐 달라고 앞 유리에 붙고, 모터가 걸리면 기겁해 기어오른다
  const pre=v.ph===1&&!v.mot;
- for(const c of v.tank){c.kick-=dt;if(c.cl>0)c.cl-=dt;
-  if(c.kick<=0){const g=v.ph===1&&v.mot;c.kick=rnd(.25,1.3)*(g?.55:1)*(c.cl>0?.7:1);if(c.ct&23&&!c.hold){const s=g?1.15:pre?.45:1;c.tv.x+=rnd(-.3,.3)*s;c.tv.z+=rnd(-.3,.3)*s;c.tv.y+=rnd(.15,.42)*s*(c.cl>0?1.4:1)}}
+ for(const c of v.tank){c.kick-=dt;if(c.cl>0)c.cl-=dt;if(c.gp>0)c.gp=Math.max(0,c.gp-dt);
+  if(c.kick<=0){const g=v.ph===1&&v.mot;c.kick=rnd(.25,1.3)*(g?.55:1)*(c.cl>0?.7:1);if(c.ct&23&&!c.hold&&!(c.pc>=2)&&!(c.gp>0)){const s=(g?1.15:pre?.45:1)*(c.pc?.4:1);c.tv.x+=rnd(-.3,.3)*s;c.tv.z+=rnd(-.3,.3)*s;c.tv.y+=rnd(.15,.42)*s*(c.cl>0?1.4:1)}}
   if(c.wl>0){c.wl-=dt;if(c.wl<=0)vacSlip(c)}
-  else if(c.ct&8&&c.tp.y>DY+.03&&!c.hold&&!c.drag&&Math.random()<dt*(c.cl>0?6:pre&&c.tp.z>.03?4:.7)){c.wl=c.cl>0?rnd(.5,1.1):pre?rnd(.5,.9):rnd(.35,1.1);c.wg=c.cl>0?rnd(.92,.99):rnd(.8,.98)}}
+  else if(!c.pc&&c.ct&8&&c.tp.y>DY+.03&&!c.hold&&!c.drag&&Math.random()<dt*(c.cl>0?6:pre&&c.tp.z>.03?4:.7)){c.wl=c.cl>0?rnd(.5,1.1):pre?rnd(.5,.9):rnd(.35,1.1);c.wg=c.cl>0?rnd(.92,.99):rnd(.8,.98)}}
  vacPile(dt);
  for(const c of v.tank){const p=c.tp;let ty,tl,tr;
-  if(c.hold){ty=(p.z>=0?0:Math.PI)+Math.sin(time*11+c.ph)*.3;tl=-.3;tr=Math.sin(time*9+c.ph)*.45} // 다리를 붙잡혀 롤러 쪽으로 끌려가며 반대쪽으로 기어 나가려 버둥댄다
+  if(c.gp>0){ty=Math.atan2(p.x,p.z);tl=-1.28;tr=0} // 유리에 배를 대고 납작하게 눌려 있다
+  else if(c.pc){ty=c.yw;tl=c.ftl||0;tr=(c.flatR||0)+(c.pc<3?Math.sin(time*9+c.ph)*.05:0)} // 짓눌려 납작하게 뒤집히거나 엎어져 있다
+  else if(c.hold){ty=(p.z>=0?0:Math.PI)+Math.sin(time*11+c.ph)*.3;tl=-.3;tr=Math.sin(time*9+c.ph)*.45} // 다리를 붙잡혀 롤러 쪽으로 끌려가며 반대쪽으로 기어 나가려 버둥댄다
   else if(c.wl>0&&c.ct&8){const f=c.cl>0?2.2:1;ty=Math.atan2(p.x,p.z)+Math.sin(time*3*f+c.ph)*.15;tl=-1.2;tr=Math.sin(time*3*f+c.ph)*.22} // 유리에 배를 붙이고
   else{const g=v.ph===1&&v.mot?(c.cl>0?1.6:1.2):1;ty=c.yw+Math.sin(time*2.2*g+c.ph)*.32;tl=c.lie+Math.sin(time*3.1*g+c.ph*2)*.16;tr=c.rl+Math.sin(time*4.1*g+c.ph*3)*.28}
-  c.yaw+=wrapA(ty-c.yaw)*Math.min(1,dt*8);c.tl=tl;c.roll=damp(c.roll,tr,8,dt);
-  _a.copy(p);cn.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.sc=.43*cn.scale.x;c.sq=1;c.panic=1}
+  const sm=c.pc||c.gp>0;c.yaw+=wrapA(ty-c.yaw)*Math.min(1,dt*(sm?18:8));c.tl=tl;c.roll=damp(c.roll,tr,sm?20:8,dt);
+  _a.copy(p);cn.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.sc=.43*cn.scale.x;c.sq=sm?damp(c.sq,c.gp>0?Math.min(c.sqT,.42):c.sqT,30,dt):1;c.panic=1;
+  if(c.pc>=2){const r=c.vr;blobAt(p.x,p.y+r*.15,p.z+r*.35,r*.5,r*.22,r*.42,c.gore||(c.gore=GUT.clone().lerp(INTEST,.35).lerp(c.ink,.2)),cn);if(c.pc>=3)blobAt(p.x+r*.3,p.y+r*.05,p.z+r*.2,r*.55,r*.12,r*.5,c.ink,cn)}} // 터진 배에서 비어져 나온 속 · 다 터진 것은 고인 피
  if(!grinding&&v.tank.length&&Math.random()<dt*.8)AU.squeal(pick(v.tank).type,.5);
  // 분쇄: 통이 눈앞에 올라오면 모터가 걸리고, 롤러 틈에 닿은 것부터 날이 붙잡아 끌고 내려간다. 날 길이만큼 나란히 여럿이 동시에 물린다
  if(grinding){v.gr+=dt;const t=v.gr;
@@ -3989,17 +4117,17 @@ function vacUpdate(dt,act,pedal){
   // 버티는 놈이 있으면 롤러가 걸려 처지고, 놓치면 다시 치솟는다
   {let bog=0;for(const e of v.eat)if(e.ph==='fight'&&!e.hf)bog+=(e.hvA>0&&e.hvT>0?3.2:1)*e.str*(e.grab?1.3:1);v.bog=damp(v.bog,Math.min(8,bog),8,dt)}
   const powered=v.ph===1&&v.mot;
-  v.drive=damp(v.drive,powered&&pedal?1:VAC_LOW_SPEED,pedal?8:4.8,dt);
+  const push=pedal||v.pA||v.pressT>0;v.drive=damp(v.drive,powered&&push?1:VAC_LOW_SPEED,push?8:4.8,dt); // 찧는 동안은 모터도 최고 속도로 돈다
   v.w=Math.min(19*v.drive,damp(v.w,powered?(15-v.bog)*v.drive:0,5,dt));
   AU.loopBend('grind',.32+.28*v.drive+.4*clamp(v.w/15,0,1.25));
   if(v.ph===1&&v.mot){const n=v.tank.length;
    if(n&&Math.random()<dt*(n>15?4:1.5))AU.squeal(pick(v.tank).type,1.2);
    v.grK-=dt*v.drive;
-   const maxE=n>30?10:n>15?7:n>6?5:n>1?4:3,gap=n>30?.018:.024,lastWait=n===1&&v.eat.some(e=>e.ph==='catch'||e.ph==='fight');let cand=false; // 마지막 한 마리는 앞엣것들이 다 놓친 뒤에 혼자 물린다
-   if(t>VM+.25&&v.eat.length<maxE&&!lastWait){let best=null;
+   const maxE=n>30?10:n>15?7:n>6?5:n>1?4:3,gap=n>30?.018:.024,lastWait=n===1&&v.eat.some(e=>!e.mash&&(e.ph==='catch'||e.ph==='fight'));let cand=false,busyE=0;for(const e of v.eat)busyE+=e.mash?.34:1; // 짓눌려 버티지 않는 것은 자리를 덜 차지한다 // 마지막 한 마리는 앞엣것들이 다 놓친 뒤에 혼자 물린다
+   if(t>VM+.25&&busyE<maxE&&!lastWait){let best=null,bk=1e9;
     const thick=n>30,zw=thick?.05:n>15?.036:.03,yw=NIP+(thick?.09:n>15?.072:.065); // 더미가 두꺼울 때는 묻혀 안 보이니 롤러 가까이만 와도 끌어당긴다
-    for(const c of v.tank){if(c.hold||!(thick||c.ct&17)||Math.abs(c.tp.z)>zw||c.tp.y>yw||Math.abs(c.tp.x)>.096)continue;const x=clamp(c.tp.x,-.088,.088);let ok=true;for(const e of v.eat)if(Math.abs(e.x-x)<gap){ok=false;break}if(ok&&(!best||c.tp.y<best.tp.y))best=c}
-    if(best){cand=true;if(v.grK<=0){vacTake(best);v.grK=n>30?.03:n>15?.06:n>6?.11:.18}}}
+    for(const c of v.tank){if(c.hold||c.gp>0||!(thick||c.ct&17)||Math.abs(c.tp.z)>zw||c.tp.y>yw||Math.abs(c.tp.x)>.096)continue;const x=clamp(c.tp.x,-.088,.088);let ok=true;for(const e of v.eat)if(Math.abs(e.x-x)<gap){ok=false;break}const k=c.tp.y-(c.pc?.06:0);if(ok&&k<bk){bk=k;best=c}} // 짓눌린 것부터 끌어당긴다
+    if(best){cand=true;if(v.grK<=0||best.pc>=2){vacTake(best,best.pc?{mash:true}:{});v.grK=n>30?.03:n>15?.06:n>6?.11:.18}}}
    // 다 유리에 매달려 틈에 닿는 게 없으면, 제일 낮은 것부터 떼어 끌어내린다
    v.noC=cand||v.eat.length>=maxE||lastWait||t<VM+.25?0:v.noC+dt;
    if(v.noC>(v.eat.length?.7:.3)&&n&&v.tank.filter(c=>c.drag).length<(n>2?2:1)){let low=null,lv=1e9;for(const c of v.tank){if(c.hold)continue;const k=c.tp.y+Math.abs(c.tp.z)*.6;if(k<lv){lv=k;low=c}}if(low){low.drag=1;low.cl=0;if(low.wl>0){low.wl=0;vacSlip(low)}v.noC=0}}
@@ -4028,11 +4156,12 @@ function vacUpdate(dt,act,pedal){
  // 호퍼 안에서 튀는 피·뼛조각·눈알
  for(let i=v.bits.length-1;i>=0;i--){const b=v.bits[i];b.t+=dt;b.vy-=9.8*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;b.z+=b.vz*dt;
   const rd=Math.hypot(b.x,b.z),lim=HR-.012;
-  if(rd>lim){if(b.kind===0){if(Math.random()<.45){if(v.spl.length>=70)v.spl.shift();v.spl.push({a:Math.atan2(b.z,b.x),y:b.y,r:b.r*rnd(.6,1.15),color:b.color,s:rnd(.01,.045)})}v.bits.splice(i,1);continue}
+  if(rd>lim){if(b.kind===0){if(Math.random()<b.sp){if(v.spl.length>=70)v.spl.shift();v.spl.push({a:Math.atan2(b.z,b.x),y:b.y,y0:b.y,r:b.r*rnd(.6,1.15),color:b.color,s:rnd(.01,.045),f:b.sp>.6?1:0})}v.bits.splice(i,1);continue}
    const nx=b.x/rd,nz=b.z/rd,vn=b.vx*nx+b.vz*nz;if(vn>0){b.vx-=1.5*vn*nx;b.vz-=1.5*vn*nz}b.x=nx*lim;b.z=nz*lim}
   if(b.y>HH-.012&&b.vy>0){b.y=HH-.012;b.vy*=-.3}
-  if(b.y<NIP+.03&&b.vy<0){if(b.kind===0||b.b>=(b.kind===2?3:1)||v.ph!==1){v.bits.splice(i,1);continue}b.b++;b.y=NIP+.03;b.vy=-b.vy*.5+.35;b.vx=rnd(-.3,.3);b.vz=rnd(-.3,.3)}
+  if(b.y<NIP+.03&&b.vy<0){if(b.kind===0||b.b>=(b.kind===2?3:b.kind===3?2:1)||v.ph!==1){v.bits.splice(i,1);continue}b.b++;b.y=NIP+.03;b.vy=-b.vy*.5+.35;b.vx=rnd(-.3,.3);b.vz=rnd(-.3,.3)}
   if(b.t>4){v.bits.splice(i,1);continue}
+  if(b.kind===3){b.rx+=b.wx*dt;b.ry+=b.wy*dt;blobR(b.x,b.y,b.z,b.r,b.r,b.L,b.rx,b.ry,b.color,cn);const cx=Math.cos(b.rx),L=b.L*.92;blobAt(b.x+Math.sin(b.ry)*cx*L,b.y-Math.sin(b.rx)*L,b.z+Math.cos(b.ry)*cx*L,b.r*1.2,b.r*1.2,b.r*1.2,BLOOD,cn);continue} // 떨어져 나간 팔다리: 빙글빙글 돌며 날아가고 잘린 끝은 시뻘겋다
   blobAt(b.x,b.y,b.z,b.r,b.r,b.r,b.color,cn);if(b.kind===2)blobAt(b.x,b.y+b.r*.45,b.z+b.r*.6,b.r*.5,b.r*.5,b.r*.45,PUPIL,cn)}
  // 앞 유리에 매달렸다 미끄러진 손자국: 손바닥 자국에서 손가락 자국이 미끄러진 만큼 길게 끌린다
  for(let i=v.prints.length-1;i>=0;i--){const pr=v.prints[i];pr.t+=dt;if(pr.t>pr.life){v.prints.splice(i,1);continue}
@@ -4046,7 +4175,8 @@ function vacUpdate(dt,act,pedal){
   for(const o of[-.0012,.0012])blobR(cx+o,cy,cz,.001*fd,.0004,len/2+.0008,-sg*ta,ry,m.col,cn)}}
  // 유리 안쪽에 튀어 붙어 흘러내리는 피
  for(let i=v.spl.length-1;i>=0;i--){const s=v.spl[i];s.y-=s.s*dt;s.r-=dt*.0005;if(s.y<NIP+.01||s.r<.002){v.spl.splice(i,1);continue}
-  blobAt(Math.cos(s.a)*(HR-.004),s.y,Math.sin(s.a)*(HR-.004),s.r,s.r*2.3,s.r,s.color,cn)}
+  if(s.f){const ca=Math.cos(s.a)*(HR-.0026),sa=Math.sin(s.a)*(HR-.0026),ry=Math.PI/2-s.a;blobR(ca,s.y,sa,s.r*1.4,s.r*2.2,.001,0,ry,s.color,cn);const tr=s.y0-s.y;if(tr>.004)blobR(ca,s.y+tr/2,sa,s.r*.32,tr/2,.0008,0,ry,s.color,cn)}else blobAt(Math.cos(s.a)*(HR-.004),s.y,Math.sin(s.a)*(HR-.004),s.r,s.r*2.3,s.r,s.color,cn)} // 누름봉에 튄 피는 유리에 납작하게 번진다
+ pestleDraw(dt,grinding);
  if(!run)return;
  const R=.85;
  for(const c of creatures){if(busy(c)||c.dead)continue;
@@ -5237,7 +5367,7 @@ function updateAct2(){ // 보조 버튼: 안전화는 양발 구르기, 집게�
  if(t==='boot'){lab='구르기';say='양발 구르기'}
  else if(t==='tong'){lab='밟기';sub=TG.in.length+'/'+TG.CAP;ok=TG.in.length>0&&['idle','reach','carry','ready','tread'].includes(TG.ph);say='봉투 밟기 · '+TG.in.length+'마리'}
  else if(t==='vac'){
-  if(VC.ph===1){lab='가속';sub='남은 '+(VC.tank.length+VC.eat.length);say='누르는 동안 가속 · '+sub+'마리'}
+  if(VC.ph===1){lab='찧기';sub='남은 '+(VC.tank.length+VC.eat.length);say='누름봉으로 찧기 · '+sub+'마리'}
   else if(VC.gr>0){lab='배출 중';ok=false;say=lab}
   else{lab='갈기';sub=VC.tank.length+'/'+VC.CAP;ok=VC.tank.length>0;say='갈기 · '+VC.tank.length+'마리'}}
  else if(t==='shovel'){const n=SH.carry.length+SH.heap.length;lab='퍼담기';sub=n?'날 위 '+n:'';ok=!['heave','dump','bang'].includes(SH.ph);say='퍼담기'+(n?' · '+n:'')}
@@ -5253,7 +5383,7 @@ let hintN=0;
 function setHint(){
  const collecting=TG.ph==='idle'||TG.ph==='reach'||TG.ph==='carry';
  const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'누르면 내려치고, 누르고 있으면 계속 내려칩니다',tong:collecting?'누르고 있으면 집어서 봉투에 모읍니다':TG.armed?'누르고 있으면 묶은 봉투를 밟습니다':'뗐다가 다시 누르고 있으면 묶은 봉투를 밟습니다',trim:fine?'누르는 동안 줄이 돌고, 가리키는 쪽으로 휘두릅니다':'누르는 동안 줄이 돌고, 누른 채 좌우로 끌면 휘두릅니다',wash:fine?'누르는 동안 물을 쏩니다. 마우스로 쏘면 가리키는 곳을 씻습니다':'누르는 동안 물을 쏘고, 누른 채 끌면 물줄기가 따라옵니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다'}[S.tool];
- const more={shovel:'누르는 동안 긁어 담고, 떼면 수거통에 텁니다',boot:'누르고 있으면 양발로 구릅니다',tong:collecting?'담긴 만큼 바로 밟습니다':'',vac:'짧게 눌러 갈고, 꾹 눌러 가속합니다',trim:'헤드를 바닥에 쳐서 새 줄을 뺍니다'}[S.tool],b2={shovel:'퍼담기',boot:'구르기',tong:'밟기',vac:'갈기',trim:'줄 풀기'}[S.tool];
+ const more={shovel:'누르는 동안 긁어 담고, 떼면 수거통에 텁니다',boot:'누르고 있으면 양발로 구릅니다',tong:collecting?'담긴 만큼 바로 밟습니다':'',vac:'눌러서 갈고, 갈리는 동안 누르면 찧습니다',trim:'헤드를 바닥에 쳐서 새 줄을 뺍니다'}[S.tool],b2={shovel:'퍼담기',boot:'구르기',tong:'밟기',vac:'갈기',trim:'줄 풀기'}[S.tool];
  $('hinttxt').textContent=(fine?'WASD 이동 · 스페이스나 마우스를 '+verb:'왼쪽 화면: 이동 · 오른쪽 화면: '+verb)+(more?(fine?' · Q나 오른쪽 클릭: ':' · '+b2+' 버튼: ')+more:'');
  $('hint').style.opacity=1;hintN=6;
 }
@@ -5358,11 +5488,11 @@ function releaseAll(){AU.stopReactions();PT.id=null;for(const k in keys)keys[k]=
 const acting=()=>mouseAct||actIds.size>0||!!keys.Space,acting2=()=>mouse2||act2Ids.size>0||!!keys.KeyQ;
 function bind(){
  const cv=$('gl');
- const mousePedal=e=>{const down=!!(e.buttons&2);if(down&&!mouse2)vacGrind();mouse2=down};
+ const mousePedal=e=>{const down=!!(e.buttons&2);if(down&&!mouse2){pestleTap(false);vacGrind()}mouse2=down};
  cv.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();
-  if(e.pointerType==='mouse'){mouseOn=true;mouseAct=!!(e.buttons&1)||!e.buttons;mousePedal(e);PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true}
+  if(e.pointerType==='mouse'){mouseOn=true;mouseAct=!!(e.buttons&1)||!e.buttons;if(mouseAct)pestleTap(true);mousePedal(e);PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true}
   else if(e.clientX<W*.45&&stickId===null){stickId=e.pointerId;sx0=e.clientX;sy0=e.clientY;stickX=stickY=0;const s=$('stick');s.style.display='block';s.style.left=sx0+'px';s.style.top=sy0+'px';s.firstElementChild.style.transform=''}
-  else{actIds.add(e.pointerId);if(PT.id===null){PT.id=e.pointerId;PT.x0=PT.x=e.clientX;PT.y0=PT.y=e.clientY}}
+  else{actIds.add(e.pointerId);pestleTap(true);if(PT.id===null){PT.id=e.pointerId;PT.x0=PT.x=e.clientX;PT.y0=PT.y=e.clientY}}
   try{cv.setPointerCapture(e.pointerId)}catch(_){}});
  cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true;if(mouseOn){mouseAct=!!(e.buttons&1);mousePedal(e)}} // 다른 단추를 겹쳐 누르거나 떼면 이쪽으로 온다
   if(e.pointerId===PT.id){PT.x=e.clientX;PT.y=e.clientY}
@@ -5371,7 +5501,7 @@ function bind(){
  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('lostpointercapture',up);
  cv.addEventListener('contextmenu',e=>e.preventDefault());
  {const b=$('act2'),up2=e=>act2Ids.delete(e.pointerId);
-  b.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();act2Ids.add(e.pointerId);vacGrind();try{b.setPointerCapture(e.pointerId)}catch(_){}});
+  b.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();act2Ids.add(e.pointerId);pestleTap(false);vacGrind();try{b.setPointerCapture(e.pointerId)}catch(_){}});
   b.addEventListener('pointerup',up2);b.addEventListener('pointercancel',up2);b.addEventListener('lostpointercapture',up2);b.addEventListener('contextmenu',e=>e.preventDefault());b.addEventListener('mousedown',e=>e.preventDefault())} // 마우스로 눌러도 초점은 화면에 둔다
  addEventListener('keydown',e=>{if(!started)return;if(EX.on&&(EX.shown||$('exfade').classList.contains('on'))){if(e.code==='Escape'||e.code==='KeyP')e.preventDefault();return} // 결과 카드·전환 중
   if(e.code==='Escape'||e.code==='KeyP'){e.preventDefault();if(e.repeat)return;if(IV.open)closeInterview();else if(!$('shop').hidden)closeShop();else if(!$('supportmenu').hidden)closeSupportMenu();else if(paused)resumeGame();else pauseGame();return}
@@ -5379,7 +5509,7 @@ function bind(){
   if(IV.open){if(e.code==='ArrowLeft'||e.code==='ArrowRight'){e.preventDefault();focusCandidate(e.code==='ArrowLeft'?-1:1)}return}
   if(paused)return;
   if(['Space','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyW','KeyA','KeyS','KeyD','KeyQ'].includes(e.code)){e.preventDefault();AU.wake()}
-  keys[e.code]=true;if(e.code==='KeyQ'&&!e.repeat)vacGrind();
+  keys[e.code]=true;if(e.code==='KeyQ'&&!e.repeat){pestleTap(false);vacGrind()}if(e.code==='Space'&&!e.repeat)pestleTap(true);
   if(e.code.startsWith('Digit')){const t=TOOLS[+e.code.slice(5)-1];if(t)setTool(t.id)}
   if(!e.repeat&&(e.code==='KeyB'||e.code==='KeyE'))openShop();
   if(!e.repeat&&(e.code==='Enter'||e.code==='KeyF')){e.preventDefault();openSupportMenu()}});
@@ -5437,7 +5567,7 @@ function sim(dt){
   if((mx||mz||act||act2)&&hintN>0){hintN-=dt;if(hintN<=0)$('hint').style.opacity=0}}
  stompUpdate(dt,act,act2);
  updateBody(dt,mx,mz);updateGoogly();
- handUpdate(dt,act);shovelUpdate(dt,act,act2,go2);vacUpdate(dt,act,act2);trimUpdate(dt,act,go2);tongUpdate(dt,act,act2,go2);washUpdate(dt,act);
+ handUpdate(dt,act);shovelUpdate(dt,act,act2,go2);vacUpdate(dt,act,act2,go2);trimUpdate(dt,act,go2);tongUpdate(dt,act,act2,go2);washUpdate(dt,act);
  if(EX.on)updateHall(dt);else{updateSupport(dt);updateCreators(dt)}updateCreatures(dt);
  updateThreads(dt);
  updateBits(dt);sweepDead();lensUpdate(dt);
