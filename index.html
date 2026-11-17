@@ -70,6 +70,8 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 #act2 small:empty{display:none}
 #act2 i{position:absolute;top:-4px;right:-2px;min-width:24px;height:24px;padding:0 6px;border-radius:7px;background:var(--ink);color:#fff;font-style:normal;font-size:12px;font-weight:800;display:none;align-items:center;justify-content:center}
 #act2.on{transform:translateY(4px);box-shadow:0 1px 0 #c9a100,0 3px 8px rgba(22,29,51,.2);background:#f4c400}
+#act2.refill{background:#ab3028;color:#fff;box-shadow:0 0 0 3px #fff,0 5px 0 #79251f,0 9px 18px rgba(22,29,51,.28)}
+#act2.refill small{color:#fff}
 #act2.off{opacity:.42}
 #act2.aside{right:calc(max(10px,env(safe-area-inset-right)) + 70px)}
 @media(pointer:fine){#act2 i{display:flex}}
@@ -4064,8 +4066,9 @@ function vacUpdate(dt,act,pedal){
 // 줄에 닿은 팔다리는 하나씩 잘려 튕겨 나가고, 몸통에 대고 있으면 닿은 쪽부터 갈려 들어간다
 // 줄은 닳고 머리카락·살가죽이 감기며 덜 잘린다. 줄 풀기 버튼을 누르면 헤드를 바닥에 탁 쳐서 감긴 것을 털고 새 줄을 뺀다
 // 몸 기준 자리: 헤드 가운데 H0, 샤프트가 지나는 피벗 C(핸들 클램프). 헤드 쪽은 피벗을 축으로 다 돌고, 핸들 쪽은 30%만 따라 돈다(장갑이 화면을 가리지 않게)
+const TR_FULL_RADIUS=.33,TR_LINE_EXIT=.032,TR_WEAR_SCALE=.4;
 const TR={g:null,rigH:null,rigU:null,low:null,up:null,spool:null,disc:null,lines:[],wrap:null,dang:[],discMat:null,lineMat:null,mist:null,mistL:[],gu:null,gu2:null,
- hx:0,hz:-1.08,R:.27,th:0,w:0,rpm:0,hs:0,load:0,spin:0,on:false,len:1,lenV:1,ldirt:0,wrapK:0,mince:0,bp:'',bt:0,bumpR:0,nb:0,nl:0,bm:0,bf:0,bd:0,
+ hx:0,hz:-1.08,R:TR_FULL_RADIUS,th:0,w:0,rpm:0,hs:0,load:0,spin:0,on:false,len:1,lenV:1,ldirt:0,wrapK:0,mince:0,bp:'',bt:0,bumpR:0,nb:0,nl:0,bm:0,bf:0,bd:0,
  fanT:0,swT:0,lensT:0,dripT:0,boneT:0,eyeT:0,scrT:0,chT:0,sprT:0,chopT:0,
  H0:new THREE.Vector3(.02,0,-1.08),C:new THREE.Vector3(),HX:0,HZ:0,TMAX:.8};
 const TR_LINE=lin(0xd8f03a),TR_RED=new THREE.Color(.3,.025,.04),LEGC=lin(0x2e1c0e),AISK=lin(0xdccfff),_tc=new THREE.Color(),_p1=new THREE.Vector3(),_p2=new THREE.Vector3(),_p3=new THREE.Vector3();
@@ -4085,8 +4088,8 @@ function guardGeo(){ // 내 쪽 뒤를 감싸는 가드: 위판은 바깥으로 
   const P=(r,s,c,y)=>[r*s,y,r*c];
   quad(P(r0,sa,ca,yt(r0)),P(r0,sb,cb,yt(r0)),P(r1,sb,cb,yt(r1)),P(r1,sa,ca,yt(r1))); // 위
   quad(P(r1,sa,ca,yt(r1)-.005),P(r1,sb,cb,yt(r1)-.005),P(r0,sb,cb,yt(r0)-.005),P(r0,sa,ca,yt(r0)-.005)); // 아래
-  quad(P(r1,sa,ca,yt(r1)),P(r1,sb,cb,yt(r1)),P(r1+.003,sb,cb,yt(r1)-.034),P(r1+.003,sa,ca,yt(r1)-.034)); // 가장자리 바깥
-  quad(P(r1-.004,sb,cb,yt(r1)-.005),P(r1-.004,sa,ca,yt(r1)-.005),P(r1-.001,sa,ca,yt(r1)-.034),P(r1-.001,sb,cb,yt(r1)-.034))} // 가장자리 안쪽
+  quad(P(r1,sa,ca,yt(r1)),P(r1,sb,cb,yt(r1)),P(r1+.003,sb,cb,yt(r1)-.028),P(r1+.003,sa,ca,yt(r1)-.028)); // 가장자리 바깥
+  quad(P(r1-.004,sb,cb,yt(r1)-.005),P(r1-.004,sa,ca,yt(r1)-.005),P(r1-.001,sa,ca,yt(r1)-.028),P(r1-.001,sb,cb,yt(r1)-.028))} // 가장자리 안쪽
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();return g}
 function buildTrim(){
  const g=new THREE.Group();TR.g=g;
@@ -4114,7 +4117,7 @@ function buildTrim(){
  const sp=new THREE.Group();sp.position.set(hx-C.x,-C.y,hz-C.z);rigH.add(sp);TR.spool=sp;
  TR.lineMat=new THREE.MeshBasicMaterial({color:TR_LINE.clone(),transparent:true,depthWrite:false});
  const lg=BX(1,.0065,.0075);lg.translate(.5,0,0);
- for(const a of[0,Math.PI]){const l=new THREE.Mesh(lg,TR.lineMat);l.position.y=.036;l.rotation.y=a;l.renderOrder=2;sp.add(l);TR.lines.push(l)}
+ for(const a of[0,Math.PI]){const l=new THREE.Mesh(lg,TR.lineMat);l.position.set(Math.cos(a)*TR_LINE_EXIT,.036,0);l.rotation.y=a;l.scale.x=TR_FULL_RADIUS-TR_LINE_EXIT;l.renderOrder=2;sp.add(l);TR.lines.push(l)}
  const dt=canvasTex(256,256,(c,w,h)=>{c.clearRect(0,0,w,h);c.translate(w/2,h/2);
   for(let i=0;i<70;i++){const r=rnd(.18,1)*w/2,a=rnd(0,TAU),l=rnd(.3,1.6);c.strokeStyle='rgba(255,255,255,'+(rnd(.08,.3)*(.4+.6*r/(w/2)))+')';c.lineWidth=rnd(.6,1.8);c.beginPath();c.arc(0,0,r,a,a+l);c.stroke()}
   c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=3;c.beginPath();c.arc(0,0,w/2-3,0,TAU);c.stroke()},false);
@@ -4331,7 +4334,7 @@ function trimTak(){ // 탁: 꼭지 밑에 있던 것은 짓이겨지고, 감긴 
  for(let i=0,n=Math.round(4+w*10+t.mince*6);i<n;i++){const a=rnd(0,TAU),sp=rnd(.5,1.8);drop(hx+Math.cos(a)*.05,.06,hz+Math.sin(a)*.05,Math.cos(a)*sp,rnd(.3,1),Math.sin(a)*sp,rnd(.004,.008),TR.gu.uGoreC.value)}
  if(t.mince>.1||w>.1)stamp(hx,hz,.3,.3,0,1,10,TR.gu.uGoreC.value,.9);
  t.wrapK=0;t.len=1;t.ldirt=Math.min(t.ldirt,.06);t.mince*=.55}
-function trimClean(){const t=TR;for(const u of[t.gu,t.gu2]){u.uGore.value=0;u.uGoreWet.value=0}t.ldirt=t.wrapK=t.mince=0;t.len=t.lenV=1;t.bp='';t.bumpR=0;t.mistL.length=0;t.load=0} // 새 자리에서는 깨끗한 장비로 시작한다
+function trimClean(){const t=TR;for(const u of[t.gu,t.gu2]){u.uGore.value=0;u.uGoreWet.value=0}t.ldirt=t.wrapK=t.mince=0;t.len=t.lenV=1;t.R=TR_FULL_RADIUS;t.bp='';t.bumpR=0;t.mistL.length=0;t.load=0} // 새 자리에서는 깨끗한 장비로 시작한다
 function trimUpdate(dt,act,go2){
  const t=TR,on=S.tool==='trim';t.g.visible=on;mistStep(dt);
  if(!on){if(t.on){t.on=false;t.rpm=t.hs=t.load=0;t.bp='';t.bumpR=0;AU.engine(false)}return}
@@ -4343,16 +4346,15 @@ function trimUpdate(dt,act,go2){
  trimSwing(run,dt);
  if(go2&&started&&!lock&&!t.bp){t.bp='up';t.bt=0;AU.whoosh()}
  trimBump(dt);
- t.lenV=damp(t.lenV,t.len,t.lenV<t.len?14:3,dt);t.R=.14+.13*t.lenV;
+ t.lenV=damp(t.lenV,t.len,t.lenV<t.len?14:3,dt);t.R=lerp(.14,TR_FULL_RADIUS,t.lenV);
  // 자리: 샤프트가 지나는 클램프를 축으로 헤드가 내 앞 부채꼴을 그린다
- const pvx=P.x+t.C.x,pvz=P.z+t.C.z,co=Math.cos(t.th),sn=Math.sin(t.th);
- t.hx=pvx+t.HX*co-t.HZ*sn;t.hz=pvz+t.HX*sn+t.HZ*co;
+ const pvx=P.x+t.C.x,pvz=P.z+t.C.z;
  const vib=t.rpm*.0022+t.load*.004;
  t.g.position.set(pvx+(Math.random()-.5)*vib,(Math.random()-.5)*vib,pvz+(Math.random()-.5)*vib*.5);t.rigH.rotation.set(t.bumpR,-t.th,clamp(t.w*.03,-.06,.06),'YXZ');t.rigU.rotation.set(t.bumpR*.25,-t.th*.3,0,'YXZ');
  // 줄 · 잔상 · 감긴 것
  t.spin+=dt*(t.hs*58+(t.rpm>.25?.4:0));t.spool.rotation.y=t.spin;
  _tc.copy(TR_LINE).lerp(TR_RED,Math.min(.92,t.ldirt*.95));t.lineMat.color.copy(_tc);t.discMat.color.copy(_tc);
- t.lineMat.opacity=clamp(1-t.hs*1.25,0,1);for(const l of t.lines)l.scale.set(t.R-.036,1,1);
+ t.lineMat.opacity=clamp(1-t.hs*1.25,0,1);for(const l of t.lines)l.scale.x=t.R-TR_LINE_EXIT;
  t.disc.scale.setScalar(t.R);t.discMat.opacity=.75*ss(t.hs*1.4);t.disc.visible=t.hs>.02;
  t.wrap.visible=t.wrapK>.04;if(t.wrap.visible){const k=t.wrapK;t.wrap.scale.set(1+k*.35,.35+k*1.9,1+k*.35)}
  t.dang.forEach((d,i)=>{d.visible=t.wrapK>.18+i*.12;if(d.visible)d.scale.setScalar(.7+t.wrapK*.6)});
@@ -4360,6 +4362,7 @@ function trimUpdate(dt,act,go2){
  for(const u of[t.gu,t.gu2]){u.uGoreWet.value=Math.max(.3,u.uGoreWet.value-dt*.08);if(!EX.on)u.uGore.value=Math.max(0,u.uGore.value-dt*.003)}
  if(!EX.on){t.ldirt=Math.max(0,t.ldirt-dt*.004);t.mince=Math.max(0,t.mince-dt*.003)}
  t.g.updateMatrixWorld(true);
+ _p1.set(0,.036,0).applyMatrix4(t.spool.matrixWorld);t.hx=_p1.x;t.hz=_p1.z;
  // 가드 안쪽에 눌어붙은 다짐육, 휘두르면 뚝뚝 떨어진다
  if(t.mince>.03){const n=Math.round(t.mince*16),gc=t.gu.uGoreC.value;
   const ga=Math.atan2(-t.HX,-t.HZ),yo=-t.C.y; // 가드는 헤드에서 클램프 쪽(내 쪽)을 향한다
@@ -4382,7 +4385,9 @@ function trimUpdate(dt,act,go2){
   if(time>t.swT){t.swT=time+.18;const sn2=stainNear(hx,hz,.16);if(sn2&&t.hs>.5)stamp(hx,hz,R*2.15,R*2.15,Math.sin(t.spin),Math.cos(t.spin),10,sn2.c.clone().multiplyScalar(.85),.8)}}
  // 줄은 닳고 감기며 붉게 물들고, 가드에는 다짐육이 눌어붙는다 (몰려 갈려도 서너 마리 몫까지만 센다)
  if(t.nb||t.nl){const k=Math.min(3,t.nb)*dt,ink=t.inkC||BLOOD;
-  t.len=Math.max(.2,t.len-k*.013-t.nl*.003);t.ldirt=Math.min(1,t.ldirt+k*.15+t.nl*.015);t.wrapK=Math.min(1,t.wrapK+k*.012+t.nl*.003);t.mince=Math.min(1,t.mince+k*.03);trimGore(ink,k*.04+t.nl*.006)}
+  t.len=Math.max(.2,t.len-(k*.013+t.nl*.003)*TR_WEAR_SCALE);
+  t.wrapK=Math.min(1,t.wrapK+(k*.012+t.nl*.003)*TR_WEAR_SCALE);
+  t.ldirt=Math.min(1,t.ldirt+k*.15+t.nl*.015);t.mince=Math.min(1,t.mince+k*.03);trimGore(ink,k*.04+t.nl*.006)}
  t.load=damp(t.load,Math.min(1,load/4),load/4>t.load?10:2.5,dt);
 }
 
@@ -5228,6 +5233,7 @@ function act2Place(){ // 결과보고전에서 장비 버튼 줄(세로)과 겹�
  const t=$('extools').getBoundingClientRect(),r=a.getBoundingClientRect();if(t.width&&r.left<t.right+4&&r.right>t.left-4&&r.top<t.bottom+8&&r.bottom>t.top-8)a.classList.add('aside');else if(was)a.classList.remove('aside')}
 function updateAct2(){ // 보조 버튼: 안전화는 양발 구르기, 집게는 봉투 밟기, 흡입기는 갈기, 예초기는 줄 풀기. 다른 장비에서는 감춘다
  const t=S.tool,el=$('act2'),show=t==='boot'||t==='tong'||t==='vac'||t==='trim'||t==='shovel';let lab='',sub='',ok=true,say='';
+ const refill=t==='trim'&&TR.len<=.5;
  if(t==='boot'){lab='구르기';say='양발 구르기'}
  else if(t==='tong'){lab='밟기';sub=TG.in.length+'/'+TG.CAP;ok=TG.in.length>0&&['idle','reach','carry','ready','tread'].includes(TG.ph);say='봉투 밟기 · '+TG.in.length+'마리'}
  else if(t==='vac'){
@@ -5235,9 +5241,9 @@ function updateAct2(){ // 보조 버튼: 안전화는 양발 구르기, 집게�
   else if(VC.gr>0){lab='배출 중';ok=false;say=lab}
   else{lab='갈기';sub=VC.tank.length+'/'+VC.CAP;ok=VC.tank.length>0;say='갈기 · '+VC.tank.length+'마리'}}
  else if(t==='shovel'){const n=SH.carry.length+SH.heap.length;lab='퍼담기';sub=n?'날 위 '+n:'';ok=!['heave','dump','bang'].includes(SH.ph);say='퍼담기'+(n?' · '+n:'')}
- else if(t==='trim'){lab='줄 풀기';sub=TR.len<.5?'줄 짧음':'';ok=!TR.bp;say='줄 풀기'+(sub?' · '+sub:'')}
+ else if(t==='trim'){lab='줄 풀기';sub=refill?'보충 필요':'';ok=!TR.bp;say='줄 풀기'+(sub?' · '+sub:'')}
  const on=ok&&acting2()&&!paused,key=show+'|'+lab+'|'+sub+'|'+ok+'|'+on;if(key===a2Key)return;a2Key=key;
- const vis=el.hidden;el.hidden=!show;el.children[0].textContent=lab;el.children[1].textContent=sub;el.classList.toggle('off',!ok);el.classList.toggle('on',on);el.setAttribute('aria-label',say);
+ const vis=el.hidden;el.hidden=!show;el.children[0].textContent=lab;el.children[1].textContent=sub;el.classList.toggle('off',!ok);el.classList.toggle('on',on);el.classList.toggle('refill',refill);el.setAttribute('aria-label',say);
  if(vis!==el.hidden||A2P.ex!==EX.on||A2P.w!==W||A2P.h!==H){A2P.ex=EX.on;A2P.w=W;A2P.h=H;act2Place()}
 }
 const A2P={ex:null,w:0,h:0};
@@ -5302,7 +5308,7 @@ one('hand',()=>{handPose(.5,0);return shoot([[HG.g,0,0,0,-.55,.55,.3]],{dir:[.15
  one('tong',()=>tongIcon({ry:-.45,bs:1.05,hk:1.22,knot:2.8,hd:[1,.28,.3],len:.4,thick:1.9,up:.012,op:1,env:.35,rough:.45,cr:.22,dir:[.2,.3,1],tint:0xe9eef3,hemi:.5,key:1.1}));
  one('shovel',()=>shoot([[SH.g,0,0,0,0,0,0]],{only:m=>m===SH.g.children[0],extra:[[0,.42,.75]],dir:[-1,1,-.8],roll:.12}));
  one('vac',()=>shoot([[VC.g,0,0,0,0,0,0]],{pre(){VC.pipe.visible=false},post(){VC.pipe.visible=true},only:m=>m===VC.can,extra:[[.04,.06,-1.02],[.12,.5,-.5]],dir:[.55,.55,1]}));
- one('trim',()=>shoot([[TR.g,0,0,0,0,0,0]],{pre(){TR.rigH.rotation.set(0,0,0);TR.rigU.rotation.set(0,0,0);TR.rigU.visible=false;TR.disc.visible=false;TR.lineMat.opacity=1;TR.spool.rotation.y=.14;for(const l of TR.lines)l.scale.set(.26,1,1)},post(){TR.rigU.visible=true},verts:3,dir:[-.6,1,.7],roll:-.25})); // 아래 반쪽(헤드·가드·샤프트)만, 줄은 가드 양옆으로
+ one('trim',()=>shoot([[TR.g,0,0,0,0,0,0]],{pre(){TR.rigH.rotation.set(0,0,0);TR.rigU.rotation.set(0,0,0);TR.rigU.visible=false;TR.disc.visible=false;TR.lineMat.opacity=1;TR.spool.rotation.y=.14;for(const l of TR.lines)l.scale.x=TR_FULL_RADIUS-TR_LINE_EXIT},post(){TR.rigU.visible=true},verts:3,dir:[-.6,1,.7],roll:-.25})); // 아래 반쪽(헤드·가드·샤프트)만, 줄은 가드 양옆으로
  renderer.setClearColor(oc,oa);rt.dispose();
 }
 const GEYES={hand:[],wash:[],boot:[1,1],tong:[1,0,1],shovel:[1,0,0,1],vac:[1,1,0,0,0],trim:[1,0,0,1,1,0,1]}; // 장비 메뉴에 그리는 눈 (1: 작은 눈)
