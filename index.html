@@ -434,7 +434,7 @@ const TOOLS=[
  {id:'hand',name:'맨손',short:'맨손',price:0,desc:'한 마리를 집어 올립니다. 바짝 붙어 있던 것들은 한 줌에 같이 쥐입니다. 꾹 누르고 있으면 손안에서 쥐어짭니다.'},
  {id:'wash',name:'고압세척기',short:'세척기',price:0,desc:'물줄기로 바닥 얼룩과 찌꺼기를 씻어 배수구로 보냅니다. 누른 채 끌면 물줄기가 따라오고, 한 마리에 계속 맞히면 살가죽이 벗겨지다 터집니다.'},
  {id:'boot',name:'안전화',short:'안전화',price:30000,desc:'밟아서 처리합니다. 길게 누르면 체중이 실리고, 구르기 버튼을 누르고 있으면 양발로 번갈아 밟습니다.'},
- {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:120000,desc:'한 번에 여섯 명까지 집어 64명까지 담습니다. 가득 차거나 밟기 버튼을 누르면 봉투를 묶어 놓고, 누르는 동안 밟습니다.'},
+ {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:120000,desc:'몇 마리는 콕 집고, 몰린 곳은 훑어 한 번에 최대 20마리를 담습니다. 50L 봉투 정원은 160마리입니다. 가득 차거나 밟기 버튼을 누르면 봉투를 묶어 놓고, 누르는 동안 밟습니다.'},
  {id:'shovel',name:'수거용 삽',short:'삽',price:250000,desc:'내려칠 때마다 더 짓이겨집니다. 누르고 있으면 계속 내려치고, 퍼담기 버튼을 누르는 동안 긁어 담았다가 떼면 수거통에 텁니다.'},
  {id:'vac',name:'흡입 수거기',short:'흡입기',price:900000,desc:'300명까지 모아 담습니다. 가득 차거나 갈기 버튼을 누르면 롤러로 갈아 아래 통에 잘게 쌓습니다. 갈리는 동안 누르면 두꺼운 유리 누름판으로 내리찍고, 꾹 누르고 있으면 짓눌러 밀어 넣습니다. 떼면 판을 들어 올립니다.'},
  {id:'trim',name:'예초기',short:'예초기',price:1400000,desc:'누르는 동안 줄이 돕니다. 누른 채 좌우로 끌면 휘두르고, 줄 풀기 버튼을 누르면 헤드를 바닥에 쳐서 감긴 것을 털고 새 줄을 뺍니다.'}
@@ -5515,19 +5515,19 @@ function trimUpdate(dt,act,go2){
 // 봉투는 고리를 층층이 쌓은 그물(바닥 → 옆구리 → 윗면 → 매듭)이고, 매 프레임 꼭짓점을 다시 놓는다.
 // 비닐·안에 든 것·고인 피가 모두 같은 변형(bagXf)을 거치므로 어디를 밟아도 안의 것이 비닐 밖으로 나가지 않는다.
 const BG_NS=48,BG_NR=30,BG_W1=BG_NS+1,BG_R0=.125,BG_RM=.185,BG_YM=.105,BG_H=.3,BG_RK=.014,BG_M=.06,BG_Z=.86,BG_HR=.112,BG_EQ=12,BG_TEAR=8,BG_S=6,BG_L=30; // BG_S: 이만큼까지는 '적게' · BG_L: 이만큼부터는 '많이'
-const mkBF=i=>({i,side:i?-1:1,boot:null,hem:null,cur:mkPose(),from:mkPose(),toe:new THREE.Vector3(),ph:'idle',t:0,p:0,rate:4,tx:0,tz:0,yaw0:0,pins:[],n0:0,kills:0,nextPop:0,gap:.03,lift:0,go:0,y0:0,sq:0,jump:0,force:0,tw:1});
-const TG={CAP:64,q2:0,g:null,a:null,b:null,gm:null,bag:null,VP:null,VN:null,St:null,stain:null,rim:null,knot:null,eyes:null,pool:null,poolP:null,shade:null,skins:null,lumps:null,guts:null,balls:null,pokes:[],pokeA:null,pokeL:null,seepT:0,
- ph:'idle',t:0,held:[],tgts:[],in:[],remains:[],spl:[],pops:[],late:[],dead:0,load:0,armed:false,
- sz:.7,nv:0,hk:1,hs:1,rs:1,ir:0,neck:0,B:0,Bv:0,jx:0,jz:0,jvx:0,jvz:0,jy:0,jvy:0,air:1,blood:0,L0:0,Lw:0,floorH:.012,torn:0,tears:[],tearT:0,tier:1,zm:0,zp:0,landT:-1,fj:0,pk:1,pkT:1,sqT:0,dripT:0,
+const mkBF=i=>({i,side:i?-1:1,boot:null,hem:null,cur:mkPose(),from:mkPose(),toe:new THREE.Vector3(),ph:'idle',t:0,p:0,rate:4,layers:1,tx:0,tz:0,yaw0:0,pins:[],n0:0,kills:0,nextPop:0,gap:.03,lift:0,go:0,y0:0,sq:0,jump:0,force:0,tw:1});
+const TG={CAP:160,q2:false,g:null,a:null,b:null,gm:null,bag:null,VP:null,VN:null,St:null,stain:null,rim:null,knot:null,eyes:null,pool:null,poolP:null,shade:null,skins:null,lumps:null,guts:null,balls:null,pokes:[],pokeA:null,pokeL:null,seepT:0,
+ ph:'idle',t:0,held:[],tgts:[],sweeping:false,sweepR:0,sweepAngle:0,batch:0,hop:0,hopV:0,in:[],remains:[],spl:[],pops:[],late:[],dead:0,load:0,armed:false,
+ sz:.7,nv:0,packed:0,hk:1,hs:1,rs:1,ir:0,neck:0,B:0,Bv:0,jx:0,jz:0,jvx:0,jvz:0,jy:0,jvy:0,air:1,blood:0,L0:0,Lw:0,floorH:.012,torn:0,tears:[],tearT:0,tier:1,zm:0,zp:0,landT:-1,fj:0,pk:1,pkT:1,sqT:0,dripT:0,
  hang:0,hl:.34,hb:1,K:new THREE.Vector3(),swx:0,swz:0,svx:0,svz:0,spin:0,fly:0,vx:0,vy:0,vz:0,thudT:0,fr:0,
  F:[mkBF(0),mkBF(1)],dents:[{x:0,z:0,c:1,s:0,y:0,k:0,push:0},{x:0,z:0,c:1,s:0,y:0,k:0,push:0}],k:0,last:1,ft:0,
  bloodC:new THREE.Color(.25,.01,.01),uCr:{value:.8},T:new THREE.Vector3(),tip:new THREE.Vector3(),from:new THREE.Vector3(),knotW:new THREE.Vector3(),tipV:new THREE.Vector3(),tip0:new THREE.Vector3()};
 const _pf=[0,0],_cl=new THREE.Color(),tri=x=>Math.abs(x-Math.floor(x)-.5)*4-1;let _bw=0,_bq=1;
 // 봉투 속: 담긴 것들은 바깥에서 보던 크기 그대로, 바닥부터 빈틈없이 포개져 쌓인다. 봉투는 담긴 만큼만 커져서 늘 속이 꽉 차 보인다
 const BG_SB=1,BG_TH=.021,BG_PV=1.85e-4,BG_SZ0=.7; // 봉투 속 몸 크기(바깥과 같다) · 누운 몸 두께(m) · 한 마리가 더미에서 차지하는 부피(m³) · 빈 봉투 크기
-const bagSz=n=>BG_SZ0+.22*Math.pow(clamp(n/TG.CAP,0,1),.7);
+const bagSz=n=>BG_SZ0+.53*Math.pow(clamp(n/TG.CAP,0,1),.7);
 const bagPileH=(n,sz)=>Math.max(BG_TH,n*BG_PV/(.0755*sz*sz)); // 더미 높이(m)
-const BG_SL=[];for(let i=0;i<96;i++){const h=k=>{const v=Math.sin(i*12.9898+k*78.233)*43758.5453;return v-Math.floor(v)};BG_SL.push({th:i*2.39996323+h(1)*.6,ro:Math.pow((.37+i*.61803399)%1,.45),ps:h(2)*2-1,dir:h(3)<.5?-1:1,tw:.55+.45*h(4),yj:h(5)-.5})}
+const BG_SL=[];for(let i=0;i<TG.CAP;i++){const h=k=>{const v=Math.sin(i*12.9898+k*78.233)*43758.5453;return v-Math.floor(v)};BG_SL.push({th:i*2.39996323+h(1)*.6,ro:Math.pow((.37+i*.61803399)%1,.45),ps:h(2)*2-1,dir:h(3)<.5?-1:1,tw:.55+.45*h(4),yj:h(5)-.5})}
 const _bn=new THREE.Vector3(),_bt=new THREE.Vector3(),_bs=new THREE.Vector3(),_bmx=new THREE.Matrix4(),_bq4=new THREE.Quaternion(),_beu=new THREE.Euler();
 function bagProf(u,nk,o){ // 고리 하나의 반지름·높이(크기 1 기준). nk 0: 입을 벌리고 서 있다 · 1: 묶어서 내려놓았다
  let ro,yo,rt,yt;
@@ -5576,7 +5576,7 @@ function buildTong(){
  geo.setIndex(idx);
  const print=canvasTex(1024,512,(c,w,h)=>{c.fillStyle='#000';c.fillRect(0,0,w,h);c.fillStyle='#fff';c.textAlign='center';c.textBaseline='middle';
   const ff='"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif';
-  c.font='900 60px '+ff;c.fillText('쓰레기 종량제 봉투',w/2,h*.47);c.font='700 27px '+ff;c.fillText('일반용 · 20L · 한국창작인복지재단',w/2,h*.615);
+  c.font='900 60px '+ff;c.fillText('쓰레기 종량제 봉투',w/2,h*.47);c.font='700 27px '+ff;c.fillText('일반용 · 50L · 한국창작인복지재단',w/2,h*.615);
   c.fillRect(w*.13,h*.36,w*.74,7);c.fillRect(w*.13,h*.69,w*.74,4)},false);
  print.wrapS=THREE.RepeatWrapping;
  for(const[side,ro]of[[THREE.BackSide,5],[THREE.FrontSide,6]]){const m=new THREE.Mesh(geo,bagMat(side,print));m.renderOrder=ro;m.frustumCulled=false;bag.add(m)}
@@ -5588,7 +5588,7 @@ function buildTong(){
   for(let j=0;j<PS;j++){pi.push(0,1+(j+1)%PS,1+j);for(let k=0;k<PR-1;k++){const a=1+k*PS+j,b=1+k*PS+(j+1)%PS,c=a+PS,d=b+PS;pi.push(a,b,c,b,d,c)}}
   const at=new THREE.BufferAttribute(TG.poolP,3);at.setUsage(THREE.DynamicDrawUsage);pg.setAttribute('position',at);pg.setIndex(pi);pg.computeVertexNormals();
   TG.pool=new THREE.Mesh(pg,new THREE.MeshStandardMaterial({color:0x4a0a0c,roughness:.16,envMapIntensity:.32}));TG.pool.frustumCulled=false;TG.pool.visible=false;bag.add(TG.pool)}
- TG.skins=solidBatch(bag,64,skinIM.geometry,.3);TG.lumps=solidBatch(bag,96);TG.guts=solidBatch(bag,40,gutIM.geometry,.12);TG.balls=solidBatch(bag,40,eyeIM.geometry,.12);for(const b of[TG.skins,TG.lumps,TG.guts,TG.balls])bagClipMat(b.material);
+ TG.skins=solidBatch(bag,TG.CAP,skinIM.geometry,.3);TG.lumps=solidBatch(bag,96);TG.guts=solidBatch(bag,40,gutIM.geometry,.12);TG.balls=solidBatch(bag,40,eyeIM.geometry,.12);for(const b of[TG.skins,TG.lumps,TG.guts,TG.balls])bagClipMat(b.material);
  TG.pokeA=solidBatch(bag,8,armIM.geometry,.3);TG.pokeL=solidBatch(bag,8,legIM.geometry,.3); // 비닐을 뚫고 나온 팔·다리 (이것만 비닐 밖에 그린다)
  TG.shade=new THREE.Mesh(new THREE.CircleGeometry(1,32),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.13,depthWrite:false}));TG.shade.rotation.x=-Math.PI/2;TG.shade.renderOrder=1;bag.add(TG.shade);
  bag.visible=false;scene.add(bag);TG.bag=bag;
@@ -5597,7 +5597,7 @@ function buildTong(){
  bagShape();
 }
 function bagRest(c,o){ // 더미 안에서 이 몸이 놓일 자리(봉투 기준, 눌리기 전)와 누운 방향(c.oq). 가장자리 것은 비닐에 등을 대고 벽을 따라 눕고, 속과 위의 것은 아무 쪽으로나 엎어져 있다
- const g=TG,sz=g.sz,S=BG_SL[c.bagI%96],n=Math.max(1,g.nv),q=clamp((c.bagI+.5)/n,0,1),hk=lerp(1,g.hk,g.neck);
+ const g=TG,sz=g.sz,S=BG_SL[c.bagI],n=Math.max(1,g.nv),q=clamp((c.bagI+.5)/n,0,1),hk=lerp(1,g.hk,g.neck);
  const Hp=bagPileH(n,sz),y=.004*sz+BG_TH*.5+clamp(Math.pow(q,.85)+S.yj*.6/n,0,1)*Math.max(0,Hp-BG_TH);
  const yu=y/sz,t=clamp(yu/.4,0,1),Rw=lerp(lerp(BG_R0,.115,t)+.062*Math.sin(Math.PI*Math.pow(t,.8)),bagRadAt(yu/hk),g.neck)*sz; // 그 높이에서 벽까지
  const L=.07*c.r/.047,d=S.ro*Math.max(.006,Rw-.046*c.r/.047)*g.pk,am=Math.asin(clamp((Rw-.02-d)/L,0,1)); // am: 벽을 뚫지 않고 벽 쪽으로 틀 수 있는 한도
@@ -5620,7 +5620,7 @@ function bagXf(x,y,z,o,cm=1){ // 봉투 안의 한 점을 지금 눌리고 부�
   q=Math.min(q,1-w*(1-cap/Math.max(.001,top)));if(w*d.k>wm)wm=w*d.k;
   if(dist>0){const dl=Math.hypot(dx,dz)||1,p=d.push*d.k*w*(1-w)*4*cm;x+=dx/dl*p;z+=dz/dl*p}}
  y*=q;
- const bl=g.B*(1-wm),rb=1+bl*.16;y*=1+bl*.6;x*=rb;z*=rb;
+ const bl=g.B*(1-wm),rb=1+bl*lerp(.55,.16,g.neck);y*=1+bl*lerp(-.22,.6,g.neck);x*=rb;z*=rb;
  const hk=y/(BG_H*g.sz);x+=g.jx*hk;z+=g.jz*hk;y*=1+g.jy;
  _bw=wm;_bq=q;return o.set(x,y,z)}
 function bagHang(a,u,rn,o){ // 매듭을 집어 올리면 물방울처럼 처진다. rn: 1이면 비닐, 그보다 작으면 그만큼 안쪽
@@ -5678,12 +5678,15 @@ function bagClipTable(){ // 방위 32칸마다: 높이 16칸의 벽까지 거리
  BC_TX.needsUpdate=true}
 function bagShape(){ // 꼭짓점·법선·얼룩을 다시 놓는다
  const g=TG,NS=BG_NS,NR=BG_NR,W1=BG_W1,VP=g.VP,VN=g.VN,sz=g.sz,nk=g.neck,hang=g.hang,yk=sz*lerp(1,g.hk,nk);
+ const gusset=(1-nk)*(1-ss(g.nv/g.CAP));
  const slack=clamp((nk>0?1-.55*g.air:.3)+hang-g.B*2.2,.2,1.25); // 바람이 빠질수록 비닐이 남아돌아 구겨진다
  for(let i=0;i<NR;i++){const u=i/(NR-1);bagProf(u,nk,_pf);
   const r0=_pf[0]*sz,y0=_pf[1]*yk,fold=nk*ss((u-.52)/.36)*(1-.6*ss((u-.92)/.06)),ko=.03*sz*nk*ss((u-.5)/.42);
   const env=ss((u-.07)/.1)*(1-ss((u-.9)/.06)),up=ss((u-.34)/.16),ca=(.0028+.0115*slack)*sz*env,lm=.035*nk*env;
   for(let j=0;j<NS;j++){const a=j/NS*TAU-Math.PI/2,pl=Math.sin(a*9+Math.sin(a*4)*1.6);
-   const wr=1+fold*(.13*pl+.05*Math.sin(a*23+1.3))+lm*Math.sin(a*4+u*9+1.7)*Math.sin(u*7+a*2);
+   // 빈 봉투의 양옆에 안으로 접혀 있던 면이 채워질수록 펴진다.
+   const pleat=.25*gusset*env*Math.pow(Math.abs(Math.cos(a)),12);
+   const wr=1-pleat+fold*(.13*pl+.05*Math.sin(a*23+1.3))+lm*Math.sin(a*4+u*9+1.7)*Math.sin(u*7+a*2);
    bagXf(Math.cos(a)*r0*wr,y0*(1+fold*.07*Math.sin(a*9+Math.sin(a*4)*1.6+1.2)),Math.sin(a)*r0*wr-ko,_a);
    const cr=ca*(1-.85*_bw)*(tri(j/NS*7+u*5.3+.2)*.6+tri(j/NS*11-u*8.1+.7)*.4),rr=cr*(1-up*(1-hang)); // 접힌 면
    if(hang>0){bagHang(a,u,1,_b);_a.lerp(_b,hang)}
@@ -5757,31 +5760,31 @@ function bagPoke(c){ // 터진 것의 팔다리 하나가 비닐을 뚫고 삐�
  const g=TG,max=g.tier===0?(g.load>=3?2:1):g.tier===1?4:6;
  if(c.type===6||g.pokes.length>=max||Math.random()>=(max-g.pokes.length)/(g.in.length+1))return;
  let a0=Math.atan2(c.brz||0,c.brx||0)+rnd(-.5,.5);
- for(let k=0;k<10;k++){let a=a0+(k?rnd(-1.7,1.7):0);if(Math.sin(a)<0&&Math.random()<.65)a=-a; // 보는 쪽 옆구리로 더 자주 나온다
+ for(let k=0;k<10;k++){const a=a0+(k?rnd(-1.7,1.7):0);
   const j=((Math.round((a+Math.PI/2)/TAU*BG_NS)%BG_NS)+BG_NS)%BG_NS,i=6+(Math.random()*4|0); // 밟아도 옆구리로 남는 높이 (찢어지는 자리 언저리)
   if(Math.abs(j-BG_NS/2)<8&&i>7)continue; // 붙여 둔 눈 둘레는 피한다
   if(g.pokes.some(q=>Math.min(Math.abs(q.j-j),BG_NS-Math.abs(q.j-j))<6))continue; // 이미 뚫린 자리 옆도 피한다
-  g.pokes.push({i,j,leg:Math.random()<.45,s:c.r*BG_SB*rnd(1.3,1.6),color:(c.type===5?AISK:SKINC).clone().lerp(g.bloodC,.2),t:0,ph:rnd(0,TAU),tw:rnd(-1,1),dr:rnd(.3,.65),dep:rnd(.14,.3),lk:0,first:1});
+  g.pokes.push({i,j,leg:Math.random()<.45,s:c.r*BG_SB,color:(c.type===5?AISK:SKINC).clone().lerp(g.bloodC,.2),t:0,ph:rnd(0,TAU),tw:rnd(-1,1),dr:rnd(.3,.65),dep:rnd(.80,.91),lk:0,first:1});
   AU.bubble(rnd(520,760),.16,.012);return}
 }
-function bagPop(c,F){ // 봉투 안에서 한 마리가 터진다
+function bagPop(c,F,accent=true){ // 봉투 안에서 한 마리가 터진다
  if(c.dead)return;const g=TG,i=g.in.indexOf(c);if(i>=0)g.in.splice(i,1);
  _b.set(c.brx||0,c.bry||.02,c.brz||0);
  g.remains.push({x:_b.x,y:_b.y,y1:_b.y*.55,z:_b.z,ry:c.yaw,s:c.r*BG_SB*rnd(.95,1.2),color:c.skin,gc:c.ink.clone().lerp(GUT,.5),ls:rnd(.75,1.25),ox:rnd(-.014,.014),oz:rnd(-.014,.014),
   eye:c.type!==6&&Math.random()<.42,gut:c.type!==6&&Math.random()<.38,poo:c.type===6,t:0,ha:rnd(0,TAU),hu:rnd(.04,.4),hr:rnd(.15,.82),hx:rnd(-1.3,1.3),hz:rnd(-1.3,1.3)});
  _cl.copy(BLOOD).lerp(c.ink,.18);if(g.blood<.01)g.bloodC.copy(_cl);else g.bloodC.lerp(_cl,.08);
  g.dead++;g.blood+=c.type===6?.5:1;bagPoke(c);
- bagSplat(c.bx,c.by,c.bz,c.ink,3+(Math.random()*3|0));
- if(g.pops.length<24)g.pops.push({x:_b.x,y:_b.y,z:_b.z,t:0,r:c.r*BG_SB*rnd(.9,1.3),color:BLOOD.clone().lerp(c.ink,.3)});
+ if(accent)bagSplat(c.bx,c.by,c.bz,c.ink,3+(Math.random()*3|0));
+ if(accent&&g.pops.length<24)g.pops.push({x:_b.x,y:_b.y,z:_b.z,t:0,r:c.r*BG_SB*rnd(.9,1.3),color:BLOOD.clone().lerp(c.ink,.3)});
  killCreature(c,'none');
- AU.crackle(1+(Math.random()*2|0),.8,0,460,1500,.03);AU.bubble(rnd(170,300),.2,.012);if(Math.random()<.25)AU.squelch(.32);
- shake=Math.max(shake,g.tier?.42:.3);g.jvy-=.25;g.Bv+=.35;if(F){F.sq=1;F.kills++}
+ if(accent){AU.crackle(1+(Math.random()*2|0),.8,0,460,1500,.03);AU.bubble(rnd(170,300),.2,.012);if(Math.random()<.25)AU.squelch(.32)}
+ shake=Math.max(shake,g.tier?.42:.3);if(accent){g.jvy-=.25;g.Bv+=.35}if(F){F.sq=1;F.kills++}
 }
 function bagStep(F,mode){ // 다음 디딜 자리. mode 0: 제 쪽에서 살아 있는 것이 가장 많이 깔리는 곳 · 1: 제 쪽 한가운데 · 2: 봉투 한복판(조금 담겼을 때 한 발로)
  const g=TG,c0=mode===2?.14:.42,yaw=-F.side*(mode===2?.1:.16+rnd(-.08,.08)),cy=Math.cos(yaw),sy=Math.sin(yaw),R=BG_RM*g.sz*g.rs;
  let best=-1,tx=F.side*R*c0,tz=0;
  for(let k=0;k<(mode?1:10);k++){const x=F.side*R*(k?rnd(F.jump?.3:-.12,.62):c0),z=k?rnd(-.3,.3)*R:0;let n=0;
-  for(const c of g.in){const dx=c.bx-x,dz=c.bz-z;if(inSole(dx*cy-dz*sy,dx*sy+dz*cy,.03))n++}
+  for(const c of g.in){const dx=c.bx-x,dz=c.bz-z;if(inSole(dx*cy-dz*sy,dx*sy+dz*cy,.03+.12*g.packed))n++}
   if(n>best){best=n;tx=x;tz=z}}
  if(!mode&&best<=0&&g.in.length){const c=pick(g.in);tx=F.side*(F.jump?clamp(Math.abs(c.bx),R*.3,R*.62):clamp(F.side*c.bx,-R*.12,R*.7));tz=clamp(c.bz,-R*.45,R*.45)} // 발밑에 아무도 없으면 남은 것을 찾아가 밟는다
  {const O=g.F[1-F.i];if((O.ph==='press'||O.ph==='swing'||O.ph==='fall')&&Math.abs(tx-O.tx)<.11&&Math.abs(tz-O.tz)<.22){const a=O.tx+F.side*.11;tx=Math.abs(a)<=R*.75?a:O.tx-F.side*.11}} // 다른 발이 딛고 있는 자리와 겹치지 않게 비켜 디딘다
@@ -5791,12 +5794,12 @@ function bagImpact(F){ // 밑창이 봉투에 닿는 순간
  if(jump)g.landT=time;F.jump=F.force=0;
  d.x=cur.x-bp.x;d.z=cur.z-bp.z;d.c=Math.cos(cur.yaw);d.s=Math.sin(cur.yaw);d.y=cur.y;d.k=.3;d.push=.045;
  const few=soft||g.in.length<=Math.max(3,g.load*.1); // 조금 담겼거나 몇 안 남으면 어디를 밟든 다 눌린다
- F.pins.length=0;for(const c of g.in){const dx=c.bx-d.x,dz=c.bz-d.z;if(few||inSole(dx*d.c-dz*d.s,dx*d.s+dz*d.c,.03)){F.pins.push(c);c.panic=1}}
+ F.pins.length=0;for(const c of g.in){const dx=c.bx-d.x,dz=c.bz-d.z;if(few||inSole(dx*d.c-dz*d.s,dx*d.s+dz*d.c,.03+.12*g.packed)){F.pins.push(c);c.panic=1}}
  F.pins.sort((a,b)=>a.tough-b.tough);
  const n=F.n0=F.pins.length,h0=clamp((F.y0-g.floorH)/.18,.25,1),hard=h0*(jump?1.6:soft?.5:1);
- F.kills=0;F.sq=0;F.ph='press';F.t=0;F.lift=0;F.tw=1;g.last=F.i;
+ F.kills=0;F.layers=1+Math.round((jump?8:3)*g.packed);F.sq=0;F.ph='press';F.t=0;F.lift=0;F.tw=1;g.last=F.i;
  if(soft){F.p=.05;F.rate=1.25;F.nextPop=time+.22;F.gap=clamp(.9/Math.max(1,n),.12,.26)} // 조금 담겼을 때: 지그시 누르는 사이에 하나씩 천천히 터진다
- else{F.p=.18;F.rate=4;F.nextPop=time+.035;F.gap=clamp((jump?.24:.2)/Math.max(1,n),jump?.016:.028,.055)}
+ else{F.p=.18+.14*g.packed;F.rate=4+2*g.packed;F.nextPop=time+.035;F.gap=clamp((jump?.24:.2)/Math.max(1,n),jump?.016:.028,.055)}
  g.jvy-=1.5*hard;g.jvx-=F.side*.32*hard;g.jvz+=rnd(-.2,.2)*hard;g.Bv+=2.4*hard*(.3+.7*g.air);
  if(first){shake=Math.max(shake,jump?1.25:soft?.3:n?.7:.4);TD.bobV-=jump?1.6:soft?.14:n?.4:.26;if(jump)hitstop=.05;else if(n>=4)hitstop=n>=8?.03:.02;
   AU.cut();AU.bagThump((.6+.4*h0)*(jump?1.15:soft?.7:1));if(jump)AU.thud(.55);if(g.air>.15)AU.hiss(g.air,.22);if(g.blood>8)AU.slosh(Math.min(1,g.blood/30));
@@ -5820,10 +5823,18 @@ function bagFoot(F,dt,go,hold){
  else if(F.ph==='press'){
   F.p=Math.min(1.25,F.p+dt*F.rate);
   while(F.pins.length&&F.pins[0].dead)F.pins.shift();
-  if(F.pins.length&&F.p>=F.pins[0].tough&&time>=F.nextPop){bagPop(F.pins.shift(),F);F.nextPop=time+F.gap*rnd(.7,1.3)}
+  if(F.pins.length&&time>=F.nextPop&&F.p>=F.pins[0].tough){
+   // 빽빽하게 포개질수록 한 번 디딜 때 같은 압력을 받는 층도 두꺼워진다.
+   let count=0;
+   while(count<F.layers&&F.pins.length&&F.p>=F.pins[0].tough){
+    const c=F.pins.shift();if(!c.dead){bagPop(c,F,count===0);count++}
+   }
+   if(g.packed>.35&&!g.tears.length&&g.dead>=g.load*.34)bagTear(F);
+   F.nextPop=time+F.gap*rnd(.7,1.3);
+  }
   F.sq=Math.max(0,F.sq-dt*6);
   // 밑창은 처음에 푹 꺼지고(조금 담겼을 때는 지그시), 그 뒤로는 하나씩 터질 때마다 덜컥 내려앉는다
-  const soft=g.tier===0,e=.5*ss(F.t/(soft?.34:.07))+.5*(F.n0?F.kills/F.n0:ss(F.t/.16));
+  const soft=g.tier===0,e=lerp(F.n0?F.kills/F.n0:ss(F.t/.16),ss(F.t/(soft?.34:.07)),.5+.16*g.packed);
   cur.y=damp(cur.y,Math.min(bagCeil(d.x,d.z),lerp(F.y0,g.floorH,e))-F.sq*.005,34,dt);
   let tw=Math.sin(F.t*34)*.012*Math.min(1,F.kills);
   if(soft){const k=ss((F.p-.3)/.4),w=Math.sin(F.t*8.5),sg=w>0?1:-1;tw=w*.13*k;if(k>.4&&sg!==F.tw){F.tw=sg;AU.wring(.45);AU.crinkle(.35,3)}} // 조금 담겼을 때는 누른 채 좌우로 비빈다
@@ -5853,7 +5864,7 @@ function bagDyn(dt,tied){ // 출렁임 · 부풂 · 꺼지는 높이
  g.hs=damp(g.hs,tied&&g.load?lerp(.14,1,Math.pow(g.in.length/g.load,.8)):1,7,dt);g.rs=1+.42*(1-g.hs);g.ir=1-g.hs;
  g.floorH=(.012+.012*Math.min(1,g.dead/50))*g.sz;
  g.L0=damp(g.L0,.13*Math.min(1,g.blood/64),9,dt);g.Lw=g.L0*g.sz*g.hk*g.hs*(1+g.B*.6);
- g.fr=g.hang>.4?0:BG_RM*g.sz*g.rs*(1+g.B*.16)+.03;
+ g.fr=g.hang>.4?0:BG_RM*g.sz*g.rs*(1+g.B*lerp(.55,.16,g.neck))+.03;
  g.uCr.value=.85-.4*clamp(g.B*2,0,1);
  g.pk=damp(g.pk,g.pkT,6,dt);
 }
@@ -5862,7 +5873,7 @@ function bagInside(dt,tied,stomp){ // 안에 든 것 · 잔해 · 고인 피 · 
  for(const c of g.in){bagRest(c,_b);c.brx=_b.x;c.bry=_b.y;c.brz=_b.z;
   bagXf(_b.x,_b.y,_b.z,_a,1.6);
   _a.y+=Math.abs(Math.sin(time*(stomp?24:9)+c.ph))*.006*_bq;
-  if(c.bt<1){c.bt=Math.min(1,c.bt+dt/.17);const k=(1-c.bt)*(1-c.bt);_a.y+=Math.max(0,c.by0-_a.y)*k;_a.x*=1-.6*k;_a.z*=1-.6*k} // 입으로 떨어져 들어와 더미 위에 얹힌다
+  if(c.bt<1){c.bt=Math.min(1,c.bt+dt/.12);const k=1-ss(c.bt);_a.lerp(_b.set(c.bagX,c.by0,c.bagZ),k)} // 입으로 떨어져 들어와 더미 위에 얹힌다
   c.bx=_a.x;c.by=_a.y;c.bz=_a.z;
   c.sq=clamp(_bq*(c.hurt?.6:1)*(.72+.28*g.hs),.14,1);
   bag.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.sc=BG_SB;c.panic=1;c.tw=.3+.5*(1-c.sq); // 곧게 뻗어 있지 않고 저마다 조금씩 휘고 꼬인 채 포개져 있다 (밟히면 더 엉킨다)
@@ -5877,15 +5888,15 @@ function bagInside(dt,tied,stomp){ // 안에 든 것 · 잔해 · 고인 피 · 
  solidEnd(g.skins,ns);solidEnd(g.lumps,nl);solidEnd(g.guts,ng);solidEnd(g.balls,nb);
  // 비닐을 뚫고 나온 팔다리: 뚫린 자리의 비닐에 붙어 다니며 바깥으로 뻗어 늘어지고, 뚫린 데서는 물이 샌다
  {let na=0,nq=0;
-  for(const p of g.pokes){p.t+=dt;const o=(p.i*BG_W1+p.j)*3,L=p.s*(p.leg?1.24:.91),e=eo(p.t/.2),tw=p.t<1.6?Math.sin(p.t*37+p.ph)*(1-p.t/1.6)*.22:0;
+  for(const p of g.pokes){p.t+=dt;const o=(p.i*BG_W1+p.j)*3,L=p.s*(p.leg?1.24:.91),e=eo(p.t/.2),tw=p.t<1.6?Math.sin(p.t*31+p.ph)*(1-p.t/1.6)*.04:0;
    {const rl=Math.hypot(VN[o],VN[o+2]),ax=rl>.05?VN[o]/rl:Math.cos(p.j/BG_NS*TAU-Math.PI/2),az=rl>.05?VN[o+2]/rl:Math.sin(p.j/BG_NS*TAU-Math.PI/2),fl=(1-hang)*.7*Math.max(0,VN[o+1]); // 납작하게 밟힌 윗면에서는 곧추서지 않고 바깥으로 눕는다
     _a.set(VN[o]+ax*fl-tw*az,VN[o+1]-p.dr-.25*hang-fl*.6,VN[o+2]+az*fl+tw*ax).normalize()} // 비닐 바깥쪽으로 나와 아래로 늘어진다 (막 뚫고 나왔을 때는 떤다)
    const dep=lerp(1,p.dep,e);if(!hang){const ty=VP[o+1]+_a.y*L*(1-dep);if(ty<.012){_a.y+=(.012-ty)/(L*Math.max(.3,1-dep));_a.normalize()}} // 바닥에 놓인 동안에는 끝이 바닥 밑으로 내려가지 않는다
-   D.position.set(VP[o]-_a.x*L*dep,VP[o+1]-_a.y*L*dep,VP[o+2]-_a.z*L*dep);D.quaternion.setFromUnitVectors(_c.set(0,0,1),_a);D.rotateZ(p.tw*1.3);D.scale.set(p.s,p.s,p.s*(p.leg?1.04:.82));D.updateMatrix();
+   D.position.set(VP[o]-_a.x*L*dep,VP[o+1]-_a.y*L*dep,VP[o+2]-_a.z*L*dep);D.quaternion.setFromUnitVectors(_c.set(0,0,1),_a);D.rotateZ(p.tw*1.3);D.scale.set(p.s*(p.leg?1.05:1),p.s*(p.leg?1.05:1),p.s*(p.leg?1.04:.82));D.updateMatrix();
    const m=p.leg?g.pokeL:g.pokeA,k=p.leg?nq++:na++;m.setMatrixAt(k,D.matrix);m.setColorAt(k,p.color);
    if(g.blood>.5){p.lk-=dt;if(p.first||p.lk<=0){_b.set(VP[o],VP[o+1],VP[o+2]);bag.localToWorld(_b);const nx=VN[o],nz=VN[o+2];
-     if(p.first){p.first=0;for(let q=0;q<6;q++)drop(_b.x,_b.y,_b.z,nx*rnd(.3,1.1)+rnd(-.15,.15),rnd(.1,.7),nz*rnd(.3,1.1)+rnd(-.15,.15),rnd(.004,.009),g.bloodC)} // 뚫리는 순간 찍 나온다
-     else{p.lk=rnd(.07,.2)*(p.t<.6?.4:1)*(hang>0?.6:1);drop(_b.x+nx*.004,_b.y-.004,_b.z+nz*.004,nx*rnd(.03,.22)+(g.fly?g.vx*.4:0),rnd(-.25,.05),nz*rnd(.03,.22)+(g.fly?g.vz*.4:0),rnd(.0035,.007),g.bloodC);g.blood=Math.max(.5,g.blood-.004)}}}}
+     if(p.first){p.first=0;drop(_b.x,_b.y,_b.z,nx*.04,-.04,nz*.04,.0025,g.bloodC)} // 뚫리는 순간 찍 나온다
+     else{p.lk=rnd(.7,1.6);drop(_b.x+nx*.004,_b.y-.004,_b.z+nz*.004,nx*rnd(.03,.22)+(g.fly?g.vx*.4:0),rnd(-.25,.05),nz*rnd(.03,.22)+(g.fly?g.vz*.4:0),rnd(.0035,.007),g.bloodC);g.blood=Math.max(.5,g.blood-.004)}}}}
   D.quaternion.identity();solidEnd(g.pokeA,na);solidEnd(g.pokeL,nq)}
  for(let i=g.pops.length-1;i>=0;i--){const p=g.pops[i];p.t+=dt;if(p.t>.2){g.pops.splice(i,1);continue} // 터지는 순간: 붉은 것이 확 번졌다 꺼진다
   bagXf(p.x,p.y,p.z,_a,1.3);const u=p.t/.2,rr=p.r*(.5+1.3*eo(u))*(1-u*u);blobAt(_a.x,_a.y+p.r*.3,_a.z,rr,rr*.4,rr,p.color,bag);
@@ -5903,7 +5914,7 @@ function bagInside(dt,tied,stomp){ // 안에 든 것 · 잔해 · 고인 피 · 
   if(hang<.5&&y<g.Lw+.003){g.spl.splice(i,1);continue}
   const fd=Math.min(1,(s.life-s.t)*2),rr=s.r*fd;blobAt(x-VN[o0]*.004,y-VN[o0+1]*.004,z-VN[o0+2]*.004,rr,rr*.8,rr,s.color,bag)}
 }
-function bagReset(){const g=TG;g.held.length=0;g.tgts.length=0;g.in.length=0;g.remains.length=0;g.pokes.length=0;g.spl.length=0;g.pops.length=0;g.stain.fill(0);g.dead=g.load=0;g.blood=g.L0=g.Lw=0;g.torn=0;g.tears.length=0;g.late.length=0;g.fj=0;g.pk=g.pkT=1;g.hang=g.fly=0;g.neck=0;g.B=g.Bv=0;g.hs=1;g.rs=1;g.hk=1;g.air=1;g.sz=BG_SZ0;g.nv=0;g.ph='idle';g.ft=0;g.swx=g.swz=g.svx=g.svz=g.spin=0;
+function bagReset(){const g=TG;g.q2=g.sweeping=false;g.batch=g.hop=g.hopV=g.packed=0;g.held.length=0;g.tgts.length=0;g.in.length=0;g.remains.length=0;g.pokes.length=0;g.spl.length=0;g.pops.length=0;g.stain.fill(0);g.dead=g.load=0;g.blood=g.L0=g.Lw=0;g.torn=0;g.tears.length=0;g.late.length=0;g.fj=0;g.pk=g.pkT=1;g.hang=g.fly=0;g.neck=0;g.B=g.Bv=0;g.hs=1;g.rs=1;g.hk=1;g.air=1;g.sz=BG_SZ0;g.nv=0;g.ph='idle';g.ft=0;g.swx=g.swz=g.svx=g.svz=g.spin=0;
  for(const d of g.dents)d.k=0;for(const F of g.F){F.ph='idle';F.pins.length=0;F.lift=F.jump=F.force=0}
  for(const m of[g.skins,g.lumps,g.guts,g.balls,g.pokeA,g.pokeL])solidEnd(m,0);g.pool.visible=false}
 function tongDrop(){const g=TG;
@@ -5911,27 +5922,116 @@ function tongDrop(){const g=TG;
  for(const c of g.held)release(c);for(const c of g.in)release(c);
  bagReset()}
 function tongTie(armed){const g=TG;g.ph='tie';g.t=0;g.load=g.in.length;g.dead=0;g.armed=armed;g.last=1;g.fj=0;
+ g.packed=ss((g.load-48)/(g.CAP-48));
  g.tier=g.load<=BG_S?0:g.load<BG_L?1:2;g.zm=g.tier===0?10:g.tier===2?1:4;g.zp=g.tier===2?.08:0;g.pkT=g.load<=1?0:g.load<=3?.5:g.load<=BG_S?.65:1; // 담긴 양에 따라 밟는 방식과 보는 거리가 달라진다 (0 적게 · 1 중간 · 2 많이)
  const f=Math.sqrt(g.load/g.CAP);g.hk=clamp(bagPileH(g.load,g.sz)/(.72*BG_H*g.sz),.42,1);g.hl=lerp(.2,.33,f)*g.sz;g.hb=lerp(.7,1.08,f);AU.rustle()} // 묶은 봉투는 더미에 꼭 맞게 내려앉는다
+const TONG_GRIP=20;
+const tongCollecting=()=>TG.ph==='idle'||TG.ph==='reach'||TG.ph==='sweep'||TG.ph==='carry'||TG.ph==='pour';
+const tongLoose=c=>!c.dead&&!c.ko&&!busy(c)&&c.y<.15;
+
+// 봉투 둘레에서 밀집한 자리를 만나면 집게가 그 둘레를 따라 짧게 훑는다.
+function tongAim(bx,bz){
+ const g=TG;
+ let best=null,nearest=g.fr+.36;
+ for(const c of creatures){if(!tongLoose(c))continue;const d=Math.hypot(c.x-bx,c.z-bz);if(d<nearest){nearest=d;best=c}}
+ g.tgts.length=0;g.sweeping=false;g.from.copy(g.tip);
+ if(best){
+  let close=0;
+  for(const c of creatures){if(!tongLoose(c))continue;const d=Math.hypot(c.x-best.x,c.z-best.z);if(d<.53)g.tgts.push(c);if(d<.23)close++}
+  g.sweeping=close>=4&&g.CAP-g.in.length>=4;
+  g.sweepR=Math.max(nearest,g.fr+.015);g.sweepAngle=Math.atan2(best.z-bz,best.x-bx);
+ }
+ if(g.sweeping)g.T.set(bx,.035,bz);
+ else{const close=best?g.tgts.filter(c=>c!==best&&Math.hypot(c.x-best.x,c.z-best.z)<.085):[];
+  g.tgts.length=0;if(best)g.tgts.push(best,...close.slice(0,Math.min(2,g.CAP-g.in.length-1)));
+  g.T.set(best?best.x:P.x+.05,.04,best?best.z:P.z-.82)}
+ g.ph='reach';g.t=0;
+}
+function tongSweepPoint(u,out){
+ const g=TG,a=g.sweepAngle+(u-.5)*Math.min(2.1,.48/g.sweepR);
+ return out.set(g.T.x+Math.cos(a)*g.sweepR,.032,g.T.z+Math.sin(a)*g.sweepR);
+}
+function tongCatch(c){
+ const g=TG;c.st='held';c.panic=1;c.gripT=0;c.gx=c.x-g.tip.x;c.gz=c.z-g.tip.z;
+ g.held.push(c);
+}
+function tongClose(){
+ const g=TG;g.tgts.length=0;g.batch=g.held.length;g.from.copy(g.tip);g.ph='carry';g.t=0;
+ AU.snip();
+ if(!g.batch)return;
+ if(g.batch>=5){AU.clack();buzz(10)}
+ AU.squeal(g.held[0].type,.65,0,.16);
+ startleNear(g.tip.x,g.tip.z,.25,.5);
+}
+function tongLand(n,main){
+ const g=TG,fill=clamp(g.in.length/g.CAP,0,1),weight=Math.sqrt(n/TONG_GRIP);
+ g.hopV=Math.max(g.hopV,(.25+.56*weight)*(1-fill)**2);
+ g.Bv+=(.5+2*weight)*(.5+fill);g.jvx+=rnd(-.1,.1)*(1-fill);
+ if(main){AU.crinkle(.5+.3*weight,3);AU.tone('sine',130-45*fill,48-12*fill,.10+.06*fill,.15+.34*weight);AU.noise('lowpass',810-300*fill,160,1,.08,.16+.16*weight);if(n>=8)buzz(10)}
+ else AU.noise('bandpass',1100,340,1,.045,.13);
+}
+function tongPour(bx,bz){
+ const g=TG,tip=g.tip;
+ tip.set(bx,.40*g.sz+.15+.025*ss(g.t/.12),bz);let landed=0;
+ for(let i=g.held.length-1;i>=0;i--){
+  const c=g.held[i],t=g.t-c.releaseAt,centering=ss(Math.max(0,t)/.13);
+  c.x=bx+c.bagX*(1-.68*centering);c.z=bz+c.bagZ*(1-.68*centering);
+  c.y=c.releaseY-5.4*Math.max(0,t)**2;
+  const top=bagPileH(g.in.length+1,g.sz)+g.hop;
+  if(t<0||c.y>top)continue;
+  c.st='bag';c.t=c.hurt=c.bt=0;c.by0=top-g.hop;c.bagX=c.x-bx;c.bagZ=c.z-bz;c.bagI=g.in.length;
+  g.in.push(c);g.held.splice(i,1);landed++;
+ }
+ if(landed){const last=!g.held.length;tongLand(last?g.batch:landed,last)}
+ if(!g.held.length){g.ph='idle';g.t=0;if(g.in.length===g.CAP||g.q2){const requested=g.q2;g.q2=false;tongTie(requested)}}
+}
 function tongUpdate(dt,act,a2,go2){
  const g=TG,on=S.tool==='tong';g.g.visible=g.bag.visible=on;
  if(!on){if(g.held.length||g.in.length||g.remains.length||g.ph!=='idle')tongDrop();g.k=0;g.fr=0;for(const F of g.F)F.boot.visible=F.hem.visible=false;return}
- g.t+=dt;if(go2)g.q2=.6;else if(g.q2>0)g.q2-=dt; // 집는 도중에 누른 밟기 버튼은 잠깐 기억해 둔다
+ g.t+=dt;if(go2&&tongCollecting()&&(g.in.length||g.held.length||g.tgts.length))g.q2=true;
  const bx=P.x-Math.min(.6,W/H*.45),bz=P.z-1.35,sx=P.x,sz=P.z-BG_Z,tip=g.tip,push=act&&g.armed||a2;
  let bX=bx,bY=0,bZ=bz,open=1,tongs=true;
  {const n=g.in.length+g.dead;g.nv=damp(g.nv,n,9,dt);g.sz=damp(g.sz,bagSz(n),7,dt)}
  if(g.ph==='idle'){tip.set(P.x+.12,.3+Math.sin(time*2)*.004,P.z-.62);
-  if(g.q2>0&&started&&g.in.length){g.q2=0;tongTie(true)} // 밟기 버튼: 담긴 만큼만 묶어서 바로 밟는다
-  else if(act&&started){let best=null,bd=g.fr+.36;for(const c of creatures){if(busy(c)||c.dead)continue;const d=Math.hypot(c.x-bx,c.z-bz);if(d<bd){bd=d;best=c}} // 봉투 둘레에 모인 것 가운데 가장 바짝 붙은 것부터
-   g.tgts.length=0;
-   if(best){g.tgts.push(best);const room=Math.min(6,g.CAP-g.in.length),near=[]; // 둘레에 몰려 있는 것들은 한 움큼에 같이 집힌다 (여섯 마리까지)
-    if(room>1){for(const c of creatures){if(c===best||busy(c)||c.dead)continue;const d=Math.hypot(c.x-best.x,c.z-best.z);if(d<.17)near.push([d,c])}near.sort((a,b)=>a[0]-b[0]);for(let i=0;i<near.length&&g.tgts.length<room;i++)g.tgts.push(near[i][1])}}
-   g.T.set(best?best.x:P.x+.05,.05,best?best.z:P.z-.82);g.ph='reach';g.t=0;g.from.copy(tip)}}
- else if(g.ph==='reach'){const u=Math.min(1,g.t/.13),c=g.tgts[0];if(c&&!c.dead&&!busy(c))g.T.set(c.x,.05,c.z);tip.lerpVectors(g.from,g.T,ss(u));
-  if(u>=1){for(const c of g.tgts)if(!c.dead&&!busy(c)&&Math.hypot(c.x-tip.x,c.z-tip.z)<.23){c.st='held';c.panic=1;c.gx=c.x-tip.x;c.gz=c.z-tip.z;AU.squeal(c.type,.8,g.held.length*.05,.22);g.held.push(c)}
-   if(g.held.length)startleNear(tip.x,tip.z,.32,.6);g.tgts.length=0;AU.snip();g.ph='carry';g.t=0;g.from.copy(tip)}}
- else if(g.ph==='carry'){const n=g.held.length,u=Math.min(1,g.t/(n?.24+.03*(n-1):.12));open=n?Math.min(.85,.25+.11*(n-1)):.5;_c.set(n?bx:P.x+.12,n?.44*g.sz:.3,n?bz:P.z-.62);tip.lerpVectors(g.from,_c,ss(u));tip.y+=Math.sin(u*Math.PI)*.1;
-  if(u>=1){if(n){for(const c of g.held){c.st='bag';c.t=0;c.bagI=g.in.length;c.hurt=0;c.bt=0;c.by0=Math.max(0,c.y-g.bag.position.y);g.in.push(c)}g.held.length=0;AU.rustle();g.jvy-=.4+.2*n;g.jvx+=rnd(-.12,.12);g.jvz+=rnd(-.12,.12);if(g.in.length>=g.CAP)tongTie(false);else g.ph='idle'}else g.ph='idle'}}
+  if(g.q2&&started&&g.in.length){g.q2=false;tongTie(true)}
+  else if(act&&started){g.q2=false;tongAim(bx,bz)}else g.q2=false;
+ }
+ else if(g.ph==='reach'){
+  const u=Math.min(1,g.t/.12),c=g.tgts[0];
+  if(g.sweeping){tongSweepPoint(0,_c);open=lerp(1,2.7,ss(u))}
+  else{if(c&&tongLoose(c))g.T.set(c.x,.04,c.z);_c.copy(g.T)}
+  tip.lerpVectors(g.from,_c,ss(u));
+  if(u>=1){if(g.sweeping){g.ph='sweep';g.t=0;AU.noise('bandpass',1000,420,.8,.13,.15)}
+   else{for(const target of g.tgts)if(tongLoose(target)&&Math.hypot(target.x-tip.x,target.z-tip.z)<.09)tongCatch(target);tongClose()}}
+ }
+ else if(g.ph==='sweep'){
+  const u=Math.min(1,g.t/.20),width=lerp(.147,.040,ss((u-.70)/.30));
+  tongSweepPoint(ss(u),tip);open=(width-.012)/.05;
+  for(const c of g.tgts){
+   if(!tongLoose(c))continue;
+   const dx=c.x-tip.x,dz=c.z-tip.z,d=Math.hypot(dx,dz);
+   if(d<=width&&g.held.length<Math.min(TONG_GRIP,g.CAP-g.in.length))tongCatch(c);
+   else if(d>0&&d<width+.035){const push=dt*.48/d;c.x+=dx*push;c.z+=dz*push}
+  }
+  if(u>=1)tongClose();
+ }
+ else if(g.ph==='carry'){
+  const n=g.batch,u=Math.min(1,g.t/(n?.22+.06*Math.sqrt(n/TONG_GRIP):.10));
+  open=n?.2+.48*Math.sqrt(n/TONG_GRIP):.5;
+  _c.set(n?bx:P.x+.12,n?.40*g.sz+.15:.3,n?bz:P.z-.62);
+  // 먼저 입구보다 높이 들고, 옆면 위를 넘긴 뒤에만 벌린다.
+  tip.lerpVectors(g.from,_c,n?ss((u-.42)/.58):ss(u));
+  if(n)tip.y=lerp(g.from.y,_c.y,ss(u/.43))+.035*Math.sin(Math.PI*u);
+  if(u>=1){
+   if(n){for(let i=0;i<n;i++){
+     const c=g.held[i];c.bagX=clamp(c.x-bx,-.075*g.sz,.075*g.sz);c.bagZ=clamp(c.z-bz,-.075*g.sz,.075*g.sz);
+     c.releaseY=Math.max(.40*g.sz+.022,c.y);c.releaseAt=i===0?0:i===1?.045:.098+.035*(i-2)/Math.max(1,n-3);
+    }
+    AU.crinkle(.38,3);g.ph='pour';
+   }else g.ph='idle';g.t=0;
+  }
+ }
+ else if(g.ph==='pour'){open=lerp(.35,2.1,ss(g.t/.085));tongPour(bx,bz)}
  else if(g.ph==='tie'){if(!act)g.armed=true;const u=ss(g.t/.5);bX=lerp(bx,sx,u);bZ=lerp(bz,sz,u);bY=Math.sin(u*Math.PI)*.07;g.neck=ss(g.t/.4);open=.2;tip.set(bX,bY+lerp(.42,.33*g.hk,g.neck)*g.sz,bZ-.03*g.neck);
   if(g.t>=.5){g.ph='ready';g.t=0;g.jvy-=1.3;g.jvx+=rnd(-.25,.25);AU.noise('lowpass',420,140,.8,.12,.4);AU.crinkle(.8,6);startleNear(sx,sz,g.fr+.4,.6);setHint()}}
  else{tongs=false;bX=sx;bZ=sz;
@@ -5972,7 +6072,9 @@ function tongUpdate(dt,act,a2,go2){
  }
  const tied=g.neck>0,stomp=g.ph==='ready'||g.ph==='tread'||g.ph==='fin'||g.ph==='off'||g.ph==='tie'&&g.t>.12;
  g.k=damp(g.k,stomp?1:0,stomp?5:3.5,dt); // 밟는 동안에는 발밑을 내려다본다
- if(g.ph==='idle'||g.ph==='reach'||g.ph==='carry'){bX=bx;bZ=bz;g.neck=0}
+ if(tongCollecting()){bX=bx;bZ=bz;g.neck=0;
+  g.hopV-=10*dt;g.hop=Math.max(0,g.hop+g.hopV*dt);if(g.hop===0)g.hopV=0;bY=g.hop;
+ }
  g.bag.position.set(bX,bY,bZ);g.bag.updateMatrixWorld(true);
  const hold=g.ph==='fin';for(const F of g.F)bagFoot(F,dt,push,hold);
  bagDyn(dt,tied);
@@ -5992,12 +6094,16 @@ function tongUpdate(dt,act,a2,go2){
  for(let i=g.late.length-1;i>=0;i--){const q=g.late[i];if(time>=q.at){stamp(q.x,q.z,q.w,q.h,q.dx,q.dz,q.c,g.bloodC,q.a);g.late.splice(i,1)}}
  bagShape();bagInside(dt,tied,g.ph==='tread'||g.ph==='fin');
  g.g.visible=tongs;
- _a.set(P.x+.22,.62,P.z-.05);g.g.position.copy(_a);g.g.lookAt(tip);g.g.scale.set(1,1,Math.max(.2,_a.distanceTo(tip)));g.a.rotation.y=open*.05;g.b.rotation.y=-open*.05;g.gm.scale.z=1/g.g.scale.z;
+ _a.set(P.x+.22,.62,P.z-.05);g.g.position.copy(_a);g.g.lookAt(tip);g.g.scale.set(1,1,Math.max(.2,_a.distanceTo(tip)));g.a.rotation.y=-open*.05;g.b.rotation.y=open*.05;g.gm.scale.z=1/g.g.scale.z;
  if(!tongs)tip.set(P.x+.38,.64,P.z+.05);
- for(let i=0,k=1-ss(g.t/.08);i<g.held.length;i++){const c=g.held[i],ring=i<1?0:i<4?1:2,a=i*2.4+.8+ring*.5,r=[0,.036,.052][ring];c.x=tip.x+lerp(Math.cos(a)*r,c.gx,k);c.y=Math.max(0,tip.y-.04-[0,.024,.05][ring]*(1-k));c.z=tip.z+lerp(Math.sin(a)*r,c.gz,k);c.sq=1;c.yaw+=dt*(3+i*1.3);c.roll=Math.sin(time*26+c.ph)*.3} // 집힌 것들은 집게 끝에 한 덩어리로 매달려 버둥댄다
+ if(g.ph!=='pour')for(let i=0;i<g.held.length;i++){
+  const c=g.held[i],r=.017*Math.sqrt(i),a=i*2.4,k=ss((c.gripT+=dt)/.095);
+  c.x=tip.x+lerp(c.gx,Math.cos(a)*r,k);c.z=tip.z+lerp(c.gz,Math.sin(a)*r,k);
+  c.y=Math.max(.012,tip.y-.022-.014*(i%4)*k);c.sq=1;c.yaw+=dt*(2+i%4);c.roll=Math.sin(time*22+c.ph)*.22;
+ }
  if(g.in.length&&Math.random()<dt*(g.ph==='tread'?2.2:.7))AU.squeal(pick(g.in).type,.6,0,0,tied);
 }
-const tongLocked=()=>TG.ph!=='idle'&&TG.ph!=='reach'&&TG.ph!=='carry';
+const tongLocked=()=>!tongCollecting();
 
 /* ───────── 배수구 ───────── */
 const DRAINS=[[-2.4,-2.6],[0,-2.6],[2.4,-2.6],[-1.2,.6],[1.2,.6]];
@@ -6522,7 +6628,7 @@ function updateAct2(){ // 보조 버튼: 안전화는 양발 구르기, 집게�
  const t=S.tool,el=$('act2'),show=t==='boot'||t==='tong'||t==='vac'||t==='trim'||t==='shovel';let lab='',sub='',ok=true,say='';
  const refill=t==='trim'&&TR.len<=.5;
  if(t==='boot'){lab='구르기';say='양발 구르기'}
- else if(t==='tong'){lab='밟기';sub=TG.in.length+'/'+TG.CAP;ok=TG.in.length>0&&['idle','reach','carry','ready','tread'].includes(TG.ph);say='봉투 밟기 · '+TG.in.length+'마리'}
+ else if(t==='tong'){lab='밟기';sub=TG.in.length+'/'+TG.CAP;ok=tongCollecting()?TG.in.length+TG.held.length+TG.tgts.length>0:TG.in.length>0&&(TG.ph==='ready'||TG.ph==='tread');say='봉투 밟기 · '+TG.in.length+'마리'}
  else if(t==='vac'){
   if(VC.ph===1){lab='누르기';sub='남은 '+(VC.nr+VC.eat.reduce((n,e)=>n+(e.c.dum?0:1),0));say='누름판으로 누르기 · '+sub+'마리'}
   else if(VC.gr>0){lab='배출 중';ok=false;say=lab}
@@ -6538,8 +6644,8 @@ function setTool(id){if(!(S.owned.includes(id)||EX.on&&EX_TOOLS.includes(id))||S
 const fine=window.matchMedia&&matchMedia('(pointer:fine)').matches;
 let hintN=0;
 function setHint(){
- const collecting=TG.ph==='idle'||TG.ph==='reach'||TG.ph==='carry';
- const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'누르면 내려치고, 누르고 있으면 계속 내려칩니다',tong:collecting?'누르고 있으면 집어서 봉투에 모읍니다':TG.armed?'누르고 있으면 묶은 봉투를 밟습니다':'뗐다가 다시 누르고 있으면 묶은 봉투를 밟습니다',trim:fine?'누르는 동안 줄이 돌고, 가리키는 쪽으로 휘두릅니다':'누르는 동안 줄이 돌고, 누른 채 좌우로 끌면 휘두릅니다',wash:fine?'누르는 동안 물을 쏩니다. 가리키는 곳을 씻고, 계속 맞히면 살가죽이 벗겨지며 터집니다':'누르는 동안 물을 쏘고, 누른 채 끌면 물줄기가 따라옵니다. 계속 맞히면 살가죽이 벗겨지며 터집니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다'}[S.tool];
+ const collecting=tongCollecting();
+ const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'누르면 내려치고, 누르고 있으면 계속 내려칩니다',tong:collecting?'누르면 집고, 몰린 곳은 훑어서 담습니다':TG.armed?'누르고 있으면 묶은 봉투를 밟습니다':'뗐다가 다시 누르고 있으면 묶은 봉투를 밟습니다',trim:fine?'누르는 동안 줄이 돌고, 가리키는 쪽으로 휘두릅니다':'누르는 동안 줄이 돌고, 누른 채 좌우로 끌면 휘두릅니다',wash:fine?'누르는 동안 물을 쏩니다. 가리키는 곳을 씻고, 계속 맞히면 살가죽이 벗겨지며 터집니다':'누르는 동안 물을 쏘고, 누른 채 끌면 물줄기가 따라옵니다. 계속 맞히면 살가죽이 벗겨지며 터집니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다'}[S.tool];
  const more={shovel:'누르는 동안 긁어 담고, 떼면 수거통에 텁니다',boot:'누르고 있으면 양발로 구릅니다',tong:collecting?'담긴 만큼 바로 밟습니다':'',vac:'눌러서 갈고, 갈리는 동안 누르면 유리판으로 찍고 꾹 누르면 짓누릅니다',trim:'헤드를 바닥에 쳐서 새 줄을 뺍니다'}[S.tool],b2={shovel:'퍼담기',boot:'구르기',tong:'밟기',vac:'갈기',trim:'줄 풀기'}[S.tool];
  $('hinttxt').textContent=(fine?'WASD 이동 · 스페이스나 마우스를 '+verb:'왼쪽 화면: 이동 · 오른쪽 화면: '+verb)+(more?(fine?' · Q나 오른쪽 클릭: ':' · '+b2+' 버튼: ')+more:'');
  $('hint').style.opacity=1;hintN=6;
