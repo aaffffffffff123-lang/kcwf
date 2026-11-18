@@ -1821,7 +1821,7 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0?(AP[d
  const bulge=new THREE.Mesh(bulgeGeo,new THREE.MeshStandardMaterial({color:lin(0xdba79c).lerp(lin(TYPES[ty].tints[v%TYPES[ty].tints.length]),.3),roughness:.12,envMapIntensity:1}));bulge.position.set(0,wy,.07);bulge.visible=false;bulge.castShadow=true;g.add(bulge);
  const dc=TRAIL.clone().lerp(lin(TYPES[ty].tints[v%TYPES[ty].tints.length]),.3);
  const lamp=new THREE.Mesh(SP(10,8),new THREE.MeshStandardMaterial({color:lin(0x39d07a),emissive:lin(0x39d07a),emissiveIntensity:.9,roughness:.3}));lamp.scale.setScalar(.032);lamp.position.set(.56,.815,.29);lamp.visible=certified;g.add(lamp);
- const c={i:idx,type:ty,d,g,hands,head,upper,rig,topCol:lin(L.top),lean:0,mouth,teeth,bulge,wy,lamp,drool:droolBuild(g,certified,dc,idx),seat:d.seat,sl:0,bill:null,selfRest:0,restMix:0,timer:rnd(2,5)+(d.citizen?d.civicIndex:idx)*.3,push:0,pop:0,look:0,clog:false,ht:rnd(0,9)};
+ const c={i:idx,type:ty,d,g,hands,head,upper,rig,topCol:lin(L.top),lean:0,mouth,teeth,bulge,wy,lamp,drool:droolBuild(g,certified,dc,idx),seat:d.seat,sl:0,bill:null,pvT:0,selfRest:0,restMix:0,timer:rnd(2,5)+(d.citizen?d.civicIndex:idx)*.3,push:0,pop:0,look:0,clog:false,ht:rnd(0,9)};
  {const bl=new THREE.Mesh(merge([part(BX(.15,1,.072),0x5fae7c,0,0,0),part(BX(.03,1.02,.074),0xf2f0e4,0,0,0)]),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.75,envMapIntensity:.3}));bl.position.set(.43,.78,.22);bl.rotation.y=.25;bl.castShadow=true;bl.visible=false;g.add(bl);c.bill=bl;}
  {const tag=new THREE.Mesh(new THREE.PlaneGeometry(.58,.16),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.9}));tag.position.set(0,.66,.399);g.add(tag);c.tag=tag;c.tagText='';tag.visible=false;if(d.seat!=null)g.visible=false;}
  c.wait=0;
@@ -1897,7 +1897,7 @@ function updateCreators(dt){
   }else{c.g.visible=creatorActive(c);c.tag.visible=!civic;if(!civic)creatorTag(c,'예술가');}
   if(!c.g.visible)continue;
   droolStep(c,dt);
-  const pv=civic&&PVA>=0&&d.ap===PVA;if(civic)showCitizenArmband(c,pv);if(pv){if(started&&!paused)c.pvT=(c.pvT||0)+dt;c.selfRest=0}else c.pvT=0; // 특별 창작지원금을 받은 시민: 받은 봉투 앞에서 한참 울고 나서, 울면서 쉬지 않고 쏟아낸다
+  const pv=civic&&PVA>=0&&d.ap===PVA;if(civic)showCitizenArmband(c,pv);if(pv){if(started&&!paused)c.pvT+=dt;c.selfRest=0}else c.pvT=0; // 특별 창작지원금을 받은 시민: 받은 봉투 앞에서 한참 울고 나서, 울면서 쉬지 않고 쏟아낸다
   const sobK=pv?1-ss((c.pvT-2.4)/.7):0,pvK=pv?ss((c.pvT-2.7)/.9):0;
   if(civic&&started&&!paused)c.selfRest=Math.max(0,c.selfRest-dt);
   c.restMix=damp(c.restMix,civic&&c.selfRest>0?1:0,4,dt);
