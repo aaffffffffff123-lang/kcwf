@@ -175,6 +175,12 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 .int-head{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px max(24px,env(safe-area-inset-right)) 16px max(24px,env(safe-area-inset-left));padding-top:max(16px,env(safe-area-inset-top));background:#f7f7f3;border-bottom:1px solid #dfe1db}
 .int-head small{display:block;font-size:11px;color:#82877d;margin-bottom:4px}.int-head h2{margin:0;font-size:21px;letter-spacing:-.04em}.int-head button{padding:9px 14px;min-height:44px;border:1px solid #d8dcd3;border-radius:6px;background:#fff;font-size:12px;white-space:nowrap}
 #candidate-stage{min-width:0;min-height:0;position:relative;grid-column:1;grid-row:2;overflow:hidden}
+.int-head-actions{display:flex;align-items:center;gap:6px;flex:none}
+#interview-pending{font-variant-numeric:tabular-nums;color:#485940;border-color:#a9b5a0}
+#interview-pending[aria-pressed=true]{background:#364d34;color:#fff;border-color:#364d34}
+#interview-pending:disabled,#candidate-prev:disabled,#candidate-next:disabled{opacity:.5;cursor:default}
+#candidate-stage,#candidate-paper{touch-action:pan-y pinch-zoom;cursor:grab}
+#candidate-stage:active,#candidate-paper:active{cursor:grabbing}
 .int-stage-count{position:absolute;top:20px;left:24px;display:flex;gap:8px;align-items:center;color:#6c7468;font-size:12px}.int-stage-count span{font-size:15px;font-weight:750;font-variant-numeric:tabular-nums;color:#303d30}
 .int-paper{grid-column:2;grid-row:2;align-self:stretch;min-height:0;overflow:auto;overscroll-behavior:contain;background:#fffef9;padding:clamp(24px,4vw,62px);border-left:1px solid #dfe1d7;display:flex;flex-direction:column;justify-content:center}
 .int-person{display:flex;justify-content:space-between;align-items:center;gap:12px}.int-person h3{font-size:30px;letter-spacing:-.03em;margin:0;font-variant-numeric:tabular-nums}.int-person small{font-size:12px;color:#7b8377;display:block;margin-bottom:5px}
@@ -416,8 +422,8 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
  </section>
 </div>
 <section class="ov" id="interview" role="dialog" aria-modal="true" aria-labelledby="interview-title" hidden>
- <header class="int-head"><div><small>한국창작인복지재단</small><h2 id="interview-title">지원 대상 심사</h2></div><button id="interview-back">창작지원으로</button></header>
- <div id="candidate-stage" role="img" aria-label="현재 심사 중인 신청인"><div class="int-stage-count">신청인 <span id="candidate-position"></span></div></div>
+ <header class="int-head"><div><small>한국창작인복지재단</small><h2 id="interview-title">지원 대상 심사</h2></div><div class="int-head-actions"><button id="interview-pending" aria-pressed="false" aria-controls="candidate-stage candidate-paper">미처리만 보기</button><button id="interview-back">창작지원으로</button></div></header>
+ <div id="candidate-stage" role="img" aria-label="현재 심사 중인 신청인"><div class="int-stage-count"><b id="candidate-scope">신청인</b><span id="candidate-position"></span></div></div>
  <article class="int-paper" id="candidate-paper" aria-live="polite" aria-atomic="true"></article>
  <footer class="int-bottom"><div class="int-bottom-inner"><div class="int-chosen" id="interview-chosen" aria-live="polite"></div>
   <nav class="int-controls" aria-label="신청인 심사"><button id="candidate-prev" aria-label="이전 신청인" title="이전 신청인"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M27 16H7M15 7l-9 9 9 9" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button id="candidate-approve" aria-pressed="false">선정</button><button id="candidate-reject" aria-pressed="false" hidden>탈락</button><button id="candidate-private" hidden>시민 특별 선정</button><button id="candidate-next" aria-label="다음 신청인" title="다음 신청인"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 16h20M17 7l9 9-9 9" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></nav>
@@ -6297,7 +6303,7 @@ function tools2Reset(){tongDrop();TG.t=0;TG.armed=false;TG.q2=0}
 
 /* 접수된 작업과 사전 판정은 함께 보여 주고, 배정은 판정 범위 안에서만 한다. */
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
-const IV={open:false,sel:0,scene:null,camera:null,actors:[],t:0,rect:null};
+const IV={open:false,sel:0,pendingOnly:false,order:[],scene:null,camera:null,actors:[],t:0,rect:null};
 const applicantLabel=id=>'접수 '+String(id+1).padStart(3,'0');
 const REVIEW_ORDER=[2,10,23,13,30,24,14,3,22,0,31,25,12,8,26,9,32,27,4,33,28,11,34,29,15,35,1,16,36,5,17,37,6,18,38,7,19,20,21];
 function teamApplicant(c){return S.team?.find(id=>AP[id].desk===c.i)}
@@ -6306,6 +6312,13 @@ function needsReassignment(){return !!S.team&&S.team.length<teamSize(S.zone)}
 function targetWorkshop(){return needsReassignment()&&!S.paid?S.zone:S.zone+1}
 function draftForZone(){const zone=targetWorkshop();if(!S.draft||S.draft.zone!==zone)S.draft={zone,ids:zone===S.zone?S.team.slice():[],rejected:[],specialIds:zone===S.zone?S.specialIds.slice():[],focus:interviewOrder()[0]};return S.draft}
 function interviewOrder(){const offset=((S.zone-1)*2)%REVIEW_ORDER.length;return REVIEW_ORDER.slice(offset).concat(REVIEW_ORDER.slice(0,offset))}
+function isPendingApplicant(d,id){return !d.ids.includes(id)&&!d.rejected.includes(id)&&!d.specialIds.includes(id)}
+function togglePendingApplicants(){
+ const d=draftForZone();
+ IV.pendingOnly=!IV.pendingOnly;
+ const keepCurrent=!IV.pendingOnly||isPendingApplicant(d,IV.sel);
+ showCandidate(keepCurrent?IV.sel:interviewOrder().find(id=>isPendingApplicant(d,id))??IV.sel);
+}
 function applicantReview(id){
  const a=AP[id],r=a.choices?a.choices[Math.max(0,apS(id).k)]||a.choices[0]:a,activity=!a.frame&&(r.rec==='ok'||a.inc==='ok'),income=a.monthly<=INCOME_LIMIT,pass=ELIGIBLE.includes(id);
  const own='본인 월 소득인정액 '+won(a.monthly),pts='이번 회차 배점 '+AP_PT(a)+'점 / 선정 '+AP_CUT+'점 이상',issues=[];
@@ -6335,13 +6348,13 @@ function buildInterview(){
 function layoutInterview(){if(!IV.open)return;const r=$('candidate-stage').getBoundingClientRect();IV.rect={x:r.left,y:r.top,w:Math.max(1,r.width),h:Math.max(1,r.height)};if(IV.camera){IV.camera.aspect=IV.rect.w/IV.rect.h;IV.camera.updateProjectionMatrix()}}
 function openInterview(){
  if(!started||paused||(!S.paid&&!needsReassignment())||stompLocked()||TD.on||shovelLocked()||tool2Locked())return false;
- paused=true;releaseAll();lensClear();buildInterview();const d=draftForZone();IV.open=true;IV.sel=d.focus;IV.t=0;
+ paused=true;releaseAll();lensClear();buildInterview();const d=draftForZone();IV.open=true;IV.pendingOnly=false;privArm=-1;IV.sel=d.focus;IV.t=0;
  for(const c of IV.actors){c.verdict=d.ids.includes(c.applicant)?1:d.specialIds.includes(c.applicant)?2:d.rejected.includes(c.applicant)?-1:0;c.reactionT=9;poseInterview(c,0,true)}
  $('hud').style.display='none';$('hud').inert=true;$('interview').hidden=false;renderInterview();layoutInterview();save();AU.wake();$('candidate-next').focus();return true;
 }
 function closeInterview(){if(!IV.open)return;IV.open=false;$('interview').hidden=true;$('hud').style.display='block';$('hud').inert=false;paused=false;last=0;renderer.setViewport(0,0,W,H);save();openSupportMenu()}
 function showCandidate(id){if(!IV.open||!AP[id])return;privArm=-1;IV.sel=id;draftForZone().focus=id;AU.wake();AU.tick();save();renderInterview();$('candidate-paper').scrollTop=0}
-function focusCandidate(delta){if(!IV.open)return;const order=interviewOrder(),i=order.indexOf(IV.sel);showCandidate(order[(i+delta+order.length)%order.length])}
+function focusCandidate(delta){const order=IV.order;if(!IV.open||order.length<2)return;const i=order.indexOf(IV.sel);showCandidate(order[(i+delta+order.length)%order.length])}
 function reactToVerdict(id,state){
  const c=IV.actors.find(c=>c.applicant===id);if(c){c.verdict=state;c.reactionT=0}
  AU.wake();if(state)AU.thwack();else AU.tick();save();renderInterview();
@@ -6381,7 +6394,17 @@ function activityRecord(id){
 }
 function renderInterview(){
  const d=draftForZone(),a=AP[IV.sel],r=applicantReview(IV.sel),chosen=d.ids.includes(IV.sel),rejected=d.rejected.includes(IV.sel),priv=d.specialIds.includes(IV.sel),need=teamSize(d.zone),order=interviewOrder();
- $('interview-title').textContent=d.zone+'기 · '+(d.zone===S.zone?'추가 선정':'지원 대상 심사');$('candidate-position').textContent=(order.indexOf(IV.sel)+1)+' / '+order.length;
+ const pending=order.filter(id=>isPendingApplicant(d,id)),filter=$('interview-pending');
+ // 방금 판정한 사람의 반응은 그대로 보여 주고, 다음 탐색부터는 목록에서 빠진다.
+ IV.order=IV.pendingOnly?order.filter(id=>id===IV.sel||pending.includes(id)):order;
+ filter.textContent='미처리만 보기 · '+pending.length+'명';
+ filter.setAttribute('aria-pressed',String(IV.pendingOnly));
+ filter.disabled=!IV.pendingOnly&&!pending.length;
+ const list=IV.pendingOnly?pending:order,index=list.indexOf(IV.sel);
+ $('interview-title').textContent=d.zone+'기 · '+(d.zone===S.zone?'추가 선정':'지원 대상 심사');
+ $('candidate-scope').textContent=IV.pendingOnly?(index<0?'남은 미처리':'미처리'):'신청인';
+ $('candidate-position').textContent=index<0?pending.length+'명':(index+1)+' / '+list.length;
+ $('candidate-prev').disabled=$('candidate-next').disabled=IV.order.length<2;
  $('candidate-stage').setAttribute('aria-label',applicantLabel(IV.sel)+' · '+(chosen?'선정':priv?'시민 특별 선정':rejected?'탈락':r.pass?'적격':'부적격')+' 신청인');
  for(const c of IV.actors)c.g.visible=c.applicant===IV.sel;
  const field=a.choices?a.choices.map(v=>v.field).join(' · '):r.field;
@@ -6400,7 +6423,10 @@ function renderInterview(){
   const detail=arm?won(PRIV)+' · 한 번 더 눌러 확정':st==='done'?won(PRIV)+' 지급 완료':st==='poor'?'예산 '+won(PRIV-S.money)+' 부족':st==='full'?'시민석 모두 배정됨':won(PRIV);
   b.innerHTML=title+'<small>'+detail+'</small>'}
  $('interview-chosen').innerHTML='<small>선정 <b>'+d.ids.length+' / '+need+'명</b>'+(d.specialIds.length?' · 시민 특별 선정 <b>'+d.specialIds.length+' / '+need+'명</b>':'')+'</small><div class="int-selected-list">'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+applicantLabel(id)+' 선정 취소">'+String(id+1).padStart(3,'0')+' ×</button>').join('')+d.specialIds.map(id=>'<button class="special" data-special="'+id+'" aria-label="'+applicantLabel(id)+' 시민 특별 선정 서류 보기">'+String(id+1).padStart(3,'0')+'</button>').join('')+(d.ids.length||d.specialIds.length?'':'<span class="empty">선정할 신청인을 골라 주세요</span>')+'</div>';
- $('interview-chosen').querySelectorAll('button').forEach(b=>b.onclick=()=>b.hasAttribute('data-special')?showCandidate(+b.dataset.special):chooseCandidate(+b.dataset.id));
+ $('interview-chosen').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  if(b.hasAttribute('data-special')){IV.pendingOnly=false;showCandidate(+b.dataset.special)}
+  else chooseCandidate(+b.dataset.id);
+ });
  $('interview-enter').hidden=d.ids.length!==need;$('interview-enter').disabled=d.ids.length!==need;$('interview-enter').textContent=need+'명 선정 완료 · '+(d.zone===S.zone?'작업 계속하기':'작업실로')+' →';
  layoutInterview();
 }
@@ -6460,7 +6486,7 @@ function drawInterview(dt){
  }
  const r=IV.rect;if(!r||!actor)return;
  if(pplEnsure(actor.head))actor.framing=null; // 지금 보는 신청인 얼굴은 바로 깎고, 앞뒤 신청인은 한 프레임에 하나씩 미리 깎아 둔다
- else{const order=interviewOrder(),i=order.indexOf(IV.sel);for(const k of[1,-1,2,-2]){const a=IV.actors.find(c=>c.applicant===order[(i+k+order.length)%order.length]);if(a&&pplEnsure(a.head)){a.framing=null;break}}}
+ else{const order=IV.order,i=order.indexOf(IV.sel);for(const k of[1,-1,2,-2]){const a=IV.actors.find(c=>c.applicant===order[(i+k+order.length)%order.length]);if(a&&pplEnsure(a.head)){a.framing=null;break}}}
  if(!actor.framing){actor.g.updateMatrixWorld(true);const box=new THREE.Box3().setFromObject(actor.g);actor.framing={center:box.getCenter(new THREE.Vector3()),size:box.getSize(new THREE.Vector3())}}
  const cam=IV.camera,{center,size}=actor.framing,tan=Math.tan(cam.fov*Math.PI/360),dist=Math.max(size.y,size.x/cam.aspect)*1.14/(2*tan)+size.z*.5;
  cam.position.set(center.x,center.y+size.y*.08,center.z+dist);cam.lookAt(center);cam.updateMatrixWorld(true);
@@ -6836,8 +6862,35 @@ const PT={mx:0,my:0,mok:false,id:null,x0:0,y0:0,x:0,y:0}; // 마우스 위치 ·
 const keys={};let stickId=null,stickX=0,stickY=0,sx0=0,sy0=0,actIds=new Set(),mouseAct=false,mouseOn=false,mouse2=false,act2Ids=new Set(),was2=false;
 function releaseAll(){AU.stopReactions();PT.id=null;for(const k in keys)keys[k]=false;stickId=null;stickX=stickY=0;actIds.clear();act2Ids.clear();mouseAct=mouseOn=mouse2=false;$('stick').style.display='none';AU.loop('scrape',false);AU.loop('vac',false);AU.loop('grind',false);AU.engine(false);AU.loop('wash',false);AU.loop('squeak',false);VC.on=false;TR.on=false;WS.on=false}
 const acting=()=>mouseAct||actIds.size>0||!!keys.Space,acting2=()=>mouse2||act2Ids.size>0||!!keys.KeyQ;
+function bindInterviewSwipe(){
+ const panel=$('interview');
+ let drag=null;
+ panel.addEventListener('pointerdown',e=>{
+  if(!e.isPrimary){drag=null;return}
+  const surface=e.target.closest('#candidate-stage,#candidate-paper');
+  if(!surface||e.button!==0||e.target.closest('button,a,input,select'))return;
+  drag={pointer:e.pointerId,x:e.clientX,y:e.clientY,candidate:IV.sel};
+  surface.setPointerCapture(e.pointerId);
+ });
+ panel.addEventListener('pointermove',e=>{
+  if(drag?.pointer!==e.pointerId)return;
+  const dx=Math.abs(e.clientX-drag.x),dy=Math.abs(e.clientY-drag.y);
+  if(dy>12&&dy>=dx)drag=null;
+ });
+ panel.addEventListener('pointerup',e=>{
+  if(drag?.pointer!==e.pointerId)return;
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y,current=drag.candidate;
+  drag=null;
+  if(current===IV.sel&&Math.abs(dx)>=44&&Math.abs(dx)>Math.abs(dy)*1.5)focusCandidate(dx<0?1:-1);
+ });
+ const cancel=e=>{if(drag?.pointer===e.pointerId)drag=null};
+ panel.addEventListener('pointercancel',cancel);
+ panel.addEventListener('lostpointercapture',cancel);
+}
 function bind(){
  const cv=$('gl');
+ bindInterviewSwipe();
+ $('interview-pending').onclick=togglePendingApplicants;
  const mousePedal=e=>{const down=!!(e.buttons&2);if(down&&!mouse2){pestleTap(false);vacGrind()}mouse2=down};
  cv.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();
   if(e.pointerType==='mouse'){mouseOn=true;mouseAct=!!(e.buttons&1)||!e.buttons;if(mouseAct)pestleTap(true);mousePedal(e);PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true}
