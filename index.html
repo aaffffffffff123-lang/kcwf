@@ -242,6 +242,14 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 #intro #start{min-height:56px;border-radius:3px;background:#393d90;font-size:15px;box-shadow:none;justify-content:space-between;padding:0 23px;font-weight:650}
 #intro #start::after{content:'→';font-size:25px;font-weight:400}#intro #start:disabled::after{content:'…'}
 #intro #load{font-size:11px;line-height:1.5;margin-top:7px;min-height:0;position:absolute;top:56px;left:0;right:0;color:#797f90}
+[hidden].intro-entry{display:none}
+.closure-notice{padding-top:24px;padding-bottom:24px}
+.closure-notice h2{font-size:clamp(20px,3vw,27px);letter-spacing:-.045em;margin:0 0 12px}
+.closure-notice p{font-size:14px;line-height:1.8;word-break:keep-all;margin:0;color:#494d61}
+.closure-notice button,#supportreport{min-height:44px;text-decoration:underline;text-underline-offset:3px}
+.closure-notice button{font-size:12px;color:#64697d;margin-top:8px}
+#supportreport{display:block;margin:4px 0 0 auto;font-size:13px;color:#665052}
+#supportreport[hidden]{display:none}
 .intro-footer{display:flex;justify-content:space-between;align-items:center;min-height:60px;flex:none;border-top:1px solid #e2e5ed;color:#9a9dab;font-size:10px;letter-spacing:.02em}
 @media(min-width:1600px){.intro-wrap{width:1240px}.intro-hero .intro-wrap{padding-top:80px;padding-bottom:80px}}
 @media(max-width:759px){.intro-wrap{padding-left:25px;padding-right:25px}.intro-header .intro-wrap{min-height:80px;gap:8px}.intro-mark{width:48px;height:34px}.intro-brand{gap:9px}.intro-brand b{font-size:18px}.intro-brand small{font-size:6px;letter-spacing:.04em}.intro-hero{min-height:330px}.intro-hero .intro-wrap{padding-top:36px;padding-bottom:34px}.intro-description{font-size:13px;line-height:1.8}.intro-emblem{right:-52px;top:48%;width:205px;opacity:.1}#intro h1{font-size:43px;margin-bottom:22px}.intro-entry{gap:18px;min-height:0;flex-direction:column;align-items:stretch;padding-top:25px;padding-bottom:25px}.intro-action{width:100%;padding-bottom:14px}#intro #start{min-height:50px}#intro #load{top:50px}.intro-footer{min-height:43px}}
@@ -368,7 +376,12 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
    </div>
    <div class="intro-emblem" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 24H35M21.5 24V50M43 24H70M49.5 24V50M63.5 24V50M79 17 89 50" fill="none" stroke="currentColor" stroke-width="9" stroke-linejoin="miter"/></svg></div>
   </div></section>
-  <section class="intro-entry intro-wrap" aria-label="입장">
+  <section class="closure-notice intro-wrap" id="closure-notice" aria-labelledby="closure-title" hidden>
+   <h2 id="closure-title" tabindex="-1">창작지원사업 종료 안내</h2>
+   <p>재단 사정으로 차기 참여자를 모집하지 않습니다.<br>그동안 본 사업에 참여해 주신 창작인 여러분께 감사드립니다.</p>
+   <button type="button" id="new-project">처음부터 다시 시작</button>
+  </section>
+  <section class="intro-entry intro-wrap" id="workshop-entry" aria-label="입장">
    <div class="intro-action"><button class="pri" id="start" disabled>준비 중</button><div id="load" role="status">작업장을 준비하고 있습니다.</div></div>
   </section>
  </main>
@@ -393,6 +406,7 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
    <p id="supportdetail"></p>
    <p class="support-notice" id="supportnotice" hidden></p>
    <button class="pri" id="supportpay">전원 지급</button>
+   <button type="button" id="supportreport" hidden>사업 종료 보고</button>
   </section>
   <section class="support-card">
    <div class="support-heading"><h3 id="supportreviewtitle"></h3><span id="supportslots"></span></div>
@@ -429,6 +443,20 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 <div id="exfade" aria-hidden="true"></div>
 <noscript>이 게임을 실행하려면 JavaScript를 켜 주세요.</noscript>
 <script>
+const KEY='creative-support-v2';
+let closedHome=false;
+function showClosedHome(muted){
+ closedHome=true;
+ const el=id=>document.getElementById(id);
+ el('supportmenu').hidden=true;el('hud').inert=true;el('hud').style.display='none';
+ el('workshop-entry').hidden=true;el('closure-notice').hidden=false;el('intro').hidden=false;
+ el('new-project').onclick=()=>{
+  if(!confirm('종료된 사업 기록을 지우고 1기부터 다시 시작할까요?'))return;
+  try{localStorage.setItem(KEY,JSON.stringify({v:2,cu:2,wp:1,wf:1,muted}))}catch(_){}
+  location.reload();
+ };
+ el('closure-title').focus()
+}
 function MAIN(){'use strict';
 const THREE=window.THREE;
 const $=id=>document.getElementById(id);
@@ -437,7 +465,6 @@ const rnd=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.random()*a.length|0],damp=
 const TAU=Math.PI*2,wrapA=a=>a-Math.round(a/TAU)*TAU; // 각도 차이를 -π~π로
 
 /* ───────── 저장 ───────── */
-const KEY='creative-support-v2';
 // 결과보고전 철수 상태 (아래 '결과보고전 철수' 참고)
 const EX={on:false,phase:'',t:0,N:0,kills:0,kept:0,held:0,pay:0,bonus:0,kw:0,kwT:0,mass:0,dt2:0,shown:false,tool0:'hand',keep:null,rt:null,lost:false,free:0,sndT:0,cooT:0,used:0},EX_PAY=500,EX_TOOLS=['hand','wash','boot','tong','shovel','vac','trim'];
 const FX={lite:false}; // 한꺼번에 많이 터질 때 조각을 줄인다
@@ -540,7 +567,7 @@ function loadSave(){
  return d;
 }
 let S=loadSave(),dirty=false,saveT=0;
-function save(){try{localStorage.setItem(KEY,JSON.stringify(Object.assign({v:2},S,EX.on&&!S.owned.includes(S.tool)?{tool:EX.tool0}:{})))}catch(e){}dirty=false}
+function save(){if(closedHome)return;try{localStorage.setItem(KEY,JSON.stringify(Object.assign({v:2},S,EX.on&&!S.owned.includes(S.tool)?{tool:EX.tool0}:{})))}catch(e){}dirty=false}
 if(S.rf){delete S.rf;save()}
 const apS=id=>S.ap[id]||(S.ap[id]={s:'new',n:0,k:-1});
 const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
@@ -1053,11 +1080,19 @@ const demandMode=()=>S.zone>=DEMAND_ZONE&&!!S.team; // 초반 기수는 싼 활�
 const supportUnit=()=>demandMode()?DEMAND_UNIT:SUPPORT_UNIT;
 function demandFrac(){const z=S.zone,q=quota(z),pts=demandPts(z),a=S.dm.n?Math.round(q*pts[S.dm.n-1]):0,b=pts[S.dm.n]!=null?Math.round(q*pts[S.dm.n]):q;return S.dm.on?0:clamp(1-(S.prog-a)/Math.max(1,b-a),.04,1)} // 책상 위 돈다발: 다음에 멈출 때까지 남은 만큼
 function activityLeft(c){return c.d.citizen?0:demandMode()?(S.dm.on?0:ACTIVITY_T):c.d.seat==null?S.funds[c.i]||0:S.grants[c.d.seat]?.left||0}
-function supportCredit(){const people=supportRecipients();return people.length>0&&people.every(c=>activityLeft(c)<=0)}
+function supportPayment(){
+ const people=supportRecipients(),n=people.length,dm=demandMode(),due=!dm||S.dm.on;
+ const cost=due?n*supportUnit():0,missing=Math.max(0,cost-S.money);
+ const waiting=people.filter(c=>activityLeft(c)<=0).length;
+ const needsAdvance=due&&!S.support&&n>0&&waiting===n&&missing>0;
+ const refused=needsAdvance&&S.advance>0,credit=needsAdvance&&!refused;
+ const payable=due&&!S.support&&n>0&&(!missing||credit);
+ return {people,n,dm,due,cost,missing,waiting,credit,refused,payable}
+}
 function startSupport(){
- if(!started||paused||S.support)return false;
- const dm=demandMode(),recipients=supportRecipients(),cost=recipients.length*supportUnit();if(!recipients.length||dm&&!S.dm.on||S.money<cost&&!supportCredit())return false;
- const missing=Math.max(0,cost-S.money);S.money=Math.max(0,S.money-cost);S.advance+=missing;
+ if(!started||paused)return false;
+ const {people:recipients,dm,cost,missing,payable}=supportPayment();if(!payable)return false;
+ S.money=Math.max(0,S.money-cost);S.advance+=missing;
  if(dm){S.dm.on=false;S.dm.n++;toast('창작지원금 '+won(cost)+' 지급\n창작을 다시 시작합니다',3.2)}
  else for(const c of recipients){if(c.d.seat==null)S.funds[c.i]=ACTIVITY_T;else{const g=S.grants[c.d.seat];g.left=GRANT_T;apS(g.a).s='paid'}}
  S.support={t:0,zone:S.zone,ids:recipients.map(c=>c.i),quiet:dm};supportSoundT=0;
@@ -6765,13 +6800,14 @@ function menuAvailable(){return started&&!paused&&!EX.on&&!stompLocked()&&!TD.on
 function openShop(){if(!menuAvailable())return false;$('buybub').hidden=true;$('shopbtn').classList.remove('new');paused=true;releaseAll();$('hud').inert=true;renderShop();$('shop').hidden=false;save();$('shopx').focus();return true}
 function closeShop(){if($('shop').hidden)return;$('shop').hidden=true;$('hud').inert=false;paused=false;last=0;AU.wake();$('gl').focus()}
 function renderSupportMenu(){
- const dm=demandMode(),idle=dm&&!S.dm.on,people=supportRecipients(),n=people.length,cost=idle?0:n*supportUnit(),waiting=people.filter(c=>activityLeft(c)<=0).length,missing=Math.max(0,cost-S.money),credit=missing>0&&supportCredit(),running=!!S.support;
+ const {dm,due,n,cost,waiting,missing,credit,refused,payable}=supportPayment(),idle=!due,running=!!S.support;
  $('support-title').textContent=S.zone+'기 창작지원';$('supportmoney').textContent=won(S.money);$('supportpeople').textContent='예술가 '+n+'명 · 시민 '+creators.filter(c=>c.d.citizen&&creatorActive(c)).length+'명'+(S.specialIds.length?' (특별 선정 '+S.specialIds.length+'명)':'');$('supportwaiting').textContent=waiting?(dm?'창작 중단 ':'활동비 소진 ')+waiting+'명':'창작 활동 중';
  $('supportamount').previousElementSibling.textContent=dm?(idle?'창작지원금':'창작지원금 미지급'):'지원금 지급';
  $('supportamount').textContent=idle?'지급 완료':won(cost);$('supportdetail').textContent=idle?'예술가들이 창작 활동 중입니다.':dm?'예술가 '+n+'명 × '+won(DEMAND_UNIT)+' · 돈을 줄 때까지 창작을 하지 않습니다. 그동안은 정산 목표가 오르지 않습니다.':'예술가 '+n+'명 × '+won(SUPPORT_UNIT)+' · 예술가에게 지급합니다.';
  $('supportnotice').hidden=!running&&!missing&&!S.advance;
- $('supportnotice').textContent=running?'현재 지원금으로 창작 활동 중입니다.':credit?'부족분 '+won(missing)+'은 앞으로 들어오는 예산에서 먼저 상계합니다.':missing?'재단 예산 '+won(missing)+'이 부족합니다.':S.advance?'미상계 선지급금 '+won(S.advance):'';
- $('supportpay').disabled=running||idle||!n||missing>0&&!credit;$('supportpay').textContent=running?'지급 완료':idle?'지급 완료':credit?'예술가 선지급':dm?'창작지원금 지급':'예술가 지급';
+ $('supportnotice').textContent=running?'현재 지원금으로 창작 활동 중입니다.':refused?'미상계 선지급금 '+won(S.advance)+' · 이번 지급 부족액 '+won(missing)+'. 작업을 계속하면 수입으로 선지급금을 갚을 수 있습니다.':credit?'부족분 '+won(missing)+'은 다음 수입에서 먼저 상계합니다. 상계 전에는 추가 선지급이 제한됩니다.':missing?'재단 예산 '+won(missing)+'이 부족합니다.':S.advance?'미상계 선지급금 '+won(S.advance):'';
+ $('supportreport').hidden=!refused;
+ $('supportpay').disabled=!payable;$('supportpay').textContent=refused?'추가 선지급 거절':running?'지급 완료':idle?'지급 완료':credit?'예술가 선지급':dm?'창작지원금 지급':'예술가 지급';
  const more=needsReassignment()&&!S.paid,target=targetWorkshop(),ready=S.paid||more;
  const ex=exReady();
  $('supportreviewtitle').textContent=ex?S.zone+'기 결과보고전 철수':more?'인원 추가 배정':target+'기 지원 대상 심사';$('supportslots').textContent=ex?'0 / '+exCount(S.zone).toLocaleString('ko-KR'):more?n+' / '+teamSize(target)+'명':'정원 '+teamSize(target)+'명';
@@ -6781,9 +6817,14 @@ function renderSupportMenu(){
 function openSupportMenu(){if(!menuAvailable())return false;paused=true;releaseAll();$('hud').inert=true;renderSupportMenu();$('supportmenu').hidden=false;save();$('supportx').focus();return true}
 function closeSupportMenu(){if($('supportmenu').hidden)return;$('supportmenu').hidden=true;$('hud').inert=false;paused=false;last=0;AU.wake();$('gl').focus()}
 function payFromSupport(){
- if($('supportmenu').hidden)return false;const n=supportRecipients().length,cost=n*supportUnit();
- if(S.support||!n||demandMode()&&!S.dm.on||S.money<cost&&!supportCredit()){renderSupportMenu();return false}
+ if($('supportmenu').hidden)return false;
+ if(!supportPayment().payable){renderSupportMenu();return false}
  closeSupportMenu();return startSupport();
+}
+function reportClosure(){
+ if($('supportmenu').hidden||!supportPayment().refused)return;
+ if(!confirm('사업 종료 보고를 제출할까요? 제출하면 이번 사업 운영이 끝납니다.'))return;
+ S.closed=true;save();started=false;paused=true;releaseAll();AU.sleep();showClosedHome(S.muted)
 }
 function reviewFromSupport(){if($('supportmenu').hidden||!S.paid&&!needsReassignment())return false;closeSupportMenu();return exReady()?enterExhibition():openInterview()}
 
@@ -6824,13 +6865,13 @@ function bind(){
   if(!e.repeat&&(e.code==='Enter'||e.code==='KeyF')){e.preventDefault();openSupportMenu()}});
  addEventListener('keyup',e=>{keys[e.code]=false});
  addEventListener('blur',()=>{if(started&&!paused)pauseGame();else releaseAll()});
- document.addEventListener('visibilitychange',()=>{if(document.hidden){if(started&&!paused)pauseGame();else{releaseAll();AU.sleep()}rememberFloor();save()}else wakeGraphics()});
- addEventListener('pagehide',()=>{releaseAll();AU.sleep();rememberFloor();save()});
+ document.addEventListener('visibilitychange',()=>{if(closedHome)return;if(document.hidden){if(started&&!paused)pauseGame();else{releaseAll();AU.sleep()}rememberFloor();save()}else wakeGraphics()});
+ addEventListener('pagehide',()=>{if(closedHome)return;releaseAll();AU.sleep();rememberFloor();save()});
  addEventListener('pageshow',wakeGraphics);addEventListener('focus',wakeGraphics);
  addEventListener('resize',resize);
  $('start').onclick=()=>{if(started)return;started=true;paused=false;$('intro').hidden=true;$('hud').style.display='block';AU.wake();updateHUD(true);setHint();$('gl').focus()};
  $('snd').onclick=()=>{AU.wake();S.muted=!S.muted;AU.mute(S.muted);save();updateHUD(true)};
- $('supportbtn').onclick=openSupportMenu;$('supportx').onclick=closeSupportMenu;$('supportpay').onclick=payFromSupport;$('supportreview').onclick=reviewFromSupport;
+ $('supportbtn').onclick=openSupportMenu;$('supportx').onclick=closeSupportMenu;$('supportpay').onclick=payFromSupport;$('supportreport').onclick=reportClosure;$('supportreview').onclick=reviewFromSupport;
  $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('buybub').onclick=()=>{AU.wake();openShop()};$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('candidate-reject').onclick=()=>rejectCandidate(IV.sel);$('candidate-private').onclick=()=>privateCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
  $('supportmenu').addEventListener('pointerdown',e=>{if(e.target===$('supportmenu'))closeSupportMenu()});
@@ -6884,6 +6925,7 @@ function sim(dt){
  if(dirty){saveT+=dt;if(saveT>3){saveT=0;save()}}
 }
 function frame(now){
+ if(closedHome)return;
  requestAnimationFrame(frame);
  if(document.hidden||GFX.lost||renderer.getContext().isContextLost()){last=0;return}
  if((GFX.wake||GFX.rebuild)&&!refreshGraphics())return;
@@ -6919,13 +6961,25 @@ function init(){
 }
 init();
 }
-(function loadEngine(i){
+// 종료 공지는 그래픽 엔진 없이도 열려야 한다.
+function boot(){
+ let record=null;try{record=JSON.parse(localStorage.getItem(KEY))}catch(_){}
+ if(record?.v===2&&record.closed===true){showClosedHome(!!record.muted);return}
+ loadEngine(0);
+}
+addEventListener('storage',event=>{
+ if(event.key!==KEY)return;
+ let record;try{record=JSON.parse(event.newValue)}catch(_){return}
+ if((record?.closed===true)!==closedHome){closedHome=true;location.reload()}
+});
+function loadEngine(i){
  const urls=['./vendor/three.min.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'],msg=t=>{document.getElementById('load').textContent=t};
  const go=()=>{try{MAIN()}catch(e){console.error(e);msg('그래픽을 시작하지 못했습니다. 페이지를 새로 열어 주세요.')}};
  if(window.THREE){go();return}
  if(i>=urls.length){msg('그래픽 파일을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');return}
  const s=document.createElement('script');s.src=urls[i];s.onload=()=>{if(window.THREE)go();else loadEngine(i+1)};s.onerror=()=>{s.remove();loadEngine(i+1)};document.head.appendChild(s);
-})(0);
+}
+boot();
 </script>
 </body>
 </html>
