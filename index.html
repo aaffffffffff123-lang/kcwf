@@ -442,7 +442,7 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
  <section class="panel" role="dialog" aria-modal="true" aria-labelledby="exr-title">
   <div class="ph"><div><small>2026 한국창작인복지재단 지원사업</small><h2 id="exr-title">결과보고전 철수</h2></div></div>
   <div class="exr-big"><b id="exr-n">0</b><span id="exr-of"></span></div>
-  <div class="exr-rows"><div><span>철수 수당 · 점당 500원</span><b id="exr-pay">0원</b></div><div class="bonus" id="exr-bonusrow"><span>전량 철수 수당</span><b id="exr-bonus">0원</b></div><div><span>작업 시간</span><b id="exr-time">60초</b></div></div>
+  <div class="exr-rows"><div><span>집행한 개최비</span><b id="exr-fee"></b></div><div><span>철수 수당 · 점당 500원</span><b id="exr-pay">0원</b></div><div class="bonus" id="exr-bonusrow"><span>전량 철수 수당</span><b id="exr-bonus">0원</b></div><div><span>작업 시간</span><b id="exr-time">60초</b></div></div>
   <button class="pri" id="exr-next">다음 기수 심사</button>
  </section>
 </div>
@@ -548,7 +548,7 @@ function savedSpecialIds(value,zone){
  return [...new Set(ids.filter(id=>Number.isInteger(id)&&AP[id]&&!ELIGIBLE.includes(id)))].slice(0,teamSize(zone))
 }
 function loadSave(){
- const d={seen:[],money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0};
+ const d={seen:[],money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0,exFeeZone:0};
  try{const r=JSON.parse(localStorage.getItem(KEY)||'null');
   if(r&&r.v===2){d.money=clamp(+r.money||0,0,1e9);d.total=clamp(Math.floor(+r.total||0),0,1e9);d.liters=clamp(+r.liters||0,0,1e9);
    d.zone=clamp(Math.floor(+r.zone||1),1,999);d.prog=clamp(Math.floor(+r.prog||0),0,quota(d.zone));d.paid=!!r.paid&&d.prog>=quota(d.zone);
@@ -557,6 +557,7 @@ function loadSave(){
    d.advance=clamp(+r.advance||0,0,1e9);if(r.cu!==2){d.money=Math.min(1e9,d.money*100);d.advance*=100} // 예전 단위로 저장된 돈
    if(r.dm&&typeof r.dm==='object')d.dm={n:clamp(Math.floor(+r.dm.n||0),0,9),on:!!r.dm.on};
    d.specialIds=savedSpecialIds(r.specialIds??(r.priv?.zone===d.zone?r.priv.a:null),d.zone);
+   d.exFeeZone=r.exFeeZone===d.zone?d.zone:0;
    d.exDone=clamp(Math.floor(+r.exDone||0),0,999);if(Array.isArray(r.seen))d.seen=r.seen.filter(id=>TOOLS.some(t=>t.id===id));
    if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid','spent','more'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999),k:Number.isInteger(v.k)&&AP[k].choices?.[v.k]?v.k:-1}}
    if(Array.isArray(r.grants))for(let k=0;k<3;k++){const g=r.grants[k];if(g&&AP[g.a]&&d.ap[g.a]&&['paid','spent'].includes(d.ap[g.a].s)&&!d.grants.some(q=>q&&q.a===g.a)){const left=clamp(+g.left||0,0,GRANT_T);d.grants[k]={a:g.a,left,receipt:Number.isFinite(g.receipt)?clamp(g.receipt,0,2):2};d.ap[g.a].s=left>0?'paid':'spent'}}
@@ -6525,6 +6526,14 @@ function nextZone(){return openInterview()}
 // 기수 정산이 끝나면 그 기수의 결과보고전을 철수한다. 바닥에 빽빽이 깔린 것들은 엎드린 채 전시돼 있다가, 걷으러 온 장비가 다가오면 고개를 들어 쳐다보고
 // 가까이 오면 움찔 물러난다(다가오지는 않는다). 시간 제한은 없다. 다 치우면 끝나고, 중간에 그만둘 수도 있다.
 const exReady=()=>S.paid&&S.exDone!==S.zone;
+function exhibitionFee(zone){
+ if(zone===1)return 100000;
+ if(zone<=3)return 500000;
+ if(zone<=6)return 1200000;
+ if(zone<=10)return 3000000;
+ return 6000000;
+}
+const exhibitionFeeDue=()=>S.exFeeZone===S.zone?0:exhibitionFee(S.zone);
 const exCount=z=>Math.min(1600,1000+(z-1)*150);
 function exArtists(){const ids=S.team?S.team.slice():artistDeskIds().map(i=>DESKS[i]&&DESKS[i].ap).filter(a=>a!=null&&a>=0&&AP[a]);return ids.length?ids:REVIEW_ORDER.slice(0,4)}
 const HALL={g:null,mat:null,walls:[],base:[],title:null,vinyl:null,pools:[],poolGeo:null,poolMat:null,F:'"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif'};
@@ -6628,11 +6637,15 @@ function exShowResult(){const e=EX;e.shown=true;
  const done=Math.min(e.N,e.kills+kept);e.bonus=done>=e.N?100000+S.zone*50000:0;if(e.bonus)receiveWage(e.bonus);
  S.exDone=S.zone;dirty=true;
  $('exr-title').textContent=S.zone+'기 결과보고전 철수';$('exr-n').textContent=done.toLocaleString('ko-KR');$('exr-of').textContent='/ '+e.N.toLocaleString('ko-KR');
+ $('exr-fee').textContent='−'+won(exhibitionFee(S.zone));
  $('exr-pay').textContent=won(e.pay);$('exr-bonusrow').hidden=!e.bonus;$('exr-bonus').textContent='+'+won(e.bonus);{const u=Math.round(e.used);$('exr-time').textContent=u<60?u+'초':Math.floor(u/60)+'분 '+(u%60)+'초'}
  paused=true;releaseAll();$('hud').inert=true;$('exresult').hidden=false;save();updateHUD(true);$('exr-next').focus()}
 function exFade(on,done){$('exfade').classList.toggle('on',!!on);if(done)setTimeout(done,on?340:0)}
 function enterExhibition(){
  if(!started||paused||EX.on||!exReady()||stompLocked()||TD.on||shovelLocked()||tool2Locked())return false;
+ const fee=exhibitionFeeDue();
+ if(S.money<fee)return false;
+ if(fee){S.money-=fee;S.exFeeZone=S.zone;save()}
  paused=true;releaseAll();AU.wake();
  exFade(1,()=>{try{hallIn()}catch(err){console.error(err)}paused=false;last=0;exFade(0);exTitle();$('gl').focus()});
  return true}
@@ -6835,10 +6848,17 @@ function renderSupportMenu(){
  $('supportreport').hidden=!refused;
  $('supportpay').disabled=!payable;$('supportpay').textContent=refused?'추가 선지급 거절':running?'지급 완료':idle?'지급 완료':credit?'예술가 선지급':dm?'창작지원금 지급':'예술가 지급';
  const more=needsReassignment()&&!S.paid,target=targetWorkshop(),ready=S.paid||more;
- const ex=exReady();
+ const ex=exReady(),fee=exhibitionFeeDue();
  $('supportreviewtitle').textContent=ex?S.zone+'기 결과보고전 철수':more?'인원 추가 배정':target+'기 지원 대상 심사';$('supportslots').textContent=ex?'0 / '+exCount(S.zone).toLocaleString('ko-KR'):more?n+' / '+teamSize(target)+'명':'정원 '+teamSize(target)+'명';
- $('supportreviewdetail').textContent=ex?'정산이 끝났습니다. 결과보고전을 철수한 뒤 다음 기수 심사를 시작합니다. 장비는 재단이 모두 빌려 드립니다.':more?'이번 기수의 남은 인원을 심사해 배정합니다.':S.paid?'정산이 끝났습니다. 다음 기수의 지원 대상을 배정합니다.':'현재 기수 정산 후 다음 기수 심사를 시작합니다.';
- $('supportreview').disabled=!ready;$('supportreview').textContent=ex?'철수 시작':ready?'심사하기':'정산 후 심사';
+ const review=$('supportreview');
+ if(ex){
+  $('supportreviewdetail').textContent='전시장 대관·설치, 도록 인쇄 포함. 철수 장비는 재단에서 대여합니다.';
+  review.disabled=S.money<fee;
+  review.textContent=review.disabled?'개최비 '+won(fee)+' · '+won(fee-S.money)+' 부족':fee?'개최비 '+won(fee)+' 집행 · 철수 시작':'개최비 집행 완료 · 철수 시작';
+ }else{
+  $('supportreviewdetail').textContent=more?'이번 기수의 남은 인원을 심사해 배정합니다.':S.paid?'정산이 끝났습니다. 다음 기수의 지원 대상을 배정합니다.':'이번 기수 정산 후 결과보고전을 엽니다. 예정 개최비 '+won(fee)+'.';
+  review.disabled=!ready;review.textContent=ready?'심사하기':'정산 후 심사';
+ }
 }
 function openSupportMenu(){if(!menuAvailable())return false;paused=true;releaseAll();$('hud').inert=true;renderSupportMenu();$('supportmenu').hidden=false;save();$('supportx').focus();return true}
 function closeSupportMenu(){if($('supportmenu').hidden)return;$('supportmenu').hidden=true;$('hud').inert=false;paused=false;last=0;AU.wake();$('gl').focus()}
@@ -6852,7 +6872,11 @@ function reportClosure(){
  if(!confirm('사업 종료 보고를 제출할까요? 제출하면 이번 사업 운영이 끝납니다.'))return;
  S.closed=true;save();started=false;paused=true;releaseAll();AU.sleep();showClosedHome(S.muted)
 }
-function reviewFromSupport(){if($('supportmenu').hidden||!S.paid&&!needsReassignment())return false;closeSupportMenu();return exReady()?enterExhibition():openInterview()}
+function reviewFromSupport(){
+ if($('supportmenu').hidden||!S.paid&&!needsReassignment())return false;
+ if(exReady()&&S.money<exhibitionFeeDue())return false;
+ closeSupportMenu();return exReady()?enterExhibition():openInterview();
+}
 
 function pauseGame(){if(!started||paused)return;paused=true;releaseAll();$('hud').inert=true;$('pause-controls').open=false;$('howto').textContent=$('hinttxt').textContent.split(' · ').join('\n');$('pause').hidden=false;save();AU.sleep();$('resume').focus()}
 function resumeGame(){$('pause').hidden=true;$('hud').inert=false;paused=false;last=0;AU.wake();$('gl').focus()}
@@ -6928,7 +6952,7 @@ function bind(){
  $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('buybub').onclick=()=>{AU.wake();openShop()};$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('candidate-reject').onclick=()=>rejectCandidate(IV.sel);$('candidate-private').onclick=()=>privateCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
  $('supportmenu').addEventListener('pointerdown',e=>{if(e.target===$('supportmenu'))closeSupportMenu()});
- $('reset').onclick=()=>{if(!confirm('예산과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;exAbort();const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:m,wp:1,wf:1,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],exDone:0};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
+ $('reset').onclick=()=>{if(!confirm('예산과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;exAbort();const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:m,wp:1,wf:1,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],exDone:0,exFeeZone:0};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
  cv.addEventListener('webglcontextlost',loseGraphics);
  cv.addEventListener('webglcontextrestored',restoredGraphics);
 }
