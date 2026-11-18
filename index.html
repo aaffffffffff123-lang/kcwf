@@ -53,6 +53,16 @@ button:disabled{opacity:.45;cursor:default}
 .hud-menu{min-height:48px;border-radius:13px;background:var(--blue);color:#fff;box-shadow:0 3px 0 #163a9e,0 5px 12px #16213c1c;padding:7px 8px;text-align:center;line-height:1.3}
 .hud-menu b{display:block;font-size:13px;font-weight:800;white-space:nowrap}
 .hud-menu small{display:block;font-size:10px;margin-top:3px;white-space:nowrap;opacity:.85}
+#shopbtn{position:relative}
+#shopbtn.new::after{content:'';position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:#ff4a3a;box-shadow:0 0 0 2px #fff}
+#buybub{position:absolute;left:0;top:0;display:flex;align-items:center;gap:8px;padding:7px 13px 7px 8px;border-radius:13px;background:#fff;color:var(--ink);box-shadow:0 4px 16px rgba(22,29,51,.22);text-align:left;white-space:nowrap;touch-action:manipulation}
+#buybub[hidden]{display:none}
+#buybub.on{animation:bubPop .45s ease-out}
+#buybub::before{content:'';position:absolute;top:-7px;left:var(--tx,50%);margin-left:-8px;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid #fff}
+#buybub img{width:40px;height:26px;object-fit:contain;flex:none}
+#buybub b{display:block;font-size:13px;font-weight:800;letter-spacing:-.03em;line-height:1.2}
+#buybub small{display:block;font-size:11px;font-weight:700;color:#1f6b3f;margin-top:2px;font-variant-numeric:tabular-nums}
+@keyframes bubPop{0%{opacity:0;transform:translateY(-7px) scale(.88)}55%{opacity:1;transform:translateY(1px) scale(1.04)}100%{transform:none}}
 #supportbtn{background:#fff;color:var(--blue);box-shadow:0 3px 0 #c6d1ef,0 5px 12px #16213c1c}
 #supportbtn.ready{background:var(--yellow);color:var(--ink);box-shadow:0 3px 0 #c9a100,0 5px 12px #16213c1c}
 .hud-menu:active{transform:translateY(1px)}
@@ -237,8 +247,15 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 #exbar i b{display:block;height:100%;width:0;background:var(--blue);border-radius:5px;transition:width .25s linear}
 #extools{position:absolute;right:max(10px,env(safe-area-inset-right));top:calc(max(12px,env(safe-area-inset-top)) + 130px);display:none;flex-direction:column;gap:6px}
 #hud.ex #extools{display:flex}
-.exb{position:relative;width:56px;height:56px;border-radius:15px;background:rgba(255,255,255,.95);color:var(--ink);box-shadow:0 3px 0 #d3d9e6,0 4px 10px rgba(22,29,51,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;touch-action:manipulation}
-.exb img{width:52px;height:31px;object-fit:contain;display:block}
+#hud.ex #extools.two{display:grid;grid-template-columns:repeat(2,var(--eb,56px));gap:6px}
+#exarrows{position:absolute;inset:0;display:none;pointer-events:none}
+#hud.ex #exarrows.on{display:block}
+#exarrows i{position:absolute;left:0;top:0;width:34px;height:34px;display:none;border-radius:50%;background:rgba(255,255,255,.95);box-shadow:0 2px 8px rgba(22,29,51,.25)}
+#exarrows i svg{position:absolute;left:0;top:0;width:34px;height:34px;display:block}
+#exarrows i span{position:absolute;right:-6px;top:-6px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--ink);color:#fff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;font-style:normal}
+#exarrows i span:empty{display:none}
+.exb{position:relative;width:var(--eb,56px);height:var(--eb,56px);border-radius:15px;background:rgba(255,255,255,.95);color:var(--ink);box-shadow:0 3px 0 #d3d9e6,0 4px 10px rgba(22,29,51,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;touch-action:manipulation}
+.exb img{width:calc(var(--eb,56px) - 4px);height:calc(var(--eb,56px)*.55);object-fit:contain;display:block}
 .exb span{font-size:10px;font-weight:800;letter-spacing:-.05em;line-height:1.1;white-space:nowrap}
 .exb em{position:absolute;top:-6px;left:-6px;font-style:normal;font-size:9px;font-weight:800;background:var(--yellow);color:var(--ink);border-radius:6px;padding:2px 4px;line-height:1}
 .exb i{position:absolute;bottom:-5px;right:-5px;font-style:normal;font-size:10px;font-weight:800;background:var(--ink);color:#fff;border-radius:6px;min-width:17px;height:17px;display:none;align-items:center;justify-content:center}
@@ -247,7 +264,7 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 .exb.sel img{filter:drop-shadow(0 0 1.5px #fff)}
 #hud .exb:disabled{opacity:.42}
 .exb:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #d3d9e6}
-@media(max-height:560px){#extools{flex-direction:row;top:calc(max(12px,env(safe-area-inset-top)) + 54px);right:max(12px,env(safe-area-inset-right))}#exbar{width:min(300px,calc(100% - 420px))}#extitle{top:56%}}
+@media(max-height:560px) and (orientation:landscape){#extools{flex-direction:row;top:calc(max(12px,env(safe-area-inset-top)) + 54px);right:max(12px,env(safe-area-inset-right))}#exbar{width:min(300px,calc(100% - 36px - var(--ebw,366px)))}#extitle{top:56%}}
 #extitle{position:absolute;left:50%;top:31%;transform:translate(-50%,-50%);width:max-content;max-width:88vw;text-align:center;background:rgba(255,255,255,.94);border-radius:18px;padding:15px 24px 14px;box-shadow:0 10px 30px rgba(22,29,51,.18);opacity:0;pointer-events:none}
 #extitle small{display:block;font-size:12px;font-weight:700;color:var(--sub);letter-spacing:-.01em}
 #extitle b{display:block;font-size:30px;font-weight:900;letter-spacing:-.05em;margin:3px 0 5px}
@@ -304,10 +321,12 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
   <button class="hud-menu" id="supportbtn" aria-haspopup="dialog"><b>창작지원</b><small id="supportstatus">운영 중</small></button>
  </div>
  <div id="toast" role="status"></div>
+ <button id="buybub" type="button" hidden><img alt=""><span><b></b><small></small></span></button>
  <div id="hint"><span id="hinttxt"></span></div>
  <div id="stick"><i></i></div>
  <button id="act2" hidden><b></b><small></small><i>Q</i></button>
  <div id="exbar"><div class="exl"><small>결과보고전 철수</small><div><b id="excount">0</b><small id="exof"> / 1,000</small></div></div><button id="exend" type="button">철수 마치기</button><i><b id="exfill"></b></i></div>
+ <div id="exarrows" aria-hidden="true"></div>
  <div id="extools" role="toolbar" aria-label="장비 바꾸기"></div>
  <div id="extitle" aria-hidden="true"><small id="ext1"></small><b id="ext2"></b><span id="ext3"></span></div>
 </div>
@@ -394,11 +413,11 @@ const TAU=Math.PI*2,wrapA=a=>a-Math.round(a/TAU)*TAU; // 각도 차이를 -π~π
 /* ───────── 저장 ───────── */
 const KEY='creative-support-v2';
 // 결과보고전 철수 상태 (아래 '결과보고전 철수' 참고)
-const EX={on:false,phase:'',t:0,N:0,kills:0,kept:0,held:0,pay:0,bonus:0,kw:0,kwT:0,mass:0,dt2:0,shown:false,tool0:'hand',keep:null,rt:null,lost:false,free:0,sndT:0,cooT:0,used:0},EX_PAY=5,EX_TOOLS=['hand','boot','tong','shovel','vac','trim'];
+const EX={on:false,phase:'',t:0,N:0,kills:0,kept:0,held:0,pay:0,bonus:0,kw:0,kwT:0,mass:0,dt2:0,shown:false,tool0:'hand',keep:null,rt:null,lost:false,free:0,sndT:0,cooT:0,used:0},EX_PAY=5,EX_TOOLS=['hand','wash','boot','tong','shovel','vac','trim'];
 const FX={lite:false}; // 한꺼번에 많이 터질 때 조각을 줄인다
 const TOOLS=[
  {id:'hand',name:'맨손',short:'맨손',price:0,desc:'한 마리를 집어 올립니다. 꾹 누르고 있으면 손안에서 쥐어짭니다.'},
- {id:'wash',name:'고압세척기',short:'세척기',price:0,desc:'물줄기로 바닥 얼룩과 찌꺼기를 씻어 배수구로 보냅니다. 누른 채 끌면 물줄기가 따라오고, 맞은 것은 처리되지 않고 밀려나기만 합니다.'},
+ {id:'wash',name:'고압세척기',short:'세척기',price:0,desc:'물줄기로 바닥 얼룩과 찌꺼기를 씻어 배수구로 보냅니다. 누른 채 끌면 물줄기가 따라오고, 한 마리에 계속 맞히면 살가죽이 벗겨지다 터집니다.'},
  {id:'boot',name:'안전화',short:'안전화',price:300,desc:'밟아서 처리합니다. 길게 누르면 체중이 실리고, 구르기 버튼을 누르고 있으면 양발로 번갈아 밟습니다.'},
  {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:1200,desc:'한 번에 세 명까지 집어 64명까지 담습니다. 가득 차거나 밟기 버튼을 누르면 봉투를 묶어 놓고, 누르는 동안 밟습니다.'},
  {id:'shovel',name:'수거용 삽',short:'삽',price:2500,desc:'내려칠 때마다 더 짓이겨집니다. 누르고 있으면 계속 내려치고, 퍼담기 버튼을 누르는 동안 긁어 담았다가 떼면 수거통에 텁니다.'},
@@ -464,13 +483,13 @@ function proofFor(id,record={}){
  return {...route,pass:route.rec==='ok'||a.inc==='ok'};
 }
 function loadSave(){
- const d={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0};
+ const d={seen:[],money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0};
  try{const r=JSON.parse(localStorage.getItem(KEY)||'null');
   if(r&&r.v===2){d.money=clamp(+r.money||0,0,1e9);d.total=clamp(Math.floor(+r.total||0),0,1e9);d.liters=clamp(+r.liters||0,0,1e9);
    d.zone=clamp(Math.floor(+r.zone||1),1,999);d.prog=clamp(Math.floor(+r.prog||0),0,quota(d.zone));d.paid=!!r.paid&&d.prog>=quota(d.zone);
    if(Array.isArray(r.owned)){for(const[id,pay]of[['glue',4000],['mop',6000],['truck',26000]])if(r.owned.includes(id)){d.money+=pay;d.rf=true}if(r.owned.includes('wash')&&!r.wf){d.money+=r.wp?4000:19000;d.rf=true}}d.owned=TOOLS.map(t=>t.id).filter(id=>id==='hand'||id==='wash'||Array.isArray(r.owned)&&r.owned.includes(id));d.tool=d.owned.includes(r.tool)?r.tool:'hand';d.muted=!!r.muted;d.ofn=!!r.ofn;
    if(Array.isArray(r.funds))d.funds=d.funds.map((v,i)=>Number.isFinite(r.funds[i])?clamp(r.funds[i],0,ACTIVITY_T):v);
-   d.advance=clamp(+r.advance||0,0,1e6);d.exDone=clamp(Math.floor(+r.exDone||0),0,999);
+   d.advance=clamp(+r.advance||0,0,1e6);d.exDone=clamp(Math.floor(+r.exDone||0),0,999);if(Array.isArray(r.seen))d.seen=r.seen.filter(id=>TOOLS.some(t=>t.id===id));
    if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid','spent','more'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999),k:Number.isInteger(v.k)&&AP[k].choices?.[v.k]?v.k:-1}}
    if(Array.isArray(r.grants))for(let k=0;k<3;k++){const g=r.grants[k];if(g&&AP[g.a]&&d.ap[g.a]&&['paid','spent'].includes(d.ap[g.a].s)&&!d.grants.some(q=>q&&q.a===g.a)){const left=clamp(+g.left||0,0,GRANT_T);d.grants[k]={a:g.a,left,receipt:Number.isFinite(g.receipt)?clamp(g.receipt,0,2):2};d.ap[g.a].s=left>0?'paid':'spent'}}
    if(Array.isArray(r.team)){const team=[...new Set(r.team.filter(id=>ELIGIBLE.includes(id)))];if(team.length>=3&&team.length<=15)d.team=team}
@@ -1596,7 +1615,7 @@ function clipFloorAtBlade(shader){
 }
 function buildFlocks(){
  const eyeMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.15,envMapIntensity:.8});
- eyeMat.onBeforeCompile=clipFloorAtBlade;
+ eyeMat.onBeforeCompile=sh=>{hopClamp(sh);clipFloorAtBlade(sh)};
  TYPES.forEach((T,ti)=>{
   T.tintsL=T.tints.map(lin);
   T.gooL=T.tintsL.map(c=>T.id==='poop'?c.clone().lerp(DUNG,.45):c.clone().lerp(BLOOD,.78));
@@ -1612,7 +1631,7 @@ function buildFlocks(){
     'float cw=aAn.w;bool rv=cw>10.;if(rv)cw-=20.;'+
     'if(aPo.z>.001){float dd=rv?cw-transformed.z:transformed.z-cw,pk=aPo.z*(1.-smoothstep(0.,.5,dd)),bk=aPo.z*smoothstep(.2,.55,dd)*(1.-smoothstep(.75,1.4,dd));transformed.x*=1.+.55*pk+.2*bk;transformed.y=.48+(transformed.y-.48)*(1.-.7*pk+.25*bk);}'+ // 틈 바로 위는 납작하게 짓눌려 옆으로 퍼지고, 그 위는 밀려 올라온 속으로 부푼다
     'if(rv?transformed.z>cw:transformed.z<cw){vColor.xyz=vec3(.5,.03,.05);transformed.z=cw;if(aPo.z>.001){transformed.y=.48+(transformed.y-.48)*.06;transformed.x*=.35;}}'+
-    'if(aCl.x>-50.||aCl.y<50.){if(aLimb.z>.5){if(aRoot.z<aCl.x||aRoot.z>aCl.y)transformed=vec3(0.,.42,clamp(aRoot.z,aCl.x,aCl.y));}else if(position.z<aCl.x){transformed.z=aCl.x;transformed.x*=.9;vColor.xyz=vec3(.46,.03,.05);}else if(position.z>aCl.y){transformed.z=aCl.y;transformed.x*=.9;vColor.xyz=vec3(.46,.03,.05);}}');clipFloorAtBlade(sh)}; // 토막: 범위 밖 몸통은 시뻘건 단면으로 접히고, 뿌리가 범위 밖인 팔다리는 없어진다 // 날 밑에 깔린 쪽을 가장자리에 접는다 (w>10: 머리 쪽을 접는다). 롤러에 물린 개체는 넘어간 쪽을 얇게 짓눌린 띠로 접는다
+    'if(aCl.x>-50.||aCl.y<50.){if(aLimb.z>.5){if(aRoot.z<aCl.x||aRoot.z>aCl.y)transformed=vec3(0.,.42,clamp(aRoot.z,aCl.x,aCl.y));}else if(position.z<aCl.x){transformed.z=aCl.x;transformed.x*=.9;vColor.xyz=vec3(.46,.03,.05);}else if(position.z>aCl.y){transformed.z=aCl.y;transformed.x*=.9;vColor.xyz=vec3(.46,.03,.05);}}');hopClamp(sh);clipFloorAtBlade(sh)}; // 토막: 범위 밖 몸통은 시뻘건 단면으로 접히고, 뿌리가 범위 밖인 팔다리는 없어진다 // 날 밑에 깔린 쪽을 가장자리에 접는다 (w>10: 머리 쪽을 접는다). 롤러에 물린 개체는 넘어간 쪽을 얇게 짓눌린 띠로 접는다
   const F={sn:0,lv:T.fg.map((G,k)=>{ // 화면에 보이는 크기로 고른다: 0 크게 보이는 것 · 1 · 2 · 3 아주 작게 보이는 것
    const an=new THREE.InstancedBufferAttribute(new Float32Array(CAP*4),4);an.setUsage(THREE.DynamicDrawUsage);G.body.setAttribute('aAn',an);
    const po=new THREE.InstancedBufferAttribute(new Float32Array(CAP*4),4);po.setUsage(THREE.DynamicDrawUsage);G.body.setAttribute('aPo',po);
@@ -1768,7 +1787,45 @@ const _fr=new THREE.Frustum(),_pm=new THREE.Matrix4(),_fs=new THREE.Sphere(),LOD
 const inHand=c=>c.vic||c.hero||c.st==='tank'||c.st==='binned'||c.st==='tossed'||c.st==='bag'||c.st==='held'||c.st==='carried'; // 손·장비 안에 든 것은 늘 자세히 그린다
 function ptStep(c){const st=c.st;if(c.vic||st==='tank')return;c.pt+=((st==='fall'?(c.t>.3?1.15:0):st==='binned'?-1.35*Math.min(1,c.cl*2.5):st==='watch'?-.3:c.beg&&(st==='walk'||st==='cower'||st==='rise')?-.5:0)-c.pt)*(st==='fall'?.3:.14)}
 const PXS=new Float32Array(2400),PXH=new Uint16Array(64);
+// 판 밑에 깔린 몸: 몸이 어느 쪽으로 누워 있든 통 기준으로 위아래가 qv배로 줄고 옆으로 qh배 붓는다 (몸 한가운데를 중심으로)
+const _tsM=new THREE.Matrix4(),_tsV=new THREE.Vector3();
+function tankSquash(c,M){
+ const e=VC.can.matrixWorld.elements;let ux=e[4],uy=e[5],uz=e[6];const l=Math.hypot(ux,uy,uz)||1;ux/=l;uy/=l;uz/=l;
+ const a=c.qh,d=c.qv-c.qh;
+ _tsM.set(a+d*ux*ux,d*ux*uy,d*ux*uz,0, d*uy*ux,a+d*uy*uy,d*uy*uz,0, d*uz*ux,d*uz*uy,a+d*uz*uz,0, 0,0,0,1);
+ M.setPosition(0,0,0);M.premultiply(_tsM);_tsV.set(0,.5,-.15).applyMatrix4(M);M.setPosition(c.x-_tsV.x,c.y-_tsV.y,c.z-_tsV.z)}
+// 흡입기 통 안: 통 유리와 누름판 유리를 뚫고 나간 살은 유리면에 납작하게 눌어붙고, 그만큼 옆으로 밀려 불룩해진다. 눌어붙은 면은 유리 쪽을 본다
+// uHop: x 켜짐 · y 판 밑면 높이(통 기준) · z 통 유리 안쪽 반지름 · w 판 반지름
+const HOPU={uHop:{value:new THREE.Vector4(0,9,1,1)},uHopI:{value:new THREE.Matrix4()},uHopM:{value:new THREE.Matrix4()}};
+function hopClamp(sh){Object.assign(sh.uniforms,HOPU);
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform vec4 uHop;uniform mat4 uHopI;uniform mat4 uHopM;')
+  .replace('#include <project_vertex>',`#include <project_vertex>
+ vec4 hopWP=vec4(transformed,1.);
+ #ifdef USE_INSTANCING
+ hopWP=instanceMatrix*hopWP;
+ #endif
+ hopWP=modelMatrix*hopWP;
+ if(uHop.x>.5){vec3 hq=(uHopI*hopWP).xyz;
+  if(hq.y>-.03&&hq.y<.42&&dot(hq.xz,hq.xz)<.032){vec3 hc=hq;
+   #ifdef USE_INSTANCING
+   hc=(uHopI*(modelMatrix*(instanceMatrix*vec4(0.,.5,-.15,1.)))).xyz;
+   #endif
+   float hk=0.;vec3 hn=vec3(0.);float rr=length(hq.xz);bool pl=hc.y<uHop.y&&rr<uHop.w;
+   if(pl&&hq.y>uHop.y){float e=hq.y-uHop.y;vec2 dd=hq.xz-hc.xz;float dl=length(dd);if(dl>1e-5)hq.xz+=dd/dl*min(e,.01)*.5;hq.y=uHop.y-e*.04;hk=clamp(e/.003,0.,1.);hn=vec3(0.,1.,0.);rr=length(hq.xz);}
+   if(rr>uHop.z){float e=rr-uHop.z;hq.xz*=(uHop.z-e*.04)/rr;hq.y+=sign(hq.y-hc.y)*min(e,.01)*.4;float k2=clamp(e/.003,0.,1.);if(k2>hk){hk=k2;hn=vec3(hq.x,0.,hq.z)/max(rr,1e-5);}if(pl&&hq.y>uHop.y)hq.y=uHop.y-.0004;}
+   if(hk>0.){hopWP=uHopM*vec4(hq,1.);mvPosition=viewMatrix*hopWP;gl_Position=projectionMatrix*mvPosition;
+    #ifndef FLAT_SHADED
+    vNormal=normalize(mix(vNormal,normalize((viewMatrix*vec4(normalize((uHopM*vec4(hn,0.)).xyz),0.)).xyz),hk));
+    #endif
+   }}}`)
+  .replace('#include <worldpos_vertex>',`#if defined( USE_ENVMAP ) || defined( DISTANCE ) || defined ( USE_SHADOWMAP )
+ vec4 worldPosition=hopWP;
+#endif`)}
+function hopUniforms(){const v=VC,u=HOPU.uHop.value,on=!!v.can&&!!v.g&&v.g.visible;u.x=on?1:0;if(!on)return;
+ v.can.updateWorldMatrix(true,false);HOPU.uHopM.value.copy(v.can.matrixWorld);HOPU.uHopI.value.copy(v.can.matrixWorld).invert();
+ u.y=v.pg&&v.pg.visible?v.pg.position.y-.0006:9;u.z=HR-.0022;u.w=PE_R+.002}
 function drawCreatures(){
+ hopUniforms();
  for(const f of flocks){f.sn=0;for(const L of f.lv)L.n=0}
  camera.updateMatrixWorld();_pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_fr.setFromProjectionMatrix(_pm);
  const cp=camera.position,n=Math.min(creatures.length,PXS.length),K=renderer.domElement.height*LODV.k*.5/Math.tan(camera.fov*Math.PI/360);let shn=0;PXH.fill(0);
@@ -1811,14 +1868,16 @@ function drawOne(c,f){
   else if(st==='binned'){ph=time*(c.cl>0?10:6)+c.ph;amp=c.cl>0?1.3:.9}
   else if(st==='tank'&&!c.vic){const V=VC;
    if(c.gpin){ph=time*17+c.ph;amp=1.5} // 판 가장자리 틈에 끼어 다리를 버둥댄다
-   else if(c.pc){ph=time*(c.pc>=2?31:23)+c.ph;amp=c.pstg>=3||c.pc>=3?0:c.pc>=2?.3:.6} // 누름판에 짓눌린 채 팔다리를 떤다
+   else if(c.pflat>0){ph=time*(c.pstg>=2?31:23)+c.ph;amp=c.pstg>=3?0:.22} // 판 밑에 끼어 짓눌린 채 팔다리를 움찔댄다
+   else if(c.pc){ph=time*(c.pc>=2?31:23)+c.ph;amp=c.pstg>=3||c.pc>=3?0:c.pc>=2?.3:.6} // 짓눌린 채 팔다리를 떤다
    else if(c.hold){ph=time*17+c.ph;amp=1.7} // 다리를 붙잡혀 끌려 내려가며 걷어찬다
    else if(c.cl>0){ph=time*12+c.ph;amp=1.4} // 겁에 질려 허우적대며 기어오른다
    else if(V.ph===1&&V.gr<VM){ph=time*5+c.ph;amp=.5} // 봐 달라고 손짓한다
    else{ph=time*(V.ph===1?9:7)+c.ph;amp=V.ph===1?1.15:.9}}
   else if(st!=='dazed'&&st!=='stump'){ph=time*34+c.ph;amp=1.5}
   if(c.vic){const e=c.vic;ph=e.sw;amp=e.amp;bx=sy=1/Math.sqrt(e.sz);sz=e.sz/bx;if(c.pc){sy*=c.sq;bx*=Math.min(1.3,1/Math.sqrt(c.sq))}} // 짓눌린 채 물린 것은 납작한 그대로 넘어간다 // 롤러에 물린 개체: 자세는 흡입기가 정한다 (몸 길이 방향으로만 늘어난다)
-  if(st==='tank'&&!c.vic&&c.kz){bx=c.kx;sy=c.ky;sz=c.kz/c.kx} // 누름판에 눌린 몸: 축마다 따로 납작해진다 (x 옆 · y 두께 · z 머리-발)
+  if(st==='tank'&&!c.vic&&c.kz){bx=c.kx;sy=c.ky;sz=c.kz/c.kx} // 판 가장자리 틈에 낀 몸: 유리에 눌려 얇다 (x 옆 · y 두께 · z 머리-발)
+  else if(st==='tank'&&!c.vic&&c.qv){bx=sy=sz=1} // 판 밑에 깔린 몸: 자기 축이 아니라 통 기준으로 눌린다 (아래 tankSquash)
   if(st==='sucked'){sz=c.str;bx=1/Math.sqrt(c.str);sy*=bx}
   // 봐 달라고 몸을 일으킨다
   if(c.vic)D.position.set(c.x,c.y,c.z); // 롤러에 물려 똑바로 선 채(또는 머리부터 거꾸로) 끌려 내려간다
@@ -1827,14 +1886,14 @@ function drawOne(c,f){
   const fast=!c.vic&&st!=='tank'&&st!=='binned'&&st!=='tossed';
   if(fast)fastXf(D.matrix,D.position.x,D.position.y,D.position.z,c.pt,c.yaw,c.roll,r*bx,r*sy,r*bx*sz);
   else{if(c.vic)D.quaternion.copy(c.vic.wq);else D.rotation.set(c.pt,c.yaw,c.roll,'YXZ');
-   D.scale.set(r*bx,r*sy,r*bx*sz);D.updateMatrix();
+   D.scale.set(r*bx,r*sy,r*bx*sz);D.updateMatrix();if(st==='tank'&&!c.vic&&c.qv)tankSquash(c,D.matrix);
    if(st==='binned'||st==='tossed')fitBinCreature(c,D)}
   f.body.setMatrixAt(i,D.matrix);f.body.setColorAt(i,c.tint);f.an.array[i*4]=ph;f.an.array[i*4+1]=amp;f.an.array[i*4+2]=c.flay;f.an.array[i*4+3]=c.clip;
   {const V=c.vic,o=f.po.array;if(V){o[i*4]=V.rl;o[i*4+1]=V.rr;o[i*4+2]=V.pk;o[i*4+3]=V.hb}else{const ar=st==='walk'||st==='shred'||st==='tank'&&c.pc>0;o[i*4]=ar?c.arL||0:0;o[i*4+1]=ar?c.arR||0:0;o[i*4+2]=0;o[i*4+3]=c.hb||0}} // hb: 고개를 젖힌(음수면 숙인) 정도 · arL/arR: 손을 뻗어 쳐든 정도
   f.cu.array[i]=c.cut||0;
   // 눈은 얼굴 자리에서 부푼다
   if(f.tiny){f.cl.array[i*2]=-100;f.cl.array[i*2+1]=100;return}
-  const e=c.noeye?0:1+c.panic*.25+(st==='pinned'?(c.pr||0)*.7:0)+(c.gk||0)*.8+(st==='pinned'||st==='tank'||st==='bag'||st==='held'||st==='shred'||st==='mash'?.5:st==='maim'||st==='stump'||st==='crawl'?.3:0);if(fast)fastXf(D.matrix,D.position.x,D.position.y,D.position.z,c.pt,c.yaw,c.roll,r*bx,r*Math.max(sy,.5),r*bx*sz);else{if(st==='tank'&&c.kz&&!c.vic)D.scale.set(r*Math.max(c.kx,.62),r*Math.max(c.ky,.5),r*c.kz);else D.scale.set(r*bx,r*Math.max(sy,.5),r*bx*sz);D.updateMatrix()}
+  const e=c.noeye?0:1+c.panic*.25+(st==='pinned'?(c.pr||0)*.7:0)+(c.gk||0)*.8+(st==='pinned'||st==='tank'||st==='bag'||st==='held'||st==='shred'||st==='mash'?.5:st==='maim'||st==='stump'||st==='crawl'?.3:0);if(fast)fastXf(D.matrix,D.position.x,D.position.y,D.position.z,c.pt,c.yaw,c.roll,r*bx,r*Math.max(sy,.5),r*bx*sz);else{if(st==='tank'&&c.kz&&!c.vic)D.scale.set(r*Math.max(c.kx,.62),r*Math.max(c.ky,.5),r*c.kz);else D.scale.set(r*bx,r*Math.max(sy,.5),r*bx*sz);D.updateMatrix();if(st==='tank'&&!c.vic&&c.qv)tankSquash(c,D.matrix)}
   _em.makeScale(e,e,e).setPosition(EYEP[0]*(1-e),EYEP[1]*(1-e),EYEP[2]*(1-e));
   const hb=c.vic?c.vic.hb:c.hb;if(hb){_hm.makeRotationX(-hb*.8);_hv.copy(HEADP).applyMatrix4(_hm);_hm.setPosition(HEADP.x-_hv.x,HEADP.y-_hv.y,HEADP.z-_hv.z);_em.premultiply(_hm)} // 젖힌 고개를 따라간다
   _em.premultiply(D.matrix);f.eyes.setMatrixAt(i,_em);f.cl.array[i*2]=-100;f.cl.array[i*2+1]=100;
@@ -1906,6 +1965,7 @@ function eyeball(c,dx,dz,p=1){if(FX.lite&&Math.random()<.7)return;const r=c.r*rn
 function updateBits(dt){
  for(let i=drops.length-1;i>=0;i--){const d=drops[i];d.vy-=9.8*dt;d.x+=d.vx*dt;d.y+=d.vy*dt;d.z+=d.vz*dt;
   if(d.bin){if(d.bin===2?d.y<=.01:(d.y<.3&&d.vy<0))drops.splice(i,1);continue}
+  if(SH.bin.visible&&d.y<.335&&d.y>.02){const b=SH.bin.position,dx=d.x-b.x,dz=d.z-b.z,rr=binR(d.y)+.003;if(dx*dx+dz*dz<rr*rr){const px=dx-d.vx*dt,pz=dz-d.vz*dt;if(px*px+pz*pz>=rr*rr)binStain(dx,d.y,dz,d.r,d.color);drops.splice(i,1);continue}} // 수거통에 맞은 방울은 통 옆면에 묻는다 (위에서 들어간 것은 통 안으로)
   if(d.y<=d.r*.5){if(Math.abs(d.x)<WORLD_SIZE/2-.2&&Math.abs(d.z)<WORLD_SIZE/2-.2)stamp(d.x,d.z,d.r*8,d.r*8,d.vx,d.vz,6,d.color,1);drops.splice(i,1)}}
  let pc=0;
  for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];k.age+=dt;
@@ -1914,6 +1974,7 @@ function updateBits(dt){
   const life=EX.on?1e9:k.kind===1?26:k.kind===2?40:34; // 전시장에서는 치울 때까지 그대로 깔려 있다
   if(k.age>life){k.fade=1-(k.age-life)/1.4;if(k.fade<=0){if(k.kind===1)stamp(k.x,k.z,k.sx*3,k.sz*3,0,1,0,ROT,.85);chunks.splice(i,1)}continue}
   if(k.rest||k.stick)continue;k.vy-=9.8*dt;k.x+=k.vx*dt;k.y+=k.vy*dt;k.z+=k.vz*dt;k.rx+=k.sp*dt;
+  if(SH.bin.visible&&k.y<.335){const b=SH.bin.position,dx=k.x-b.x,dz=k.z-b.z,d2=dx*dx+dz*dz,rr=binR(k.y)+Math.max(k.sx,k.sz)*.6;if(d2<rr*rr){const px=dx-k.vx*dt,pz=dz-k.vz*dt;if(px*px+pz*pz>=rr*rr){const dl=Math.sqrt(d2)||1,nx=dx/dl,nz=dz/dl,vn=k.vx*nx+k.vz*nz;if(vn<0){k.vx=(k.vx-1.4*vn*nx)*.5;k.vz=(k.vz-1.4*vn*nz)*.5}k.x=b.x+nx*rr;k.z=b.z+nz*rr;const R=binR(k.y);binStain(nx*R,k.y,nz*R,Math.min(.011,Math.max(k.sx,k.sz)*.5),k.ink||(k.kind===2?FATC:BLOOD),.8)}}} // 수거통에 맞은 살점은 튕겨 나가며 문댄 자국을 남긴다
   const gy=k.kind===4?k.sy*.2:k.kind>=5?k.sy*.075:k.sy;if(k.y<=gy){k.y=gy;
    if(k.flop){k.flop=0;k.rx=0;k.vy=0;AU.slap(.3);stamp(k.x,k.z,k.sx*2.6,k.sz*2.6,rnd(-1,1),rnd(-1,1),6,k.ink||BLOOD,.85)} // 밑창에서 떨어진 사체가 철퍼덕 붙는다
    if(Math.abs(k.vy)<.7){k.rest=true;if(k.kind!==2)k.rx=0}else{k.vy=-k.vy*.3;k.vx*=.5;k.vz*=.5}}
@@ -2014,6 +2075,11 @@ function killNow(c,cause,ex,ez,ox,oz){
  else if(cause==='grind'){AU.crunch()}
  else if(cause==='trim'){gooBurst(c,c.x,c.z,ox,oz,1.5);gooBurst(c,c.x,c.z,-oz,ox,1.2);eyeball(c,ox,oz,1.4);eyeball(c,-ox,-oz,1.2);stamp(c.x,c.z,c.r*8,c.r*8,ox,oz,1,c.ink,1);gore(c,ox,oz,1.6);AU.slap(1);AU.slap(.7,.05);AU.crackle(2,.6,.02)}
  else if(cause==='crush'){stamp(c.x,c.z,c.r*9,c.r*9,ox,oz,Math.random()<.5?1:2,c.ink,1);gooBurst(c,c.x,c.z,ox,oz,1.2);corpse(c,1.15);gore(c,ox,oz,1.1);eyeball(c,oz,ox,1.2)}
+ else if(cause==='wash'){ // 고압 물줄기에 살가죽이 다 벗겨지며 터진다: 살갗 조각과 속이 물줄기 쪽으로 날아가고, 시뻘겋게 벗겨진 몸뚱이가 납작하게 남는다
+  stamp(c.x,c.z,c.r*7.5,c.r*7.5,ox,oz,1,c.ink,1);gooBurst(c,c.x,c.z,ox,oz,1.25);lastCorpse=null;corpse(c,1.05);if(lastCorpse){lastCorpse.color=RAWC.clone().lerp(c.ink,.35)}
+  for(let i=0,n=FX.lite?2:6;i<n;i++){const a=rnd(-1,1);chunk(c.x,.03,c.z,(ox*Math.cos(a)-oz*Math.sin(a))*rnd(.6,2.2),rnd(.4,1.3),(oz*Math.cos(a)+ox*Math.sin(a))*rnd(.6,2.2),rnd(.01,.018),.0022,rnd(.012,.022),c.skin)}
+  gore(c,ox,oz,1.2);eyeball(c,ox,oz,1.3);for(let i=0;i<5;i++)drop(c.x,.04,c.z,ox*rnd(.8,2.2)+rnd(-.5,.5),rnd(.6,1.6),oz*rnd(.8,2.2)+rnd(-.5,.5),rnd(.006,.012),i<3?BLOOD:c.ink);
+  AU.pop(c.type,.95);AU.slap(.55);AU.squelch(.35);panicNear(c.x,c.z,.9)}
  else if(cause==='drain'){stamp(c.x,c.z,c.r*7,c.r*7,0,1,0,c.ink,1);AU.crunch();AU.rattle();gore(c,rnd(-1,1),rnd(-1,1),.5);for(let i=0;i<4;i++)drop(c.x+rnd(-.05,.05),.02,c.z+rnd(-.05,.05),rnd(-.4,.4),rnd(1,2.2),rnd(-.4,.4),rnd(.006,.012),c.ink);if(Math.random()<.5)eyeball(c,rnd(-1,1),rnd(-1,1),.7)}
 }
 function sweepDead(){let j=0;for(let i=0;i<creatures.length;i++){const c=creatures[i];if(!c.dead)creatures[j++]=c}creatures.length=j}
@@ -3259,10 +3325,27 @@ function buildBin(){
  const m=new THREE.Mesh(body,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.45,envMapIntensity:.5,side:THREE.DoubleSide}));m.castShadow=true;m.receiveShadow=true;g.add(m);
  const p=new THREE.Mesh(lump(new THREE.CylinderGeometry(.158,.15,.03,18,1),.05,6),new THREE.MeshStandardMaterial({roughness:.1,envMapIntensity:1}));p.visible=false;g.add(p);SH.pulp=p;
  const pv=p.geometry.attributes.position;let radius=0,bottom=0;for(let i=0;i<pv.count;i++){radius=Math.max(radius,Math.hypot(pv.getX(i),pv.getZ(i)));bottom=Math.min(bottom,pv.getY(i))}p.userData.radius=radius;p.userData.bottom=bottom;
- SH.binSolid=solidBatch(g,240);SH.binEyes=solidBatch(g,24,eyeIM.geometry,.3);
+ SH.binSolid=solidBatch(g,240);SH.binEyes=solidBatch(g,24,eyeIM.geometry,.3);binStainBuild(g);
  for(const m of[SH.binSolid,SH.binEyes]){m.geometry.computeBoundingSphere();const b=m.geometry.boundingSphere;m.userData.bound=b.radius+b.center.length()}
  g.visible=false;scene.add(g);SH.bin=g;
 }
+// 수거통 바깥 핏자국(그림): 삽으로 내려칠 때 튄 피와 살점이 통에 닿은 자리에 묻고, 큰 방울은 흘러내린다. 고인 데를 세게 칠수록 많이·멀리 튀어서 점점 벌게진다
+const BS={can:null,ctx:null,tex:null,mesh:null,dirty:0,t:0};
+function binStainBuild(g){const cv=document.createElement('canvas');cv.width=512;cv.height=144;BS.can=cv;BS.ctx=cv.getContext('2d');const t=new THREE.CanvasTexture(cv);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;BS.tex=t;
+ const m=new THREE.Mesh(new THREE.CylinderGeometry(.1718,.1418,.3,32,1,true),new THREE.MeshStandardMaterial({map:t,transparent:true,roughness:.26,metalness:0,envMapIntensity:.6,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));
+ m.position.y=.17;m.renderOrder=2;m.visible=false;g.add(m);BS.mesh=m}
+const binR=y=>.14+.03*clamp((y-.02)/.3,0,1); // 높이마다 통 바깥 반지름
+function binStain(lx,y,lz,rad,col,a=1){const g=BS.ctx;if(!g)return;const W=BS.can.width,H=BS.can.height,px=frac(Math.atan2(lx,lz)/TAU)*W,py=(1-clamp((y-.02)/.3,0,1))*H,pr=Math.max(1.6,rad*(W/(TAU*.156))*2.4),q=col.clone().convertLinearToSRGB(),r=q.r*255|0,gg=q.g*255|0,b=q.b*255|0;
+ for(const ox of[0,-W,W]){const x=px+ox;if(x<-pr*5||x>W+pr*5)continue;
+  g.fillStyle=`rgba(${r},${gg},${b},${.85*a})`;g.beginPath();g.ellipse(x,py,pr*rnd(1,1.35),pr*rnd(.75,1),rnd(0,TAU),0,TAU);g.fill();
+  for(let i=0,n=1+(Math.random()*3|0);i<n;i++){const an=rnd(0,TAU),d=pr*rnd(1.2,2.4);g.beginPath();g.arc(x+Math.cos(an)*d,py+Math.sin(an)*d,pr*rnd(.15,.4),0,TAU);g.fill()} // 둘레로 튄 잔방울
+  if(pr>3&&Math.random()<.7){const L=pr*rnd(2,7);g.strokeStyle=`rgba(${r},${gg},${b},${.75*a})`;g.lineWidth=Math.max(1,pr*.42);g.lineCap='round';g.beginPath();g.moveTo(x,py);g.lineTo(x+rnd(-.8,.8),py+L);g.stroke();g.beginPath();g.ellipse(x,py+L,pr*.36,pr*.5,0,0,TAU);g.fill()}} // 아래로 흘러내린 자국
+ BS.dirty=1;BS.mesh.visible=true}
+function binSpray(cx,cz,w,col,hit){ // 내려친 자리 쪽 통 옆면에 튀는 것: 고인 정도(w)와 통까지 거리만큼
+ if(!SH.bin.visible||!col)return;const b=SH.bin.position,dx=cx-b.x,dz=cz-b.z,d=Math.hypot(dx,dz),k=(hit?1:.5)*w*clamp(1.35-d,0,1),n=Math.round(k*7);if(!n)return;const a0=Math.atan2(dx,dz);
+ for(let i=0;i<n;i++){const a=a0+rnd(-.95,.95),y=.025+.29*Math.pow(Math.random(),1.8)*(.45+.55*w),R=binR(y);binStain(Math.sin(a)*R,y,Math.cos(a)*R,rnd(.004,.009)*(.7+w*.8),col,.9)}}
+function binStainClear(){if(!BS.ctx)return;BS.ctx.clearRect(0,0,BS.can.width,BS.can.height);BS.tex.needsUpdate=true;BS.dirty=0;BS.mesh.visible=false}
+function binStainTick(dt){BS.t-=dt;if(BS.dirty&&BS.t<=0){BS.t=.08;BS.dirty=0;BS.tex.needsUpdate=true}}
 function binAdd(n,col){
  const s=SH;s.binN+=n;s.binC.lerp(col,.35);
  for(let j=0;j<Math.min(n,72)*3-.001;j++){const i=s.binPieces.length,k=i%11;
@@ -3465,7 +3548,7 @@ function slamImpact(){
  hitstop=Math.max(hitstop,hit?(first?.075:.04+.025*w):first?.045:.022);shake=Math.max(shake,hit?(first?1.4:.85+.5*w):first?.95:.5);buzz(hit?[24,18,12]:14);
  if(hit||pool){AU.pound(-1,w,n+crushed);if(n)AU.crackle(Math.min(14,2+n*3),1,.01,900,3000,.012);
   for(let i=0;i<Math.min(3,cr.length);i++)AU.squeal(cr[i].type,1.35+cr[i].crush*.15,rnd(0,.05),rnd(.45,.8));
-  if(col){stamp(cx,cz,SHW*2.3,SHD*1.2,0,1,7,col,hit?1:.55);bladeSqueeze(col,.5+w*.6);bladeSquirt(w,col,hit);bootGore(s.g,col,.04+.012*Math.min(10,hit)+.02*w)}
+  if(col){stamp(cx,cz,SHW*2.3,SHD*1.2,0,1,7,col,hit?1:.55);bladeSqueeze(col,.5+w*.6);bladeSquirt(w,col,hit);binSpray(cx,cz,w,col,hit);bootGore(s.g,col,.04+.012*Math.min(10,hit)+.02*w)}
   // 많이 고인 데를 내려치면 화면에도 튄다 (1초에 한 번 남짓)
   if(col&&w>.45&&time>s.lensT&&Math.random()<w){s.lensT=time+rnd(.9,1.5);_a.set(cx,.05,cz).project(camera);lensSplat((_a.x*.5+.5)*W,(-_a.y*.5+.5)*H,col,2+(w*3|0))}}
  if(hit){startleNear(cx,cz,.68,1.15+w*.6)} // 충격에 옆에 있던 것들이 나동그라진다
@@ -3558,7 +3641,7 @@ function shovelUpdate(dt,act,a2,go2){
  s.t+=dt;const p=s.pose;
  // 삽은 오른쪽, 통은 왼쪽 앞. 세로 화면에서도 통 전체와 삽날 사이를 비운다.
  const bx=P.x-Math.min(.66,W/H*.55),bz=P.z-1.35;s.bin.position.set(bx,0,bz);
- binContents(dt);binnedUpdate(dt);
+ binContents(dt);binnedUpdate(dt);binStainTick(dt);
  {const u=s.gu;if(u.uGore.value>0){u.uGoreWet.value=Math.max(.35,u.uGoreWet.value-dt*.06);u.uGore.value=Math.max(0,u.uGore.value-dt*.003)}} // 날에 묻은 피는 번들거리다 마른다
  s.wet*=Math.exp(-dt/7); // 고인 것은 천천히 스며든다
  // 퍼담기(노란 버튼): 내려치지 않을 때 누르면 앞으로 긁어 담기 시작한다
@@ -3644,7 +3727,9 @@ const VAC_LOW_SPEED=.70, VAC_DRAIN_TIME=.78;
 // 떨어질 때 가속·최고 빠르기 · 한 번 찍고 최소로 눌러 두는 시간 · 들어 올리는 시간 · 들다가 다시 찍을 수 있는 때 · 짓눌린 것이 끌려 들어가는 빠르기 · 롤러로 밀어 넣는 간격 · 꾹 누를 때 밀고 내려가는 빠르기 · 꺼질 때 빠르기
 const PE_R=HR*.91,PE_TH=.036,PE_SH=.23,PE_YR=HH-.034,PE_YMIN=Math.max(NIP+RC+.012,DY+DS*(PE_R-DZ)+.008),PE_ACC=22,PE_VMAX=2.3,PE_HIT=.12,PE_UP=.24,PE_TAP=.3,PE_FEED=11,PE_PULSE=.3,PE_PUSH=.2,PE_LURCH=.5;
 // 눌린 놈이 단계마다 버틸 수 있는 두께(처음 두께에 대한 비율): 처음엔 물러서 조금 눌리고 → 뼈가 나가며 납작 → 눈알·팔다리 → 몸통이 터짐 → 고깃장
-const PE_STG=[.78,.5,.32,.19,.11],GS_Y0=NIP+.02,GS_H=HH-GS_Y0; // 통 유리 핏자국 그림이 덮는 높이
+const PE_STG=[.86,.72,.6,.5,.42],GS_Y0=NIP+.02,GS_H=HH-GS_Y0; // 통 유리 핏자국 그림이 덮는 높이
+// 단계마다 남은 부피(터져 나간 만큼 준다) · 판이 더미를 누르는 동안 더미 전체가 납작해지는 빠르기
+const PE_VF=[1,.97,.93,.88,.82],PE_CS=.75;
 const VC={g:null,on:false,lumps:[],curve:null,t:0,er:0,streaks:[],mouth:new THREE.Vector3(),tank:[],eat:[],bits:[],spl:[],can:null,pipe:null,rol:[],rolM:null,deckM:null,gr:0,grK:0,iv:.1,idleT:0,ph:0,pt:0,k:0,w:0,drive:VAC_LOW_SPEED,spin:0,lvN:0,flT:0,col:new THREE.Color(.5,.42,.12),CAP:96,minced:[],falls:[],minceSeq:0,minceMesh:null,crumbMesh:null,slurpT:0,voiceT:0,boneT:0,splT:0,crkT:0,eyeT:0,rest:new THREE.Vector3(-.17,.3,-.72),show:new THREE.Vector3(0,.86,-.79),TILT:.12,ZOOM:1.2,prints:[],marks:[],prT:0,chkT:0,mot:0,jo:0,joS:1,bog:0,noC:0,cooN:0,
  hf:new Float32Array(NG*NG),hfIn:new Uint8Array(NG*NG),hfMean:0,hfDirty:0,lq:0,L:0,L0:0,Lmax:0,film:0,stain:0,rip:[],ripOn:false,foam:[],dots:[],blup:[],flow:[],streams:[],liqTop:null,liqSide:null,liqM:null,liqSM:null,strM:null,filmM:null,filmMesh:null,foamC:new THREE.Color(),hiC:new THREE.Color(),
  pg:null,pS:'ready',pT:0,pX:0,pX0:0,pXt:0,pZ:0,pY:0,pY0:0,pY1:0,pV:0,pCmd:0,pBlk:0,pBlkd:false,pNone:0,pStuckT:0,pDig:0,bncT:0,bncA:0,pIn:0,pq:0,pLX:0,aPrev:false,pressT:0,pLoad:0,pPulse:0,pstain:0,gsm:0,stk:[],strs:[],pHit:[],pN:0,popT2:0,pHeadM:null,pGlassM:null,pEdgeM:null,gfilm:null,gfilmM:null,
@@ -3756,14 +3841,17 @@ const VM=.55,VZ0=-1.62,VZH=1.33,VL=3.82,PRINTC=lin(0x5a0910); // 모터가 걸�
 function vacEnter(c){ // 관을 타고 올라와 호퍼 위쪽 입구에서 튀어나와 떨어진다. 떨어진 자세 그대로 아무렇게나 쌓인다
  c.vr=c.vr0=c.r*.5;c.pc=0;c.gp=0;c.sq=1;c.sqT=1;c.tp=new THREE.Vector3(HR-.04-c.vr,HH-.05,rnd(-.025,.025));c.tv=new THREE.Vector3(-rnd(.5,1),rnd(-.1,.3),rnd(-.3,.3));
  c.yw=rnd(0,TAU);c.lie=pick([0,0,.45,-.45,.85]);c.rl=pick([0,0,1.35,-1.35,2.9,-2.9]);c.tl=c.lie;c.kick=rnd(.3,1);c.wl=0;c.wg=0;c.ct=0;c.dox=null;c.vic=null;c.hold=null;c.drag=0;c.cl=0;
- c.hv=c.hr=c.vr;c.pflat=0;c.psv=1;c.pstg=0;c.plim=PE_STG[0];c.pprs=0;c.pthr=0;c.pwall=0;c.pgl=.8;c.gpin=null;c.prsd=0;c.pprt=0;c.kx=c.ky=c.kz=0;c.peye=0;c.phbT=null;c.pgA=null} // 누름판에 눌린 정도: 납작해진 정도·두께·단계·버틸 수 있는 두께·쌓인 압력
+ c.hv=c.hr=c.vr;c.pflat=0;c.psv=1;c.pstg=0;c.plim=PE_STG[0];c.pprs=0;c.pthr=0;c.pwall=0;c.pvf=1;c.gpin=null;c.prsd=0;c.pprt=0;c.kx=c.ky=c.kz=0;c.qv=0;c.qh=1;c.peye=0;c.phbT=null;c.pgA=null;c.pyw=c.ptl=c.prl=null;c.pc0=0;c.hvN=c.vr*.55;c.hrN=c.vr*.72} // 누름판에 눌린 정도: 판 밑에 깔린 정도·두께·단계·버틸 수 있는 두께·남은 부피·쌓인 압력
 // 호퍼 안: 서로 밀치며 쌓여 있다가, 맨 아래가 롤러 틈으로 끌려 들어가면 위에 얹힌 것들이 그만큼 내려앉는다
 function vacPile(dt){
  const v=VC,T=v.tank,n=T.length;if(!n)return;
  const grind=v.ph===1,w=v.w,h=Math.min(dt,.034)/2,ny=1/Math.sqrt(1+DS*DS),nt=DS*ny,pre=grind&&!v.mot,draw=grind&&v.mot;
  const pd=!!v.pg&&v.pg.visible&&(v.pS==='down'||v.pS==='press'||v.pS==='up'),hx=v.pX,hz=v.pZ,hy=v.pY; // 누름판이 내려와 있다
- // 차지하는 자리: 판에 눌려 납작해진 것은 위아래로 얇고 옆으로 넓다 (눌린 만큼 더미 높이가 실제로 줄어든다). 판 가장자리 틈에 낀 것은 유리에 붙어 얇다
- for(const c of T){if(c.gpin){c.hv=c.vr;c.hr=c.vr*.45;continue}const f=c.pflat||0,s=c.psv||1;c.hv=c.vr*(1-f+.56*s*f);c.hr=c.vr*(1-f+f*Math.min(1.45,1.08/Math.sqrt(Math.max(.1,s))))}
+ // 차지하는 자리: 평소에는 둥글게 넉넉히 차지하고, 판에 깔린 것은 실제 몸 크기로 줄어 서로 바짝 붙는다. 눌린 만큼 위아래로 얇아지고 그만큼 옆으로 불어난다
+ // (겉모습보다 조금 작게 잡아서 맞닿은 몸끼리 살짝 파고들어 짓눌린 것처럼 보인다). 판 가장자리 틈에 낀 것은 유리에 붙어 얇다
+ for(const c of T){if(c.gpin){c.hv=c.vr;c.hr=c.vr*.45;continue}const f=c.pflat||0;
+  if(f>0){const sv=c.psv||1,qh=Math.min(1.9,Math.sqrt((c.pvf||1)/sv));c.hv=c.vr*(1-f)+f*(c.hvN||c.vr*.55)*sv*.92;c.hr=c.vr*(1-f)+f*(c.hrN||c.vr*.72)*qh*.8}
+  else c.hv=c.hr=c.vr}
  for(let s=0;s<2;s++){
   for(const c of T){const p=c.tp,q=c.tv;c.px=p.x;c.py=p.y;c.pz=p.z;if(c.gpin){q.set(0,0,0);c.ct=0;continue}if(c.gp>0){const rd=Math.hypot(p.x,p.z)||1;q.x+=p.x/rd*3*h;q.z+=p.z/rd*3*h;q.y=-.05}else if(!c.hold)q.y-=9.8*h*(c.wl>0?1-c.wg:1); // 유리에 눌려 붙은 것은 붙은 채 천천히 미끄러져 내려간다
    if(c.wl>0){const rd=Math.hypot(p.x,p.z)||1;q.x+=p.x/rd*1.6*h;q.z+=p.z/rd*1.6*h;if(c.cl>0)q.y+=2.6*h;q.y=clamp(q.y,-.2,c.cl>0?.2:.05)} // 유리에 몸을 붙이고 기어오르다 미끄러진다. 겁에 질리면 훨씬 높이 기어오른다
@@ -3780,7 +3868,7 @@ function vacPile(dt){
      if(q<1){const d=Math.sqrt(q)||1e-4,k=(1-d)/d;pa.x+=dx*k;pa.y+=dy*k;pa.z+=dz*k;if(dy/ry>d*.5)a.ct|=4}}}
    if(pd)for(const c of T){if(c.gpin)continue;const p=c.tp,r=c.hr,dx=p.x-hx,dz=p.z-hz,d2=dx*dx+dz*dz,R=PE_R+r*.55;if(d2<R*R&&p.y+c.hv>hy){const d=Math.sqrt(d2);if(d<PE_R-r*.3){p.y=hy-c.hv;c.ct|=32}else{const k=R/(d||1e-4);p.x=hx+dx*k;p.z=hz+dz*k}}} // 판 밑은 눌러 내리고, 가장자리에 걸친 것은 바깥으로 밀어낸다
    for(const c of T){if(c.gpin)continue;const p=c.tp,r=c.hr,rv=c.hv;
-    const rd=Math.hypot(p.x,p.z),lim=HR-.007-r*(c.pwall&&c.pflat>.5?.6:1);if(rd>lim){p.x*=lim/rd;p.z*=lim/rd;c.ct|=8} // 유리벽 (유리에 짓눌린 것은 더 바짝 붙는다)
+    const rd=Math.hypot(p.x,p.z),lim=HR-.007-r*(c.pflat>.5?.72:1);if(rd>lim){p.x*=lim/rd;p.z*=lim/rd;c.ct|=8} // 유리벽 (판에 깔려 짓눌린 것은 유리에 몸이 납작하게 붙을 만큼 더 바짝 붙는다)
     if(p.y>HH-rv)p.y=HH-rv;
     if(Math.abs(p.x)<.108)for(let k=0;k<2;k++){const sz=k?1:-1,dy=p.y-NIP,dz=p.z-sz*RZ,d=Math.hypot(dy,dz),rr=RC+rv;if(d<rr){const f=rr/(d||1e-4);p.y=NIP+dy*f;p.z=sz*RZ+dz*f;c.ct|=k?16:1}} // 롤러
     {const sz=p.z<0?-1:1,dd=(p.y-DY)*ny-(sz*p.z-DZ)*nt;if(dd<rv){p.y+=(rv-dd)*ny;p.z-=sz*(rv-dd)*nt;c.ct|=2}} // 앞뒤 바닥판
@@ -3800,7 +3888,7 @@ function vacPile(dt){
 const _vq=new THREE.Quaternion(),_ve=new THREE.Euler(),_vv=new THREE.Vector3(),_vw=new THREE.Quaternion();
 function pileK(n){return n>30?.2:n>15?.35:n>6?.55:n>1?.8:1}
 function vacTake(c,o={}){ // 틈에 닿은 것을 날이 붙잡는다. 대부분 발부터, 더러는 머리부터 처박힌다
- const v=VC,i0=v.tank.indexOf(c);if(i0<0)return null;v.tank.splice(i0,1);if(c.gpin){c.gpin=null;v.pinN=Math.max(0,v.pinN-1)}c.kz=0;
+ const v=VC,i0=v.tank.indexOf(c);if(i0<0)return null;v.tank.splice(i0,1);if(c.gpin){c.gpin=null;v.pinN=Math.max(0,v.pinN-1)}c.kz=0;c.qv=0;
  const n=v.tank.length,g=pileK(n),last=!n&&!o.mash,hf=!o.chain&&!(c.pc>=2)&&Math.random()<(o.mash?.33:.27),re=c.r*.43,x=o.x!=null?o.x:clamp(c.tp.x,-.088,.088),p=new THREE.Vector3(),arms=c.type!==6;
  if(c.dox!=null)p.set(c.dox,c.doy,c.doz);else{p.copy(c.tp);v.can.localToWorld(p)}v.can.worldToLocal(p); // 지금 그려진 자리에서 출발한다
  const tmp=o.mash?0:hf||!arms||o.chain?1:Math.random()<.22?0:Math.random()<.4?2:1; // 0 얼어붙음 · 1 악착같이 버팀 · 2 앞에 있는 놈을 붙잡고 버팀
@@ -4005,26 +4093,31 @@ function vacLiquid(dt){
 /* ── 유리 누름판: 무게를 실어 떨어져 더미에 쿵 박히고, 꾹 누르고 있으면 계속 밀고 내려간다.
    판에 닿은 채 밑이 받쳐진 놈은 밀려 내려가지 못하고 그 자리에서 위아래로 납작해진다. 단계마다 버틸 수 있는 두께가 있어서
    거기 닿으면 판이 멈춰 끼익 버티다가, 압력이 쌓여 뼈가 나가면(우둑) 다음 단계 두께까지 툭 꺼진다. 판이 투명해서 짓눌리는 면이 위에서 그대로 보인다. ── */
-function pestleTop(x,z){const v=VC;let top=PE_YMIN; // 판이 처음 닿는 높이: 판 둘레 안에 든 것 중 가장 높은 몸
- for(const c of v.tank){if(c.gp>0||c.gpin)continue;const dx=c.tp.x-x,dz=c.tp.z-z,R=PE_R+c.hr*.2;if(dx*dx+dz*dz<R*R){const t=c.tp.y+c.hv*.8;if(t>top)top=t}} // 유리에 매달린 것·튀어 오른 것은 지나쳐 더미 윗면에서 멈춘다
+function pestleTop(x,z){const v=VC;let top=PE_YMIN; // 판이 처음 닿는 높이: 판 둘레 안에 든 것 중 겉모습이 가장 높이 솟은 몸
+ for(const c of v.tank){if(c.gp>0||c.gpin)continue;const dx=c.tp.x-x,dz=c.tp.z-z,R=PE_R+c.hr*.2;if(dx*dx+dz*dz<R*R){const t=c.tp.y+(c.pflat>0?c.hv:Math.min(c.hv,c.hvN||c.hv));if(t>top)top=t}} // 유리에 매달린 것·튀어 오른 것은 지나쳐 더미 윗면에서 멈춘다
  for(const e of v.eat){if(e.cy<0)continue;const dx=e.cx-x,dz=e.cz-z;if(dx*dx+dz*dz<PE_R*PE_R){const t=e.cy+e.cr*.45;if(t>top)top=t}}
  return top}
 const pressThr=c=>(.14+.26*c.tough)*(1+.16*(c.pstg||0))*rnd(.8,1.2); // 뼈가 나가기까지 버티는 시간 (단단한 놈일수록 오래 버틴다)
-function pressFirst(c){const p=c.tp,rd=Math.hypot(p.x,p.z),arms=c.type!==6; // 처음 눌릴 때: 대개 반듯이 누운 채 얼굴이 유리판을 보고, 유리벽 쪽 놈은 옆으로 누워 배와 얼굴을 통 유리에 댄다
- c.pfR=Math.abs(wrapA(c.roll))>Math.PI/2||Math.random()<.65?Math.PI:0;c.yw=c.yaw;c.pwall=rd>HR-.007-c.hr*1.35?1:0;c.pstg=c.pstg||0;c.plim=PE_STG[c.pstg];c.psv=c.psv||1;c.pprs=0;c.pgl=.8;
- c.parL=arms?rnd(-1.25,-.5):0;c.parR=arms?rnd(-1.25,-.5):0;c.phbT=c.pwall||c.pfR?-1.05:.3;
- c.pc=Math.max(c.pc||0,1);c.cl=0;c.wl=0;c.hold=null;c.drag=0;c.gk=Math.max(c.gk||0,.85);c.pthr=pressThr(c)}
+function pressFirst(c){const p=c.tp,rd=Math.hypot(p.x,p.z),arms=c.type!==6; // 판 밑에 깔리는 순간: 엉켜 있던 자세 그대로 굳는다. 유리벽에 붙은 놈은 대개 얼굴을 통 유리에 처박는다
+ c.pwall=rd>HR-.007-c.hr*1.35?1:0;c.pstg=c.pstg||0;c.plim=PE_STG[c.pstg];c.pvf=c.pvf||PE_VF[c.pstg];c.psv=c.psv||1;c.pprs=0;
+ c.pyw=c.yaw;c.ptl=c.pt;c.prl=c.roll;
+ if(c.pwall&&Math.random()<.6){c.pyw=Math.atan2(p.x,p.z)+rnd(-.35,.35);c.ptl=rnd(-.3,.08);c.prl=rnd(-.45,.45)}
+ c.parL=arms?(Math.random()<.22?rnd(.7,1):rnd(-.25,.3)):0;c.parR=arms?(Math.random()<.22?rnd(.7,1):rnd(-.25,.3)):0;c.phbT=rnd(-.45,.4); // 팔은 대개 몸에 붙은 채 끼이고, 몇은 한 팔을 위로 뻗다 손바닥이 판 유리에 짓눌린다
+ c.pc0=c.pc||0;c.pc=Math.max(c.pc||0,1);c.cl=0;c.wl=0;c.hold=null;c.drag=0;c.gk=Math.max(c.gk||0,.85);c.pthr=pressThr(c)}
+function pressRelax(c,dt){ // 판이 들리면 덜 짓눌린 놈은 다시 부풀어 꿈틀대고, 뼈가 나간 놈은 납작한 채 조금만 돌아온다
+ const k=c.pstg||0,rc=k?Math.min(1,PE_STG[k]+.22):1;if(c.psv<rc)c.psv=Math.min(rc,c.psv+dt*(k?.7:2.4));
+ if(!k&&c.psv>=.995){c.pflat=Math.max(0,c.pflat-dt*4);if(!c.pflat){c.pc=c.pc0||0;c.phbT=null;c.qv=0}}}
 function pressCrack(c,fx=1){ // 버티던 놈의 뼈가 나간다: 다음 단계 두께까지 납작해진다
  const v=VC,p=c.tp,a0=Math.atan2(p.z,p.x),rd=Math.hypot(p.x,p.z),arms=c.type!==6,k=c.pstg=Math.min(4,(c.pstg||0)+1);
- c.plim=PE_STG[k];c.pprs=0;c.pthr=pressThr(c);c.pc=Math.max(c.pc||0,k>=3?3:k>=2?2:1);c.flay=Math.max(c.flay||0,[.1,.24,.4,.58,.76][k]);c.pgl=[.8,.66,.55,.48,.42][k];v.pStuckT=0;
+ c.plim=PE_STG[k];c.pvf=PE_VF[k];c.pprs=0;c.pthr=pressThr(c);c.pc=Math.max(c.pc||0,k>=3?3:k>=2?2:1);c.pc0=c.pc;c.flay=Math.max(c.flay||0,[.1,.24,.4,.58,.76][k]);v.pStuckT=0;
  if(k===1)c.gk=Math.max(c.gk||0,1.3); // 처음 뼈가 나갈 때 눈이 튀어나온다
  if(!fx)return;
  const y=p.y;
- for(let i=0,m=k>=3?4:2;i<m;i++){const a=a0+rnd(-1.2,1.2),sp=rnd(1.1,2.5);pressBit(p.x,y,p.z,Math.cos(a)*sp,rnd(-.15,.25),Math.sin(a)*sp,rnd(.0022,.004),Math.random()<.78?BLOOD:c.ink,0,.85)} // 눌린 자리에서 피가 옆으로 뿜어져 통 유리와 판 밑면에 튄다
+ for(let i=0,m=k>=3?2:1;i<m;i++){const a=a0+rnd(-1.2,1.2),sp=rnd(1.1,2.5);pressBit(p.x,y,p.z,Math.cos(a)*sp,rnd(-.15,.25),Math.sin(a)*sp,rnd(.0022,.004),Math.random()<.78?BLOOD:c.ink,0,.85)} // 눌린 자리에서 피가 옆으로 뿜어져 통 유리와 판 밑면에 튄다
  if(k===2&&!c.noeye&&c.type!==6){c.noeye=1;c.peye=1;const a=a0+rnd(-1,1),sp=rnd(1,1.8);vacBit(p.x,y+.002,p.z,Math.cos(a)*sp,rnd(.05,.3),Math.sin(a)*sp,c.r*.086,WHITE,2);if(time>v.eyeT){v.eyeT=time+.07;AU.eyePop(.55)}} // 눈알 하나는 짓눌려 튀어 나가고, 하나는 고깃장에 박힌 채 납작해진다
  if(k>=2&&arms&&Math.random()<.7){const left=[1,2,4,8].filter(b=>!((c.cut||0)&b));if(left.length){const b=pick(left),a=a0+rnd(-.8,.8),sp=rnd(.9,1.7);c.cut=(c.cut||0)|b;vacBit(p.x,y,p.z,Math.cos(a)*sp,rnd(.2,.7),Math.sin(a)*sp,c.r*.047,SKINC.clone().lerp(c.tint,.45),3,0,c.r*(b<4?.13:.155))}} // 꺾인 팔다리 하나가 떨어져 날아간다
  if(k===3){for(let i=0;i<3;i++){const a=rnd(0,TAU),sp=rnd(.5,1.3);vacBit(p.x,y,p.z,Math.cos(a)*sp,rnd(.1,.6),Math.sin(a)*sp,rnd(.003,.0055),pick([GUT,INTEST,BONE]),1)}} // 몸통이 터져 속이 비어져 나온다
- filmSplat(p.x,p.z,c.vr*(.6+.25*k),c,k>=3?1:.75);if(k>=2&&p.y+c.hv>=v.pY-.003)filmPrint(c,.08+.03*k); // 판 밑면에 피가 눌려 번지고, 판에 닿은 놈은 몸 자국이 더 짙게 남는다
+ filmSplat(p.x,p.z,c.vr*(.55+.2*k),c,k>=3?.6:.32);if(k>=2&&p.y+c.hv>=v.pY-.003)filmPrint(c,.08+.03*k); // 판 밑면에 피가 눌려 번지고, 판에 닿은 놈은 몸 자국이 더 짙게 남는다
  if(rd>HR-.05)gapPush(a0,k,c); // 유리벽 쪽이면 판 옆 틈으로 피가 솟고 다진 살이 밀려 올라온다
  if(time>v.crT){v.crT=time+.045;
   if(k===1){AU.rib(.95);AU.squelch(.3);if(time>v.voiceT){v.voiceT=time+.08;AU.squeal(c.type,1.35,0,.16)}}
@@ -4048,11 +4141,10 @@ function filmDot(x,z,rad,col){const v=VC,g=v.fCtx;if(!g)return;const[px,py,s]=fi
 function filmSmear(x,z,rad,dA,c){const v=VC,g=v.fCtx;if(!g)return;const[px,py,s]=filmXY(x,z),[r,gg,b]=filmCol(c.ink,.85),R=Math.hypot(px-v.fCan.width/2,py-v.fCan.width/2),a0=Math.atan2(py-v.fCan.width/2,px-v.fCan.width/2); // 판을 비틀면 깔린 놈이 판 밑면에 문대진다
  g.strokeStyle=`rgba(${r},${gg},${b},.32)`;g.lineWidth=Math.max(1.5,rad*s*1.1);g.lineCap='round';g.beginPath();g.arc(v.fCan.width/2,v.fCan.width/2,R,a0,a0-dA*.9,dA>0);g.stroke();v.fDirty=1;v.fUsed=1}
 function filmClear(){const v=VC;if(!v.fCtx)return;v.fCtx.clearRect(0,0,v.fCan.width,v.fCan.height);v.fTex.needsUpdate=true;v.fUsed=0;v.fK=0}
-// 판 밑면에 눌린 몸 자국: 유리에 눌어붙은 살과 피가 몸 모양대로 남는다 (팔은 머리 위로 뻗고 다리는 벌어진 채)
+// 판 밑면에 눌린 몸 자국: 유리에 눌어붙은 살과 피가 몸통·머리 모양대로 번져 남는다
 function filmPrint(c,al=.2){const v=VC,g=v.fCtx;if(!g)return;const p=c.tp,[px,py,s]=filmXY(p.x,p.z),rb=.43*c.r*s,ca=Math.cos(v.twA),sa=Math.sin(v.twA),hx=Math.sin(c.yaw),hz=Math.cos(c.yaw),dx=hx*ca-hz*sa,dz=hx*sa+hz*ca,[r,gg,b]=filmCol(c.ink,.95);
- g.save();g.translate(px,py);g.rotate(Math.atan2(-dx,dz));g.scale(c.kx||1.3,c.kz||1.25);const st=`rgba(${r},${gg*.85|0},${b*.85|0},${al})`;g.fillStyle=st;g.strokeStyle=st;
+ g.save();g.translate(px,py);g.rotate(Math.atan2(-dx,dz));g.scale(c.qh||1.2,c.qh||1.2);const st=`rgba(${r},${gg*.85|0},${b*.85|0},${al})`;g.fillStyle=st;g.strokeStyle=st;
  g.beginPath();g.ellipse(0,-.1*rb,.34*rb,.62*rb,0,0,TAU);g.fill();g.beginPath();g.arc(0,.92*rb,.3*rb,0,TAU);g.fill(); // 몸통 · 머리
- g.lineCap='round';g.lineWidth=.14*rb;g.beginPath();for(const sd of[-1,1]){g.moveTo(sd*.3*rb,.35*rb);g.lineTo(sd*.62*rb,1.5*rb);g.moveTo(sd*.2*rb,-.6*rb);g.lineTo(sd*.46*rb,-1.55*rb)}g.stroke();
  g.restore();v.fDirty=1;v.fUsed=1}
 // 통 유리 안쪽 핏자국(그림): 짓눌린 놈이 유리에 문댄 자국 · 끼어 끌려 내려간 자국 · 틈에서 튄 피
 function gsXY(a,y){const v=VC;return[frac((-Math.PI/2-a)/TAU)*v.gsCan.width,(1-(y-GS_Y0)/GS_H)*v.gsCan.height]}
@@ -4105,9 +4197,13 @@ function pestleRam(){const v=VC,T=v.tank;let rammed=0; // 맨 밑 것들이 롤�
  return rammed}
 function pestleImpact(vI){ // 더미에 쿵 박힌다: 세게 찍을수록 맨 윗켜의 뼈가 그 자리에서 나가고 판이 쑥 파고든다
  const v=VC,T=v.tank,hy=v.pY,k=clamp((vI-.2)/1.9,0,1),drop=vI>1.55?2:vI>.6?1:0;v.pN++;v.pressT=.18;if(v.ph===1&&!v.mot&&v.gr>.3)v.gr=Math.max(v.gr,VM-.001); // 찍기 시작하면 모터도 바로 건다
- const hit=[];for(const c of T){if(c.gp>0||c.gpin)continue;if(Math.hypot(c.tp.x,c.tp.z)<PE_R-c.hr*.3&&c.tp.y+c.hv>hy-.007)hit.push(c)}
- hit.sort((a,b)=>b.tp.y+b.hv-a.tp.y-a.hv);
- let fxN=0;for(const c of hit){if(!c.pflat)pressFirst(c);c.pflat=Math.max(c.pflat,.45);for(let i=0;i<drop&&c.pstg<4;i++)pressCrack(c,fxN<4?1:0);if(drop)fxN++}
+ const top=c=>c.tp.y+(c.pflat>0?c.hv:Math.min(c.hv,c.hvN||c.hv));
+ const hit=[];for(const c of T){if(c.gp>0||c.gpin)continue;if(Math.hypot(c.tp.x,c.tp.z)<PE_R-c.hr*.3&&top(c)>hy-.009)hit.push(c)}
+ hit.sort((a,b)=>top(b)-top(a));
+ let fxN=0;for(const c of hit){const nw=!c.pflat;if(nw)pressFirst(c);c.pflat=Math.max(c.pflat,.45);
+  if(nw&&!c.pwall&&c.type!==6&&Math.random()<.3){c.ptl=-rnd(1,1.3);c.prl=rnd(-.3,.3)} // 맨 윗켜 몇은 고개를 쳐들었다가 얼굴이 판 유리에 짓눌린다
+  for(let i=0;i<drop&&c.pstg<4;i++)pressCrack(c,fxN<4?1:0);if(drop)fxN++}
+ v.cs=Math.min(v.cs??1,1-(.04+.12*k)); // 찍힌 기세만큼 판 밑 더미 전체가 한 번에 눌린다
  if(v.pinN<2&&k>.25){let best=null,bs=-1;for(const c of T){if(c.gpin||c.gp>0||c.hold||c.pflat)continue;const p=c.tp,rd=Math.hypot(p.x,p.z),ax=Math.abs(p.x);if(rd>HR-.007-c.hr-.008&&Math.abs(p.y-hy)<c.hv*1.4&&p.z>.02){const sc=p.z-Math.abs(ax-.055)*.8;if(sc>bs){bs=sc;best=c}}}if(best)pinBody(best)} // 앞쪽 유리벽에 붙어 있던 놈이 판 가장자리 틈에 끼인다
  const smashed=pestleEat(hy);
  for(const c of T){if(c.wl>0&&Math.random()<.55){c.wl=0;vacSlip(c)} // 유리에 매달려 버티던 것들이 충격에 미끄러진다
@@ -4158,33 +4254,32 @@ function pestleUpdate(dt,hold,tap,kk){
   v.pLoad=damp(v.pLoad,0,7,dt);v.twA=damp(v.twA,0,10,dt);const u=clamp((v.pT-.05)/PE_UP,0,1);v.pY=lerp(v.pY1,PE_YR,ss(u));
   if(ok&&(v.pq||hold)&&u>=PE_TAP)pestleStart();else if(u>=1)v.pS='ready'}
 }
-// 판에 눌린 것: 밑면은 그대로 둔 채 판 높이에 맞춰 두께가 줄어든다. 버티는 놈이 있으면 판이 거기서 멈추고, 버티는 동안 압력이 쌓이다 뼈가 나간다
+// 판 밑에 깔린 것은 맨 윗켜만이 아니라 판 둘레 안의 더미 전체가 같이 눌린다. 판이 더미 윗면에 닿아 있는 동안 더미 전체가 고르게 납작해지고(v.cs),
+// 저마다 버틸 수 있는 두께(plim)에 닿은 놈은 압력이 쌓이다 뼈가 나간다. 눌린 만큼 옆으로 불어나 틈을 메우고 서로 짓누른다(부피는 터져 나간 만큼만 준다)
 function pressSolve(dt){
- const v=VC,T=v.tank,act=!!v.pg&&v.pg.visible&&(v.pS==='press'||v.pS==='down');let blk=PE_YMIN,nP=0,nC=0;
- const dA=v.twA-(v.twA0||0);v.twA0=v.twA;
- for(const c of T){c.prsd=0;if(!act||c.gpin||c.gp>0)continue;const p=c.tp,d=Math.hypot(p.x,p.z);
-  if(d>=PE_R-c.hr*.3||p.y+c.hv<v.pY-.005)continue;
-  if(dA){const t=dA*.72,ca=Math.cos(t),sa=Math.sin(t),x=p.x;p.x=x*ca+p.z*sa;p.z=-x*sa+p.z*ca;c.yaw+=t;c.yw=(c.yw||0)+t} // 판을 비틀면 깔린 것도 같이 비틀려 짓이겨진다
-  nP++;c.prsd=1;if(!(c.ct&23))continue; // 밑이 비었으면 밀려 내려가기만 한다
-  c.prsd=2;nC++;if(!c.pflat)pressFirst(c);c.pflat=Math.min(1,c.pflat+dt*12);
-  const f=c.pflat;c.ptop=p.y-c.hv+2*c.vr*(1-f+.56*c.plim*f);if(c.ptop>blk)blk=c.ptop} // 이 단계에서 버틸 수 있는 가장 얇은 두께일 때의 윗면
- for(const e of v.eat){if(!act||e.cy<0||Math.abs(e.x)>PE_R)continue;const t=e.cy+e.cr*.3;if(t>blk)blk=t} // 롤러에 걸린 몸뚱이도 판을 받친다
+ const v=VC,T=v.tank,act=!!v.pg&&v.pg.visible&&(v.pS==='press'||v.pS==='down'),pressing=act&&v.pS==='press',hold=pressing&&(v.pHold||v.pT<PE_HIT);
+ const dA=v.twA-(v.twA0||0);v.twA0=v.twA;const smT=dA&&time>(v.smT||0);if(smT)v.smT=time+.06;
+ let topY=PE_YMIN,nP=0,minL=1;
+ for(const c of T){c.prsd=0;if(c.gpin||c.gp>0)continue;const p=c.tp,d=Math.hypot(p.x,p.z);
+  if(!pressing||d>=PE_R-c.hr*.3||p.y>=v.pY)continue;
+  if(dA&&p.y+c.hv>v.pY-.03){const t=dA*.72,ca=Math.cos(t),sa=Math.sin(t),x=p.x;p.x=x*ca+p.z*sa;p.z=-x*sa+p.z*ca;c.yaw+=t;c.pyw=(c.pyw??c.yaw)+t} // 판을 비틀면 판에 닿은 켜도 같이 비틀려 짓이겨진다
+  c.prsd=2;nP++;if(!c.pflat)pressFirst(c);c.pflat=Math.min(1,c.pflat+dt*12);if(c.plim<minL)minL=c.plim;
+  if(c.ct&23){const t=p.y+c.hv;if(t>topY)topY=t}}
+ for(const e of v.eat){if(!pressing||e.cy<0||Math.abs(e.x)>PE_R)continue;const t=e.cy+e.cr*.3;if(t>topY)topY=t} // 롤러에 걸린 몸뚱이도 판을 받친다
  v.pNone=nP?0:(v.pNone||0)+dt;
- if(!act){v.pBlk=PE_YMIN;v.pBlkd=false;v.pLoad=damp(v.pLoad,0,8,dt);return}
- v.pBlk=blk;
- const hy=v.pY,blocked=v.pS==='press'&&v.pCmd<blk-.0004&&hy<=blk+.0008;v.pBlkd=blocked;if(blocked)v.pStuckT=(v.pStuckT||0)+dt;
- let strain=0,sm=0,fx=3;const smT=dA&&time>(v.smT||0);if(smT)v.smT=time+.06;
- for(const c of T){if(c.prsd!==2)continue;const p=c.tp,f=c.pflat,bot=p.y-c.hv;
-  const want=(hy-bot)/(2*c.vr),s=f>.02?(want-1+f)/(.56*f):1;
-  if(s<c.plim-.03&&c.pstg<4&&v.pS==='press')pressCrack(c,fx-->0?1:0); // 판은 밀려 올라가지 않는다: 밑이 들려 버틸 두께보다 더 눌리면 그 자리에서 뼈가 나간다
-  if(s<c.psv)c.psv=Math.max(c.pstg>=4?.07:c.plim,s);
-  c.hv=c.vr*(1-f+.56*c.psv*f);p.y=Math.min(bot+c.hv,hy-c.hv);
-  if(blocked&&c.ptop>=blk-.0009&&c.pstg<4){c.pprs+=dt;strain=Math.max(strain,c.pprs/c.pthr);if(c.pprs>=c.pthr)pressCrack(c,1)} // 버티는 동안 압력이 쌓이다 뼈가 나간다
-  if(!c.pprt&&f>.8&&p.y+c.hv>=hy-.0015){c.pprt=1;filmPrint(c,.12)} // 유리판 밑면에 몸 자국이 눌어붙는다
-  if(c.pwall&&time>(c.psmT||0)){c.psmT=time+.14;glassSmudge(Math.atan2(p.z,p.x),p.y,c.vr*(.85+.22*c.pstg),c.vr*(.42+.1*c.pstg),c.ink,.08+.035*c.pstg)} // 통 유리에 짓눌린 자리에 피가 넓게 번진다
-  if(smT&&sm<4){sm++;filmSmear(p.x,p.z,c.vr,dA,c)}}
- v.pLoad=damp(v.pLoad,Math.min(1,nC/5),9,dt);
- if(blocked&&strain>0){v.stT=(v.stT||0)-dt;if(v.stT<=0){v.stT=rnd(.075,.12);AU.strain(Math.min(1,strain))}}
+ if(!pressing){v.pBlk=PE_YMIN;v.pBlkd=false;v.pLoad=damp(v.pLoad,0,8,dt);v.cs=damp(v.cs??1,1,3,dt);for(const c of T)if(c.pflat>0&&!c.gpin)pressRelax(c,dt);return}
+ v.pBlk=topY;const hy=v.pY,atTop=hy<=topY+.0012;
+ if(hold&&atTop)v.cs=Math.max(minL-.02,(v.cs??1)-PE_CS*dt); // 판이 더미를 누르고 있는 동안 더미 전체가 고르게 납작해진다
+ const lock=hold&&atTop&&v.cs<=minL+.004;v.pBlkd=lock;if(lock)v.pStuckT=(v.pStuckT||0)+dt; // 더 납작해질 수 없으면 판이 멈춰 버틴다
+ let strain=0,sm=0,fx=3;
+ for(const c of T){if(c.prsd!==2)continue;const p=c.tp,tg=Math.max(c.plim,Math.min(v.cs,1));c.psv=c.psv>tg?Math.max(tg,c.psv-dt*3.2):Math.min(tg,c.psv+dt*1.2);
+  if(hold&&atTop&&v.cs<=c.plim+.004&&c.pstg<4){c.pprs+=dt*(c.ct&32?1.25:1);strain=Math.max(strain,c.pprs/c.pthr);if(c.pprs>=c.pthr)pressCrack(c,fx-->0?1:0)} // 버틸 두께에 닿은 놈은 압력이 쌓이다 뼈가 나간다 (판에 직접 닿은 놈이 조금 먼저)
+  const rd=Math.hypot(p.x,p.z);c.pwall=rd+c.hr>HR-.011?1:0;
+  if(!c.pprt&&c.pflat>.8&&p.y+c.hv>=hy-.0015){c.pprt=1;filmPrint(c,.07)} // 유리판 밑면에 몸 자국이 눌어붙는다
+  if(c.pwall&&time>(c.psmT||0)){c.psmT=time+rnd(.28,.4);glassSmudge(Math.atan2(p.z,p.x),p.y,c.vr*(.7+.2*c.pstg),c.vr*(.36+.1*c.pstg),c.ink,.03+.025*c.pstg)} // 통 유리에 짓눌린 자리에 피와 기름이 번진다
+  if(smT&&sm<4&&p.y+c.hv>=hy-.004){sm++;filmSmear(p.x,p.z,c.vr,dA,c)}}
+ v.pLoad=damp(v.pLoad,Math.min(1,nP/6),9,dt);
+ if(lock&&strain>0){v.stT=(v.stT||0)-dt;if(v.stT<=0){v.stT=rnd(.075,.12);AU.strain(Math.min(1,strain))}}
 }
 function pestlePlace(dt){const v=VC,g=v.pg;if(!g||!g.visible)return;
  v.bncT=(v.bncT||0)+dt;const bnc=v.bncA?v.bncA*Math.sin(Math.min(v.bncT*34,Math.PI*3))*Math.exp(-v.bncT*16):0; // 박힌 뒤 살짝 튕긴다
@@ -4258,26 +4353,24 @@ function vacUpdate(dt,act,pedal,go2){
  for(const c of v.tank){const p=c.tp;let ty,tl,tr;
   if(c.gpin){ty=Math.atan2(p.x,p.z);tl=-1.3;tr=0;c.arL=-1.05+.4*Math.sin(time*13+c.ph);c.arR=-1.05+.4*Math.sin(time*13+c.ph+2.1)} // 판 가장자리 틈에 끼어 유리에 배를 대고, 판 위로 두 팔을 뻗어 버둥댄다
   else if(c.gp>0){ty=Math.atan2(p.x,p.z);tl=-1.28;tr=0} // 유리에 배를 대고 납작하게 눌려 있다
-  else if(c.pflat>0){ // 판에 눌려 납작해졌다: 대개 반듯이 누운 채 얼굴이 유리판을 보고, 유리벽 쪽 놈은 옆으로 누워 배와 얼굴을 통 유리에 댄다
-   if(c.pwall){const rd=Math.hypot(p.x,p.z)||1;ty=Math.atan2(-p.z/rd,p.x/rd);tl=0;tr=Math.PI/2}else{ty=c.yw;tl=0;tr=c.pfR}
-   const tw=c.pstg<3?Math.sin(time*19+c.ph)*.12*(1-c.pstg*.3):0;tr+=tw*.25;c.arL=c.parL+tw;c.arR=c.parR-tw} // 짓눌린 채 팔다리를 떤다
+  else if(c.pflat>0){ // 판 밑에 깔렸다: 엉켜 있던 자세 그대로 굳은 채 짓눌리며 떤다
+   ty=c.pyw??c.yaw;tl=c.ptl??c.pt;tr=c.prl??c.roll;const tw=c.pstg<3?Math.sin(time*19+c.ph)*.1*(1-c.pstg*.3):0;tr+=tw*.2;c.arL=(c.parL||0)+tw;c.arR=(c.parR||0)-tw}
   else if(c.pc){ty=c.yw;tl=c.ftl||0;tr=(c.flatR||0)+(c.pc<3?Math.sin(time*9+c.ph)*.05:0)} // 짓눌려 납작하게 뒤집히거나 엎어져 있다
   else if(c.hold){ty=(p.z>=0?0:Math.PI)+Math.sin(time*11+c.ph)*.3;tl=-.3;tr=Math.sin(time*9+c.ph)*.45} // 다리를 붙잡혀 롤러 쪽으로 끌려가며 반대쪽으로 기어 나가려 버둥댄다
   else if(c.wl>0&&c.ct&8){const f=c.cl>0?2.2:1;ty=Math.atan2(p.x,p.z)+Math.sin(time*3*f+c.ph)*.15;tl=-1.2;tr=Math.sin(time*3*f+c.ph)*.22} // 유리에 배를 붙이고
   else{const g=v.ph===1&&v.mot?(c.cl>0?1.6:1.2):1;ty=c.yw+Math.sin(time*2.2*g+c.ph)*.32;tl=c.lie+Math.sin(time*3.1*g+c.ph*2)*.16;tr=c.rl+Math.sin(time*4.1*g+c.ph*3)*.28}
   const sm=c.pc||c.gp>0||c.gpin;c.yaw+=wrapA(ty-c.yaw)*Math.min(1,dt*(sm?18:8));c.tl=tl;c.roll+=wrapA(tr-c.roll)*Math.min(1,dt*(sm?20:8));if(c.phbT!=null)c.hb=damp(c.hb||0,c.phbT,10,dt);
   _a.copy(p);cn.localToWorld(_a);c.x=_a.x;c.y=_a.y;c.z=_a.z;c.sc=.43*cn.scale.x;c.panic=1;
-  if(c.gpin){c.sq=.38;c.kx=1.04;c.ky=.38;c.kz=1.03}
-  else if(c.pflat>0){const f=c.pflat,s=c.sq=damp(c.sq,c.psv,30,dt);c.sqT=s;
-   if(c.pwall){const g=c.pgl||.8;c.kx=1-f+f*s;c.ky=1-f+f*g;c.kz=1+f*(Math.min(1.75,1/Math.sqrt(Math.max(.1,s*g)))-1)} // 옆으로 누운 자세: x 위아래(판 쪽) · y 통 유리 쪽 · z 둘레 방향
-   else{const sp=Math.min(1.7,1/Math.sqrt(Math.max(.1,s)));c.kx=1+f*(sp-1);c.ky=1-f+f*s;c.kz=1+f*(sp*.94-1)}}
-  else{c.kz=0;c.sq=sm?damp(c.sq,c.gp>0?Math.min(c.sqT,.42):c.sqT,30,dt):1}
+  if(c.gpin){c.sq=.38;c.kx=1.04;c.ky=.38;c.kz=1.03;c.qv=0}
+  else if(c.pflat>0){const f=c.pflat,sv=c.psv||1,qh=Math.min(1.9,Math.sqrt((c.pvf||1)/sv));c.qv=1-f+f*sv;c.qh=1-f+f*qh*1.03;c.kz=0;c.sq=c.sqT=damp(c.sq,sv,30,dt)} // 통 기준 위아래로 줄고 그만큼 옆으로 붓는다 (몸이 어느 쪽으로 누워 있든)
+  else{c.kz=0;c.qv=0;c.sq=sm?damp(c.sq,c.gp>0?Math.min(c.sqT,.42):c.sqT,30,dt):1}
+  {const cp=Math.cos(c.pt),sp=Math.sin(c.pt),cr=Math.cos(c.roll),sr=Math.sin(c.roll),s=.43*c.r;c.hvN=s*(.55*Math.abs(cp*sr)+.6*Math.abs(cp*cr)+1.2*Math.abs(sp));c.hrN=s*Math.sqrt(Math.max(1.2*Math.abs(cp),.6)*.6)} // 지금 자세의 실제 몸 크기 (위아래 반높이 · 바닥에 비친 반너비): 몸 반치수 옆 .55 · 두께 .6 · 머리-발 1.2
   // 짓눌린 몸에서 비어져 나온 것
   if(c.pflat>.5&&c.pstg>=2){const r=c.vr,y=p.y+c.hv*.25,gA=c.pgA??(c.pgA=rnd(0,TAU)),ox=Math.cos(gA),oz=Math.sin(gA);
    blobAt(p.x+ox*r*1.05,p.y-c.hv*.2,p.z+oz*r*1.05,r*.5,Math.max(.0014,Math.min(.0032,c.hv*.6)),r*.4,c.gore||(c.gore=GUT.clone().lerp(INTEST,.35).lerp(c.ink,.2)),cn); // 터진 배에서 옆으로 비어져 나온 속
    blobR(p.x-oz*r*.75,y+.0008,p.z+ox*r*.75,.0011,.0011,r*.32,0,gA+1.2,BONE,cn); // 부러져 비죽 나온 뼈
    if(c.pstg>=3){blobAt(p.x+ox*r*.3,p.y-c.hv*.7,p.z+oz*r*.3,r*.95,.0012,r*.85,c.ink,cn);blobR(p.x+oz*r*.6,y+.0006,p.z-ox*r*.6,.0012,.0012,r*.26,0,gA-.9,BONE,cn)} // 짓눌린 자리에 고인 피 · 뼈 하나 더
-   if(c.peye&&!c.pwall&&c.pfR){const hd=.8*r*c.kz,ex=p.x+Math.sin(c.yaw)*hd,ez=p.z+Math.cos(c.yaw)*hd,ey=p.y+c.hv*.8;blobAt(ex,ey,ez,r*.2,r*.06,r*.2,EYEW,cn);blobAt(ex,ey+.0007,ez,r*.085,r*.035,r*.085,PUPIL,cn)}} // 고깃장에 박힌 채 납작해진 눈알
+   }
   else if(c.pc>=2&&!c.pflat){const r=c.vr;blobAt(p.x,p.y+r*.15,p.z+r*.35,r*.5,r*.22,r*.42,c.gore||(c.gore=GUT.clone().lerp(INTEST,.35).lerp(c.ink,.2)),cn);if(c.pc>=3)blobAt(p.x+r*.3,p.y+r*.05,p.z+r*.2,r*.55,r*.12,r*.5,c.ink,cn)} // 터진 배에서 비어져 나온 속 · 다 터진 것은 고인 피
   if(c.gpin){const R=PE_R+.0035,a=c.gpin.a;blobR(Math.cos(a)*R,v.pY+PE_TH*.55,Math.sin(a)*R,.006,.0035,.0028,0,Math.PI/2-a,BLOOD,cn)}} // 판 가장자리에 눌린 허리에서 피가 배어 나온다
  if(!grinding&&v.tank.length&&Math.random()<dt*.8)AU.squeal(pick(v.tank).type,.5);
@@ -5169,7 +5262,7 @@ function washUpdate(dt,act){
  // 닿은 자리의 핏자국 (보상 계산 · 튀는 물 색)
  let dirt=0,got=0;const s=INK.stains;
  for(let i=s.length-1;i>=0;i--){const t=s[i];if(Math.abs(t.x-w.aim.x)>.18||Math.abs(t.z-w.aim.z)>.18)continue;if(t.c){if(!dirt)w.dirtC.copy(t.c);dirt=1}t.a-=dt*8;if(t.a<=0){s.splice(i,1);got++}}
- if(got)earn(got*6,w.aim.x,w.aim.z);w.dirt=damp(w.dirt,dirt,8,dt);
+ if(got&&!EX.on)earn(got*6,w.aim.x,w.aim.z);w.dirt=damp(w.dirt,dirt,8,dt);
  // 씻기: 지난 자리에서 지금 자리까지 둥근 붓으로 촘촘히 지운다
  if(!w.has){w.last.copy(w.aim);w.has=true}
  const R=.105,L=Math.hypot(w.aim.x-w.last.x,w.aim.z-w.last.z),n=Math.min(14,Math.ceil(L/.022));
@@ -5184,17 +5277,22 @@ function washUpdate(dt,act){
  for(let i=0;i<4;i++){const f=Math.random()<.55,sp=f?rnd(.6,2.2):rnd(.3,1.1),sd=rnd(-1,1)*(f?.8:1.4);drop(w.aim.x+rnd(-.03,.03),.02,w.aim.z+rnd(-.03,.03),(f?hx:-hx)*sp-hz*sd,rnd(.35,1.4),(f?hz:-hz)*sp+hx*sd,rnd(.004,.009),w.dirt>.3&&Math.random()<.6?w.spray:WATER,2)}
  w.mt-=dt;if(w.mt<=0){w.mt=.04;const m=w.mist[w.mi++%w.mist.length];m.t=0;m.life=rnd(.32,.55);m.p.set(w.aim.x+rnd(-.05,.05),.03,w.aim.z+rnd(-.05,.05));m.v.set(-hx*rnd(.1,.5)+rnd(-.35,.35),rnd(.25,.7),-hz*rnd(.1,.5)+rnd(-.35,.35));m.s.material.color.copy(w.spray).lerp(WHITE,.55)}
  if(w.dirt>.4&&Math.random()<dt*7)AU.noise('bandpass',rnd(1300,2600),900,1.6,.05,.1);
- // 맞은 것은 죽지 않는다. 물줄기 방향으로 떠밀려 구르고, 뒤집어쓴 피가 씻겨 나간다 (다른 장비에 이미 터져 죽어 가던 것은 떠밀리기만 하고 그대로 죽어 간다)
- for(const c of creatures){if(busy(c)||c.dead)continue;const dx=c.x-w.aim.x,dz=c.z-w.aim.z,d=Math.hypot(dx,dz),rr=.17+c.r;if(d>rr)continue;
-  const hurt=c.st==='maim'||c.st==='stump',red=hurt||c.flay>.04,k=1-d/rr,ux=d>.001?dx/d:hx,uz=d>.001?dz/d:hz;c.panic=1;c.flay=Math.max(0,c.flay-dt*1.6);
-  c.x=clamp(c.x+(hx*2.6+ux*1.4)*k*dt*1.7,-XB,XB);c.z=clamp(c.z+(hz*2.6+uz*1.4)*k*dt*1.7,ZN,ZF);
-  if(!hurt){c.st='washed';c.wj=1;c.yaw+=dt*9;c.sq=1;c.y=.02+Math.abs(Math.sin(time*20+c.ph))*.03}
+ // 맞은 것은 물줄기에 눌려 버둥대며 떠밀리고, 계속 맞으면 살가죽이 벗겨져 붉게 드러나다 터진다 (작업장 1초 남짓 · 결과보고전 반 초). 맞은 정도는 잠깐 비켜 가도 남는다
+ const KT=EX.on?.5:1.1,PU=EX.on?.3:.5;
+ for(const c of creatures){if(busy(c)||c.dead)continue;const dx=c.x-w.aim.x,dz=c.z-w.aim.z,d=Math.hypot(dx,dz),rr=.17+c.r;if(d>rr){if(c.wd>0&&time-c.wdT>.2)c.wd=Math.max(0,c.wd-dt*.12);continue}
+  const hurt=c.st==='maim'||c.st==='stump',k=1-d/rr,ux=d>.001?dx/d:hx,uz=d>.001?dz/d:hz;c.panic=1;
+  c.wd=(c.wd||0)+dt*(.75+.25*k)/KT;c.wdT=time;c.flay=Math.max(c.flay,Math.min(1,c.wd*.95));
+  c.x=clamp(c.x+(hx*2.6+ux*.5)*k*dt*PU,-XB,XB);c.z=clamp(c.z+(hz*2.6+uz*.5)*k*dt*PU,ZN,ZF); // 물줄기 방향으로 떠밀리되 옆으로는 덜 빠져나간다
+  if(!hurt){c.st='washed';c.wj=1;c.yaw+=dt*(9+8*c.wd);c.sq=1;c.y=.02+Math.abs(Math.sin(time*(20+14*c.wd)+c.ph))*.03}
+  if(c.wd>=1){killCreature(c,'wash',c.x,c.z,hx,hz);continue}
+  const red=hurt||c.wd>.18;
   if(Math.random()<dt*9)drop(c.x,.05,c.z,hx*rnd(.6,1.8)+rnd(-.5,.5),rnd(.5,1.4),hz*rnd(.6,1.8)+rnd(-.5,.5),rnd(.006,.012),red?BLOOD:WATER,red?false:2);
-  if(Math.random()<dt*1.4)AU.squeal(c.type,.8)}
+  if(c.wd>.3&&Math.random()<dt*7)chunk(c.x,.03,c.z,hx*rnd(.5,1.6)+rnd(-.4,.4),rnd(.3,.9),hz*rnd(.5,1.6)+rnd(-.4,.4),rnd(.006,.011),.0022,rnd(.008,.015),c.skin); // 벗겨진 살갗 조각이 물줄기에 날아간다
+  if(Math.random()<dt*(1.4+2.2*c.wd))AU.squeal(c.type,.8+.45*c.wd)}
  // 찌꺼기는 물줄기에 떠밀려 가다 배수구로 빠진다
  for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];if(k.stick)continue;const dx=k.x-w.aim.x,dz=k.z-w.aim.z,d=Math.hypot(dx,dz);if(d>.21)continue;
   const f=(1-d/.21)*dt;k.x=clamp(k.x+(hx*3.4+(d>.001?dx/d:0)*1.2)*f,-XB-.15,XB+.15);k.z=clamp(k.z+(hz*3.4+(d>.001?dz/d:0)*1.2)*f,ZN-.2,ZF+.2);k.ry+=dt*5;
-  if(overDrain(k.x,k.z,.22)){chunks.splice(i,1);S.liters+=.2;earn(5,k.x,k.z);if(Math.random()<.5)AU.bubble(rnd(300,500),.12)}}
+  if(!EX.on&&overDrain(k.x,k.z,.22)){chunks.splice(i,1);S.liters+=.2;earn(5,k.x,k.z);if(Math.random()<.5)AU.bubble(rnd(300,500),.12)}}
 }
 
 const tool2Locked=()=>handLocked()||tongLocked()||VC.gr>0;
@@ -5367,7 +5465,7 @@ function spawnInitial(){
  while(made<n){const cx=rnd(-XB+.4,XB-.4),cz=rnd(ZN+.5,ZF-.6);if(Math.hypot(cx-P.x,cz-P.z)<.6)continue;herd(cx,cz,pick(act).type,5+(Math.random()*5|0))}
 }
 function cleanTools(){ // 손·발·장비에 걸려 있던 것을 모두 내려놓는다
- handReset();for(const F of FT){F.ph='idle';F.pins.length=0;F.stuck.length=0;F.fresh.length=0;F.seeds.length=0}TD.on=false;TD.k=0;SH.carry.length=0;SH.ph='idle';SH.kick=0;SH.mashed.length=0;SH.wet=0;SH.rep=0;SH.tossN=0;SH.load=0;SH.heap.length=0;SH.fall.length=0;SH.binned.length=0;SH.pins.length=0;SH.stuck.length=0;SH.seeds.length=0;SH.fresh.length=0;SH.crushT=0;SH.scraping=false;SH.gu.uGore.value=0;for(const m of[SH.heapS,SH.heapK,SH.heapE,SH.fallS,SH.fallE])solidEnd(m,0);SH.binN=SH.binLv=SH.binDrain=0;SH.binPieces.length=0;solidEnd(SH.binSolid,0);solidEnd(SH.binEyes,0);vacClear();AU.loop('grind',false);tools2Reset();clearThreads();trimClean()}
+ handReset();for(const F of FT){F.ph='idle';F.pins.length=0;F.stuck.length=0;F.fresh.length=0;F.seeds.length=0}TD.on=false;TD.k=0;SH.carry.length=0;SH.ph='idle';SH.kick=0;SH.mashed.length=0;SH.wet=0;SH.rep=0;SH.tossN=0;SH.load=0;SH.heap.length=0;SH.fall.length=0;SH.binned.length=0;SH.pins.length=0;SH.stuck.length=0;SH.seeds.length=0;SH.fresh.length=0;SH.crushT=0;SH.scraping=false;SH.gu.uGore.value=0;for(const m of[SH.heapS,SH.heapK,SH.heapE,SH.fallS,SH.fallE])solidEnd(m,0);SH.binN=SH.binLv=SH.binDrain=0;SH.binPieces.length=0;solidEnd(SH.binSolid,0);solidEnd(SH.binEyes,0);binStainClear();vacClear();AU.loop('grind',false);tools2Reset();clearThreads();trimClean()}
 function resetRoom(){
  resetSupport();cleanTools();creatures.length=0;drops.length=0;chunks.length=0;inkClear();for(const b of[bootR,bootL,TG.F[0].boot,TG.F[1].boot]){b.userData.res.length=0;b.userData.gu.uGore.value=0}
  P.x=0;P.z=.8;creators.forEach(c=>{c.timer=rnd(3,7);c.selfRest=c.restMix=0});spawnInitial();
@@ -5404,6 +5502,7 @@ function buildHall(){
  H.poolGeo=new THREE.PlaneGeometry(1,1);H.poolMat=new THREE.MeshBasicMaterial({map:pt,color:lin(0xfff4e2),transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false});
  // 벽 글씨 · 입구 바닥 글씨 (기수마다 다시 쓴다)
  H.title=new THREE.Mesh(new THREE.PlaneGeometry(2.6,.8125),new THREE.MeshStandardMaterial({transparent:true,roughness:.7,envMapIntensity:.2,depthWrite:false}));H.title.renderOrder=2;g.add(H.title);
+ exMarksBuild();
  H.vinyl=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.272),inkify(new THREE.MeshStandardMaterial({transparent:true,roughness:.5,envMapIntensity:.3,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2})));H.vinyl.rotation.x=-Math.PI/2;H.vinyl.receiveShadow=true;H.vinyl.renderOrder=1;g.add(H.vinyl);
 }
 function hallTexts(N,ids){const H=HALL,F=H.F,set=(m,t)=>{const o=m.material.map;m.material.map=t;m.material.needsUpdate=true;if(o)o.dispose()};
@@ -5443,6 +5542,7 @@ function exDanger(){const t=S.tool;let x=P.x+AIMX,z=P.z-AIMZ,r=.24,on=true;
  else if(t==='tong'){x=P.x-Math.min(.6,W/H*.45);z=P.z-1.35;r=.3;on=TG.ph==='idle'}
  else if(t==='boot'){if(TD.on){x=P.x;z=P.z-TDZ;r=.32}else{r=.26;on=ST.ph==='idle'||ST.ph==='back'}}
  else if(t==='hand'){r=.24;on=HG.ph==='idle'}
+ else if(t==='wash'){x=WS.aim.x;z=WS.aim.z;r=.3;on=WS.on} // 물줄기가 닿는 자리
  DG.x=x;DG.z=z;DG.r=r;DG.on=on}
 const exSees=c=>Math.hypot(c.x-DG.x,c.z-DG.z)<1.15||Math.hypot(c.x-P.x,c.z-(P.z-.1))<.5||EX.t>=c.wk;
 function exWake(c){c.st='rise';c.t=0;c.rt=rnd(.3,.55);c.panic=1;c.beg=1;c.calm=0; // 고개를 들어 올려다본다
@@ -5467,7 +5567,7 @@ function updateHall(dt){
   e.free=free;e.held=held;if(e.phase==='run'&&e.t>.5&&!free)exFinish();
   const nr=Math.min(1,near/140);AU.crowdLevel((.04+.5*nr)*(e.phase==='run'?.22:.1),Math.min(1,move/50)*.4*(e.phase==='run'?1:.4))}
  if(exEndArm&&time>exEndArm)exEndDisarm();
- exHUD(false)}
+ exHUD(false);exMarks()}
 function exFinish(){const e=EX;if(e.phase!=='run')return;e.phase='done';e.dt2=0;e.used=e.t;exEndDisarm();releaseAll();AU.exEnd();exHUD(true)}
 function exShowResult(){const e=EX;e.shown=true;
  let kept=0;for(const c of creatures)if(!c.dead&&!c.ko&&(busy(c)||c.st==='sucked')){kept++;c.kept=1;credit(c)} // 장비에 담아 둔 것도 철수한 것으로 센다
@@ -5521,12 +5621,54 @@ function exHUD(force){const e=EX;if(!e.on)return;const done=Math.min(e.N,e.kills
  for(const b of $('extools').children){const sel=b.dataset.t===S.tool;b.classList.toggle('sel',sel);b.disabled=lock&&!sel;b.setAttribute('aria-pressed',String(sel))}}
 function exToolsRender(){const el=$('extools');
  el.innerHTML=EX_TOOLS.map(id=>{const t=TOOLS.find(t=>t.id===id),own=S.owned.includes(id);return '<button class="exb'+(own?'':' rent')+'" data-t="'+id+'" aria-label="'+t.name+(own?'':' · 대여 장비')+'">'+(ICON[id]?'<img src="'+ICON[id]+'" alt="">':'')+'<span>'+t.short+'</span>'+(own?'':'<em>대여</em>')+'<i>'+(TOOLS.indexOf(t)+1)+'</i></button>'}).join('');
- el.querySelectorAll('button').forEach(b=>{b.addEventListener('mousedown',ev=>ev.preventDefault());b.onclick=()=>{AU.wake();setTool(b.dataset.t);exHUD(true);$('gl').focus()}})}
+ el.querySelectorAll('button').forEach(b=>{b.addEventListener('mousedown',ev=>ev.preventDefault());b.onclick=()=>{AU.wake();setTool(b.dataset.t);exHUD(true);$('gl').focus()}});exToolsFit()}
+// 장비 버튼 크기: 세로 줄은 화면 높이에, 가로 줄(가로 화면)은 화면 폭에 맞춘다. 세로로 다 안 들어가면 두 줄로 놓는다
+function exToolsFit(){const el=$('extools'),n=el.children.length;if(!EX.on||!n)return;el.classList.remove('two');el.style.removeProperty('--eb');
+ const g=6,row=getComputedStyle(el).flexDirection==='row';let s=56;
+ if(row){s=Math.max(40,Math.min(56,Math.floor((W-36-250-(n-1)*g)/n)));$('hud').style.setProperty('--ebw',(n*s+(n-1)*g)+'px')}
+ else{const avail=H-el.getBoundingClientRect().top-112;s=Math.floor((avail-(n-1)*g)/n);if(s<46){el.classList.add('two');const rows=Math.ceil(n/2);s=Math.floor((avail-(rows-1)*g)/rows)}s=Math.max(40,Math.min(56,s))}
+ el.style.setProperty('--eb',s+'px');A2P.w=0}
+// 남은 게 얼마 안 되면(30 이하) 산 놈 발밑에 노란 고리를 깔고, 화면 밖(등 뒤 포함)에 있는 놈은 화면 가장자리에 방향과 마릿수를 띄운다
+const EXM={ring:null,arrows:[],bins:10},_xm=new THREE.Matrix4(),_xv=new THREE.Vector3();
+function exMarksBuild(){
+ const g=new THREE.RingGeometry(.72,1,28);g.rotateX(-Math.PI/2);
+ const m=new THREE.InstancedMesh(g,new THREE.MeshBasicMaterial({color:lin(0xffd21f),transparent:true,opacity:.8,depthWrite:false}),48);m.count=0;m.frustumCulled=false;m.renderOrder=2;HALL.g.add(m);EXM.ring=m;
+ const box=$('exarrows');box.innerHTML=Array.from({length:EXM.bins},()=>'<i><svg viewBox="0 0 34 34"><path fill="#e0322a"/></svg><span></span></i>').join('');EXM.arrows=[...box.children]}
+function exMarks(){const e=EX,m=EXM.ring;if(!m)return;
+ const on=e.on&&e.phase==='run'&&e.t>1&&e.free>0&&e.free<=30;$('exarrows').classList.toggle('on',on);
+ if(!on){if(m.count){m.count=0}return}
+ const N=EXM.bins,cnt=new Array(N).fill(0);let n=0;camera.updateMatrixWorld();
+ for(const c of creatures){if(c.dead||c.ko||busy(c)||c.st==='sucked')continue;
+  const s=c.r*2.7*(1+.12*Math.sin(time*6+c.ph));_xm.makeScale(s,1,s).setPosition(c.x,.004,c.z);if(n<48)m.setMatrixAt(n++,_xm);
+  _xv.set(c.x,c.y+.05,c.z).applyMatrix4(camera.matrixWorldInverse);let sx,sy;
+  if(_xv.z<-.05){_xv.set(c.x,c.y+.05,c.z).project(camera);if(Math.abs(_xv.x)<.94&&Math.abs(_xv.y)<.94)continue;sx=_xv.x*W;sy=-_xv.y*H} // 앞쪽인데 화면 밖
+  else{sx=(c.x-P.x)*.6;sy=1} // 등 뒤: 아래쪽(뒤로 물러서는 쪽)을 가리키고, 옆으로 치우친 만큼 비스듬히
+  const b=((Math.round(Math.atan2(sy,sx)/(TAU/N))%N)+N)%N;cnt[b]++}
+ m.count=n;m.instanceMatrix.needsUpdate=true;
+ const hb=$('exbar').getBoundingClientRect(),tl=$('extools').getBoundingClientRect(),a2=$('act2');
+ const L=14+17,R=W-14-17-(tl.width&&tl.left>W*.5&&tl.top>=hb.top?tl.width+10:0),T=hb.bottom+12+17,B=H-17-(a2.hidden?100:210),cx=(L+R)/2,cy=(T+B)/2;
+ for(let b=0;b<N;b++){const el=EXM.arrows[b];if(!cnt[b]){el.style.display='none';continue}
+  const a=b*TAU/N,dx=Math.cos(a),dy=Math.sin(a),tx=dx>1e-3?(R-cx)/dx:dx<-1e-3?(L-cx)/dx:1e9,ty=dy>1e-3?(B-cy)/dy:dy<-1e-3?(T-cy)/dy:1e9,t=Math.min(tx,ty);
+  el.style.display='block';el.style.transform='translate('+(cx+dx*t-17).toFixed(1)+'px,'+(cy+dy*t-17).toFixed(1)+'px)';{const ca=Math.cos(a),sa=Math.sin(a),pt=(x,y)=>(17+x*ca-y*sa).toFixed(1)+' '+(17+x*sa+y*ca).toFixed(1);el.firstChild.firstChild.setAttribute('d','M'+pt(-8,-2.6)+'L'+pt(1.5,-2.6)+'L'+pt(1.5,-7.5)+'L'+pt(10,0)+'L'+pt(1.5,7.5)+'L'+pt(1.5,2.6)+'L'+pt(-8,2.6)+'Z')}el.lastChild.textContent=cnt[b]>1?cnt[b]:''}}
+
 
 /* ───────── HUD ───────── */
 let toastT=0,hudKey='';
 function toast(s,sec=2.6){$('toast').textContent=s;$('toast').classList.add('on');toastT=sec}
+// 아직 없는 장비를 살 돈이 처음 모이면 장비 버튼 밑에 말풍선을 6초 띄운다 (장비마다 한 번, 한꺼번에 여럿이면 비싼 것 하나에 '외 몇 개').
+// 누르면 장비 메뉴가 열린다. 말풍선이 사라져도 메뉴를 열 때까지 장비 버튼에 빨간 점이 남는다 (그사이 돈이 모자라게 되면 점도 지운다)
+const BUB={until:0};
+function bubPlace(){const b=$('buybub');if(!b||b.hidden)return;const r=$('shopbtn').getBoundingClientRect(),w=b.offsetWidth,cx=r.left+r.width/2,l=clamp(cx-w/2,10,W-10-w);b.style.left=l+'px';b.style.top=(r.bottom+10)+'px';b.style.setProperty('--tx',(cx-l)+'px')}
+function buyBubble(){const b=$('buybub'),btn=$('shopbtn');
+ if(!b.hidden&&(time>BUB.until||EX.on||!$('shop').hidden))b.hidden=true;
+ if(btn.classList.contains('new')&&!TOOLS.some(t=>!S.owned.includes(t.id)&&S.money>=t.price))btn.classList.remove('new');
+ if(!started||paused||EX.on||!$('shop').hidden)return;
+ const seen=S.seen||(S.seen=[]),can=TOOLS.filter(t=>t.price>0&&!S.owned.includes(t.id)&&!seen.includes(t.id)&&S.money>=t.price);if(!can.length)return;
+ const t=can.reduce((a,c)=>c.price>a.price?c:a);for(const c of can)seen.push(c.id);dirty=true;
+ b.querySelector('img').src=ICON[t.id]||'';b.querySelector('b').textContent=t.name;b.querySelector('small').textContent='구매 가능 · '+won(t.price)+(can.length>1?' · 외 '+(can.length-1)+'개':'');
+ b.setAttribute('aria-label',t.name+' 구매 가능 · 장비 메뉴 열기');b.hidden=false;b.classList.remove('on');bubPlace();void b.offsetWidth;b.classList.add('on');BUB.until=time+6;btn.classList.add('new');AU.chime()}
 function updateHUD(force){
+ buyBubble();
  const running=!!S.support,recipients=supportRecipients().length,more=needsReassignment()&&!S.paid;
  const key=[Math.round(S.money),S.prog,S.zone,S.paid,S.tool,S.owned.length,S.muted,running,recipients,more,S.exDone].join('|');if(!force&&key===hudKey)return;hudKey=key;
  $('money').textContent=won(S.money);$('ztxt').textContent=S.zone+'기 · '+S.prog+'/'+quota(S.zone);$('zbar').style.width=Math.min(100,S.prog/quota(S.zone)*100)+'%';
@@ -5538,8 +5680,8 @@ function updateHUD(force){
 }
 let a2Key='';
 function act2Place(){ // 결과보고전에서 장비 버튼 줄(세로)과 겹치면 줄 왼쪽으로 옮긴다
- const a=$('act2');if(a.hidden)return;const was=a.classList.contains('aside');a.classList.remove('aside');if(!EX.on)return;
- const t=$('extools').getBoundingClientRect(),r=a.getBoundingClientRect();if(t.width&&r.left<t.right+4&&r.right>t.left-4&&r.top<t.bottom+8&&r.bottom>t.top-8)a.classList.add('aside');else if(was)a.classList.remove('aside')}
+ const a=$('act2');if(a.hidden)return;a.classList.remove('aside');a.style.right='';if(!EX.on)return;
+ const t=$('extools').getBoundingClientRect(),r=a.getBoundingClientRect();if(t.width&&r.left<t.right+4&&r.right>t.left-4&&r.top<t.bottom+8&&r.bottom>t.top-8)a.style.right=Math.round(W-t.left+8)+'px'}
 function updateAct2(){ // 보조 버튼: 안전화는 양발 구르기, 집게는 봉투 밟기, 흡입기는 갈기, 예초기는 줄 풀기. 다른 장비에서는 감춘다
  const t=S.tool,el=$('act2'),show=t==='boot'||t==='tong'||t==='vac'||t==='trim'||t==='shovel';let lab='',sub='',ok=true,say='';
  const refill=t==='trim'&&TR.len<=.5;
@@ -5561,7 +5703,7 @@ const fine=window.matchMedia&&matchMedia('(pointer:fine)').matches;
 let hintN=0;
 function setHint(){
  const collecting=TG.ph==='idle'||TG.ph==='reach'||TG.ph==='carry';
- const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'누르면 내려치고, 누르고 있으면 계속 내려칩니다',tong:collecting?'누르고 있으면 집어서 봉투에 모읍니다':TG.armed?'누르고 있으면 묶은 봉투를 밟습니다':'뗐다가 다시 누르고 있으면 묶은 봉투를 밟습니다',trim:fine?'누르는 동안 줄이 돌고, 가리키는 쪽으로 휘두릅니다':'누르는 동안 줄이 돌고, 누른 채 좌우로 끌면 휘두릅니다',wash:fine?'누르는 동안 물을 쏩니다. 마우스로 쏘면 가리키는 곳을 씻습니다':'누르는 동안 물을 쏘고, 누른 채 끌면 물줄기가 따라옵니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다'}[S.tool];
+ const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'누르면 내려치고, 누르고 있으면 계속 내려칩니다',tong:collecting?'누르고 있으면 집어서 봉투에 모읍니다':TG.armed?'누르고 있으면 묶은 봉투를 밟습니다':'뗐다가 다시 누르고 있으면 묶은 봉투를 밟습니다',trim:fine?'누르는 동안 줄이 돌고, 가리키는 쪽으로 휘두릅니다':'누르는 동안 줄이 돌고, 누른 채 좌우로 끌면 휘두릅니다',wash:fine?'누르는 동안 물을 쏩니다. 가리키는 곳을 씻고, 계속 맞히면 살가죽이 벗겨지며 터집니다':'누르는 동안 물을 쏘고, 누른 채 끌면 물줄기가 따라옵니다. 계속 맞히면 살가죽이 벗겨지며 터집니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다'}[S.tool];
  const more={shovel:'누르는 동안 긁어 담고, 떼면 수거통에 텁니다',boot:'누르고 있으면 양발로 구릅니다',tong:collecting?'담긴 만큼 바로 밟습니다':'',vac:'눌러서 갈고, 갈리는 동안 누르면 유리판으로 찍고 꾹 누르면 짓누릅니다',trim:'헤드를 바닥에 쳐서 새 줄을 뺍니다'}[S.tool],b2={shovel:'퍼담기',boot:'구르기',tong:'밟기',vac:'갈기',trim:'줄 풀기'}[S.tool];
  $('hinttxt').textContent=(fine?'WASD 이동 · 스페이스나 마우스를 '+verb:'왼쪽 화면: 이동 · 오른쪽 화면: '+verb)+(more?(fine?' · Q나 오른쪽 클릭: ':' · '+b2+' 버튼: ')+more:'');
  $('hint').style.opacity=1;hintN=6;
@@ -5633,7 +5775,7 @@ function buyOrEquip(id){
  S.tool=id;save();updateHUD(true);setHint();closeShop();return true;
 }
 function menuAvailable(){return started&&!paused&&!EX.on&&!stompLocked()&&!TD.on&&!shovelLocked()&&!tool2Locked()}
-function openShop(){if(!menuAvailable())return false;paused=true;releaseAll();$('hud').inert=true;renderShop();$('shop').hidden=false;save();$('shopx').focus();return true}
+function openShop(){if(!menuAvailable())return false;$('buybub').hidden=true;$('shopbtn').classList.remove('new');paused=true;releaseAll();$('hud').inert=true;renderShop();$('shop').hidden=false;save();$('shopx').focus();return true}
 function closeShop(){if($('shop').hidden)return;$('shop').hidden=true;$('hud').inert=false;paused=false;last=0;AU.wake();$('gl').focus()}
 function renderSupportMenu(){
  const people=supportRecipients(),n=people.length,cost=n*SUPPORT_UNIT,waiting=people.filter(c=>activityLeft(c)<=0).length,missing=Math.max(0,cost-S.money),credit=missing>0&&supportCredit(),running=!!S.support;
@@ -5701,7 +5843,7 @@ function bind(){
  $('start').onclick=()=>{if(started)return;started=true;paused=false;$('intro').hidden=true;$('hud').style.display='block';AU.wake();updateHUD(true);setHint();$('gl').focus()};
  $('snd').onclick=()=>{AU.wake();S.muted=!S.muted;AU.mute(S.muted);save();updateHUD(true)};
  $('supportbtn').onclick=openSupportMenu;$('supportx').onclick=closeSupportMenu;$('supportpay').onclick=payFromSupport;$('supportreview').onclick=reviewFromSupport;
- $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('candidate-reject').onclick=()=>rejectCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
+ $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('buybub').onclick=()=>{AU.wake();openShop()};$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('candidate-reject').onclick=()=>rejectCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
  $('supportmenu').addEventListener('pointerdown',e=>{if(e.target===$('supportmenu'))closeSupportMenu()});
  $('reset').onclick=()=>{if(!confirm('예산과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;exAbort();const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:m,wp:1,wf:1,ap:{},grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,exDone:0};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
@@ -5730,7 +5872,7 @@ function refreshGraphics(){
  resize();renderer.setViewport(0,0,W,H);GFX.wake=false;last=0;return true;
 }
 
-function resize(){FR.need=true;W=Math.max(1,innerWidth);H=Math.max(1,innerHeight);portrait=H>W;renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=portrait?CAM.fp:CAM.fl;camera.updateProjectionMatrix();lensSize();if(IV.open)layoutInterview()}
+function resize(){FR.need=true;W=Math.max(1,innerWidth);H=Math.max(1,innerHeight);portrait=H>W;renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=portrait?CAM.fp:CAM.fl;camera.updateProjectionMatrix();lensSize();if(IV.open)layoutInterview();if(EX.on)exToolsFit();bubPlace()}
 
 /* ───────── 루프 ───────── */
 let last=0,slow=0,pr=1;const FR={prev:0,vs:16.7,odd:false,need:true,drawn:0,ft:.0167,hold:0,mem:0};
@@ -5742,7 +5884,7 @@ function sim(dt){
   let m=Math.hypot(mx,mz);if(m>1){mx/=m;mz/=m;m=1}if(m<.12){mx=mz=0}else{const k=Math.pow(m,1.4)/m;mx*=k;mz*=k}
   if(stompLocked()||(S.tool==='shovel'?shovelMoveLocked():shovelLocked())||tool2Locked())mx=mz=0;
   const v=TD.on?.62:S.tool==='trim'&&act?1.5:S.tool==='wash'&&act?1.1:S.tool==='vac'&&act?1.5:SH.ph==='hold'?1.3:S.tool==='shovel'&&shovelLocked()?.85:2.3;mx*=v;mz*=v;
-  const pb=XB-.15;P.x=clamp(P.x+mx*dt,-pb,pb);P.z=clamp(P.z+mz*dt,ZN+.95,ZF-.1);
+  const pb=XB-.15;P.x=clamp(P.x+mx*dt,-pb,pb);P.z=clamp(P.z+mz*dt,ZN+.95,EX.on?ZF+.75:ZF-.1); // 전시장에서는 맨 뒷줄 뒤까지 물러서서 끝에 붙은 것도 앞에 두고 칠 수 있다
   if((mx||mz||act||act2)&&hintN>0){hintN-=dt;if(hintN<=0)$('hint').style.opacity=0}}
  stompUpdate(dt,act,act2);
  updateBody(dt,mx,mz);updateGoogly();
