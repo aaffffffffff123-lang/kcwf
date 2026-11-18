@@ -200,6 +200,7 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 @media(max-width:350px){.int-controls.two #candidate-reject{font-size:14px}.int-controls.two #candidate-private{font-size:14px}.int-controls.two #candidate-private small{font-size:10px}}
 #candidate-private{background:#fff3c4;color:#5c4708;border:2px solid #d8b23a;flex-direction:column;gap:1px;font-size:15px;line-height:1.2;padding:4px 6px;word-break:keep-all}#candidate-private small{font-size:11px;font-weight:650;opacity:.85;font-variant-numeric:tabular-nums}
 #candidate-private.armed{background:#e2a400;border-color:#b98500;color:#fff;box-shadow:0 2px 0 #946a00}#candidate-private.done{background:#c98f00;border-color:#a67500;color:#fff}#candidate-private:disabled{opacity:1;cursor:default}#candidate-private:disabled:not(.done){background:#eeeade;border-color:#dcd6c4;color:#9a927c}
+.int-award{margin:10px 0 0;font-size:13px;line-height:1.5;color:#5c4708;word-break:keep-all}
 .int-seal.priv{background:#c98f00;color:#fff}
 .int-seal{background:#e1e7ef;color:#3f5675}.int-seal.denied{background:#efe2df;color:#7d4a44}.int-seal.chosen{background:#1f66d6;color:#fff}.int-seal.rejected{background:#d9342b;color:#fff}
 .int-selected-list button{background:#e8effb;border-color:#a9c0e6;color:#1f4f9a}
@@ -394,7 +395,7 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
  <div id="candidate-stage" role="img" aria-label="현재 심사 중인 신청인"><div class="int-stage-count">신청인 <span id="candidate-position"></span></div></div>
  <article class="int-paper" id="candidate-paper" aria-live="polite" aria-atomic="true"></article>
  <footer class="int-bottom"><div class="int-bottom-inner"><div class="int-chosen" id="interview-chosen" aria-live="polite"></div>
-  <nav class="int-controls" aria-label="신청인 심사"><button id="candidate-prev" aria-label="이전 신청인" title="이전 신청인"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M27 16H7M15 7l-9 9 9 9" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button id="candidate-approve" aria-pressed="false">선정</button><button id="candidate-reject" aria-pressed="false" hidden>탈락</button><button id="candidate-private" hidden>특별 하사</button><button id="candidate-next" aria-label="다음 신청인" title="다음 신청인"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 16h20M17 7l9 9-9 9" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></nav>
+  <nav class="int-controls" aria-label="신청인 심사"><button id="candidate-prev" aria-label="이전 신청인" title="이전 신청인"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M27 16H7M15 7l-9 9 9 9" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button id="candidate-approve" aria-pressed="false">선정</button><button id="candidate-reject" aria-pressed="false" hidden>탈락</button><button id="candidate-private" hidden>시민 특별 선정</button><button id="candidate-next" aria-label="다음 신청인" title="다음 신청인"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 16h20M17 7l9 9-9 9" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></nav>
   <button id="interview-enter" disabled hidden>작업실로</button>
  </div></footer>
 </section>
@@ -440,7 +441,7 @@ const TOOLS=[
 ];
 
 const GRANT_T=96,SUPPORT_UNIT=10000,SUPPORT_T=14,ACTIVITY_T=90; // 예술가 한 명에게 건네는 활동비
-const PRIV=3000000,DEMAND_UNIT=100000,DEMAND_ZONE=5; // 특별 하사금 · 예술가 한 명에게 줘야 하는 창작지원금 · 돈을 안 주면 멈추기 시작하는 기수
+const PRIV=3000000,DEMAND_UNIT=100000,DEMAND_ZONE=5; // 특별 창작지원금 · 예술가 한 명에게 줘야 하는 창작지원금 · 돈을 안 주면 멈추기 시작하는 기수
 const demandPts=z=>z<DEMAND_ZONE?[]:z<7?[.5]:[.36,.72]; // 기수마다, 정산 목표의 어느 지점에서 예술가들이 돈을 받을 때까지 창작을 멈추는가
 const AP=[
  {"type":4,"field":"문학","title":"창문을 닫은 뒤","work":"시 7편 · 문예지 게재본","recT":"문예지 발표 7편","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"원고료 48만 원 / 연","inc":"no","ev":"발표 지면 7건 · 원고료 입금내역","papers":[["거주","부 소유 주택 / 주거비 없음"],["작업실","모 소유 상가 / 사용료 없음"],["생활비","가족 카드 / 본인 원고료 월 4만 원"]],"income":"근로·사업소득과 본인 재산 반영","plan":"다음 호 원고 3편. 현재 초고 작성 중.","art":"pages","kind":"예술활동증명 (일반)","desk":4,"monthly":40000},
@@ -1022,12 +1023,14 @@ function updateRoom(dt){const e=Math.abs(XB-ROOM.tx)+Math.abs(ZN-ROOM.tn)+Math.a
  if(e<.004){XB=ROOM.tx;ZN=ROOM.tn;ZF=ROOM.tf}else{XB=damp(XB,ROOM.tx,2.2,dt);ZN=damp(ZN,ROOM.tn,2.2,dt);ZF=damp(ZF,ROOM.tf,2.2,dt)}roomApply()}
 const creators=[];
 let supportEnvelopeGeo=null,supportEnvelopeMat=null,supportSoundT=0;
-function buildSupportEnvelope(){
- if(!supportEnvelopeGeo){supportEnvelopeGeo=BX(.23,.009,.13);supportEnvelopeMat=M(0xf8f2dd,.85);
-  const tex=canvasTex(256,144,(c,w,h)=>{c.fillStyle='#fff9e8';c.fillRect(0,0,w,h);c.strokeStyle='#bbb3a0';c.lineWidth=2;c.beginPath();c.moveTo(0,0);c.lineTo(w/2,h*.52);c.lineTo(w,0);c.stroke();drawMark(c,18,90,36);c.fillStyle='#1f4fd8';c.font='bold 23px sans-serif';c.textAlign='center';c.fillText('창작지원금',155,119)});
-  supportEnvelopeMat.userData.top=new THREE.MeshStandardMaterial({map:tex,roughness:.85,envMapIntensity:.2})}
+function buildSupportEnvelope(special=false){
+ if(!supportEnvelopeGeo){supportEnvelopeGeo=BX(.23,.009,.13);supportEnvelopeMat=M(0xf8f2dd,.85)}
+ const label=special?'특별 창작지원금':'창작지원금';
+ if(!supportEnvelopeMat.userData[label]){
+  const tex=canvasTex(256,144,(c,w,h)=>{c.fillStyle='#fff9e8';c.fillRect(0,0,w,h);c.strokeStyle='#bbb3a0';c.lineWidth=2;c.beginPath();c.moveTo(0,0);c.lineTo(w/2,h*.52);c.lineTo(w,0);c.stroke();drawMark(c,18,90,36);c.fillStyle='#1f4fd8';c.font='bold 23px sans-serif';c.textAlign='center';c.fillText(label,155,119,178)});
+  supportEnvelopeMat.userData[label]=new THREE.MeshStandardMaterial({map:tex,roughness:.85,envMapIntensity:.2})}
  const g=new THREE.Group();addMesh(g,supportEnvelopeGeo,supportEnvelopeMat);
- const top=new THREE.Mesh(new THREE.PlaneGeometry(.23,.13),supportEnvelopeMat.userData.top);top.rotation.x=-Math.PI/2;top.position.y=.0046;g.add(top);g.visible=false;return g;
+ const top=new THREE.Mesh(new THREE.PlaneGeometry(.23,.13),supportEnvelopeMat.userData[label]);top.rotation.x=-Math.PI/2;top.position.y=.0046;g.add(top);g.visible=false;return g;
 }
 const supportRecipients=()=>creators.filter(c=>!c.d.citizen&&creatorActive(c));
 const demandMode=()=>S.zone>=DEMAND_ZONE&&!!S.team; // 초반 기수는 싼 활동비를 주면 고마워하며 쏟아낸다. 이 기수부터는 정해진 지점마다 큰돈을 받을 때까지 손을 놓고, 받아도 하던 속도로만 다시 한다
@@ -1168,13 +1171,46 @@ function artistArmband(parent){
  g.add(new THREE.Mesh(a.sleeve,a.sleeveMat));const face=new THREE.Mesh(a.face,a.faceMat);face.name='artist-led-lettering';g.add(face);parent.add(g);return g;
 }
 
+// 시민 특별 선정 완장. 앞쪽만 반원으로 솟은 노란 비닐 띠를 상완에 두른다.
+function makeCitizenArmband(){
+ const bottom=-.054,shoulder=.044,rise=.055,positions=[],uv=[],indices=[],steps=64;
+ for(let i=0;i<=steps;i++){
+  const u=i/steps,angle=(u-.5)*TAU;
+  const arch=Math.sqrt(Math.max(0,1-(angle/1.04)**2)),top=shoulder+rise*arch;
+  const x=.090*Math.sin(angle),z=.067*Math.cos(angle);
+  positions.push(x,bottom,z,x,top,z);uv.push(u,0,u,(top-bottom)/(shoulder+rise-bottom));
+  if(i<steps){const k=i*2;indices.push(k,k+2,k+1,k+2,k+3,k+1)}
+ }
+ const geo=new THREE.BufferGeometry();
+ geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+ geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(indices);geo.computeVertexNormals();
+ const map=canvasTex(1024,256,g=>{
+  g.fillStyle='#ffda26';g.fillRect(0,0,1024,256);
+  g.fillStyle='#11100c';g.textBaseline='alphabetic';g.textAlign='left';
+  const gothic='"Malgun Gothic","Apple SD Gothic Neo","Noto Sans CJK KR",sans-serif';
+  g.font='900 150px '+gothic;g.fillText('준',360,208,127);
+  g.font='900 72px '+gothic;g.fillText('예술인',498,208,188);
+ });
+ const cuff=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map,roughness:.78,metalness:0,side:THREE.DoubleSide}));
+ cuff.name='citizen-special-armband';cuff.castShadow=true;
+ // 작은 옷핀은 솟은 비닐 앞면을 비스듬히 물고 있다.
+ const pin=addMesh(cuff,CY(.0016,.0016,.031,6),M(0xa5a6a2,.42,.42),.009,.086,.068,false);
+ pin.rotation.z=-.60;
+ return cuff;
+}
+function showCitizenArmband(c,selected){
+ const arm=c.hands[1];
+ if(!arm.band&&selected){arm.band=makeCitizenArmband();arm.up.parent.add(arm.band)}
+ if(arm.band)arm.band.visible=selected;
+}
+
 const _ik1=new THREE.Vector3(),_ik2=new THREE.Vector3();
 function armIK(h,H){ // 어깨-팔꿈치-손목
  const a=.25,b=.25,mx=(a+b)*.985;_ik1.subVectors(H,h.sh);let dl=_ik1.length();if(dl>mx){H.copy(h.sh).addScaledVector(_ik1,mx/dl);dl=mx}_ik1.multiplyScalar(1/dl);
  const x=(a*a-b*b+dl*dl)/(2*dl),hh=Math.sqrt(Math.max(0,a*a-x*x));
  _ik2.set(h.s*.8,-.4,-.5);_ik2.addScaledVector(_ik1,-_ik2.dot(_ik1)).normalize().multiplyScalar(hh).addScaledVector(_ik1,x).add(h.sh);
  between(h.up,h.sh,_ik2);between(h.fo,_ik2,H);h.el.position.copy(_ik2);handAim(h,_ik2,H);
- if(h.band){h.band.position.copy(h.sh).lerp(_ik2,.52);_ik1.subVectors(h.sh,_ik2).normalize();h.band.quaternion.setFromUnitVectors(UP,_ik1)}}
+ if(h.band&&h.band.visible){h.band.position.copy(h.sh).lerp(_ik2,.52);_ik1.subVectors(h.sh,_ik2).normalize();h.band.quaternion.setFromUnitVectors(UP,_ik1)}}
 /* ── 책상 앞으로 흘러내리는 진물 ──
    작품이 책상 모서리를 넘어간 자리마다 진물이 묻는다. 모서리를 따라 띠처럼 번지고(띠 아랫단은 들쭉날쭉 늘어진다), 넘어간 자리에서 줄기가 앞면을 타고 흘러내린다.
    줄기는 앞쪽 끝이 방울져 굵고 지나온 자리는 가늘게 남는다. 앞판 아래 끝에 닿으면 방울로 맺혔다가 바닥에 뚝뚝 떨어지고, 시간이 지나면 말라 가늘어지다 없어진다. */
@@ -1793,7 +1829,7 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0?(AP[d
   const ph=new THREE.Group(),bd=new THREE.Mesh(merge([part(BX(.074,.152,.01),[0xf1f1f4,0xf6c9d6,0xcfe6dc,0x1c1d22,0xe9dcb8][idx%5],0,0,0),part(BX(.03,.032,.004),0x15161a,-.016,.052,-.0062),part(CY(.0075,.0075,.003,10),0x2c3440,-.023,.059,-.0085,1,1,1,PI/2,0,0),part(CY(.0075,.0075,.003,10),0x2c3440,-.009,.045,-.0085,1,1,1,PI/2,0,0)]),new THREE.MeshStandardMaterial({vertexColors:true,roughness:.32,envMapIntensity:.8}));
   const sc=new THREE.Mesh(new THREE.PlaneGeometry(.066,.142),new THREE.MeshStandardMaterial({color:0x0b0d12,emissive:lin(0xcfe2ff),emissiveIntensity:.95,roughness:.2}));
   sc.position.z=.0054;bd.castShadow=true;ph.add(bd,sc);ph.visible=false;rig.add(ph);c.phone=ph}
- c.envelope=buildSupportEnvelope();g.add(c.envelope);
+ c.envelope=buildSupportEnvelope(!!d.citizen);g.add(c.envelope);
  creators.push(c);
 }
 function syncReviewCitizens(){
@@ -1803,7 +1839,7 @@ function syncReviewCitizens(){
   const pos=creators.indexOf(c),a=AP[id];d.ap=id;d.type=a?a.type:d.civicIndex%5;d.wk=a?a.wk:(d.civicIndex*2+1)%5;
   // Dispose only this desk's resources; the workshop's shared assets stay alive.
   scene.remove(c.g);const geos=new Set(),mats=new Set();c.g.traverse(m=>{if(m.geometry)geos.add(m.geometry);if(m.material)for(const v of(Array.isArray(m.material)?m.material:[m.material]))mats.add(v)});
-  const band=ARTIST_LED.assets,sharedG=[bulgeGeo,supportEnvelopeGeo,band?.sleeve,band?.face],sharedM=[bodyMat,droolMat,supportEnvelopeMat,supportEnvelopeMat?.userData.top,band?.sleeveMat,band?.faceMat];
+  const band=ARTIST_LED.assets,sharedG=[bulgeGeo,supportEnvelopeGeo,band?.sleeve,band?.face],sharedM=[bodyMat,droolMat,supportEnvelopeMat,...Object.values(supportEnvelopeMat.userData),band?.sleeveMat,band?.faceMat];
   for(const g of geos)if(!sharedG.includes(g)&&!pplShared(g))g.dispose();for(const m of mats)if(!sharedM.includes(m)&&m!==PPL.eyeMat){if(m.map)m.map.dispose();m.dispose()}
   buildDesk(d,c.i);creators[pos]=creators.pop();
  }
@@ -1861,7 +1897,7 @@ function updateCreators(dt){
   }else{c.g.visible=creatorActive(c);c.tag.visible=!civic;if(!civic)creatorTag(c,'예술가');}
   if(!c.g.visible)continue;
   droolStep(c,dt);
-  const pv=civic&&PVA>=0&&d.ap===PVA;if(pv){if(started&&!paused)c.pvT=(c.pvT||0)+dt;c.selfRest=0}else c.pvT=0; // 특별 하사금을 받은 시민: 받은 봉투 앞에서 한참 울고 나서, 울면서 쉬지 않고 쏟아낸다
+  const pv=civic&&PVA>=0&&d.ap===PVA;if(civic)showCitizenArmband(c,pv);if(pv){if(started&&!paused)c.pvT=(c.pvT||0)+dt;c.selfRest=0}else c.pvT=0; // 특별 창작지원금을 받은 시민: 받은 봉투 앞에서 한참 울고 나서, 울면서 쉬지 않고 쏟아낸다
   const sobK=pv?1-ss((c.pvT-2.4)/.7):0,pvK=pv?ss((c.pvT-2.7)/.9):0;
   if(civic&&started&&!paused)c.selfRest=Math.max(0,c.selfRest-dt);
   c.restMix=damp(c.restMix,civic&&c.selfRest>0?1:0,4,dt);
@@ -1951,7 +1987,7 @@ const TYPES=[
 const BONE=lin(0xefe6d2),BRAIN=lin(0xd6a0a6),INTEST=lin(0xdc8f96),HAIRC=lin(0x1c1614),PAPER=lin(0xf1ede0),CANVAS=lin(0xd9c7a0),SKINC=lin(0xd9b7a5),WATER=lin(0xcfe8ff),BLOOD=lin(0x8a1c1c),TRAIL=lin(0x8a6a3a),GUT=lin(0x7d2a2e),MUCUS=lin(0xb7a136),ROT=lin(0x4a4318),WHITE=new THREE.Color(1,1,1),DUNG=lin(0x33200d),LAMP_G=lin(0x39d07a),LAMP_R=lin(0xff3b2f),LAMP_Y=lin(0xffd21f);
 const busy=c=>c.st==='fall'||c.st==='pinned'||c.st==='carried'||c.st==='tossed'||c.st==='tank'||c.st==='held'||c.st==='bag'||c.st==='binned'||c.st==='twitch'||c.st==='shred';
 const CAP=1700,WCAP=1000,SHCAP=320,creatures=[],flocks=[];let herdSeq=0,SHMAT=null;
-const alive=()=>{let n=0;for(const c of creatures)if(!c.dead&&!c.ko&&!c.pv&&c.st!=='bag'&&c.st!=='tank'&&c.st!=='binned')n++;return n}; // 특별 하사금을 받은 시민의 창작물은 따로 센다
+const alive=()=>{let n=0;for(const c of creatures)if(!c.dead&&!c.ko&&!c.pv&&c.st!=='bag'&&c.st!=='tank'&&c.st!=='binned')n++;return n}; // 특별 창작지원금을 받은 시민의 창작물은 따로 센다
 function mergeX(list){ // 위치·법선·색 + 얼룩 마스크 + 팔다리 흔들림 가중치 + 팔다리 뿌리(잘리면 여기로 오그라든다)
  const ps=list.map(g=>g.index?g.toNonIndexed():g);let n=0;for(const q of ps)n+=q.attributes.position.count;
  const A=new Float32Array(n*3),N=new Float32Array(n*3),C=new Float32Array(n*3),Mk=new Float32Array(n),L=new Float32Array(n*3),Rt=new Float32Array(n*3);let o=0;
@@ -2551,7 +2587,7 @@ function updatePops(dt){ // 예산 칸의 '+번 돈': 버는 동안 모아서 �
  if(!MG.on){MG.on=true;el.classList.add('on');el.parentNode.classList.add('gain')}
  if(MG.t<=0){MG.on=false;el.classList.remove('on');el.parentNode.classList.remove('gain');MG.sum=0;MG.shown=-1}
 }
-function payFor(c,y){ // 치운 값: 통을 채우는 덤은 세지 않고, 특별 하사금을 받은 시민의 창작물은 재단 실적이 아니라서 예산도 정산도 오르지 않는다
+function payFor(c,y){ // 치운 값: 통을 채우는 덤은 세지 않고, 특별 창작지원금을 받은 시민의 창작물은 재단 실적이 아니라서 예산도 정산도 오르지 않는다
  if(c.kept||c.dum)return;if(c.pv){S.total++;S.liters+=c.vol;return}credit(c);earn(EX.on?EX_PAY:TYPES[c.type].pay,c.x,c.z,y)}
 function demandCheck(){ // 돈을 받을 때까지 멈출 지점에 닿았는가
  if(!demandMode()||S.paid||S.dm.on)return;const pt=demandPts(S.zone)[S.dm.n];if(pt==null||S.prog<Math.round(quota(S.zone)*pt))return;
@@ -6129,7 +6165,7 @@ function chooseCandidate(id){
  return true;
 }
 let privArm=-1;
-function privState(id){ // 특별 하사: 요건을 못 채운 신청인만 · 한 번 심사에 한 명 · 하사한 다음 기수에는 쉰다
+function privState(id){ // 시민 특별 선정: 요건을 못 채운 신청인만 · 한 번 심사에 한 명 · 특별 선정한 다음 기수에는 쉰다
  if(!AP[id]||ELIGIBLE.includes(id))return null;const d=draftForZone();
  return d.priv===id?'done':d.priv!=null?'used':d.zone-S.privLast<2?'cool':S.money<PRIV?'poor':'ok'}
 function privateCandidate(id){
@@ -6158,21 +6194,24 @@ function activityRecord(id){
 function renderInterview(){
  const d=draftForZone(),a=AP[IV.sel],r=applicantReview(IV.sel),chosen=d.ids.includes(IV.sel),rejected=d.rejected.includes(IV.sel),priv=d.priv===IV.sel,need=teamSize(d.zone),order=interviewOrder();
  $('interview-title').textContent=d.zone+'기 · '+(d.zone===S.zone?'추가 선정':'지원 대상 심사');$('candidate-position').textContent=(order.indexOf(IV.sel)+1)+' / '+order.length;
- $('candidate-stage').setAttribute('aria-label',applicantLabel(IV.sel)+' · '+(chosen?'선정':rejected?'탈락':r.pass?'적격':'부적격')+' 신청인');
+ $('candidate-stage').setAttribute('aria-label',applicantLabel(IV.sel)+' · '+(chosen?'선정':priv?'시민 특별 선정':rejected?'탈락':r.pass?'적격':'부적격')+' 신청인');
  for(const c of IV.actors)c.g.visible=c.applicant===IV.sel;
  const field=a.choices?a.choices.map(v=>v.field).join(' · '):r.field;
- $('candidate-paper').innerHTML='<div class="int-person"><div><small>'+esc(field)+'</small><h3>'+applicantLabel(IV.sel)+'</h3></div><span class="int-seal'+(chosen?' chosen':priv?' priv':rejected?' rejected':!r.pass?' denied':'')+'" role="status">'+(chosen?'선정':priv?'특별 하사':rejected?'탈락':r.pass?'적격':'부적격')+'</span></div>'
+ $('candidate-paper').innerHTML='<div class="int-person"><div><small>'+esc(field)+'</small><h3>'+applicantLabel(IV.sel)+'</h3></div><span class="int-seal'+(chosen?' chosen':priv?' priv':rejected?' rejected':!r.pass?' denied':'')+'" role="status">'+(chosen?'선정':priv?'시민 특별 선정':rejected?'탈락':r.pass?'적격':'부적격')+'</span></div>'
   +'<section class="int-work" aria-label="신청 작업">'+(a.everyday?'<small class="int-work-label">'+(a.parody?'신청 제목':'하는 일')+'</small>':'')+'<h4>'+esc(a.title)+'</h4><p>'+esc(a.work)+'</p></section>'
+  +(priv?'<p class="int-award">귀하께서도 창작 활동을 이어가실 수 있도록 특별 창작지원금 '+won(PRIV)+'을 지급합니다.</p>':'')
   +incomePanel(a)
   +'<div class="int-record"><span>'+(a.everyday?'활동 내용':a.frame?'제출 실적':'발표 실적')+'</span><strong>'+esc(activityRecord(IV.sel))+'</strong></div>'
   +'<div class="int-result'+(r.pass?'':' denied')+'">'+(r.pass?'예술활동증명 · 소득 기준 충족':r.issues.map(v=>'<div><b>'+esc(v.title)+'</b>'+(v.detail?'<small>'+esc(v.detail)+'</small>':'')+'</div>').join(''))+'</div>';
  const approve=$('candidate-approve');approve.hidden=!r.pass;approve.setAttribute('aria-pressed',String(chosen));approve.disabled=!r.pass||!chosen&&d.ids.length>=need;
  approve.innerHTML=chosen?'✓ 선정됨<small>다시 누르면 취소</small>':'선정';
  const reject=$('candidate-reject');reject.hidden=r.pass;reject.disabled=r.pass||rejected||priv;reject.setAttribute('aria-pressed',String(rejected));reject.textContent=rejected?'✕ 탈락됨':'탈락';
- {const b=$('candidate-private'),st=privState(IV.sel),arm=st==='ok'&&privArm===IV.sel;b.hidden=!st;$('candidate-approve').parentNode.classList.toggle('two',!!st); // 요건을 못 채운 신청인에게는 재단 예산으로 특별 하사금을 내릴 수 있다
+ {const b=$('candidate-private'),st=privState(IV.sel),arm=st==='ok'&&privArm===IV.sel;b.hidden=!st;$('candidate-approve').parentNode.classList.toggle('two',!!st); // 요건을 못 채운 신청인에게는 재단 예산으로 특별 창작지원금을 지급한다
   b.disabled=st!=='ok';b.classList.toggle('armed',arm);b.classList.toggle('done',st==='done');
-  b.innerHTML=st==='done'?'✓ 특별 하사<small>'+won(PRIV)+' 지급</small>':arm?'한 번 더 누르면<small>'+won(PRIV)+' 하사</small>':'특별 하사<small>'+(st==='poor'?'예산 '+won(PRIV-S.money)+' 부족':st==='cool'?'한 기수 걸러 한 번':st==='used'?'이번 기수 1명 하사함':won(PRIV))+'</small>'}
- $('interview-chosen').innerHTML='<small>선정 <b>'+d.ids.length+' / '+need+'명</b>'+(d.priv!=null?' · 하사 <b>'+String(d.priv+1).padStart(3,'0')+'</b>':'')+'</small><div class="int-selected-list">'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+applicantLabel(id)+' 선정 취소">'+String(id+1).padStart(3,'0')+' ×</button>').join('')+(d.ids.length?'':'<span class="empty">선정할 신청인을 골라 주세요</span>')+'</div>';
+  const title=arm?'특별 창작지원금 지급':st==='done'?'✓ 시민 특별 선정':'시민 특별 선정';
+  const detail=arm?won(PRIV)+' · 한 번 더 눌러 확정':st==='done'?won(PRIV)+' 지급 완료':st==='poor'?'예산 '+won(PRIV-S.money)+' 부족':st==='cool'?'한 기수 걸러 한 번':st==='used'?'이번 기수 선정 완료':won(PRIV);
+  b.innerHTML=title+'<small>'+detail+'</small>'}
+ $('interview-chosen').innerHTML='<small>선정 <b>'+d.ids.length+' / '+need+'명</b>'+(d.priv!=null?' · 시민 특별 선정 <b>'+String(d.priv+1).padStart(3,'0')+'</b>':'')+'</small><div class="int-selected-list">'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+applicantLabel(id)+' 선정 취소">'+String(id+1).padStart(3,'0')+' ×</button>').join('')+(d.ids.length?'':'<span class="empty">선정할 신청인을 골라 주세요</span>')+'</div>';
  $('interview-chosen').querySelectorAll('button').forEach(b=>b.onclick=()=>chooseCandidate(+b.dataset.id));
  $('interview-enter').hidden=d.ids.length!==need;$('interview-enter').disabled=d.ids.length!==need;$('interview-enter').textContent=need+'명 선정 완료 · '+(d.zone===S.zone?'작업 계속하기':'작업실로')+' →';
  layoutInterview();
@@ -6182,7 +6221,7 @@ function enterNextWorkshop(){
  const d=S.draft;if(d.ids.length!==teamSize(d.zone)||new Set(d.ids).size!==d.ids.length||!d.ids.every(id=>ELIGIBLE.includes(id)))return false;
  const current=d.zone===S.zone,old=S.team||[];S.team=d.ids.slice();S.civic=[...new Set([...d.rejected,...(current?S.civic:[])])].filter(id=>!S.team.includes(id));
  if(d.priv!=null){S.priv={a:d.priv,zone:d.zone};S.privLast=d.zone}else if(!current)S.priv=null;
- if(S.priv)S.civic=[S.priv.a,...S.civic.filter(v=>v!==S.priv.a)]; // 특별 하사금을 받은 시민은 맨 앞 시민 책상에 앉는다
+ if(S.priv)S.civic=[S.priv.a,...S.civic.filter(v=>v!==S.priv.a)]; // 특별 창작지원금을 받은 시민은 맨 앞 시민 책상에 앉는다
  S.draft=null;syncReviewCitizens();
  if(current){for(const id of S.team)if(!old.includes(id))S.funds[AP[id].desk]=ACTIVITY_T;resetSupport()}
  else{S.zone=d.zone;S.prog=0;S.paid=false;S.grants=[null,null,null];S.funds.fill(ACTIVITY_T);S.dm={n:0,on:false}}
@@ -6192,6 +6231,7 @@ function enterNextWorkshop(){
 // 판정 순간의 몸짓 뒤에도 태도가 남는다. 표정/손/허리를 한 좌표계에서 움직인다.
 function poseInterview(c,dt,snap=false){
  const t=c.reactionT,kind=c.applicant%3,p=c.pose;
+ showCitizenArmband(c,c.verdict===2);
  let back=-.09,pitch=.09,yaw=0,roll=0,drop=0,hand=0,thumb=0,cry=0,pray=0;
  if(c.verdict===1){
   const settle=ss(t/.62),nod=Math.sin(Math.PI*clamp((t-.24)/.65,0,1));
@@ -6575,7 +6615,7 @@ function openShop(){if(!menuAvailable())return false;$('buybub').hidden=true;$('
 function closeShop(){if($('shop').hidden)return;$('shop').hidden=true;$('hud').inert=false;paused=false;last=0;AU.wake();$('gl').focus()}
 function renderSupportMenu(){
  const dm=demandMode(),idle=dm&&!S.dm.on,people=supportRecipients(),n=people.length,cost=idle?0:n*supportUnit(),waiting=people.filter(c=>activityLeft(c)<=0).length,missing=Math.max(0,cost-S.money),credit=missing>0&&supportCredit(),running=!!S.support;
- $('support-title').textContent=S.zone+'기 창작지원';$('supportmoney').textContent=won(S.money);$('supportpeople').textContent='예술가 '+n+'명 · 시민 '+creators.filter(c=>c.d.citizen&&creatorActive(c)).length+'명'+(S.priv&&S.priv.zone===S.zone?' (특별 하사 1명)':'');$('supportwaiting').textContent=waiting?(dm?'창작 중단 ':'활동비 소진 ')+waiting+'명':'창작 활동 중';
+ $('support-title').textContent=S.zone+'기 창작지원';$('supportmoney').textContent=won(S.money);$('supportpeople').textContent='예술가 '+n+'명 · 시민 '+creators.filter(c=>c.d.citizen&&creatorActive(c)).length+'명'+(S.priv&&S.priv.zone===S.zone?' (특별 선정 1명)':'');$('supportwaiting').textContent=waiting?(dm?'창작 중단 ':'활동비 소진 ')+waiting+'명':'창작 활동 중';
  $('supportamount').previousElementSibling.textContent=dm?(idle?'창작지원금':'창작지원금 미지급'):'지원금 지급';
  $('supportamount').textContent=idle?'지급 완료':won(cost);$('supportdetail').textContent=idle?'예술가들이 창작 활동 중입니다.':dm?'예술가 '+n+'명 × '+won(DEMAND_UNIT)+' · 돈을 줄 때까지 창작을 하지 않습니다. 그동안은 정산 목표가 오르지 않습니다.':'예술가 '+n+'명 × '+won(SUPPORT_UNIT)+' · 예술가에게 지급합니다.';
  $('supportnotice').hidden=!running&&!missing&&!S.advance;
