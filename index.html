@@ -201,6 +201,7 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 #candidate-private{background:#fff3c4;color:#5c4708;border:2px solid #d8b23a;flex-direction:column;gap:1px;font-size:15px;line-height:1.2;padding:4px 6px;word-break:keep-all}#candidate-private small{font-size:11px;font-weight:650;opacity:.85;font-variant-numeric:tabular-nums}
 #candidate-private.armed{background:#e2a400;border-color:#b98500;color:#fff;box-shadow:0 2px 0 #946a00}#candidate-private.done{background:#c98f00;border-color:#a67500;color:#fff}#candidate-private:disabled{opacity:1;cursor:default}#candidate-private:disabled:not(.done){background:#eeeade;border-color:#dcd6c4;color:#9a927c}
 .int-award{margin:10px 0 0;font-size:13px;line-height:1.5;color:#5c4708;word-break:keep-all}
+.int-selected-list button.special{background:#fff3c4;border-color:#d8b23a;color:#5c4708}
 .int-seal.priv{background:#c98f00;color:#fff}
 .int-seal{background:#e1e7ef;color:#3f5675}.int-seal.denied{background:#efe2df;color:#7d4a44}.int-seal.chosen{background:#1f66d6;color:#fff}.int-seal.rejected{background:#d9342b;color:#fff}
 .int-selected-list button{background:#e8effb;border-color:#a9c0e6;color:#1f4f9a}
@@ -509,8 +510,12 @@ function proofFor(id,record={}){
  if(!route)return {pass:false,field:'',crit:'접수 분야 선택',recT:a.recT,rec:'out',note:'분야 선택 후 산정'};
  return {...route,pass:route.rec==='ok'||a.inc==='ok'};
 }
+function savedSpecialIds(value,zone){
+ const ids=Array.isArray(value)?value:[value];
+ return [...new Set(ids.filter(id=>Number.isInteger(id)&&AP[id]&&!ELIGIBLE.includes(id)))].slice(0,teamSize(zone))
+}
 function loadSave(){
- const d={seen:[],money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},cu:2,dm:{n:0,on:false},priv:null,privLast:-9,grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0};
+ const d={seen:[],money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0};
  try{const r=JSON.parse(localStorage.getItem(KEY)||'null');
   if(r&&r.v===2){d.money=clamp(+r.money||0,0,1e9);d.total=clamp(Math.floor(+r.total||0),0,1e9);d.liters=clamp(+r.liters||0,0,1e9);
    d.zone=clamp(Math.floor(+r.zone||1),1,999);d.prog=clamp(Math.floor(+r.prog||0),0,quota(d.zone));d.paid=!!r.paid&&d.prog>=quota(d.zone);
@@ -518,11 +523,12 @@ function loadSave(){
    if(Array.isArray(r.funds))d.funds=d.funds.map((v,i)=>Number.isFinite(r.funds[i])?clamp(r.funds[i],0,ACTIVITY_T):v);
    d.advance=clamp(+r.advance||0,0,1e9);if(r.cu!==2){d.money=Math.min(1e9,d.money*100);d.advance*=100} // 예전 단위로 저장된 돈
    if(r.dm&&typeof r.dm==='object')d.dm={n:clamp(Math.floor(+r.dm.n||0),0,9),on:!!r.dm.on};
-   if(r.priv&&Number.isInteger(r.priv.a)&&AP[r.priv.a]&&!ELIGIBLE.includes(r.priv.a)&&r.priv.zone===d.zone)d.priv={a:r.priv.a,zone:d.zone};if(Number.isFinite(r.privLast))d.privLast=r.privLast;d.exDone=clamp(Math.floor(+r.exDone||0),0,999);if(Array.isArray(r.seen))d.seen=r.seen.filter(id=>TOOLS.some(t=>t.id===id));
+   d.specialIds=savedSpecialIds(r.specialIds??(r.priv?.zone===d.zone?r.priv.a:null),d.zone);
+   d.exDone=clamp(Math.floor(+r.exDone||0),0,999);if(Array.isArray(r.seen))d.seen=r.seen.filter(id=>TOOLS.some(t=>t.id===id));
    if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid','spent','more'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999),k:Number.isInteger(v.k)&&AP[k].choices?.[v.k]?v.k:-1}}
    if(Array.isArray(r.grants))for(let k=0;k<3;k++){const g=r.grants[k];if(g&&AP[g.a]&&d.ap[g.a]&&['paid','spent'].includes(d.ap[g.a].s)&&!d.grants.some(q=>q&&q.a===g.a)){const left=clamp(+g.left||0,0,GRANT_T);d.grants[k]={a:g.a,left,receipt:Number.isFinite(g.receipt)?clamp(g.receipt,0,2):2};d.ap[g.a].s=left>0?'paid':'spent'}}
    if(Array.isArray(r.team)){const team=[...new Set(r.team.filter(id=>ELIGIBLE.includes(id)))];if(team.length>=3&&team.length<=15)d.team=team}
-   if(r.draft&&Array.isArray(r.draft.ids)&&((d.team&&d.team.length<teamSize(d.zone)&&r.draft.zone===d.zone)||(d.paid&&r.draft.zone===d.zone+1))){d.draft={zone:r.draft.zone,ids:[...new Set(r.draft.ids.filter(id=>ELIGIBLE.includes(id)))].slice(0,teamSize(r.draft.zone)),focus:Number.isInteger(r.draft.focus)&&AP[r.draft.focus]?r.draft.focus:2,rejected:[],priv:Number.isInteger(r.draft.priv)&&AP[r.draft.priv]&&!ELIGIBLE.includes(r.draft.priv)?r.draft.priv:null};d.draft.rejected=Array.isArray(r.draft.rejected)?[...new Set(r.draft.rejected.filter(id=>Number.isInteger(id)&&AP[id]&&!ELIGIBLE.includes(id)))]:[]}
+   if(r.draft&&Array.isArray(r.draft.ids)&&((d.team&&d.team.length<teamSize(d.zone)&&r.draft.zone===d.zone)||(d.paid&&r.draft.zone===d.zone+1))){d.draft={zone:r.draft.zone,ids:[...new Set(r.draft.ids.filter(id=>ELIGIBLE.includes(id)))].slice(0,teamSize(r.draft.zone)),focus:Number.isInteger(r.draft.focus)&&AP[r.draft.focus]?r.draft.focus:2,rejected:[],specialIds:savedSpecialIds([...(r.draft.zone===d.zone?d.specialIds:[]),...savedSpecialIds(r.draft.specialIds??r.draft.priv,r.draft.zone)],r.draft.zone)};d.draft.rejected=Array.isArray(r.draft.rejected)?[...new Set(r.draft.rejected.filter(id=>Number.isInteger(id)&&AP[id]&&!ELIGIBLE.includes(id)))]:[]}
 
    if(Array.isArray(r.civic))d.civic=[...new Set(r.civic.filter(id=>Number.isInteger(id)&&AP[id]&&!d.team?.includes(id)))];
    if(r.support&&r.support.zone===d.zone&&Number.isFinite(r.support.t)&&r.support.t>=0&&r.support.t<SUPPORT_T&&Array.isArray(r.support.ids)){
@@ -994,7 +1000,7 @@ for(const d of DESKS)d.wk=AP[d.ap]?.wk;
 const NREG=DESKS.length;
 [[1,-1.05],[1,1.65],[3,1.65]].forEach((q,k)=>{for(let ty=0;ty<5;ty++){const ry=q[0]*Math.PI/2;DESKS.push({side:q[0],off:q[1],x:0,z:0,ry,fx:Math.sin(ry),fz:Math.cos(ry),type:ty,seat:k})}});
 const CIVIC_START=DESKS.length;
-function civicApplicants(){return [...new Set([...(S.civic||[]),...REJECTED])].filter(id=>!S.team?.includes(id))}
+function civicApplicants(){return [...new Set([...S.specialIds,...(S.civic||[]),...REJECTED])].filter(id=>!S.team?.includes(id))}
 for(let i=0;i<18;i++){const ap=civicApplicants()[i];DESKS.push({citizen:true,civicIndex:i,side:0,off:0,x:0,z:0,ry:0,fx:0,fz:1,type:ap!=null?AP[ap].type:i%5,ap:ap??-1,wk:ap!=null?AP[ap].wk:(i*2+1)%5})} // 시민은 모두 일하다 온 차림
 function artistDeskIds(){
  if(S.team)return S.team.map(id=>AP[id].desk);
@@ -1182,7 +1188,9 @@ function artistArmband(parent){
 }
 
 // 시민 특별 선정 완장. 앞쪽만 반원으로 솟은 노란 비닐 띠를 상완에 두른다.
+let citizenBandTemplate=null;
 function makeCitizenArmband(){
+ if(citizenBandTemplate)return citizenBandTemplate.clone();
  const bottom=-.054,shoulder=.044,rise=.055,positions=[],uv=[],indices=[],steps=64;
  for(let i=0;i<=steps;i++){
   const u=i/steps,angle=(u-.5)*TAU;
@@ -1206,7 +1214,7 @@ function makeCitizenArmband(){
  // 작은 옷핀은 솟은 비닐 앞면을 비스듬히 물고 있다.
  const pin=addMesh(cuff,CY(.0016,.0016,.031,6),M(0xa5a6a2,.42,.42),.009,.086,.068,false);
  pin.rotation.z=-.60;
- return cuff;
+ citizenBandTemplate=cuff;return cuff.clone();
 }
 function showCitizenArmband(c,selected){
  const arm=c.hands[1];
@@ -1850,6 +1858,9 @@ function syncReviewCitizens(){
   // Dispose only this desk's resources; the workshop's shared assets stay alive.
   scene.remove(c.g);const geos=new Set(),mats=new Set();c.g.traverse(m=>{if(m.geometry)geos.add(m.geometry);if(m.material)for(const v of(Array.isArray(m.material)?m.material:[m.material]))mats.add(v)});
   const band=ARTIST_LED.assets,sharedG=[bulgeGeo,supportEnvelopeGeo,band?.sleeve,band?.face],sharedM=[bodyMat,droolMat,supportEnvelopeMat,...Object.values(supportEnvelopeMat.userData),band?.sleeveMat,band?.faceMat];
+  sharedG.push(TEARG);sharedM.push(TEARM);
+  citizenBandTemplate?.traverse(part=>{sharedG.push(part.geometry);sharedM.push(part.material)});
+  c.tearM?.dispose();
   for(const g of geos)if(!sharedG.includes(g)&&!pplShared(g))g.dispose();for(const m of mats)if(!sharedM.includes(m)&&m!==PPL.eyeMat){if(m.map)m.map.dispose();m.dispose()}
   buildDesk(d,c.i);creators[pos]=creators.pop();
  }
@@ -1883,22 +1894,37 @@ function supportReaction(c,ft,prev){
 const CLOG={t:0};
 function countNearDesks(dt){ // 책상 앞 1m 안에서 기어 다니는 수 (0.2초마다)
  CLOG.t-=dt;if(CLOG.t>0)return;CLOG.t=.2;const act=[];for(const c of creators){c.near=0;if(c.g.visible)act.push(c)}
- PVC.n=0;for(const k of creatures){if(k.pv&&!k.dead&&!k.ko&&k.st!=='bag'&&k.st!=='tank'&&k.st!=='binned')PVC.n++;if(k.st!=='walk')continue;for(const c of act){const d=c.d;if(Math.abs(k.x-d.x-d.fx)<1&&Math.abs(k.z-d.z-d.fz)<1)c.near++}}}
-const TEARG=new THREE.SphereGeometry(1,8,6),TEARM=new THREE.MeshStandardMaterial({color:0x58b4ff,emissive:0x1f6fe0,emissiveIntensity:.35,roughness:.08,envMapIntensity:1.2,transparent:true,opacity:.93});
-function tearsUpdate(c,k,tm,landY){ // k: 우는 정도. 두 눈에서 줄줄이 뿜어져 포물선을 그리며 양옆으로 떨어진다 (landY: 떨어져 닿는 높이)
- const N=28,T=.62;
- if(!c.tearM){if(k<=.01)return;c.tearM=[];for(let i=0;i<N;i++){const m=new THREE.Mesh(TEARG,TEARM);m.visible=false;m.castShadow=false;c.g.add(m);c.tearM.push(m)}}
- const e=c.head.userData.eye;if(!e||k<=.01){for(const m of c.tearM)m.visible=false;return}
+ PVC.n=0;for(const k of creatures){if(k.pv&&!k.dead&&!k.ko)PVC.n++;if(k.st!=='walk')continue;for(const c of act){const d=c.d;if(Math.abs(k.x-d.x-d.fx)<1&&Math.abs(k.z-d.z-d.fz)<1)c.near++}}}
+const TEARG=new THREE.SphereGeometry(.0086,8,6),TEARM=new THREE.MeshStandardMaterial({color:0x58b4ff,emissive:0x1f6fe0,emissiveIntensity:.35,roughness:.08,envMapIntensity:1.2,transparent:true,opacity:.93});
+const tearLocal=new THREE.Matrix4(),tearDrop=new THREE.Matrix4(),tearEyes=[new THREE.Vector3(),new THREE.Vector3()];
+function tearsUpdate(c,k,tm,landY){
+ const eye=c.head.userData.eye,N=28,T=.62;
+ if(!eye||k<=.01){if(c.tearM)c.tearM.visible=false;return}
+ if(!c.tearM){
+  c.tearM=new THREE.InstancedMesh(TEARG,TEARM,N);c.tearM.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  c.tearM.frustumCulled=false;c.g.add(c.tearM)
+ }
  c.head.updateWorldMatrix(true,false);
- const kk=Math.min(1,k)*(1+.45*clamp(k-1,0,.7)/.7),fz=e.z<0?-1:1,r0=.0086*Math.sqrt(Math.min(1.7,k)); // 심사 자리(k 1.7)에서는 더 크게, 더 멀리 뿜는다
- for(let i=0;i<N;i++){const m=c.tearM[i],s=i&1?1:-1,j=i>>1,u=tm/T+j/(N/2),q=u%1,n=Math.floor(u),h1=frac(Math.sin(n*12.9898+i*78.233)*43758.5453),h2=frac(Math.sin(n*39.3467+i*11.135)*24634.6345),t=q*T;
-  _a.set(s*e.x*1.04,e.y-.012,e.z+.008);c.head.localToWorld(_a);c.g.worldToLocal(_a); // 눈 밑에서 나와
-  _a.x+=s*(.2+.22*h1)*kk*t;_a.z+=fz*(.04+.1*h2)*t;_a.y+=(.46+.3*h2)*kk*t-2.1*t*t; // 바깥·위로 솟았다가 떨어진다
-  const r=r0*(1-.35*q);m.position.copy(_a);m.scale.set(r,r*(1.25+1.3*q),r);m.visible=_a.y>landY&&q<.97}}
-const PVC={n:0};
+ tearLocal.copy(c.g.matrixWorld).invert().multiply(c.head.matrixWorld);
+ for(let side=0;side<2;side++)tearEyes[side].set((side?1:-1)*eye.x*1.04,eye.y-.012,eye.z+.008).applyMatrix4(tearLocal);
+ const strength=Math.min(1,k)*(1+.45*clamp(k-1,0,.7)/.7),forward=eye.z<0?-1:1,radius=Math.sqrt(Math.min(1.7,k));
+ let count=0;
+ for(let i=0;i<N;i++){
+  const side=i&1,eyePos=tearEyes[side],u=tm/T+(i>>1)/(N/2),q=u%1,n=Math.floor(u),t=q*T;
+  const h1=frac(Math.sin(n*12.9898+i*78.233)*43758.5453),h2=frac(Math.sin(n*39.3467+i*11.135)*24634.6345);
+  const y=eyePos.y+(.46+.3*h2)*strength*t-2.1*t*t;if(y<=landY||q>=.97)continue;
+  const r=radius*(1-.35*q);
+  tearDrop.makeScale(r,r*(1.25+1.3*q),r).setPosition(eyePos.x+(side?1:-1)*(.2+.22*h1)*strength*t,y,eyePos.z+forward*(.04+.1*h2)*t);
+  c.tearM.setMatrixAt(count++,tearDrop)
+ }
+ c.tearM.count=count;c.tearM.visible=count>0;c.tearM.instanceMatrix.needsUpdate=true
+}
+const PVC={n:0,budget:0};
 const NOREACT={kind:0,rt:0,mix:0},LEAN=.92,LGAZE=.1,_lp=new THREE.Vector3(),_lh=new THREE.Vector3(),_lx=new THREE.Vector3(1,0,0);
 function updateCreators(dt){
- countNearDesks(dt);const DM=demandMode(),dmFrac=DM?demandFrac():1,PVA=S.priv&&S.priv.zone===S.zone?S.priv.a:-1,pvCap=Math.round(.15*Math.min(600,(80+S.zone*22)*flowK())*roomK());
+ countNearDesks(dt);const DM=demandMode(),dmFrac=DM?demandFrac():1,pvBatch=Math.round(2.4*flowK()),pvCap=Math.round(.15*Math.min(600,(80+S.zone*22)*flowK())*roomK());
+ // 한꺼번에 자리가 비어도 한 프레임에는 한 묶음까지만 만든다.
+ PVC.budget=Math.min(pvBatch,PVC.budget+dt*pvBatch*6);
  for(const c of creators){const d=c.d,civic=!!d.citizen;let gs=null,on=true;
   if(d.seat!=null){
    gs=S.grants[d.seat];on=!S.team&&!!gs&&AP[gs.a].type===c.type;if(!on)gs=null;c.sl=damp(c.sl,on?1:0,5,dt);const q=ss(c.sl);c.g.visible=q>.02;
@@ -1907,7 +1933,7 @@ function updateCreators(dt){
   }else{c.g.visible=creatorActive(c);c.tag.visible=!civic;if(!civic)creatorTag(c,'예술가');}
   if(!c.g.visible)continue;
   droolStep(c,dt);
-  const pv=civic&&PVA>=0&&d.ap===PVA;if(civic)showCitizenArmband(c,pv);if(pv){if(started&&!paused)c.pvT+=dt;c.selfRest=0}else c.pvT=0; // 특별 창작지원금을 받은 시민: 받은 봉투 앞에서 한참 울고 나서, 울면서 쉬지 않고 쏟아낸다
+  const pv=civic&&S.specialIds.includes(d.ap);if(civic)showCitizenArmband(c,pv);if(pv){if(started&&!paused)c.pvT+=dt;c.selfRest=0}else c.pvT=0; // 특별 창작지원금을 받은 시민: 받은 봉투 앞에서 한참 울고 나서, 울면서 쉬지 않고 쏟아낸다
   const sobK=pv?1-ss((c.pvT-2.4)/.7):0,pvK=pv?ss((c.pvT-2.7)/.9):0;
   if(civic&&started&&!paused)c.selfRest=Math.max(0,c.selfRest-dt);
   c.restMix=damp(c.restMix,civic&&c.selfRest>0?1:0,4,dt);
@@ -1974,7 +2000,15 @@ function updateCreators(dt){
     if(time>supportSoundT&&Math.hypot(P.x-c.d.x,P.z-c.d.z)<4){supportSoundT=time+.13;AU.noise(c.type===2?'lowpass':'bandpass',c.type===2?420:1900,c.type===2?160:900,1,.035,.07);if(c.type===3)AU.tone('triangle',440+(c.i%4)*110,440,.045,.035)}}
    continue;
   }
-  if(pv){c.timer-=dt;if(pvK>0&&c.timer<=0){c.timer=rnd(1,1.7);if(PVC.n<pvCap){const n=Math.min(pvCap-PVC.n,Math.round(2.4*flowK()));creatorOutput(c,n,false,false,true);PVC.n+=n}}continue} // 바닥 상한과 따로, 쉬지 않고 조금씩 쏟아낸다 (일반 창작자 한 명이 6~8초에 한 번 쏟는 것을 1~2초마다)
+  if(pv){
+   c.timer-=dt;
+   if(pvK>0&&c.timer<=0){
+    const n=Math.min(pvCap-PVC.n,Math.floor(PVC.budget));
+    if(n>0){creatorOutput(c,n,false,false,true);PVC.n+=n;PVC.budget-=n;c.timer=rnd(1,1.7)}
+    else c.timer=rnd(.12,.35)
+   }
+   continue
+  }
   if(c.clog||waiting||c.selfRest>0)continue;
   if(gs){gs.left=Math.max(0,gs.left-dt);dirty=true;if(gs.left<=0){grantEnd(d.seat);continue}}else if(!civic&&!DM){S.funds[c.i]=Math.max(0,left-dt);dirty=true;if(S.funds[c.i]<=0)continue}
   c.timer-=dt;
@@ -6235,7 +6269,7 @@ function teamApplicant(c){return S.team?.find(id=>AP[id].desk===c.i)}
 function creatorActive(c){return c.d.citizen?c.d.civicIndex<artistCount():S.team?teamApplicant(c)!=null:c.d.seat==null?c.i<Math.min(NREG,2+S.zone*2):!!S.grants[c.d.seat]&&AP[S.grants[c.d.seat].a].type===c.type}
 function needsReassignment(){return !!S.team&&S.team.length<teamSize(S.zone)}
 function targetWorkshop(){return needsReassignment()&&!S.paid?S.zone:S.zone+1}
-function draftForZone(){const zone=targetWorkshop();if(!S.draft||S.draft.zone!==zone)S.draft={zone,ids:zone===S.zone?S.team.slice():[],rejected:[],priv:null,focus:interviewOrder()[0]};return S.draft}
+function draftForZone(){const zone=targetWorkshop();if(!S.draft||S.draft.zone!==zone)S.draft={zone,ids:zone===S.zone?S.team.slice():[],rejected:[],specialIds:zone===S.zone?S.specialIds.slice():[],focus:interviewOrder()[0]};return S.draft}
 function interviewOrder(){const offset=((S.zone-1)*2)%REVIEW_ORDER.length;return REVIEW_ORDER.slice(offset).concat(REVIEW_ORDER.slice(0,offset))}
 function applicantReview(id){
  const a=AP[id],r=a.choices?a.choices[Math.max(0,apS(id).k)]||a.choices[0]:a,activity=!a.frame&&(r.rec==='ok'||a.inc==='ok'),income=a.monthly<=INCOME_LIMIT,pass=ELIGIBLE.includes(id);
@@ -6267,7 +6301,7 @@ function layoutInterview(){if(!IV.open)return;const r=$('candidate-stage').getBo
 function openInterview(){
  if(!started||paused||(!S.paid&&!needsReassignment())||stompLocked()||TD.on||shovelLocked()||tool2Locked())return false;
  paused=true;releaseAll();lensClear();buildInterview();const d=draftForZone();IV.open=true;IV.sel=d.focus;IV.t=0;
- for(const c of IV.actors){c.verdict=d.ids.includes(c.applicant)?1:d.priv===c.applicant?2:d.rejected.includes(c.applicant)?-1:0;c.reactionT=9;poseInterview(c,0,true)}
+ for(const c of IV.actors){c.verdict=d.ids.includes(c.applicant)?1:d.specialIds.includes(c.applicant)?2:d.rejected.includes(c.applicant)?-1:0;c.reactionT=9;poseInterview(c,0,true)}
  $('hud').style.display='none';$('hud').inert=true;$('interview').hidden=false;renderInterview();layoutInterview();save();AU.wake();$('candidate-next').focus();return true;
 }
 function closeInterview(){if(!IV.open)return;IV.open=false;$('interview').hidden=true;$('hud').style.display='block';$('hud').inert=false;paused=false;last=0;renderer.setViewport(0,0,W,H);save();openSupportMenu()}
@@ -6284,16 +6318,16 @@ function chooseCandidate(id){
  return true;
 }
 let privArm=-1;
-function privState(id){ // 시민 특별 선정: 요건을 못 채운 신청인만 · 한 번 심사에 한 명 · 특별 선정한 다음 기수에는 쉰다
+function privState(id){ // 요건 미충족 신청인 한 명당 시민석 한 자리와 특별 창작지원금 한 건
  if(!AP[id]||ELIGIBLE.includes(id))return null;const d=draftForZone();
- return d.priv===id?'done':d.priv!=null?'used':d.zone-S.privLast<2?'cool':S.money<PRIV?'poor':'ok'}
+ return d.specialIds.includes(id)?'done':d.specialIds.length>=teamSize(d.zone)?'full':S.money<PRIV?'poor':'ok'}
 function privateCandidate(id){
  if(!IV.open||privState(id)!=='ok')return false;
  if(privArm!==id){privArm=id;AU.wake();AU.tick();renderInterview();return false} // 큰돈이라 한 번 더 눌러야 나간다
- privArm=-1;const d=draftForZone();S.money-=PRIV;d.priv=id;d.rejected=d.rejected.filter(v=>v!==id);AU.buy();reactToVerdict(id,2);updateHUD(true);return true}
+ privArm=-1;const d=draftForZone();S.money-=PRIV;d.specialIds.push(id);d.rejected=d.rejected.filter(v=>v!==id);AU.buy();reactToVerdict(id,2);updateHUD(true);return true}
 function rejectCandidate(id){
  if(!IV.open||!AP[id]||ELIGIBLE.includes(id))return false;const d=draftForZone();
- if(d.rejected.includes(id))return false;
+ if(d.rejected.includes(id)||d.specialIds.includes(id))return false;
  d.rejected.push(id);reactToVerdict(id,-1);return true;
 }
 function incomePanel(a){
@@ -6311,7 +6345,7 @@ function activityRecord(id){
  return a.recT;
 }
 function renderInterview(){
- const d=draftForZone(),a=AP[IV.sel],r=applicantReview(IV.sel),chosen=d.ids.includes(IV.sel),rejected=d.rejected.includes(IV.sel),priv=d.priv===IV.sel,need=teamSize(d.zone),order=interviewOrder();
+ const d=draftForZone(),a=AP[IV.sel],r=applicantReview(IV.sel),chosen=d.ids.includes(IV.sel),rejected=d.rejected.includes(IV.sel),priv=d.specialIds.includes(IV.sel),need=teamSize(d.zone),order=interviewOrder();
  $('interview-title').textContent=d.zone+'기 · '+(d.zone===S.zone?'추가 선정':'지원 대상 심사');$('candidate-position').textContent=(order.indexOf(IV.sel)+1)+' / '+order.length;
  $('candidate-stage').setAttribute('aria-label',applicantLabel(IV.sel)+' · '+(chosen?'선정':priv?'시민 특별 선정':rejected?'탈락':r.pass?'적격':'부적격')+' 신청인');
  for(const c of IV.actors)c.g.visible=c.applicant===IV.sel;
@@ -6328,10 +6362,10 @@ function renderInterview(){
  {const b=$('candidate-private'),st=privState(IV.sel),arm=st==='ok'&&privArm===IV.sel;b.hidden=!st;$('candidate-approve').parentNode.classList.toggle('two',!!st); // 요건을 못 채운 신청인에게는 재단 예산으로 특별 창작지원금을 지급한다
   b.disabled=st!=='ok';b.classList.toggle('armed',arm);b.classList.toggle('done',st==='done');
   const title=arm?'특별 창작지원금 지급':st==='done'?'✓ 시민 특별 선정':'시민 특별 선정';
-  const detail=arm?won(PRIV)+' · 한 번 더 눌러 확정':st==='done'?won(PRIV)+' 지급 완료':st==='poor'?'예산 '+won(PRIV-S.money)+' 부족':st==='cool'?'한 기수 걸러 한 번':st==='used'?'이번 기수 선정 완료':won(PRIV);
+  const detail=arm?won(PRIV)+' · 한 번 더 눌러 확정':st==='done'?won(PRIV)+' 지급 완료':st==='poor'?'예산 '+won(PRIV-S.money)+' 부족':st==='full'?'시민석 모두 배정됨':won(PRIV);
   b.innerHTML=title+'<small>'+detail+'</small>'}
- $('interview-chosen').innerHTML='<small>선정 <b>'+d.ids.length+' / '+need+'명</b>'+(d.priv!=null?' · 시민 특별 선정 <b>'+String(d.priv+1).padStart(3,'0')+'</b>':'')+'</small><div class="int-selected-list">'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+applicantLabel(id)+' 선정 취소">'+String(id+1).padStart(3,'0')+' ×</button>').join('')+(d.ids.length?'':'<span class="empty">선정할 신청인을 골라 주세요</span>')+'</div>';
- $('interview-chosen').querySelectorAll('button').forEach(b=>b.onclick=()=>chooseCandidate(+b.dataset.id));
+ $('interview-chosen').innerHTML='<small>선정 <b>'+d.ids.length+' / '+need+'명</b>'+(d.specialIds.length?' · 시민 특별 선정 <b>'+d.specialIds.length+' / '+need+'명</b>':'')+'</small><div class="int-selected-list">'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+applicantLabel(id)+' 선정 취소">'+String(id+1).padStart(3,'0')+' ×</button>').join('')+d.specialIds.map(id=>'<button class="special" data-special="'+id+'" aria-label="'+applicantLabel(id)+' 시민 특별 선정 서류 보기">'+String(id+1).padStart(3,'0')+'</button>').join('')+(d.ids.length||d.specialIds.length?'':'<span class="empty">선정할 신청인을 골라 주세요</span>')+'</div>';
+ $('interview-chosen').querySelectorAll('button').forEach(b=>b.onclick=()=>b.hasAttribute('data-special')?showCandidate(+b.dataset.special):chooseCandidate(+b.dataset.id));
  $('interview-enter').hidden=d.ids.length!==need;$('interview-enter').disabled=d.ids.length!==need;$('interview-enter').textContent=need+'명 선정 완료 · '+(d.zone===S.zone?'작업 계속하기':'작업실로')+' →';
  layoutInterview();
 }
@@ -6339,8 +6373,7 @@ function enterNextWorkshop(){
  if(!IV.open||(!S.paid&&!needsReassignment())||!S.draft||S.draft.zone!==targetWorkshop())return false;
  const d=S.draft;if(d.ids.length!==teamSize(d.zone)||new Set(d.ids).size!==d.ids.length||!d.ids.every(id=>ELIGIBLE.includes(id)))return false;
  const current=d.zone===S.zone,old=S.team||[];S.team=d.ids.slice();S.civic=[...new Set([...d.rejected,...(current?S.civic:[])])].filter(id=>!S.team.includes(id));
- if(d.priv!=null){S.priv={a:d.priv,zone:d.zone};S.privLast=d.zone}else if(!current)S.priv=null;
- if(S.priv)S.civic=[S.priv.a,...S.civic.filter(v=>v!==S.priv.a)]; // 특별 창작지원금을 받은 시민은 맨 앞 시민 책상에 앉는다
+ S.specialIds=d.specialIds.slice();
  S.draft=null;syncReviewCitizens();
  if(current){for(const id of S.team)if(!old.includes(id))S.funds[AP[id].desk]=ACTIVITY_T;resetSupport()}
  else{S.zone=d.zone;S.prog=0;S.paid=false;S.grants=[null,null,null];S.funds.fill(ACTIVITY_T);S.dm={n:0,on:false}}
@@ -6423,7 +6456,7 @@ function cleanTools(){ // 손·발·장비에 걸려 있던 것을 모두 내려
  handReset();for(const F of FT){F.ph='idle';F.pins.length=0;F.stuck.length=0;F.fresh.length=0;F.seeds.length=0}TD.on=false;TD.k=0;SH.carry.length=0;SH.ph='idle';SH.kick=0;SH.mashed.length=0;SH.wet=0;SH.rep=0;SH.tossN=0;SH.load=0;SH.heap.length=0;SH.fall.length=0;SH.binned.length=0;SH.pins.length=0;SH.stuck.length=0;SH.seeds.length=0;SH.fresh.length=0;SH.crushT=0;SH.scraping=false;SH.gu.uGore.value=0;for(const m of[SH.heapS,SH.heapK,SH.heapE,SH.fallS,SH.fallE])solidEnd(m,0);SH.binN=SH.binLv=SH.binDrain=0;SH.binPieces.length=0;solidEnd(SH.binSolid,0);solidEnd(SH.binEyes,0);binStainClear();vacClear();AU.loop('grind',false);tools2Reset();clearThreads();trimClean()}
 function resetRoom(){
  resetSupport();cleanTools();creatures.length=0;drops.length=0;chunks.length=0;inkClear();for(const b of[bootR,bootL,TG.F[0].boot,TG.F[1].boot]){b.userData.res.length=0;b.userData.gu.uGore.value=0}
- P.x=0;P.z=.8;creators.forEach(c=>{c.timer=rnd(3,7);c.selfRest=c.restMix=0});spawnInitial();
+ P.x=0;P.z=.8;creators.forEach(c=>{c.timer=rnd(3,7);c.selfRest=c.restMix=c.pvT=0});spawnInitial();
 }
 function nextZone(){return openInterview()}
 
@@ -6733,7 +6766,7 @@ function openShop(){if(!menuAvailable())return false;$('buybub').hidden=true;$('
 function closeShop(){if($('shop').hidden)return;$('shop').hidden=true;$('hud').inert=false;paused=false;last=0;AU.wake();$('gl').focus()}
 function renderSupportMenu(){
  const dm=demandMode(),idle=dm&&!S.dm.on,people=supportRecipients(),n=people.length,cost=idle?0:n*supportUnit(),waiting=people.filter(c=>activityLeft(c)<=0).length,missing=Math.max(0,cost-S.money),credit=missing>0&&supportCredit(),running=!!S.support;
- $('support-title').textContent=S.zone+'기 창작지원';$('supportmoney').textContent=won(S.money);$('supportpeople').textContent='예술가 '+n+'명 · 시민 '+creators.filter(c=>c.d.citizen&&creatorActive(c)).length+'명'+(S.priv&&S.priv.zone===S.zone?' (특별 선정 1명)':'');$('supportwaiting').textContent=waiting?(dm?'창작 중단 ':'활동비 소진 ')+waiting+'명':'창작 활동 중';
+ $('support-title').textContent=S.zone+'기 창작지원';$('supportmoney').textContent=won(S.money);$('supportpeople').textContent='예술가 '+n+'명 · 시민 '+creators.filter(c=>c.d.citizen&&creatorActive(c)).length+'명'+(S.specialIds.length?' (특별 선정 '+S.specialIds.length+'명)':'');$('supportwaiting').textContent=waiting?(dm?'창작 중단 ':'활동비 소진 ')+waiting+'명':'창작 활동 중';
  $('supportamount').previousElementSibling.textContent=dm?(idle?'창작지원금':'창작지원금 미지급'):'지원금 지급';
  $('supportamount').textContent=idle?'지급 완료':won(cost);$('supportdetail').textContent=idle?'예술가들이 창작 활동 중입니다.':dm?'예술가 '+n+'명 × '+won(DEMAND_UNIT)+' · 돈을 줄 때까지 창작을 하지 않습니다. 그동안은 정산 목표가 오르지 않습니다.':'예술가 '+n+'명 × '+won(SUPPORT_UNIT)+' · 예술가에게 지급합니다.';
  $('supportnotice').hidden=!running&&!missing&&!S.advance;
@@ -6801,7 +6834,7 @@ function bind(){
  $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('buybub').onclick=()=>{AU.wake();openShop()};$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('candidate-reject').onclick=()=>rejectCandidate(IV.sel);$('candidate-private').onclick=()=>privateCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
  $('supportmenu').addEventListener('pointerdown',e=>{if(e.target===$('supportmenu'))closeSupportMenu()});
- $('reset').onclick=()=>{if(!confirm('예산과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;exAbort();const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:m,wp:1,wf:1,ap:{},cu:2,dm:{n:0,on:false},priv:null,privLast:-9,grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,exDone:0};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
+ $('reset').onclick=()=>{if(!confirm('예산과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;exAbort();const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:m,wp:1,wf:1,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],exDone:0};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
  cv.addEventListener('webglcontextlost',loseGraphics);
  cv.addEventListener('webglcontextrestored',restoredGraphics);
 }
