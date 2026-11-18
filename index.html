@@ -76,7 +76,8 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 #hint span{background:rgba(255,255,255,.9);padding:7px 13px;border-radius:12px;box-shadow:0 2px 8px rgba(22,29,51,.1);display:inline-block}
 #stick{position:absolute;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;border:2px solid rgba(22,29,51,.28);background:rgba(255,255,255,.28);display:none}
 #stick i{position:absolute;left:50%;top:50%;width:48px;height:48px;margin:-24px 0 0 -24px;border-radius:50%;background:rgba(22,29,51,.62);box-shadow:0 2px 8px rgba(0,0,0,.2)}
-#act2{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 96px);width:80px;height:80px;border-radius:50%;background:var(--yellow);color:var(--ink);box-shadow:0 5px 0 #c9a100,0 9px 18px rgba(22,29,51,.24);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;touch-action:none;line-height:1.15;transition:opacity .15s}
+#hud{--act2-bottom:calc(max(18px,env(safe-area-inset-bottom)) + 96px)}
+#act2{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:var(--act2-bottom);width:80px;height:80px;border-radius:50%;background:var(--yellow);color:var(--ink);box-shadow:0 5px 0 #c9a100,0 9px 18px rgba(22,29,51,.24);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;touch-action:none;line-height:1.15;transition:opacity .15s}
 #act2[hidden]{display:none}
 #act2 b{font-size:17px;font-weight:900;letter-spacing:-.05em}
 #act2 small{font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;color:#5c4a00}
@@ -86,9 +87,8 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 #act2.refill{background:#ab3028;color:#fff;box-shadow:0 0 0 3px #fff,0 5px 0 #79251f,0 9px 18px rgba(22,29,51,.28)}
 #act2.refill small{color:#fff}
 #act2.off{opacity:.42}
-#act2.aside{right:calc(max(10px,env(safe-area-inset-right)) + 70px)}
 @media(pointer:fine){#act2 i{display:flex}}
-@media(max-height:480px){#act2{width:68px;height:68px;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 74px)}#act2 b{font-size:15px}}
+@media(max-height:480px){#hud{--act2-bottom:calc(max(18px,env(safe-area-inset-bottom)) + 74px)}#act2{width:68px;height:68px}#act2 b{font-size:15px}}
 #pops{position:absolute;inset:0;overflow:hidden}
 .pop{position:absolute;font-weight:900;font-size:17px;color:#fff;letter-spacing:-.02em;text-shadow:0 0 0 #161d33,1.5px 1.5px 0 #161d33,-1.5px 1.5px 0 #161d33,1.5px -1.5px 0 #161d33,-1.5px -1.5px 0 #161d33,0 3px 0 #161d33;transform:translate(-50%,-50%);opacity:0;will-change:transform,opacity;white-space:nowrap}
 .ov{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(22,29,51,.34)}
@@ -260,7 +260,10 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 #exend.armed{background:#ffe6e1;color:#c4321f;box-shadow:0 2px 0 #f2b8ad}
 #exbar i{grid-column:1/-1;display:block;height:5px;border-radius:5px;background:#e3e8f3;overflow:hidden}
 #exbar i b{display:block;height:100%;width:0;background:var(--blue);border-radius:5px;transition:width .25s linear}
-#extools{position:absolute;right:max(10px,env(safe-area-inset-right));top:calc(max(12px,env(safe-area-inset-top)) + 130px);display:none;flex-direction:column;gap:6px}
+#excontrols{display:contents}
+#hud.ex #excontrols{position:absolute;top:0;bottom:0;right:max(10px,env(safe-area-inset-right));padding-top:calc(max(12px,env(safe-area-inset-top)) + 130px);display:flex;flex-direction:column;align-items:flex-end}
+#hud.ex #act2{right:calc(100% + 14px)}
+#extools{display:none;flex:none;flex-direction:column;gap:6px}
 #hud.ex #extools{display:flex}
 #hud.ex #extools.two{display:grid;grid-template-columns:repeat(2,var(--eb,56px));gap:6px}
 #exarrows{position:absolute;inset:0;display:none;pointer-events:none}
@@ -279,7 +282,12 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 .exb.sel img{filter:drop-shadow(0 0 1.5px #fff)}
 #hud .exb:disabled{opacity:.42}
 .exb:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #d3d9e6}
-@media(max-height:560px) and (orientation:landscape){#extools{flex-direction:row;top:calc(max(12px,env(safe-area-inset-top)) + 54px);right:max(12px,env(safe-area-inset-right))}#exbar{width:min(300px,calc(100% - 36px - var(--ebw,366px)))}#extitle{top:56%}}
+@media(max-height:560px) and (orientation:landscape){
+ #hud.ex #excontrols{padding-top:calc(max(12px,env(safe-area-inset-top)) + 54px);right:max(12px,env(safe-area-inset-right))}
+ #extools{flex-direction:row;margin-bottom:14px}
+ #hud.ex #act2{position:static;flex:none;margin-top:auto}
+ #hud.ex #excontrols::after{content:"";flex:0 1 var(--act2-bottom);min-height:max(8px,env(safe-area-inset-bottom))}
+ #exbar{width:min(300px,calc(100% - 36px - var(--ebw,366px)))}#extitle{top:56%}}
 #extitle{position:absolute;left:50%;top:31%;transform:translate(-50%,-50%);width:max-content;max-width:88vw;text-align:center;background:rgba(255,255,255,.94);border-radius:18px;padding:15px 24px 14px;box-shadow:0 10px 30px rgba(22,29,51,.18);opacity:0;pointer-events:none}
 #extitle small{display:block;font-size:12px;font-weight:700;color:var(--sub);letter-spacing:-.01em}
 #extitle b{display:block;font-size:30px;font-weight:900;letter-spacing:-.05em;margin:3px 0 5px}
@@ -339,10 +347,12 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
  <button id="buybub" type="button" hidden><img alt=""><span><b></b><small></small></span></button>
  <div id="hint"><span id="hinttxt"></span></div>
  <div id="stick"><i></i></div>
- <button id="act2" hidden><b></b><small></small><i>Q</i></button>
  <div id="exbar"><div class="exl"><small>결과보고전 철수</small><div><b id="excount">0</b><small id="exof"> / 1,000</small></div></div><button id="exend" type="button">철수 마치기</button><i><b id="exfill"></b></i></div>
  <div id="exarrows" aria-hidden="true"></div>
- <div id="extools" role="toolbar" aria-label="장비 바꾸기"></div>
+ <div id="excontrols">
+  <div id="extools" role="toolbar" aria-label="장비 바꾸기"></div>
+  <button id="act2" hidden><b></b><small></small><i>Q</i></button>
+ </div>
  <div id="extitle" aria-hidden="true"><small id="ext1"></small><b id="ext2"></b><span id="ext3"></span></div>
 </div>
 <div class="ov" id="intro">
@@ -2383,6 +2393,7 @@ function drawCreatures(){
  const cp=camera.position,n=Math.min(creatures.length,PXS.length),K=renderer.domElement.height*LODV.k*.5/Math.tan(camera.fov*Math.PI/360);let shn=0;PXH.fill(0);
  // 1) 화면에 보이는 몸길이(실제 화면 픽셀)
  for(let i=0;i<n;i++){const c=creatures[i];
+  if(c.st==='tank'&&!VC.g.visible){PXS[i]=-1;continue}
   if(!inHand(c)){_fs.center.set(c.x,c.y+c.r*.5,c.z);_fs.radius=c.r*3.2;if(!_fr.intersectsSphere(_fs)){PXS[i]=-1;continue}PXS[i]=c.r*c.sc*3*K/Math.max(.05,Math.hypot(c.x-cp.x,c.y-cp.y,c.z-cp.z))}
   else if(c.st==='tank'&&!c.vic)PXS[i]=c.hid?5:c.r*c.sc*3*K/Math.max(.05,Math.hypot(c.x-cp.x,c.y-cp.y,c.z-cp.z))*(c.tp.z>.02||!(c.cov>.5)?1:.6); // 흡입기 통 안: 수백 마리가 들어가므로 보이는 크기대로 고르고, 더미 속에 묻힌 것은 가장 가벼운 모형으로
   else PXS[i]=1e9;
@@ -5040,7 +5051,9 @@ function vacUpdate(dt,act,pedal,go2){
  const grinding=v.gr>0,run=on&&act&&started&&!grinding,cn=v.can;v.g.visible=on;
  if(run!==v.on){v.on=run;AU.loop('vac',run);if(!run)for(const c of creatures)if(c.st==='sucked'){c.st='flee';c.t=0;c.fx=v.mouth.x;c.fz=v.mouth.z;c.fleeT=1;c.str=1}}
  for(const s of v.streaks)s.m.visible=run;
- if(!on){if(v.tank.length||v.eat.length){for(const c of v.tank)killCreature(c,'none');for(const e of v.eat)killCreature(e.c,'none')}if(v.gr>0)AU.loop('grind',false);vacClear();return}
+ if(!on){
+  if(EX.on&&v.tank.length)return; // 철수 중에는 흡입기를 다시 들면 담아 둔 것부터 갈 수 있다
+  if(v.tank.length||v.eat.length){for(const c of v.tank)killCreature(c,'none');for(const e of v.eat)killCreature(e.c,'none')}if(v.gr>0)AU.loop('grind',false);vacClear();return}
  const sh=run?.004:0;
  v.g.position.set(P.x+Math.sin(time*70)*sh,(run?-.02:0)+Math.sin(time*53)*sh,P.z);
  // 통: 호스와 겹치지 않게 왼쪽 앞에 달고, 갈 때는 눈앞으로 들어 올린다.
@@ -6498,21 +6511,25 @@ function exKillPre(c){const e=EX;e.kills++;e.pay+=EX_PAY;e.kw++;AU.hush=e.kw>4;F
 let exEndArm=0;
 function exEndDisarm(){exEndArm=0;const b=$('exend');b.classList.remove('armed');b.textContent='철수 마치기'}
 function exEndPress(){if(!EX.on||EX.phase!=='run')return;AU.wake();if(exEndArm&&time<=exEndArm){exEndDisarm();exFinish();return}exEndArm=time+2.6;const b=$('exend');b.classList.add('armed');b.textContent='한 번 더 누르면 마침'} // 잘못 눌러 끝내지 않게 두 번 누른다
+const exInVacuum=c=>c.st==='sucked'||c.st==='tank'; // 호스에서 끌려오는 중부터 롤러를 다 통과할 때까지
 function updateHall(dt){
  const e=EX;
  if(e.phase==='run')e.t+=dt;
  else if(e.phase==='done'){e.dt2+=dt;if(e.dt2>1.2&&!e.shown)exShowResult()}
  e.kwT-=dt;if(e.kwT<=0){e.kwT=.1;if(e.mass){AU.mass(e.mass);e.mass=0}e.kw=0}
  e.sndT-=dt;if(e.sndT<=0){e.sndT=.1; // 0.1초마다 한 번 센다
-  let free=0,held=0,near=0,move=0;const ex=P.x,ez=P.z-.8;
-  for(const c of creatures){if(c.dead||c.ko)continue;if(busy(c)||c.st==='sucked')held++;else free++;if(c.st!=='still'){if(c.st==='startle'||c.st==='crawl'||c.st==='maim'||c.st==='mash')move++;if(Math.abs(c.x-ex)<2.2&&Math.abs(c.z-ez)<2.2)near++}}
-  e.free=free;e.held=held;if(e.phase==='run'&&e.t>.5&&!free)exFinish();
+  let free=0,held=0,inVacuum=0,near=0,move=0;const ex=P.x,ez=P.z-.8;
+  for(const c of creatures){if(c.dead||c.ko||c.dum)continue;
+   if(exInVacuum(c))inVacuum++;else if(busy(c))held++;else free++;
+   if(c.st!=='still'){if(c.st==='startle'||c.st==='crawl'||c.st==='maim'||c.st==='mash')move++;if(Math.abs(c.x-ex)<2.2&&Math.abs(c.z-ez)<2.2)near++}}
+  e.free=free;e.held=held+inVacuum;
+  if(e.phase==='run'&&e.t>.5&&!free&&!inVacuum&&VC.gr===0)exFinish();
   const nr=Math.min(1,near/140);AU.crowdLevel((.04+.5*nr)*(e.phase==='run'?.22:.1),Math.min(1,move/50)*.4*(e.phase==='run'?1:.4))}
  if(exEndArm&&time>exEndArm)exEndDisarm();
  exHUD(false);exMarks()}
 function exFinish(){const e=EX;if(e.phase!=='run')return;e.phase='done';e.dt2=0;e.used=e.t;exEndDisarm();releaseAll();AU.exEnd();exHUD(true)}
 function exShowResult(){const e=EX;e.shown=true;
- let kept=0;for(const c of creatures)if(!c.dead&&!c.ko&&!c.dum&&(busy(c)||c.st==='sucked')){kept++;c.kept=1;credit(c)} // 장비에 담아 둔 것도 철수한 것으로 센다
+ let kept=0;for(const c of creatures)if(!c.dead&&!c.ko&&!c.dum&&busy(c)&&!exInVacuum(c)){kept++;c.kept=1;credit(c)} // 다른 장비의 수거분은 정산하고, 흡입기 안의 미분쇄분은 제외한다
  e.kept=kept;if(kept){receiveWage(kept*EX_PAY);e.pay+=kept*EX_PAY}
  const done=Math.min(e.N,e.kills+kept);e.bonus=done>=e.N?100000+S.zone*50000:0;if(e.bonus)receiveWage(e.bonus);
  S.exDone=S.zone;dirty=true;
@@ -6569,7 +6586,7 @@ function exToolsFit(){const el=$('extools'),n=el.children.length;if(!EX.on||!n)r
  const g=6,row=getComputedStyle(el).flexDirection==='row';let s=56;
  if(row){s=Math.max(40,Math.min(56,Math.floor((W-36-250-(n-1)*g)/n)));$('hud').style.setProperty('--ebw',(n*s+(n-1)*g)+'px')}
  else{const avail=H-el.getBoundingClientRect().top-112;s=Math.floor((avail-(n-1)*g)/n);if(s<46){el.classList.add('two');const rows=Math.ceil(n/2);s=Math.floor((avail-(rows-1)*g)/rows)}s=Math.max(40,Math.min(56,s))}
- el.style.setProperty('--eb',s+'px');A2P.w=0}
+ el.style.setProperty('--eb',s+'px')}
 // 남은 게 얼마 안 되면(30 이하) 산 놈 발밑에 노란 고리를 깔고, 화면 밖(등 뒤 포함)에 있는 놈은 화면 가장자리에 방향과 마릿수를 띄운다
 const EXM={ring:null,arrows:[],bins:10},_xm=new THREE.Matrix4(),_xv=new THREE.Vector3();
 function exMarksBuild(){
@@ -6621,9 +6638,6 @@ function updateHUD(force){
  $('snd').style.opacity=S.muted?.4:1;
 }
 let a2Key='';
-function act2Place(){ // 결과보고전에서 장비 버튼 줄(세로)과 겹치면 줄 왼쪽으로 옮긴다
- const a=$('act2');if(a.hidden)return;a.classList.remove('aside');a.style.right='';if(!EX.on)return;
- const t=$('extools').getBoundingClientRect(),r=a.getBoundingClientRect();if(t.width&&r.left<t.right+4&&r.right>t.left-4&&r.top<t.bottom+8&&r.bottom>t.top-8)a.style.right=Math.round(W-t.left+8)+'px'}
 function updateAct2(){ // 보조 버튼: 안전화는 양발 구르기, 집게는 봉투 밟기, 흡입기는 갈기, 예초기는 줄 풀기. 다른 장비에서는 감춘다
  const t=S.tool,el=$('act2'),show=t==='boot'||t==='tong'||t==='vac'||t==='trim'||t==='shovel';let lab='',sub='',ok=true,say='';
  const refill=t==='trim'&&TR.len<=.5;
@@ -6636,10 +6650,8 @@ function updateAct2(){ // 보조 버튼: 안전화는 양발 구르기, 집게�
  else if(t==='shovel'){const n=SH.carry.length+SH.heap.length;lab='퍼담기';sub=n?'날 위 '+n:'';ok=!['heave','dump','bang'].includes(SH.ph);say='퍼담기'+(n?' · '+n:'')}
  else if(t==='trim'){lab='줄 풀기';sub=refill?'보충 필요':'';ok=!TR.bp;say='줄 풀기'+(sub?' · '+sub:'')}
  const on=ok&&acting2()&&!paused,key=show+'|'+lab+'|'+sub+'|'+ok+'|'+on;if(key===a2Key)return;a2Key=key;
- const vis=el.hidden;el.hidden=!show;el.children[0].textContent=lab;el.children[1].textContent=sub;el.classList.toggle('off',!ok);el.classList.toggle('on',on);el.classList.toggle('refill',refill);el.setAttribute('aria-label',say);
- if(vis!==el.hidden||A2P.ex!==EX.on||A2P.w!==W||A2P.h!==H){A2P.ex=EX.on;A2P.w=W;A2P.h=H;act2Place()}
+ el.hidden=!show;el.children[0].textContent=lab;el.children[1].textContent=sub;el.classList.toggle('off',!ok);el.classList.toggle('on',on);el.classList.toggle('refill',refill);el.setAttribute('aria-label',say);
 }
-const A2P={ex:null,w:0,h:0};
 function setTool(id){if(!(S.owned.includes(id)||EX.on&&EX_TOOLS.includes(id))||S.tool===id||EX.on&&(!EX_TOOLS.includes(id)||EX.phase!=='run'))return;if(stompLocked()||TD.on||shovelLocked()||tool2Locked())return;S.tool=id;AU.tick();dirty=true;updateHUD(true);setHint()}
 const fine=window.matchMedia&&matchMedia('(pointer:fine)').matches;
 let hintN=0;
