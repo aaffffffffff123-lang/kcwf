@@ -139,6 +139,18 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 .gear.sel .st{background:var(--blue)}
 .gear small{font-size:11px;color:var(--sub);line-height:1.5;display:block;margin:7px 0 0;word-break:keep-all}
 .modal-close{box-shadow:none;background:#f3f5fa;flex:none}
+.support-pages{display:flex;background:#edf0f6;border-radius:11px;padding:3px;margin:8px 0 2px}
+.support-pages button{flex:1;min-height:40px;font:inherit;font-size:14px;font-weight:750;color:var(--sub);border-radius:8px}
+.support-pages button[aria-pressed="true"]{background:#fff;color:var(--blue);box-shadow:0 1px 4px #17264b22}
+#support-perks select{font:inherit;font-size:14px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;min-height:40px;padding:5px 8px;max-width:100%}
+#perk-seat{width:100%;margin:9px 0 0}
+#perk-photo{display:block;width:100%;max-height:155px;object-fit:contain;background:#e9e6e0;border-radius:7px;margin:7px 0 9px}
+.perk-goods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.perk-goods button{border-radius:9px;background:#eef2fc;color:var(--blue);text-align:left;padding:9px 10px;min-height:52px}
+.perk-goods b,.perk-goods span{display:block;overflow-wrap:anywhere}.perk-goods b{font-size:14px}.perk-goods span{font-size:12px;margin-top:4px}
+.perk-goods button:disabled{background:#f1f2f4;color:#687385;opacity:1}
+.honor-setting{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 5px;font-size:13px}
+#support-perks #honor-comparison{margin:6px 0 9px}.perk-feedback{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .support-overview{display:flex;justify-content:space-between;gap:10px;padding:8px 2px 5px;font-size:12px}.support-overview span{color:var(--sub);text-align:right}
 .support-card{border:1px solid var(--line);border-radius:15px;padding:15px;margin-top:12px}
 .support-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.support-heading h3{font-size:15px;letter-spacing:-.03em;margin:0}.support-heading b{font-size:18px;font-variant-numeric:tabular-nums}.support-heading span{color:var(--sub);font-size:12px;white-space:nowrap}
@@ -406,6 +418,11 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
  <section class="panel" role="dialog" aria-modal="true" aria-labelledby="support-title">
   <div class="ph"><div><small>한국창작인복지재단</small><h2 id="support-title">창작지원</h2></div><button class="ib modal-close" id="supportx" aria-label="창작지원 닫기">✕</button></div>
   <div class="bal">재단 예산 <b id="supportmoney"></b></div>
+  <div class="support-pages" aria-label="창작지원 업무">
+   <button id="support-main-btn" aria-controls="support-main" aria-pressed="true">지원·심사</button>
+   <button id="support-perks-btn" aria-controls="support-perks" aria-pressed="false">비품·품위유지비</button>
+  </div>
+  <div id="support-main">
   <div class="support-overview"><b id="supportpeople"></b><span id="supportwaiting"></span></div>
   <section class="support-card">
    <div class="support-heading"><h3>지원금 지급</h3><b id="supportamount"></b></div>
@@ -419,6 +436,25 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
    <p id="supportreviewdetail"></p>
    <button class="review-button" id="supportreview">심사하기</button>
   </section>
+  </div>
+  <div id="support-perks" hidden>
+   <section class="support-card">
+    <div class="support-heading"><h3><label for="perk-seat">예술가 자리</label></h3></div>
+    <select id="perk-seat"></select>
+    <canvas id="perk-photo" width="432" height="206" aria-label="선택한 예술가의 현재 책상과 의자"></canvas>
+    <div class="perk-goods">
+     <button id="perk-salon"><b>로코코 책상·의자</b><span></span></button>
+     <button id="perk-mac"><b>맥북 프로</b><span></span></button>
+    </div>
+   </section>
+   <section class="support-card">
+    <div class="support-heading"><h3>품위유지비</h3><span id="honor-period"></span></div>
+    <div class="honor-setting"><label for="honor-rate">예술가 1인당</label><select id="honor-rate"><option value="0">미편성 · 0원</option><option value="500000">50만 원</option><option value="1000000">100만 원</option><option value="2000000">200만 원</option></select></div>
+    <p id="honor-comparison"></p>
+    <button class="review-button" id="honor-pay"></button>
+   </section>
+   <span id="perk-feedback" role="status" class="perk-feedback"></span>
+  </div>
  </section>
 </div>
 <section class="ov" id="interview" role="dialog" aria-modal="true" aria-labelledby="interview-title" hidden>
@@ -547,8 +583,25 @@ function savedSpecialIds(value,zone){
  const ids=Array.isArray(value)?value:[value];
  return [...new Set(ids.filter(id=>Number.isInteger(id)&&AP[id]&&!ELIGIBLE.includes(id)))].slice(0,teamSize(zone))
 }
+const HONOR_RATES=[0,500000,1000000,2000000];
+function freshArtistPerks(zone,previous=0){
+ return {zone,previous,unit:null,seats:[]};
+}
+function restoreArtistPerks(raw,zone){
+ const record=freshArtistPerks(zone);
+ if(!raw)return record;
+ if(raw.zone===zone-1&&HONOR_RATES.includes(raw.unit))record.previous=raw.unit;
+ if(raw.zone!==zone)return record;
+ if(HONOR_RATES.includes(raw.previous))record.previous=raw.previous;
+ if(HONOR_RATES.includes(raw.unit)){
+  record.unit=raw.unit;
+  if(Array.isArray(raw.seats))record.seats=[...new Set(raw.seats.filter(i=>Number.isInteger(i)&&i>=0&&i<30))];
+ }
+ return record;
+}
+function artistSeatGear(i){return S.seatGear[i]||0}
 function loadSave(){
- const d={seen:[],money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0,exFeeZone:0};
+ const d={seen:[],money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0,exFeeZone:0,seatGear:[],honor:freshArtistPerks(1)};
  try{const r=JSON.parse(localStorage.getItem(KEY)||'null');
   if(r&&r.v===2){d.money=clamp(+r.money||0,0,1e9);d.total=clamp(Math.floor(+r.total||0),0,1e9);d.liters=clamp(+r.liters||0,0,1e9);
    d.zone=clamp(Math.floor(+r.zone||1),1,999);d.prog=clamp(Math.floor(+r.prog||0),0,quota(d.zone));d.paid=!!r.paid&&d.prog>=quota(d.zone);
@@ -557,6 +610,8 @@ function loadSave(){
    d.advance=clamp(+r.advance||0,0,1e9);if(r.cu!==2){d.money=Math.min(1e9,d.money*100);d.advance*=100} // 예전 단위로 저장된 돈
    if(r.dm&&typeof r.dm==='object')d.dm={n:clamp(Math.floor(+r.dm.n||0),0,9),on:!!r.dm.on};
    d.specialIds=savedSpecialIds(r.specialIds??(r.priv?.zone===d.zone?r.priv.a:null),d.zone);
+   if(Array.isArray(r.seatGear))d.seatGear=Array.from(r.seatGear.slice(0,30),v=>Number.isInteger(v)&&v>=0&&v<=3?v:0);
+   d.honor=restoreArtistPerks(r.honor,d.zone);
    d.exFeeZone=r.exFeeZone===d.zone?d.zone:0;
    d.exDone=clamp(Math.floor(+r.exDone||0),0,999);if(Array.isArray(r.seen))d.seen=r.seen.filter(id=>TOOLS.some(t=>t.id===id));
    if(r.ap&&typeof r.ap==='object')for(const k in r.ap){const v=r.ap[k];if(AP[+k]&&v&&['new','cert','rej','paid','spent','more'].includes(v.s))d.ap[+k]={s:v.s,n:clamp(Math.floor(+v.n||0),0,999),k:Number.isInteger(v.k)&&AP[k].choices?.[v.k]?v.k:-1}}
@@ -1713,6 +1768,135 @@ function shoeParts(x,zc,o){const z=zc-.02;const L=[],P=(g,c,px,py,pz,sx,sy,sz,rx
  if(o.stripe)P(S,o.stripe,x,sh+.02,z+.03,w*.51,.012,len*.32);
  return L}
 
+
+// 같은 규격의 좌석에는 하나의 가구 원형과 노트북 원형을 공유한다.
+let courtSuiteTemplate=null,macBookTemplate=null;
+function courtSuite(){
+ if(courtSuiteTemplate)return courtSuiteTemplate;
+ const lacquer=[],gilt=[],wood=0x542c24,burl=0x8b5140,edge=0x391d21,gold=0xe0ab50,light=0xffdb83,velvet=0x8f2045,oxblood=0x692139;
+ const add=(arr,geo,col,...pose)=>arr.push(part(geo,col,...pose));
+ const box=(arr,w,h,d,col,x,y,z)=>add(arr,BX(w,h,d),col,x,y,z);
+ const bead=(arr,x,y,z,a,b,c,col,angle=0)=>add(arr,SP(9,6),col,x,y,z,a,b,c,0,0,angle);
+ const scroll=(arr,points,r,col)=>{
+  const path=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));
+  arr.push(tint(new THREE.TubeGeometry(path,Math.max(6,points.length*2),r,5,false),col));
+ };
+ // 루이 15세식 카브리올 다리. 무릎에서 부풀고 발목에서 가늘어져 바깥으로 말린다.
+ function leg(x,z,sx,sz,height,scale){
+  const rings=[[0,.040,.031],[.035,.056,.043],[.076,.058,.032],[.13,.034,.025],[.34,-.014,.019],[.58,.008,.028],[.80,.060,.047],[.91,.048,.050],[1,.001,.040]];
+  const pos=[],idx=[],colors=[],color=new THREE.Color();
+  for(let j=0;j<rings.length;j++){
+   const [t,bend,r]=rings[j];color.copy(lin(j<2?gold:wood));
+   for(let i=0;i<8;i++){const a=i*Math.PI/4;pos.push(x+(sx*bend+Math.cos(a)*r)*scale,t*height,z+(sz*bend+Math.sin(a)*r)*scale);colors.push(color.r,color.g,color.b);
+    if(j){const p=(j-1)*8+i,q=(j-1)*8+(i+1)%8;idx.push(p,p+8,q,p+8,q+8,q)}}
+  }
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geo.setIndex(idx);geo.computeVertexNormals();lacquer.push(geo);
+  scroll(gilt,rings.slice(2).map(([t,b,r])=>[x+sx*(b+r*.70)*scale,t*height,z+sz*(b+r*.70)*scale]),.007*scale,gold);
+ }
+ // 진한 마호가니 책상, 녹색 가죽 집필면, 둘레의 금박과 굴곡진 서랍 앞판.
+ box(lacquer,1.42,.055,.78,wood,0,.734,0);
+ box(gilt,1.427,.009,.785,gold,0,.752,0);
+ box(lacquer,1.41,.014,.773,burl,0,.763,0);
+ box(gilt,1.08,.0025,.55,gold,0,.7708,-.005);
+ box(lacquer,1.066,.0025,.538,0x264d42,0,.7726,-.005);
+ for(const x of [-1,1])for(const z of [-1,1])leg(x*.625,z*.29,x,z,.723,1);
+ const apron=new THREE.Shape();apron.moveTo(-.676,.704);apron.lineTo(.676,.704);apron.lineTo(.66,.49);
+ apron.bezierCurveTo(.49,.455,.45,.618,.31,.568);apron.bezierCurveTo(.17,.542,.14,.496,0,.483);
+ apron.bezierCurveTo(-.14,.496,-.17,.542,-.31,.568);apron.bezierCurveTo(-.45,.618,-.49,.455,-.66,.49);apron.closePath();
+ const apronGeo=new THREE.ExtrudeGeometry(apron,{depth:.033,bevelEnabled:false,curveSegments:6});
+ add(lacquer,apronGeo,wood,0,0,.330);add(lacquer,apronGeo,wood,0,0,-.37);
+ for(const side of [-1,1]){
+  box(lacquer,.035,.13,.67,wood,side*.65,.641,0);
+  box(lacquer,.257,.078,.012,burl,side*.498,.646,.367);
+  scroll(gilt,[[side*.413,.65,.377],[side*.448,.636,.387],[side*.499,.621,.393],[side*.552,.638,.387],[side*.577,.65,.377]],.007,light);
+  for(const x of [.416,.577])bead(gilt,side*x,.648,.38,.012,.014,.007,gold);
+  scroll(gilt,[[side*.651,.508,.369],[side*.588,.516,.371],[side*.499,.558,.372],[side*.407,.584,.371],[side*.32,.573,.368]],.008,gold);
+  bead(gilt,side*.625,.49,.355,.024,.061,.014,gold,side*-.23);
+ }
+ // 중앙 명패는 기존 예술가 명패와 같은 자리에 걸린다.
+ box(gilt,.62,.175,.018,gold,0,.66,.382);
+ // 왕좌의 등판과 금테: 머리 양쪽으로 벨벳과 곡선 프레임이 드러나게 한다.
+ for(const x of [-1,1])for(const z of [-1,1])leg(x*.188,-.674+z*.179,x,z,.43,.62);
+ box(lacquer,.51,.058,.468,wood,0,.424,-.66);
+ box(gilt,.518,.016,.474,gold,0,.446,-.66);
+ bead(lacquer,0,.468,-.66,.26,.043,.24,velvet);
+ const outline=new THREE.Shape();outline.moveTo(-.197,.533);
+ outline.bezierCurveTo(-.219,.668,-.35,.974,-.303,1.176);
+ outline.bezierCurveTo(-.289,1.287,-.16,1.305,-.105,1.315);
+ outline.quadraticCurveTo(-.046,1.347,0,1.368);
+ outline.quadraticCurveTo(.046,1.347,.105,1.315);
+ outline.bezierCurveTo(.16,1.305,.289,1.287,.303,1.176);
+ outline.bezierCurveTo(.35,.974,.219,.668,.197,.533);outline.closePath();
+ const backGeo=new THREE.ExtrudeGeometry(outline,{depth:.036,bevelEnabled:true,bevelThickness:.008,bevelSize:.009,bevelSegments:1,curveSegments:6});
+ add(lacquer,backGeo,wood,0,0,-.935);
+ add(gilt,backGeo,gold,0,.027,-.914,.973,.976,.78);
+ add(lacquer,backGeo,velvet,0,.077,-.889,.89,.922,.82);
+ for(const side of [-1,1]){
+  scroll(gilt,[[side*.207,.58,-.887],[side*.24,.76,-.883],[side*.3,.99,-.882],[side*.29,1.18,-.884],[side*.237,1.263,-.886],[side*.143,1.288,-.886],[side*.063,1.316,-.882]],.012,light);
+  scroll(gilt,[[side*.267,.445,-.47],[side*.272,.54,-.483],[side*.255,.613,-.5],[side*.263,.653,-.5],[side*.269,.69,-.595],[side*.246,.708,-.76],[side*.225,.76,-.87]],.018,gold);
+  bead(lacquer,side*.265,.682,-.627,.037,.025,.117,oxblood);
+  bead(gilt,side*.272,.655,-.511,.029,.027,.038,light);
+  scroll(gilt,[[side*.238,1.276,-.884],[side*.163,1.306,-.879],[side*.124,1.353,-.872],[side*.157,1.382,-.870],[side*.176,1.35,-.870],[side*.154,1.337,-.869]],.012,gold);
+ }
+ for(let j=0;j<4;j++)for(let i=-2;i<=2;i++){
+  const x=i*.079+(j%2)*.039;if(Math.abs(x)>.205)continue;
+  bead(gilt,x,.84+j*.101,-.853,.008,.008,.004,gold);
+ }
+ // 조가비 모양으로 펼쳐진 꼭대기 장식
+ for(let i=-3;i<=3;i++){
+  const k=Math.abs(i);bead(gilt,i*.020,1.373-k*.008,-.884,.018,.082-k*.009,.012,k%2?gold:light,-i*.22);
+ }
+ bead(gilt,0,1.325,-.873,.039,.023,.013,gold);
+ const group=new THREE.Group();
+ for(const [parts,metal,rough] of [[lacquer,.06,.49],[gilt,.70,.30]]){
+  const m=new THREE.Mesh(merge(parts),new THREE.MeshStandardMaterial({vertexColors:true,metalness:metal,roughness:rough,envMapIntensity:.85}));
+  m.castShadow=m.receiveShadow=true;group.add(m);
+ }
+ return courtSuiteTemplate=group;
+}
+function artistMacBook(){
+ if(macBookTemplate)return macBookTemplate;
+ const parts=[],silver=0xc3c6cc,shadow=0x343740,keys=0x202028;
+ const A=(...a)=>parts.push(part(...a)),box=(w,h,d,c,x,y,z)=>A(BX(w,h,d),c,x,y,z);
+ // 금속 유니바디, 검은 독립 키, 넓은 트랙패드. 덮개 안쪽이 착석자를 본다.
+ box(.355,.010,.244,silver,0,.006,0);
+ box(.309,.002,.105,shadow,0,.012,.032);
+ for(let row=0;row<4;row++)for(let k=0;k<13;k++)box(.018,.003,.017,keys,(k-6)*.022,.0145,.066-row*.022);
+ box(.119,.0015,.061,0x9b9ea5,0,.012,-.064);box(.116,.002,.058,silver,0,.0123,-.064);
+ A(CY(.009,.009,.304,10),shadow,0,.014,.113,1,1,1,0,0,Math.PI/2);
+ const tilt=.22,lid=new THREE.Matrix4().makeRotationX(tilt);lid.setPosition(0,.016,.112);
+ const L=(...args)=>parts.push(part(...args).applyMatrix4(lid));
+ L(BX(.355,.221,.008),silver,0,.11,0);L(BX(.347,.211,.0015),keys,0,.11,-.0047);
+ // 뚜껑 뒷면의 한입 베어 문 사과 각인.
+ const apple=new THREE.Shape();apple.moveTo(0,.009);apple.bezierCurveTo(-.012,.017,-.023,.009,-.021,-.004);
+ apple.bezierCurveTo(-.018,-.022,-.010,-.027,-.003,-.023);apple.bezierCurveTo(.007,-.019,.010,-.030,.018,-.014);
+ apple.bezierCurveTo(.010,-.010,.010,-.002,.019,.002);apple.bezierCurveTo(.016,.012,.007,.014,0,.009);
+ L(new THREE.ShapeGeometry(apple,6),0x64666b,0,.118,.0043);
+ L(SP(9,5),0x64666b,.005,.137,.004,.0045,.008,.001,0,0,-.63);
+ const group=new THREE.Group(),shell=new THREE.Mesh(merge(parts),new THREE.MeshStandardMaterial({vertexColors:true,metalness:.45,roughness:.38,envMapIntensity:.8}));
+ shell.castShadow=shell.receiveShadow=true;group.add(shell);
+ const wallpaper=canvasTex(256,160,(c,w,h)=>{
+  const sky=c.createLinearGradient(0,0,w,h);sky.addColorStop(0,'#211e58');sky.addColorStop(.52,'#5d62a4');sky.addColorStop(1,'#e3b9b8');c.fillStyle=sky;c.fillRect(0,0,w,h);
+  for(const [n,col] of [[0,'#cba7bf'],[1,'#7f80ad'],[2,'#324968']]){
+   c.fillStyle=col;c.beginPath();c.moveTo(0,h);c.lineTo(0,102+n*13);c.bezierCurveTo(73,46+n*14,115,150+n*4,w,42+n*20);c.lineTo(w,h);c.fill();
+  }
+ });
+ const lcd=new THREE.Mesh(new THREE.PlaneGeometry(.330,.190),new THREE.MeshBasicMaterial({map:wallpaper}));
+ lcd.rotation.y=Math.PI;lcd.position.set(0,.111,-.0057);lcd.updateMatrix();lcd.applyMatrix4(lid);group.add(lcd);
+ return macBookTemplate=group;
+}
+function setArtistFurniture(c){
+ const slot=c.furnishings;if(!slot)return;
+ const mask=artistSeatGear(c.i);if(mask===slot.mask)return;slot.mask=mask;
+ slot.base.geometry.setDrawRange(mask&1?slot.end:0,Infinity);
+ if(mask&1&&!slot.suite){slot.suite=courtSuite().clone();c.g.add(slot.suite)}
+ if(slot.suite)slot.suite.visible=!!(mask&1);
+ if(mask&2&&!slot.mac){slot.mac=artistMacBook().clone();slot.mac.position.set(-.478,.773,.145);slot.mac.rotation.y=-.21;c.g.add(slot.mac)}
+ if(slot.mac)slot.mac.visible=!!(mask&2);if(slot.oldComputer)slot.oldComputer.visible=!(mask&2);
+ if(slot.loose){const on=!!(mask&2);slot.loose.position.set(on?(c.type===2?.70:.81):0,on&&c.type===4?.025:0,on?(c.type===2?-.36:-.07):0)}
+}
+function syncArtistFurniture(){for(const c of creators)setArtistFurniture(c)}
+
 function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0?(AP[d.ap].desk??(d.ap%3)*5+ty):idx,v=(pid/5|0)%3,certified=!d.citizen&&!d.interview; // wk: 일하다 온 차림 번호(없으면 차려입은 쪽) · pid: 심사실과 작업실에서 같은 사람으로 보이게 하는 번호(책상이 있는 신청인은 책상 번호 그대로)
  if(!bodyMat){bodyMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.66,envMapIntensity:.35});droolMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.1,envMapIntensity:1.1});bulgeGeo=lump(SP(14,10),.1,3)}
  const g=new THREE.Group();g.position.set(d.x,0,d.z);g.rotation.y=d.ry;target.add(g);
@@ -1742,6 +1926,9 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0?(AP[d
   for(const x of[-.19,.19]){G([x,.43,-.82],[x,.96,-.85],.018,.018,STEEL,6);A(BX(.055,.035,.32),0x293b55,x*1.3,.64,-.63);G([x*1.3,.44,-.68],[x*1.3,.63,-.68],.015,.015,STEEL,6);}
  }else A(CY(.17,.17,.035,14),WOODD,0,.455,-.66);
  for(let k=0;k<4;k++){const a=k*PI/2+PI/4,cx=Math.cos(a),cz=Math.sin(a);G([cx*.1,.44,-.66+cz*.1],[cx*.2,0,-.66+cz*.2],.014,.014,K,5)}
+ // 기본 가구가 차지하는 앞쪽 정점만 건너뛰면 인물·작업물은 원래 자세를 유지한다.
+ const furnitureEnd=certified?ps.reduce((sum,p)=>sum+(p.index?p.index.count:p.attributes.position.count),0):0;
+ let shelfParts=null,oldComputer=null;
  // 하체: 통 넓은 바지 · 롤업 · 양말 · 신발
  A(SP(18,12),L.pants,0,.56,-.66,.18,.11,.15);
  for(const s of[-1,1]){const hx=s*.09,kx=s*.135;
@@ -1792,6 +1979,7 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0?(AP[d
  else if(ty===3){Hd(new THREE.TorusGeometry(.104,.011,6,20,PI),L.hat,0,.026,-.01,HW/.091,1,1);for(const s of[-1,1]){Hd(CY(.036,.036,.032,16),L.hat,s*(HW+.016),-.004,-.01,1,1,1,0,0,PI/2);Hd(CY(.028,.028,.036,14),K,s*(HW+.013),-.004,-.01,1,1,1,0,0,PI/2)}} // 헤드폰
  else{Hd(SP(16,8),L.hat,.012,.118,-.012,HW+.034,.04,.13,0,0,-.18);Hd(CY(.005,.005,.026,6),L.hat,.016,.16,-.012);glasses(.027,.0042,0xd9a520)} // 베레모
  if(wk==null)for(const side of[-1,1])Hd(new THREE.TorusGeometry(.017,.0038,6,12),0xd4b26b,side*(HW+.002),-.042,-.004,1,1,1,0,PI/2,0); // 귀걸이
+ const tabletopStart=ps.length;
  // 책상 위 물건 · 옆에 둔 물건
  const belong=(x,z)=>{ // 일터에서 들고 온 것
   if(wk===0){A(SP(12,8),L.helm,x,.085,z,.13,.1,.15);A(CY(.155,.155,.012,16),L.helm,x,.04,z+.02,1,1,1.12);A(lump(SP(10,8),.08,2),0x30384a,x-.04,.2,z-.3,.15,.2,.11);A(BX(.05,.2,.02),0x232a38,x-.04,.22,z-.19)} // 안전모 · 백팩
@@ -1834,8 +2022,9 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0?(AP[d
   A(CY(.04,.05,.08,12),0xcfe6f2,-.5,.81,-.1);A(CY(.055,.02,.055,12),0xf6f4ee,-.5,.88,-.1);A(BX(.012,.05,.012),0xf6f4ee,-.44,.88,-.1);
   A(CY(.04,.032,.06,10),0xe2563b,-.5,.8,.2);A(SP(8,6),0x2f9e4f,-.5,.87,.2,.032,.05,.032);A(SP(6,5),0x2f9e4f,-.47,.88,.2,.014,.024,.014)}
  else if(ty===3){A(BX(.72,.035,.19),W,0,.79,.06);A(BX(.72,.02,.09),K,0,.815,.005);A(BX(.74,.05,.06),0x2b6fe0,0,.795,-.07);
-  A(BX(.3,.012,.2),0xc9ced6,-.46,.777,-.2,1,1,1,0,.25,0);A(BX(.3,.2,.008),0xc9ced6,-.435,.875,-.1,1,1,1,.22,.25,0);
+  const notebookStart=ps.length;A(BX(.3,.012,.2),0xc9ced6,-.46,.777,-.2,1,1,1,0,.25,0);A(BX(.3,.2,.008),0xc9ced6,-.435,.875,-.1,1,1,1,.22,.25,0);
   [[-.08,.05,0xff4f9a],[.04,.02,0xffd21f],[.09,-.05,0x12b08a],[-.05,-.04,0xff6a3d],[0,.07,0x1f4fd8]].forEach(q=>A(BX(.055,.045,.012),q[2],-.435+q[0],.875+q[1],-.094+q[1]*.22,1,1,1,.22,.25,rnd(-.4,.4)));
+  if(certified)oldComputer=ps.splice(notebookStart);
   A(BX(.2,.016,.78),L.acc,-.92,.075,.1,1,1,1,0,.3,0);for(const a of[-.26,.26])for(const b of[-.07,.07])A(CY(.028,.028,.03,10),W,-.92+b*Math.cos(.3)+a*Math.sin(.3),.03,.1+a*Math.cos(.3)-b*Math.sin(.3),1,1,1,0,.3,PI/2)}
  else{const twStart=ps.length;
   A(BX(.3,.07,.22),0x2f8f83,0,.805,-.1);A(BX(.26,.02,.1),0x24746a,0,.83,-.03,1,1,1,.3,0,0);for(let r=0;r<3;r++)for(let k=0;k<7;k++)A(CY(.011,.011,.012,6),0xf4f1e6,-.1+k*.034+(r%2)*.012,.848-r*.01,-.055+r*.03);
@@ -1852,6 +2041,14 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0?(AP[d
   A(BX(.27,.22,.25),0xc7a273,.38,.11,-.45);A(BX(.036,.004,.254),0xa67e4b,.38,.223,-.45);
   for(let k=0;k<4;k++)A(BX(.3,.008,.26),0xb89060,.38,.005+k*.009,-.08);
  }else if(wk!=null)belong(.38,-.5);else bought(.38,-.5,.42); // 심사실: 의자 옆에 내려놓은 것
+ // 도예가의 화분과 작가가 구긴 종이는 노트북을 놓을 때 한쪽으로 정리한다.
+ if(certified&&(ty===4||ty===2&&wk==null)){
+  const movable=[];
+  for(let j=ps.length-1;j>=tabletopStart;j--){const p=ps[j];p.computeBoundingBox();const b=p.boundingBox;
+   if(b.min.y>.765&&b.max.y<.94&&b.min.x>-.62&&b.max.x<-.20&&b.max.z>-.01&&b.min.z<.32)movable.push(...ps.splice(j,1));
+  }
+  if(movable.length)shelfParts=movable;
+ }
  const body=new THREE.Mesh(merge(ps),bodyMat);body.castShadow=true;body.receiveShadow=true;g.add(body);
  const head=pplHeadMesh(look,d.interview?'hi':'lo',bodyMat,r=>{mouth.position.set(0,r.mouth.y-.002,r.mouth.z+.003);head.userData.eye=r.eye;head.userData.mth=r.mouth;if(head.userData.smile)head.userData.smile(r)});head.position.set(0,1.075,-.285);head.rotation.order='YXZ';g.add(head);
  if(hp.length){const acc=new THREE.Mesh(merge(hp),bodyMat);acc.castShadow=true;head.add(acc)}
@@ -1890,6 +2087,11 @@ function buildDesk(d,idx,target=scene){const ty=d.type,wk=d.wk,pid=d.ap>=0?(AP[d
   const sc=new THREE.Mesh(new THREE.PlaneGeometry(.066,.142),new THREE.MeshStandardMaterial({color:0x0b0d12,emissive:lin(0xcfe2ff),emissiveIntensity:.95,roughness:.2}));
   sc.position.z=.0054;bd.castShadow=true;ph.add(bd,sc);ph.visible=false;rig.add(ph);c.phone=ph}
  c.envelope=buildSupportEnvelope(!!d.citizen);g.add(c.envelope);
+ if(certified){
+  const loose=parts=>{if(!parts)return null;const mesh=new THREE.Mesh(merge(parts),bodyMat);mesh.castShadow=mesh.receiveShadow=true;g.add(mesh);return mesh};
+  c.furnishings={base:body,end:furnitureEnd,oldComputer:loose(oldComputer),loose:loose(shelfParts),suite:null,mac:null,mask:-1};
+  setArtistFurniture(c);
+ }
  creators.push(c);
 }
 function syncReviewCitizens(){
@@ -5582,7 +5784,7 @@ function trimUpdate(dt,act,go2){
  // 자르기
  let load=0;t.nb=t.nl=0;t.bm=12;t.bf=1;t.bd=4;t.chopN=0; // 한 프레임에 뿌리는 양은 묶어 둔다 (여럿이 한꺼번에 갈려도 끊기지 않게)
  if(t.hs>.22&&started){const R=t.R,hx=t.hx,hz=t.hz,rr=(R+.12)*(R+.12);
-  if(EX.on&&EX.phase==='run')load+=cutHallWreaths(hx,hz,R,dt);
+  if(run&&EX.on)load+=cutHallWreaths(hx,hz,R,dt*t.hs);
   for(const c of creatures){if(c.dead)continue;const st=c.st;if(st==='fall'||st==='pinned'||st==='carried'||st==='tossed'||st==='tank'||st==='held'||st==='bag'||st==='binned'||st==='sucked')continue;
    const dx=c.x-hx,dz=c.z-hz;if(dx*dx+dz*dz>rr)continue;load+=trimHit(c,dt,R,hx,hz)}
   // 바닥에 깔린 것도 다시 갈려 더 잘게 흩어진다 (먼저 골라 두고 처리한다: 새 조각이 오래된 것을 밀어내므로)
@@ -6441,9 +6643,9 @@ function enterNextWorkshop(){
  S.specialIds=d.specialIds.slice();
  S.draft=null;syncReviewCitizens();
  if(current){for(const id of S.team)if(!old.includes(id))S.funds[AP[id].desk]=ACTIVITY_T;resetSupport()}
- else{S.zone=d.zone;S.prog=0;S.paid=false;S.grants=[null,null,null];S.funds.fill(ACTIVITY_T);S.dm={n:0,on:false}}
+ else{S.honor=freshArtistPerks(d.zone,S.honor.unit||0);S.zone=d.zone;S.prog=0;S.paid=false;S.grants=[null,null,null];S.funds.fill(ACTIVITY_T);S.dm={n:0,on:false}}
  IV.open=false;$('interview').hidden=true;$('hud').style.display='block';$('hud').inert=false;paused=false;last=0;renderer.setViewport(0,0,W,H);
- roomTarget(S.zone,true);if(!current)resetRoom();updateCreators(0);save();updateHUD(true);setHint();AU.wake();AU.chime();$('gl').focus();return true;
+ syncArtistFurniture();roomTarget(S.zone,true);if(!current)resetRoom();updateCreators(0);save();updateHUD(true);setHint();AU.wake();AU.chime();$('gl').focus();return true;
 }
 // 판정 순간의 몸짓 뒤에도 태도가 남는다. 표정/손/허리를 한 좌표계에서 움직인다.
 function poseInterview(c,dt,snap=false){
@@ -6575,14 +6777,53 @@ function wreathFace(warm){
   }
  });
 }
-function wreathHalf(side){
- const pos=[],uv=[],indices=[],nx=6,ny=12;
+const WREATH_COLS=112,WREATH_ROWS=168,WREATH_BEND=9,WREATH_TRACKS=WREATH_COLS+WREATH_BEND*2,WREATH_CHIPS=144;
+function wreathGeometry(){
+ const pos=[],uv=[],indices=[],nx=12,ny=12;
  for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
-  const u=(i/nx+(side<0?0:1))*.5,v=j/ny,x=(u-.5)*.88;
+  const u=i/nx,v=j/ny,x=(u-.5)*.88;
   pos.push(x,(v-.5)*1.24,.045+.092*Math.max(0,1-(2*u-1)**2)*Math.sin(v*Math.PI));uv.push(u,v);
   if(i<nx&&j<ny){const a=j*(nx+1)+i;indices.push(a,a+1,a+nx+1,a+1,a+nx+2,a+nx+1)}
  }
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();return g;
+}
+// 꽃잎 크기의 얼룩마다 끊어지는 순서를 다르게 둔다. 두 종류의 원화가 이 자료를 한 번씩만 만든다.
+function wreathPattern(warm){
+ const map=wreathFace(warm),cols=WREATH_COLS,rows=WREATH_ROWS;
+ const swatch=document.createElement('canvas');swatch.width=cols;swatch.height=rows;
+ const ctx=swatch.getContext('2d');ctx.drawImage(map.image,0,0,cols,rows);
+ const rgba=ctx.getImageData(0,0,cols,rows).data,order=new Uint8Array(WREATH_TRACKS*rows),level=new Float32Array(WREATH_TRACKS*rows);
+ const offsets=Int8Array.from({length:rows},(_,j)=>Math.round(4.8*Math.sin(j*.106)+2*Math.sin(j*.287)+1.6*Math.cos(j*.047)));
+ const first=new Float32Array(WREATH_TRACKS),last=new Float32Array(WREATH_TRACKS),indices=Array.from({length:rows},(_,j)=>j);
+ let visible=0;
+ for(let i=0;i<WREATH_TRACKS;i++){
+  const start=i*rows;first[i]=2;last[i]=-1;
+  for(let j=0;j<rows;j++){
+   const column=i-WREATH_BEND+offsets[j];
+   const rough=.048*Math.sin(column*.32+j*.18)+.029*Math.sin(column*.17-j*.43)+.017*Math.cos(column*.71+j*.57);
+   const fleck=.057*(Math.sin(i*78.233+j*37.719)*43758.5453%1);
+   level[start+j]=(j+.5)/rows+rough+fleck;
+   if(column>=0&&column<cols&&rgba[((rows-1-j)*cols+column)*4+3]>32){
+    visible++;first[i]=Math.min(first[i],level[start+j]);last[i]=Math.max(last[i],level[start+j]);
+   }
+  }
+  indices.sort((a,b)=>level[start+a]-level[start+b]);
+  order.set(indices,start);
+ }
+ return {map,rgba,order,level,first,last,offsets,visible};
+}
+function makeHallWreath(base,geometry,pattern){
+ const pixels=new Uint8Array(WREATH_COLS*WREATH_ROWS*4),mask=new THREE.DataTexture(pixels,WREATH_COLS,WREATH_ROWS,THREE.RGBAFormat);
+ mask.minFilter=mask.magFilter=THREE.LinearFilter;mask.generateMipmaps=false;
+ const mat=new THREE.MeshStandardMaterial({map:pattern.map,alphaMap:mask,alphaTest:.42,side:THREE.DoubleSide,roughness:.9});
+ const mesh=new THREE.Mesh(geometry,mat);base.add(mesh);mesh.castShadow=true;mesh.position.y=.87;mesh.rotation.x=-.13;
+ mesh.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:pattern.map,alphaMap:mask,alphaTest:.42,side:THREE.DoubleSide});
+ const wx=new Float32Array(WREATH_TRACKS),wz=new Float32Array(WREATH_TRACKS),p=new THREE.Vector3();
+ for(let i=0;i<WREATH_TRACKS;i++){
+  p.set(((i-WREATH_BEND+.5)/WREATH_COLS-.5)*.88,0,.085);base.localToWorld(p);wx[i]=p.x;wz[i]=p.z;
+ }
+ return {x:base.position.x,z:base.position.z,mesh,pattern,pixels,mask,wx,wz,
+  edge:new Float32Array(WREATH_TRACKS),cursor:new Uint8Array(WREATH_TRACKS),remaining:0,chip:0};
 }
 function hallCatalogueBundle(){
  // 정수리에서는 금박 표지, 옆에서는 천을 씌운 책등과 켜켜이 겹친 종이가 보인다.
@@ -6619,8 +6860,7 @@ function hallCatalogueBundle(){
 function buildHallProps(){
  const h=hallProps;if(h.root)return;
  h.root=new THREE.Group();HALL.g.add(h.root);
- const faces=[false,true].map(warm=>new THREE.MeshStandardMaterial({map:wreathFace(warm),alphaTest:.42,side:THREE.DoubleSide,roughness:.9}));
- const half=[wreathHalf(-1),wreathHalf(1)],wood=new THREE.MeshStandardMaterial({color:0xa47b48,roughness:.94});
+ const faces=[wreathPattern(false),wreathPattern(true)],geometry=wreathGeometry(),wood=new THREE.MeshStandardMaterial({color:0xa47b48,roughness:.94});
  const frame=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),wood,5*5);frame.frustumCulled=false;frame.castShadow=true;h.root.add(frame);
  const V=THREE.Vector3,up=new V(0,1,0),bar=new THREE.Object3D();let k=0;
  function rail(base,from,to,width){
@@ -6631,16 +6871,12 @@ function buildHallProps(){
   const base=new THREE.Group();base.position.set(x,0,z);base.rotation.y=yaw;base.scale.setScalar(height);h.root.add(base);base.updateMatrixWorld(true);
   rail(base,[-.225,.014,.115],[-.05,1.28,-.08],.028);rail(base,[.225,.014,.115],[.05,1.28,-.08],.028);
   rail(base,[0,.014,-.27],[0,1.21,-.08],.026);rail(base,[-.16,.41,.06],[.16,.41,.06],.026);rail(base,[-.11,.86,-.006],[.11,.86,-.006],.023);
-  const halves=half.map((geo,i)=>{
-   const mesh=new THREE.Mesh(geo,faces[h.wreaths.length%2]);base.add(mesh);mesh.castShadow=true;
-   const side=i?1:-1,foot=new V(side*.153,0,.07);base.localToWorld(foot);
-   return {mesh,side,x:foot.x,z:foot.z,cut:0,t:-1};
-  });
-  h.wreaths.push({x,z,halves});
+  h.wreaths.push(makeHallWreath(base,geometry,faces[h.wreaths.length%2]));
  }
- h.petalMesh=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshStandardMaterial({roughness:.87}),100);
+ h.petalMesh=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshStandardMaterial({roughness:.87}),WREATH_CHIPS);
  h.petalMesh.frustumCulled=false;h.petalMesh.count=0;h.petalMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);h.root.add(h.petalMesh);
- h.petalPose=new THREE.Object3D();
+ h.petalPose=new THREE.Object3D();h.chipColor=new THREE.Color();h.chipSlot=0;
+ h.petals=Array.from({length:WREATH_CHIPS},()=>({rest:true}));
  const book=hallCatalogueBundle();
  for(const [x,z,qty,yaw] of [[.43,-.48,4,-.16],[.69,-.51,3,.09],[.46,-.75,5,.05],[.75,-.8,2,-.31]]){
   h.piles.push({x,z});
@@ -6654,10 +6890,11 @@ function setHallPackFloor(p,x,y,z,yaw){
  const h=hallProps;h.root.add(p.mesh);p.mesh.position.set(x,y,z);p.mesh.rotation.set(0,yaw,0);p.mesh.visible=true;p.state='floor';
 }
 function resetHallProps(){
- buildHallProps();const h=hallProps;h.blade=h.flight=null;h.inBin.length=h.petals.length=0;h.petalMesh.count=0;h.petalMoving=false;
+ buildHallProps();const h=hallProps;h.blade=h.flight=null;h.inBin.length=0;h.petalMesh.count=h.chipSlot=0;h.petalMoving=false;h.nextRustle=0;
  for(const p of h.packs)setHallPackFloor(p,p.x,p.y,p.z,p.yaw);
- for(const w of h.wreaths)for(const f of w.halves){
-  f.cut=0;f.t=-1;f.mesh.visible=true;f.mesh.position.set(0,.87,0);f.mesh.rotation.set(-.13,0,0);f.mesh.scale.set(1,1,1);
+ for(const w of h.wreaths){
+  w.pixels.fill(255);w.mask.needsUpdate=true;w.edge.set(w.pattern.first);w.cursor.fill(0);
+  w.remaining=w.pattern.visible;w.chip=.8;w.mesh.visible=true;
  }
 }
 function hallPropFootprint(x,z){
@@ -6665,35 +6902,53 @@ function hallPropFootprint(x,z){
  const h=hallProps;
  return h.wreaths.some(w=>Math.abs(x-w.x)<.31&&Math.abs(z-w.z)<.25)||h.piles.some(p=>Math.abs(x-p.x)<.13&&Math.abs(z-p.z)<.15);
 }
-function cutHallWreaths(x,z,r,dt){
- const h=hallProps;let hits=0;
+function wreathChip(w,i,j,rgbaIndex,hx,hz){
+ const h=hallProps,slot=h.chipSlot,p=h.petals[slot],v=h.petalPose.position;
+ h.chipSlot=(slot+1)%WREATH_CHIPS;
+ const u=(i+.5)/WREATH_COLS,t=(j+.5)/WREATH_ROWS;
+ v.set((u-.5)*.88,(t-.5)*1.24,.045+.092*(1-(2*u-1)**2)*Math.sin(t*Math.PI));
+ w.mesh.localToWorld(v);p.x=v.x;p.y=v.y;p.z=v.z;
+ const a=Math.atan2(v.z-hz,v.x-hx)+rnd(.65,1.65),speed=rnd(.18,.69);
+ p.vx=Math.cos(a)*speed;p.vz=Math.sin(a)*speed;p.vy=rnd(-.33,.26);p.a=rnd(0,6);p.spin=rnd(-9,9);
+ p.size=rnd(.006,.022);p.rest=false;
+ const col=w.pattern.rgba,at=rgbaIndex;
+ h.chipColor.setRGB(col[at]/255,col[at+1]/255,col[at+2]/255).convertSRGBToLinear();
+ h.petalMesh.setColorAt(slot,h.chipColor);h.petalMesh.instanceColor.needsUpdate=true;
+ h.petalMesh.count=Math.min(WREATH_CHIPS,h.petalMesh.count+1);h.petalMoving=true;
+}
+function cutHallWreaths(x,z,r,turn){
+ const h=hallProps,cols=WREATH_COLS,rows=WREATH_ROWS,rr=r*r;let removed=0;
  for(const w of h.wreaths){
-  if(Math.abs(w.z-z)>r+.25||Math.abs(w.x-x)>r+.3)continue;
-  for(const f of w.halves){
-   if(f.t>=0||(x-f.x)**2+(z-f.z)**2>(r+.04)**2)continue;
-   f.cut=Math.min(1,f.cut+dt*8);f.mesh.rotation.z=-f.side*.09*f.cut;
-   if(f.cut<1)continue;
-   f.t=0;hits++;AU.noise('highpass',1700,680,.75,.08,.12);
-   const col=['#e784aa','#f8d1cf','#f5b451','#faf0d5','#6f9653'];
-   for(let i=0;i<10;i++){
-    const n=h.petals.length,px=f.x+f.side*rnd(.01,.16),py=rnd(.42,1.36);
-    h.petals.push({x:px,y:py,z:f.z+rnd(-.03,.08),vx:f.side*rnd(.1,.46),vy:rnd(-.5,.32),vz:rnd(.05,.4),a:rnd(0,6),spin:rnd(-7,7),size:rnd(.012,.027),rest:false});
-    h.petalMesh.setColorAt(n,new THREE.Color(col[i%5]));
+  if(!w.remaining||Math.abs(w.z-z)>r+.28||Math.abs(w.x-x)>r+.5)continue;
+  const pat=w.pattern;let dirtyMask=false;
+  for(let i=0;i<WREATH_TRACKS;i++){
+   const k=w.cursor[i];if(k===rows||pat.last[i]<0)continue;
+   const dx=w.wx[i]-x,dz=w.wz[i]-z,strength=1-(dx*dx+dz*dz)/rr;if(strength<=0)continue;
+   // 줄이 훑은 가로 폭 안에서만 낮은 꽃잎과 리본부터 풀린다. 떼면 닳은 경계가 그대로 선다.
+   let front=w.edge[i]+turn*(.25+.66*strength)*Math.sqrt(strength);
+   if(front>=pat.last[i])front=2;w.edge[i]=front;
+   const start=i*rows;let k2=k;
+   while(k2<rows){
+    const j=pat.order[start+k2];if(pat.level[start+j]>front)break;
+    const column=i-WREATH_BEND+pat.offsets[j];k2++;if(column<0||column>=cols)continue;
+    w.pixels[(j*cols+column)*4+1]=0;dirtyMask=true;
+    const src=((rows-1-j)*cols+column)*4;if(pat.rgba[src+3]<=32)continue;
+    w.remaining--;removed++;w.chip+=1/(FX.lite?140:86);
+    if(w.chip>=1){w.chip-=1;wreathChip(w,column,j,src,x,z)}
    }
-   h.petalMesh.count=h.petals.length;h.petalMesh.instanceColor.needsUpdate=true;h.petalMoving=true;
+   w.cursor[i]=k2;
   }
+  if(dirtyMask)w.mask.needsUpdate=true;
+  if(!w.remaining)w.mesh.visible=false;
  }
- return hits*.16;
+ if(removed&&time>=h.nextRustle){h.nextRustle=time+rnd(.10,.18);AU.noise('highpass',2100,750,.72,.052,.065)}
+ return Math.min(.6,removed*.003);
 }
 function updateHallFlowers(dt){
  const h=hallProps;
- for(const w of h.wreaths)for(const f of w.halves)if(f.t>=0&&f.mesh.visible){
-  f.t+=dt;const u=Math.min(1,f.t/.46),m=f.mesh;
-  m.position.set(f.side*.19*u,.87-.7*u*u,.21*u);m.rotation.set(-.13+.77*u,0,-f.side*(.09+.88*u));m.scale.setScalar(1-u*.94);if(u>=1)m.visible=false;
- }
  if(!h.petalMoving)return;
  const o=h.petalPose;h.petalMoving=false;
- for(let i=0;i<h.petals.length;i++){
+ for(let i=0;i<h.petalMesh.count;i++){
   const p=h.petals[i];if(p.rest)continue;
   p.vy-=3.8*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;p.a+=p.spin*dt;
   if(p.y<=.011){p.y=.011;p.rest=true}else h.petalMoving=true;
@@ -7048,6 +7303,68 @@ function buyOrEquip(id){
 function menuAvailable(){return started&&!paused&&!EX.on&&!stompLocked()&&!TD.on&&!shovelLocked()&&!tool2Locked()}
 function openShop(){if(!menuAvailable())return false;$('buybub').hidden=true;$('shopbtn').classList.remove('new');paused=true;releaseAll();$('hud').inert=true;renderShop();$('shop').hidden=false;save();$('shopx').focus();return true}
 function closeShop(){if($('shop').hidden)return;$('shop').hidden=true;$('hud').inert=false;paused=false;last=0;AU.wake();$('gl').focus()}
+const ARTIST_GOODS=[{button:'perk-salon',bit:1,price:4800000},{button:'perk-mac',bit:2,price:3600000}];
+let perkSeat=-1,perkPhotoKey='';
+function showSupportPage(perks){
+ $('support-main').hidden=perks;$('support-perks').hidden=!perks;
+ $('support-main-btn').setAttribute('aria-pressed',String(!perks));$('support-perks-btn').setAttribute('aria-pressed',String(perks));
+ if(perks){const h=S.honor;$('honor-rate').value=String(h.unit??(h.previous||500000));renderArtistPerks()}
+}
+// 메뉴에서 자리를 골랐을 때만 현재 작업대 실물을 한 장 촬영한다.
+function photographArtistSeat(id){
+ const c=creators.find(c=>c.i===id);if(!c||GFX.lost)return;
+ const key=id+'|'+artistSeatGear(id);if(key===perkPhotoKey)return;
+ const canvas=$('perk-photo'),w=canvas.width,h=canvas.height,sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,w/h,.05,12);
+ sc.background=lin(0xe9e6e0);sc.environment=scene.environment;
+ sc.add(new THREE.HemisphereLight(0xfffbef,0xc3b6ac,.79));const lamp=new THREE.DirectionalLight(0xffeed8,.82);lamp.position.set(-2,4,3);sc.add(lamp);
+ cam.position.set(1.31,1.53,2.80);cam.lookAt(0,.71,-.14);
+ const rt=new THREE.WebGLRenderTarget(w,h),old=renderer.getRenderTarget(),m=c.g,home=m.parent,pos=m.position.clone(),rot=m.quaternion.clone(),visible=m.visible;
+ rt.texture.encoding=THREE.sRGBEncoding;
+ try{
+  sc.add(m);m.visible=true;m.position.set(0,0,0);m.quaternion.identity();renderer.setRenderTarget(rt);renderer.render(sc,cam);
+  const px=new Uint8Array(w*h*4);renderer.readRenderTargetPixels(rt,0,0,w,h,px);
+  const ctx=canvas.getContext('2d'),img=ctx.createImageData(w,h);for(let y=0;y<h;y++)img.data.set(px.subarray((h-y-1)*w*4,(h-y)*w*4),y*w*4);
+  ctx.putImageData(img,0,0);perkPhotoKey=key;
+ }finally{home.add(m);m.position.copy(pos);m.quaternion.copy(rot);m.visible=visible;m.updateMatrixWorld(true);renderer.setRenderTarget(old);rt.dispose()}
+}
+function renderArtistPerks(){
+ const ids=artistDeskIds(),select=$('perk-seat');
+ if(!ids.includes(perkSeat))perkSeat=ids[0]??-1;
+ if(select.dataset.roster!==ids.join(',')){
+  select.replaceChildren();ids.forEach(i=>{
+   const d=DESKS[i],a=AP[d.seat==null?d.ap:S.grants[d.seat]?.a],label=String(i+1).padStart(2,'0')+'번 자리 · '+(a?a.field+' 〈'+a.title+'〉':'예술가');
+   select.add(new Option(label,String(i)));
+  });select.dataset.roster=ids.join(',');
+ }
+ select.value=String(perkSeat);
+ for(const item of ARTIST_GOODS){
+  const b=$(item.button),owned=!!(artistSeatGear(perkSeat)&item.bit),short=Math.max(0,item.price-S.money);
+  b.disabled=perkSeat<0||owned||short>0;b.querySelector('span').textContent=owned?'설치 완료':short?won(short)+' 부족':won(item.price)+' 구입';
+ }
+ photographArtistSeat(perkSeat);renderHonorarium();
+}
+function buyArtistGood(item){
+ if($('supportmenu').hidden||$('support-perks').hidden||!artistDeskIds().includes(perkSeat)||(artistSeatGear(perkSeat)&item.bit)||S.money<item.price)return false;
+ S.money-=item.price;S.seatGear[perkSeat]=artistSeatGear(perkSeat)|item.bit;save();syncArtistFurniture();AU.buy();updateHUD(true);renderSupportMenu();
+ $('perk-feedback').textContent=(perkSeat+1)+'번 자리 '+$(item.button).querySelector('b').textContent+' 설치 완료';return true;
+}
+function renderHonorarium(){
+ const h=S.honor,ids=artistDeskIds(),unpaid=ids.filter(i=>!h.seats.includes(i)),rate=$('honor-rate'),unit=h.unit??Number(rate.value),cost=unit*unpaid.length,b=$('honor-pay');
+ rate.disabled=h.unit!==null;rate.value=String(unit);$('honor-period').textContent=S.zone+'기 · 예술가 '+ids.length+'명';
+ let comparison='직전 기수 1인당 '+won(h.previous);
+ if(h.previous){const pct=Math.round((unit-h.previous)*100/h.previous);comparison+=' · '+(pct?Math.abs(pct)+'% '+(pct<0?'삭감':'증액'):'동결')}
+ else if(unit)comparison+=' · 신규 편성';
+ $('honor-comparison').textContent=comparison;
+ const closed=h.unit===0||!unpaid.length,short=Math.max(0,cost-S.money);
+ b.disabled=closed||short>0;b.textContent=h.unit===0?'미편성 확정':!unpaid.length?'지급 완료 · '+won(unit*h.seats.length):short?won(short)+' 부족':!unit?'이번 기수 미편성 확정':unpaid.length+'명 · '+won(cost)+(h.unit===null?' 지급':' 추가 지급');
+}
+function payHonorarium(){
+ if($('supportmenu').hidden||$('support-perks').hidden)return false;
+ const h=S.honor,unit=h.unit??Number($('honor-rate').value),seats=artistDeskIds().filter(i=>!h.seats.includes(i)),cost=unit*seats.length;
+ if(!HONOR_RATES.includes(unit)||h.unit===0||!seats.length||S.money<cost)return false;
+ h.unit=unit;h.seats.push(...seats);S.money-=cost;save();if(cost)AU.buy();else AU.tick();updateHUD(true);renderSupportMenu();
+ $('perk-feedback').textContent=cost?'품위유지비 '+won(cost)+' 지급 완료':'이번 기수 품위유지비 미편성';return true;
+}
 function renderSupportMenu(){
  const {dm,due,n,cost,waiting,missing,credit,refused,payable}=supportPayment(),idle=!due,running=!!S.support;
  $('support-title').textContent=S.zone+'기 창작지원';$('supportmoney').textContent=won(S.money);$('supportpeople').textContent='예술가 '+n+'명 · 시민 '+creators.filter(c=>c.d.citizen&&creatorActive(c)).length+'명'+(S.specialIds.length?' (특별 선정 '+S.specialIds.length+'명)':'');$('supportwaiting').textContent=waiting?(dm?'창작 중단 ':'활동비 소진 ')+waiting+'명':'창작 활동 중';
@@ -7069,8 +7386,9 @@ function renderSupportMenu(){
   $('supportreviewdetail').textContent=more?'이번 기수의 남은 인원을 심사해 배정합니다.':S.paid?'정산이 끝났습니다. 다음 기수의 지원 대상을 배정합니다.':'이번 기수 정산 후 결과보고전을 엽니다. 예정 개최비 '+won(fee)+'.';
   review.disabled=!ready;review.textContent=ready?'심사하기':'정산 후 심사';
  }
+ if(!$('support-perks').hidden)renderArtistPerks();
 }
-function openSupportMenu(){if(!menuAvailable())return false;paused=true;releaseAll();$('hud').inert=true;renderSupportMenu();$('supportmenu').hidden=false;save();$('supportx').focus();return true}
+function openSupportMenu(){if(!menuAvailable())return false;paused=true;releaseAll();$('hud').inert=true;showSupportPage(false);perkPhotoKey='';$('perk-feedback').textContent='';renderSupportMenu();$('supportmenu').hidden=false;save();$('supportx').focus();return true}
 function closeSupportMenu(){if($('supportmenu').hidden)return;$('supportmenu').hidden=true;$('hud').inert=false;paused=false;last=0;AU.wake();$('gl').focus()}
 function payFromSupport(){
  if($('supportmenu').hidden)return false;
@@ -7158,11 +7476,15 @@ function bind(){
  addEventListener('resize',resize);
  $('start').onclick=()=>{if(started)return;started=true;paused=false;$('intro').hidden=true;$('hud').style.display='block';AU.wake();updateHUD(true);setHint();$('gl').focus()};
  $('snd').onclick=()=>{AU.wake();S.muted=!S.muted;AU.mute(S.muted);save();updateHUD(true)};
+ $('support-main-btn').onclick=()=>showSupportPage(false);$('support-perks-btn').onclick=()=>showSupportPage(true);
+ $('perk-seat').onchange=e=>{perkSeat=Number(e.target.value);renderArtistPerks()};
+ for(const item of ARTIST_GOODS)$(item.button).onclick=()=>buyArtistGood(item);
+ $('honor-rate').onchange=renderHonorarium;$('honor-pay').onclick=payHonorarium;
  $('supportbtn').onclick=openSupportMenu;$('supportx').onclick=closeSupportMenu;$('supportpay').onclick=payFromSupport;$('supportreport').onclick=reportClosure;$('supportreview').onclick=reviewFromSupport;
  $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('buybub').onclick=()=>{AU.wake();openShop()};$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('candidate-reject').onclick=()=>rejectCandidate(IV.sel);$('candidate-private').onclick=()=>privateCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
  $('supportmenu').addEventListener('pointerdown',e=>{if(e.target===$('supportmenu'))closeSupportMenu()});
- $('reset').onclick=()=>{if(!confirm('예산과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;exAbort();const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:m,wp:1,wf:1,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],exDone:0,exFeeZone:0};roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
+ $('reset').onclick=()=>{if(!confirm('예산과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;exAbort();const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:m,wp:1,wf:1,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],exDone:0,exFeeZone:0,seatGear:[],honor:freshArtistPerks(1)};syncArtistFurniture();roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
  cv.addEventListener('webglcontextlost',loseGraphics);
  cv.addEventListener('webglcontextrestored',restoredGraphics);
 }
