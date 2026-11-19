@@ -917,7 +917,7 @@ const AU={c:null,out:null,fx:null,mu:null,nb:null,loops:{},coinT:0,popT:0,mt:0,m
 
 /* ───────── three 기본 ───────── */
 let renderer,scene,camera,sun,W=1,H=1,portrait=true,time=0;
-const GFX={lost:false,rebuild:false,wake:false,environment:null,source:null};
+const GFX={lost:false,rebuild:false,wake:false,suspended:false,environment:null,source:null};
 const P={x:0,z:.8};
 const lin=h=>new THREE.Color(h).convertSRGBToLinear();
 const M=(hex,rough=.7,metal=0,env=.4)=>new THREE.MeshStandardMaterial({color:lin(hex),roughness:rough,metalness:metal,envMapIntensity:env});
@@ -943,9 +943,32 @@ const INK={size:2048,rt:null,scene:null,cam:null,pool:[],q:[],stains:[],journal:
 const CELL=i=>[(i%4)*.25,1-(Math.floor(i/4)+1)*.25,.25,.25],INKN=320;
 // 바닥 그림이 덮는 범위: 작업장은 24m 전체, 전시장은 전시장만 덮어서 같은 해상도로 더 촘촘하게 그린다
 function inkFrame(cx,cz,size){const c=INK.cam;c.left=cx-size/2;c.right=cx+size/2;c.bottom=cz-size/2;c.top=cz+size/2;c.updateProjectionMatrix();INK.uWorld.value=size;INK.uOff.value.set(cx,cz)}
+// 실제 작업 구역 바깥 네 줄은 보존한다. 구석의 낮은 알파값은 바닥에 보이지 않고
+// 탭 복귀 시 GPU에 잉크가 남았는지, 축소 백업까지 제대로 복사됐는지 알려 준다.
+const INK_TAG=32,inkProbe=new Uint8Array(4);
+function inkTarget(size){
+ const target=new THREE.WebGLRenderTarget(size,size,{depthBuffer:false,stencilBuffer:false,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
+ target.scissorTest=true;target.scissor.set(0,4,size,size-4);return target;
+}
+function hasFloorImage(){
+ inkProbe[3]=0;renderer.readRenderTargetPixels(INK.rt,0,0,1,1,inkProbe);
+ return inkProbe[3]===INK_TAG;
+}
+function clearFloorImage(){
+ const target=INK.rt,old=renderer.getRenderTarget(),col=renderer.getClearColor(new THREE.Color()),a=renderer.getClearAlpha();
+ try{
+  target.scissor.set(0,0,target.width,target.height);renderer.setRenderTarget(target);
+  renderer.setClearColor(0,0);renderer.clear(true,false,false);
+  target.scissor.set(0,0,4,4);renderer.setRenderTarget(target);
+  renderer.setClearColor(0,INK_TAG/255);renderer.clear(true,false,false);
+ }finally{
+  target.scissor.set(0,4,target.width,target.height-4);
+  renderer.setRenderTarget(old);renderer.setClearColor(col,a);
+ }
+}
 function inkInit(){
  const mt=renderer.capabilities.maxTextureSize;INK.size=fine&&mt>=8192?4096:mt>=4096?2048:1024;
- INK.rt=new THREE.WebGLRenderTarget(INK.size,INK.size,{depthBuffer:false,stencilBuffer:false,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
+ INK.rt=inkTarget(INK.size);
  INK.uInk.value=INK.rt.texture;INK.uInkPx.value=1/INK.size;
  INK.scene=new THREE.Scene();INK.cam=new THREE.OrthographicCamera(-WORLD_SIZE/2,WORLD_SIZE/2,WORLD_SIZE/2,-WORLD_SIZE/2,0,2);INK.cam.position.z=1;INK.uOff.value=new THREE.Vector2(0,0);
  const atlas=canvasTex(1024,1024,(g)=>{
@@ -1024,7 +1047,7 @@ function wetFlush(dt){
  q.splice(0,n);
  const ac=renderer.autoClear;try{renderer.autoClear=false;renderer.setRenderTarget(WET.rt);renderer.render(WET.scene,INK.cam)}finally{renderer.setRenderTarget(null);renderer.autoClear=ac}
 }
-function inkClear(){const old=renderer.getClearAlpha(),oc=renderer.getClearColor(new THREE.Color());renderer.setRenderTarget(INK.rt);renderer.setClearColor(0x000000,0);renderer.clear();renderer.setRenderTarget(null);renderer.setClearColor(oc,old);INK.q.length=0;INK.stains.length=0;INK.journal.length=0;if(INK.backup)INK.backup.valid=false;wetClear()}
+function inkClear(){clearFloorImage();INK.q.length=0;INK.stains.length=0;INK.journal.length=0;if(INK.backup)INK.backup.valid=false;wetClear()}
 // rot: 스탬프의 +y(바깥 방향)가 향할 월드 방향 (dx,dz)
 function stamp(x,z,w,h,dx,dz,cell,color,alpha=1,erase=false,nj=false){
  if(INK.q.length>1400)return;
@@ -1068,14 +1091,16 @@ function inkCopy(texture,target){
 }
 function rememberFloor(){
  if(!INK.rt||GFX.lost||renderer.getContext().isContextLost()||!INK.journal.length&&!INK.q.length)return;
- try{while(INK.q.length)inkFlush();const b=inkBackup();inkCopy(INK.rt.texture,b.rt);renderer.readRenderTargetPixels(b.rt,0,0,b.size,b.size,b.spare);
-  if(renderer.getContext().isContextLost())return;const previous=b.data;b.data=b.spare;b.spare=previous;b.texture.image.data=b.data;b.valid=true;b.texture.needsUpdate=true;INK.journal.length=0;
+ try{
+  if(!hasFloorImage()){wakeGraphics();return}
+  while(INK.q.length)inkFlush();const b=inkBackup();inkCopy(INK.rt.texture,b.rt);
+  b.spare[3]=0;renderer.readRenderTargetPixels(b.rt,0,0,b.size,b.size,b.spare);
+  if(renderer.getContext().isContextLost()||b.spare[3]!==INK_TAG)return;const previous=b.data;b.data=b.spare;b.spare=previous;b.texture.image.data=b.data;b.valid=true;b.texture.needsUpdate=true;INK.journal.length=0;
  }catch(e){console.warn('Floor checkpoint unavailable',e)}
 }
 function restoreFloor(){
  if(!INK.rt)return;
- const pending=INK.q.splice(0),journal=INK.journal.slice(),old=renderer.getClearColor(new THREE.Color()),alpha=renderer.getClearAlpha();
- renderer.setRenderTarget(INK.rt);renderer.setClearColor(0,0);renderer.clear();renderer.setRenderTarget(null);renderer.setClearColor(old,alpha);
+ const pending=INK.q.splice(0),journal=INK.journal.slice();clearFloorImage();
  if(INK.backup?.valid){INK.backup.texture.needsUpdate=true;inkCopy(INK.backup.texture,INK.rt)}
  INK.q.push(...journal);while(INK.q.length)inkFlush(true);INK.q.push(...pending);
 }
@@ -7124,7 +7149,7 @@ function hallIn(){
  // 바닥 그림: 작업장 것은 그대로 두고 전시장 것을 따로 그린다
  while(INK.q.length)inkFlush();
  EX.keep={rt:INK.rt,size:INK.size,stains:INK.stains,journal:INK.journal,backup:INK.backup,XB,ZN,ZF};
- const sz=Math.min(INK.size,2048);EX.rt=new THREE.WebGLRenderTarget(sz,sz,{depthBuffer:false,stencilBuffer:false,minFilter:THREE.LinearFilter,magFilter:THREE.LinearFilter});
+ const sz=Math.min(INK.size,2048);EX.rt=inkTarget(sz);
  INK.rt=EX.rt;INK.size=sz;INK.stains=[];INK.journal=[];INK.backup=null;INK.uInk.value=INK.rt.texture;INK.uInkPx.value=1/sz;EX.lost=false;
  roomShow(false);const L=hallLayout(N,ids);XB=L.xb;ZN=L.zn;ZF=L.zf;P.x=0;P.z=ZF-.35;camX=0;
  {const x0=-L.sx-.1,x1=L.sx+.1,z0=L.bz-.1,z1=ZF+.9,size=Math.max(x1-x0,z1-z0);inkFrame((x0+x1)/2,(z0+z1)/2,size)} // 전시장만 덮어서 자국을 촘촘하게 그린다
@@ -7138,7 +7163,7 @@ function hallOut(){
  leaveHallProps();cleanTools();creatures.length=0;drops.length=0;chunks.length=0;lensClear();AU.crowdStop();
  INK.q.length=0;const k=EX.keep;if(INK.backup&&INK.backup!==k.backup&&!EX.lost){INK.backup.rt.dispose();INK.backup.texture.dispose()}$('extitle').classList.remove('on');
  INK.rt=k.rt;INK.size=k.size;INK.stains=k.stains;INK.journal=k.journal;INK.backup=k.backup;INK.uInk.value=INK.rt.texture;INK.uInkPx.value=1/INK.size;if(EX.rt){if(!EX.lost)EX.rt.dispose();EX.rt=null}inkFrame(0,0,WORLD_SIZE);wetClear();
- if(EX.lost)restoreFloor(); // 전시장에 있는 동안 그래픽이 끊겼으면 작업장 바닥을 기록으로 다시 그린다
+ if(EX.lost||!hasFloorImage())restoreFloor(); // 숨겨 뒀던 작업장 바닥도 복귀할 때 따로 검사한다.
  EX.on=false;EX.phase='';EX.keep=null;XB=k.XB;ZN=k.ZN;ZF=k.ZF;roomShow(true);roomTarget(S.zone,true);
  if(!S.owned.includes(S.tool))S.tool=S.owned.includes(EX.tool0)?EX.tool0:'hand';
  P.x=0;P.z=.8;camX=0;spawnInitial();updateCreators(0);
@@ -7469,9 +7494,9 @@ function bind(){
   if(!e.repeat&&(e.code==='KeyB'||e.code==='KeyE'))openShop();
   if(!e.repeat&&(e.code==='Enter'||e.code==='KeyF')){e.preventDefault();openSupportMenu()}});
  addEventListener('keyup',e=>{keys[e.code]=false});
- addEventListener('blur',()=>{if(started&&!paused)pauseGame();else releaseAll()});
- document.addEventListener('visibilitychange',()=>{if(closedHome)return;if(document.hidden){if(started&&!paused)pauseGame();else{releaseAll();AU.sleep()}rememberFloor();save()}else wakeGraphics()});
- addEventListener('pagehide',()=>{if(closedHome)return;releaseAll();AU.sleep();rememberFloor();save()});
+ addEventListener('blur',suspendGraphics);addEventListener('pagehide',suspendGraphics);
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendGraphics();else wakeGraphics()});
+ document.addEventListener('freeze',suspendGraphics);document.addEventListener('resume',wakeGraphics);
  addEventListener('pageshow',wakeGraphics);addEventListener('focus',wakeGraphics);
  addEventListener('resize',resize);
  $('start').onclick=()=>{if(started)return;started=true;paused=false;$('intro').hidden=true;$('hud').style.display='block';AU.wake();updateHUD(true);setHint();$('gl').focus()};
@@ -7495,22 +7520,33 @@ function rebuildEnvironment(){
  const pm=new THREE.PMREMGenerator(renderer),previous=GFX.environment;
  try{GFX.environment=pm.fromEquirectangular(GFX.source);scene.environment=GFX.environment.texture;if(IV.scene)IV.scene.environment=scene.environment;previous?.dispose()}finally{pm.dispose()}
 }
-function wakeGraphics(){GFX.wake=true;last=0}
+function suspendGraphics(){
+ if(closedHome||GFX.suspended)return;GFX.suspended=true;
+ if(started&&!paused)pauseGame();else{releaseAll();AU.sleep()}
+ rememberFloor();save();
+}
+function wakeGraphics(){GFX.wake=true;FR.need=true;last=0}
 function loseGraphics(e){
  e.preventDefault();if(EX.on)EX.lost=true;GFX.lost=true;GFX.rebuild=true;last=0;
  if(started&&!paused)pauseGame();else{releaseAll();AU.sleep()}save();
 }
-function restoredGraphics(){GFX.lost=false;GFX.rebuild=true;wakeGraphics()}
+function restoredGraphics(){GFX.environment=null;GFX.lost=false;GFX.rebuild=true;wakeGraphics()}
 function refreshGraphics(){
  if(!renderer||GFX.lost||renderer.getContext().isContextLost())return false;
+ if(GFX.suspended||GFX.rebuild)renderer.resetState();
  renderer.setRenderTarget(null);renderer.setScissorTest(false);renderer.autoClear=true;
  renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.NoToneMapping;
  renderer.setClearColor(0xeef1f7,1);scene.background=lin(0xeef1f7);
- if(GFX.rebuild){rebuildEnvironment();restoreFloor();wetClear();renderer.shadowMap.needsUpdate=true;GFX.rebuild=false}
- resize();renderer.setViewport(0,0,W,H);GFX.wake=false;last=0;return true;
+ if(GFX.rebuild)rebuildEnvironment();
+ if(GFX.rebuild||!hasFloorImage()){restoreFloor();wetClear()}
+ if(GFX.suspended||GFX.rebuild){
+  const floor=EX.on?HALL.mat:ROOM.fl.material;if(floor?.map)floor.map.needsUpdate=true;
+  renderer.shadowMap.needsUpdate=true;
+ }
+ GFX.suspended=false;GFX.rebuild=false;resize();renderer.setViewport(0,0,W,H);GFX.wake=false;last=0;return true;
 }
 
-function resize(){FR.need=true;W=Math.max(1,innerWidth);H=Math.max(1,innerHeight);portrait=H>W;renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=portrait?CAM.fp:CAM.fl;camera.updateProjectionMatrix();lensSize();if(IV.open)layoutInterview();if(EX.on)exToolsFit();bubPlace()}
+function resize(){FR.need=true;W=Math.max(1,innerWidth);H=Math.max(1,innerHeight);portrait=H>W;const cv=renderer.domElement;if(cv.width!==Math.floor(W*pr)||cv.height!==Math.floor(H*pr))renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=portrait?CAM.fp:CAM.fl;camera.updateProjectionMatrix();lensSize();if(IV.open)layoutInterview();if(EX.on)exToolsFit();bubPlace()}
 
 /* ───────── 루프 ───────── */
 let last=0,slow=0,pr=1;const FR={prev:0,vs:16.7,odd:false,need:true,drawn:0,ft:.0167,hold:0,mem:0};
