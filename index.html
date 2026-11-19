@@ -538,7 +538,7 @@ const TOOLS=[
  {id:'boot',name:'안전화',short:'안전화',price:30000,desc:'밟아서 처리합니다. 길게 누르면 체중이 실리고, 구르기 버튼을 누르고 있으면 양발로 번갈아 밟습니다.'},
  {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:120000,desc:'몇 마리는 콕 집고, 몰린 곳은 훑어 한 번에 최대 20마리를 담습니다. 50L 봉투 정원은 160마리입니다. 가득 차거나 밟기 버튼을 누르면 봉투를 묶어 놓고, 누르는 동안 밟습니다.'},
  {id:'shovel',name:'수거용 삽',short:'삽',price:250000,desc:'내려칠 때마다 더 짓이겨집니다. 누르고 있으면 계속 내려치고, 퍼담기 버튼을 누르는 동안 긁어 담았다가 떼면 수거통에 텁니다.'},
- {id:'vac',name:'흡입 수거기',short:'흡입기',price:900000,desc:'300명까지 모아 담습니다. 가득 차거나 갈기 버튼을 누르면 롤러로 갈아 아래 통에 잘게 쌓습니다. 갈리는 동안 찧기 버튼을 누르고 있으면 두꺼운 유리 누름판으로 계속 내리찍고, 화면을 누르고 있으면 꾹 짓눌러 밀어 넣습니다.'},
+ {id:'vac',name:'흡입 수거기',short:'흡입기',price:900000,desc:'300명까지 모아 담습니다. 가득 차거나 갈기 버튼을 누르면 롤러로 갈아 아래 통에 잘게 쌓습니다. 갈리는 동안 찧기 버튼을 누르고 있으면 두꺼운 유리 누름판으로 내리찍어 짓누르기를 되풀이하고, 화면을 누르고 있으면 계속 꾹 짓눌러 밀어 넣습니다.'},
  {id:'trim',name:'예초기',short:'예초기',price:1400000,desc:'누르는 동안 줄이 돕니다. 누른 채 좌우로 끌면 휘두르고, 줄 풀기 버튼을 누르면 헤드를 바닥에 쳐서 감긴 것을 털고 새 줄을 뺍니다.'}
 ];
 
@@ -4759,7 +4759,7 @@ const VAC_LOW_SPEED=.86, VAC_DRAIN_TIME=.78;
 // 누름판: 통 안지름의 91% · 두꺼운 강화유리 원반 · 가운데 쇠 허브. 넓어진 가장자리가 경사진 바닥판에 닿지 않게 하한을 둔다.
 // 떨어질 때 가속·최고 빠르기 · 한 번 찍고 최소로 눌러 두는 시간 · 들어 올리는 시간 · 들다가 다시 찍을 수 있는 때 · 짓눌린 것이 끌려 들어가는 빠르기 · 롤러로 밀어 넣는 간격 · 꾹 누를 때 밀고 내려가는 빠르기 · 꺼질 때 빠르기
 const PE_R=HR*.91,PE_TH=.036,PE_SH=.23,PE_YR=HH-.034,PE_YMIN=Math.max(NIP+RC+.012,DY+DS*(PE_R-DZ)+.008),PE_ACC=22,PE_VMAX=2.3,PE_HIT=.12,PE_UP=.24,PE_TAP=.3,PE_FEED=11,PE_PULSE=.3,PE_PUSH=.2,PE_LURCH=.5;
-const PD_V0=1.15,PD_ACC=36,PD_VMAX=2.7,PD_HIT=.09,PD_TOP=.96,PD_RISE=.085,PD_UP=.26,PD_WIND=.14,PD_HANG=.05,PD_DEEP=.03,PD_FX=6,PD_RAM=2.2; // 찧기: 내려찍는 첫 속도·가속·최고 속도 · 박힌 채 머무는 시간 · 다시 내려찍기 전에 들어 올리는 정도(0~1) · 통 위로 더 들어 올리는 높이 · 들어 올리는 시간(박힌 데서 / 쉬던 자리에서) · 꼭대기에서 잠깐 멎는 시간 · 한 번에 뼈가 나가는 켜의 두께 · 효과를 다 내는 마릿수
+const PD_PUSH=.6,PD_PUSHMAX=.85,PD_CLEAR=.075; // 찧기(누르고 있으면 되풀이): 박힌 뒤 꾹 밀어 넣는 시간 · 판이 아직 꺼져 내려가는 중이면 더 미는 한도 · 다시 찍기 전에 더미 위로 들어 올리는 높이
 // 눌린 놈이 단계마다 버틸 수 있는 두께(처음 두께에 대한 비율): 처음엔 물러서 조금 눌리고 → 뼈가 나가며 납작 → 눈알·팔다리 → 몸통이 터짐 → 고깃장
 const PE_STG=[.74,.54,.4,.3,.22],GS_Y0=NIP+.02,GS_H=HH-GS_Y0; // 통 유리 핏자국 그림이 덮는 높이
 // 단계마다 남은 부피(터져 나간 만큼 준다) · 판이 더미를 누르는 동안 더미 전체가 납작해지는 빠르기
@@ -5174,8 +5174,10 @@ function douUpdate(dt){const d=DOU,v=VC;if(!d.stM)return;const py=d.py=v.pg&&v.p
 /* ── 유리 누름판: 무게를 실어 떨어져 더미에 쿵 박히고, 꾹 누르고 있으면 계속 밀고 내려간다.
    판에 닿은 채 밑이 받쳐진 놈은 밀려 내려가지 못하고 그 자리에서 위아래로 납작해진다. 단계마다 버틸 수 있는 두께가 있어서
    거기 닿으면 판이 멈춰 끼익 버티다가, 압력이 쌓여 뼈가 나가면(우둑) 다음 단계 두께까지 툭 꺼진다. 판이 투명해서 짓눌리는 면이 위에서 그대로 보인다. ── */
-function pestleTop(x,z){const v=VC;let top=PE_YMIN; // 판이 처음 닿는 높이: 판 둘레 안에 든 것 중 겉모습이 가장 높이 솟은 몸
- for(const c of v.tank){if(c.gp>0||c.gpin)continue;const dx=c.tp.x-x,dz=c.tp.z-z,R=PE_R+c.hr*.2;if(dx*dx+dz*dz<R*R){const t=c.tp.y+(c.pflat>0?c.hv:Math.min(c.hv,c.hvN||c.hv));if(t>top)top=t}} // 유리에 매달린 것·튀어 오른 것은 지나쳐 더미 윗면에서 멈춘다
+function pestleTop(x,z){const v=VC;let top=PE_YMIN,t1=-9,t2=-9,t3=-9,air=-9; // 판이 떨어져 멎는 높이: 판 둘레 안 더미의 윗면 (겉모습 기준)
+ for(const c of v.tank){if(c.gp>0||c.gpin||c.wl>0)continue;const dx=c.tp.x-x,dz=c.tp.z-z,R=PE_R+c.hr*.2;if(dx*dx+dz*dz<R*R){const t=c.tp.y+(c.pflat>0?c.hv:Math.min(c.hv,c.hvN||c.hv));
+   if(!(c.ct&23)){if(t>air)air=t}else if(t>t1){t3=t2;t2=t1;t1=t}else if(t>t2){t3=t2;t2=t}else if(t>t3)t3=t}} // 유리에 매달린 것·떠 있는 것·혼자 솟은 한둘은 판에 쓸려 내려간다
+ {const t=t3>-9?t3:t2>-9?t2:t1>-9?t1:air;if(t>top)top=t}
  for(const e of v.eat){if(e.cy<0)continue;const dx=e.cx-x,dz=e.cz-z;if(dx*dx+dz*dz<PE_R*PE_R){const t=e.cy+e.cr*.45;if(t>top)top=t}}
  return top}
 const pressThr=c=>(.15+.28*c.tough)*(1+.22*(c.pstg||0))*rnd(.8,1.2); // 뼈가 나가기까지 버티는 시간 (단단한 놈일수록 오래 버틴다)
@@ -5273,28 +5275,28 @@ function pestleEat(hy){const v=VC;let smashed=0;
   else if(e.ph==='limp')e.dg+=e.mash?.6:.8} // 넘어가는 중인 것은 더 깊이 밀어 넣는다
  return smashed}
 function pestleRam(){const v=VC,T=v.tank;let rammed=0; // 맨 밑 것들이 롤러 틈으로 밀려 들어간다
- if(v.mot&&v.ph===1){const n=T.length,K=Math.round((n>40?7:n>24?5:3)*(v.pPd&&v.pS!=='up'?PD_RAM:1));
+ if(v.mot&&v.ph===1){const n=T.length,K=n>40?7:n>24?5:3;
   const cand=T.filter(c=>!c.hold&&!(c.gp>0)&&!c.gpin&&Math.abs(c.tp.x)<PE_R+.012&&Math.abs(c.tp.z)<.075&&(c.ct&17||c.tp.y<NIP+.075)).sort((a,b)=>a.tp.y-(a.pc?.03:0)-b.tp.y+(b.pc?.03:0));
   for(const c of cand){if(rammed>=K)break;const xx=clamp(c.tp.x,-.088,.088),sd=c.tp.z>=0?1:-1;if(v.eat.some(e=>e.s===sd&&Math.abs(e.x-xx)<.012))continue;vacTake(c,{mash:true});rammed++}}
  return rammed}
 function pestleImpact(vI){ // 더미에 쿵 박힌다: 세게 찍을수록 맨 윗켜의 뼈가 그 자리에서 나가고 판이 쑥 파고든다
  const v=VC,T=v.tank,hy=v.pY,k=clamp((vI-.2)/1.9,0,1),drop=vI>1.55?2:vI>.6?1:0;v.pN++;v.pressT=.18;if(v.ph===1&&!v.mot&&v.gr>.3)v.gr=Math.max(v.gr,VM-.001); // 찍기 시작하면 모터도 바로 건다
  const top=c=>c.tp.y+(c.pflat>0?c.hv:Math.min(c.hv,c.hvN||c.hv));
- const hit=[];for(const c of T){if(c.gp>0||c.gpin)continue;if(Math.hypot(c.tp.x,c.tp.z)<PE_R-c.hr*.3&&top(c)>hy-(v.pPd?.009+PD_DEEP*k:.009))hit.push(c)}
+ const hit=[];for(const c of T){if(c.gp>0||c.gpin)continue;if(Math.hypot(c.tp.x,c.tp.z)<PE_R-c.hr*.3&&top(c)>hy-.009)hit.push(c)}
  hit.sort((a,b)=>top(b)-top(a));
  let fxN=0;for(const c of hit){const nw=!c.pflat;if(nw)pressFirst(c);c.pflat=Math.max(c.pflat,.45);
   if(nw&&!c.pwall&&c.type!==6&&Math.random()<.3){c.ptl=-rnd(1,1.3);c.prl=rnd(-.3,.3)} // 맨 윗켜 몇은 고개를 쳐들었다가 얼굴이 판 유리에 짓눌린다
-  for(let i=0;i<drop&&c.pstg<4;i++)pressCrack(c,fxN<(v.pPd?PD_FX:4)?1:0);if(drop)fxN++}
+  for(let i=0;i<drop&&c.pstg<4;i++)pressCrack(c,fxN<4?1:0);if(drop)fxN++}
  v.cs=Math.min(v.cs??1,1-(.1+.3*k)); // 찍힌 기세만큼 판 밑 더미 전체가 한 번에 눌린다
  for(const c of hit)c.fu=Math.max(c.fu||0,.28+.4*k); // 찍힌 켜는 그 자리에서 서로 들러붙기 시작한다
  if(v.pinN<2&&k>.25){let best=null,bs=-1;for(const c of T){if(c.gpin||c.gp>0||c.hold||c.pflat)continue;const p=c.tp,rd=Math.hypot(p.x,p.z),ax=Math.abs(p.x);if(rd>HR-.007-c.hr-.008&&Math.abs(p.y-hy)<c.hv*1.4&&p.z>.02){const sc=p.z-Math.abs(ax-.055)*.8;if(sc>bs){bs=sc;best=c}}}if(best)pinBody(best)} // 앞쪽 유리벽에 붙어 있던 놈이 판 가장자리 틈에 끼인다
- const smashed=pestleEat(v.pPd&&k>.5?-1:hy);
+ const smashed=pestleEat(hy);
  for(const c of T){if(c.wl>0&&Math.random()<.55){c.wl=0;vacSlip(c)} // 유리에 매달려 버티던 것들이 충격에 미끄러진다
   if(!c.hold&&!(c.gp>0)&&!c.gpin&&c.tp.y<hy){c.tv.y=Math.min(c.tv.y,-.15-.25*k);c.tv.z-=Math.sign(c.tp.z)*.1*k}} // 찍힌 충격에 밑 더미가 롤러 쪽으로 쑥 내려앉는다
  const rammed=pestleRam(),n=hit.length+smashed;
  if(n||rammed){AU.glassSlam(Math.min(6,n)+rammed*.5,.5+.5*k);if(time>v.bzT){v.bzT=time+.12;buzz(Math.round(8+10*k))}}else AU.tone('sine',70,35,.16,.18);
  v.jo=Math.max(v.jo,n?.14+.3*k:.05);v.joS=1; // 화면은 흔들지 않고 통만 덜컥한다
- if(n&&k>.35)hitstop=Math.max(hitstop,v.pPd?.018+.016*k:.02+.03*k);
+ if(n&&k>.35)hitstop=Math.max(hitstop,.02+.03*k);
  v.pDig=.09;v.pV0=vI*.5;v.pCmd=hy-(.008+.026*k);v.bncT=0;v.bncA=n?.0028*k:.0015;
  v.gsm=Math.min(1,v.gsm+(n?.03:0));v.pstain=Math.min(1,v.pstain+(n?.08:0));
  if(hit.length)v.pHit=hit.slice(0,6)}
@@ -5309,21 +5311,21 @@ function pestleLift(){const v=VC;let n=0; // 들어 올리면 밑면과 짓이�
    v.strs.push({c,ox,oz,bx:c.tp.x,by:c.tp.y,bz:c.tp.z,L:rnd(.09,.19),r:rnd(.0018,.0032),col:BLOOD.clone().lerp(c.ink,.3).multiplyScalar(.85),t:0})}}
  if(n){AU.unstick(.9);if(Math.random()<.5)AU.squelch(.35)}
  v.pHit.length=0}
-function pestleStart(pd){const v=VC;v.pPd=pd?1:0;v.pq=0;v.pS='down';v.pT=0;v.pV=pd?PD_V0:0;v.pY0=v.pY;v.pX=v.pZ=0;v.pPulse=PE_PULSE;v.twT=0;v.pNone=0;for(const s of v.strs)s.L=0}
-function pestleTap(main){const v=VC;if(!started||paused||S.tool!=='vac'||(EX.on&&EX.phase!=='run')||v.ph!==1||v.gr<=.06)return;v.pq=main?1:2}
-function pestleRelease(){const v=VC;v.pS='up';v.pT=0;v.pU=0;v.pY1=v.pY;v.pTop=PE_YR;v.pWind=0;v.pHang=0;v.pq=0;v.pressT=0;v.twT=0;v.pV=0;v.pBlkd=false;douLift();pestleLift();gapRelease();for(const c of v.tank)if(c.gpin)pinRelease(c)}
-function pestleUpdate(dt,hold,tap,kk,pound){ // hold: 꾹 누르기 · pound: 찧기(누르는 동안 되풀이) · tap: 1 화면, 2 찧기 버튼
+function pestleStart(){const v=VC;v.pq=0;v.pS='down';v.pT=0;v.pV=0;v.pY0=v.pY;v.pX=v.pZ=0;v.pPulse=PE_PULSE;v.twT=0;v.pNone=0;for(const s of v.strs)s.L=0}
+function pestleTap(main){const v=VC;if(!started||paused||S.tool!=='vac'||(EX.on&&EX.phase!=='run')||v.ph!==1||v.gr<=.06)return;v.pq=1}
+function pestleRelease(){const v=VC;v.pS='up';v.pT=0;v.pU=0;v.pY1=v.pY;v.pq=0;v.pressT=0;v.twT=0;v.pV=0;v.pBlkd=false;douLift();pestleLift();gapRelease();for(const c of v.tank)if(c.gpin)pinRelease(c)}
+function pestleUpdate(dt,hold,tap,kk){
  const v=VC,g=v.pg,live=v.ph===1;v.pHold=hold;
  v.pIn=damp(v.pIn,live&&kk>.4?1:0,live?10:7,dt);g.visible=v.pIn>.01;v.pressT=Math.max(0,v.pressT-dt);
  if(!g.visible){v.pS='ready';v.pq=0;v.pY=PE_YR;v.pT=0;v.pLoad=0;v.pV=0;v.twA=0;v.twT=0;return}
- if(tap&&live)v.pq=tap;if(!live){v.pq=0;if(v.pS==='down'||v.pS==='press')pestleRelease()}
+ if(tap&&live)v.pq=1;if(!live){v.pq=0;if(v.pS==='down'||v.pS==='press')pestleRelease()}
  const ok=live&&v.pIn>.9;v.pT+=dt;v.pX=v.pZ=0;
- if(v.pS==='ready'){v.pLoad=damp(v.pLoad,0,8,dt);v.pY=damp(v.pY,PE_YR,10,dt);if(ok&&!hold&&(pound||v.pq===2)){v.pS='up';v.pT=1;v.pU=0;v.pY1=v.pY;v.pTop=v.pY;v.pWind=1;v.pHang=0}else if(ok&&(v.pq||hold))pestleStart()}
+ if(v.pS==='ready'){v.pLoad=damp(v.pLoad,0,8,dt);v.pY=damp(v.pY,PE_YR,10,dt);if(ok&&(v.pq||hold))pestleStart()}
  else if(v.pS==='down'){ // 무게를 실어 떨어진다: 점점 빨라지다 더미에 박힌다
-  v.pressT=.18;v.pV=Math.min(v.pPd?PD_VMAX:PE_VMAX,v.pV+(v.pPd?PD_ACC:PE_ACC)*dt);const y=v.pY-v.pV*dt,top=pestleTop(0,0);
+  v.pressT=.18;v.pV=Math.min(PE_VMAX,v.pV+PE_ACC*dt);const y=v.pY-v.pV*dt,top=pestleTop(0,0);
   if(y<=top||y<=PE_YMIN){v.pY=Math.max(top,PE_YMIN);v.pS='press';v.pT=0;v.pPulse=PE_PULSE;v.pq=0;v.pCmd=v.pY;v.pBlk=PE_YMIN;v.pNone=0;v.pStuckT=0;pestleImpact(v.pV);v.pV=0}else v.pY=y}
  else if(v.pS==='press'){
-  v.pq=0;v.pressT=.18;const hitT=v.pPd?PD_HIT:PE_HIT,push=hold||v.pT<hitT;
+  v.pq=0;v.pressT=.18;const push=hold||v.pT<PE_HIT;
   if(push)v.pCmd=Math.max(PE_YMIN,v.pCmd-PE_PUSH*dt,v.pY-.032); // 꾹 누르는 동안 계속 밀고 내려간다 (버티는 놈이 있으면 거기서 멈춘다)
   v.pDig=Math.max(0,v.pDig-dt);
   const tgt=Math.max(v.pCmd,v.pBlk,PE_YMIN),sp=v.pDig>0?Math.max(PE_LURCH,(v.pV0||0)*v.pDig/.09):PE_LURCH;if(tgt<v.pY)v.pY=Math.max(tgt,v.pY-sp*dt); // 박힐 때는 찍은 기세로 파고들다 금세 멎고, 뼈가 나가면 다음에 버티는 데까지 툭 꺼진다 (밀려 올라가지는 않는다)
@@ -5332,16 +5334,15 @@ function pestleUpdate(dt,hold,tap,kk,pound){ // hold: 꾹 누르기 · pound: �
   if(v.twT>.22){v.tw+=dt;v.twA=Math.sin(v.tw*12.5)*.14*Math.min(1,(v.twT-.22)*4);if(time>(v.twS||0)){v.twS=time+.15;AU.grind2(.6)}}else v.twA=damp(v.twA,0,8,dt);
   if(push&&v.pNone>.1&&v.pY>PE_YMIN+.003){v.pS='down';v.pV=.25;v.pT=0} // 롤러가 먹어 밑이 꺼지면 다시 무게를 실어 떨어진다
   v.pPulse-=dt;if(v.pPulse<=0){v.pPulse=PE_PULSE;pestlePulse()}
-  if(!hold&&v.pT>=hitT)pestleRelease()}
+  if(!hold&&v.pT>=PE_HIT)pestleRelease()}
  else if(v.pS==='up'){ // 들러붙은 데서 잠깐 버티다 들린다
-  const pd=!hold&&(pound||v.pq===2);v.pTop=damp(v.pTop??PE_YR,pd?PE_YR+PD_RISE:PE_YR,16,dt); // 찧을 때는 통 위로 더 들어 올린다
-  v.pLoad=damp(v.pLoad,0,7,dt);v.twA=damp(v.twA,0,10,dt);v.pU=(v.pU||0)+(v.pT>(pd?.03:.05)?dt/(pd?(v.pWind?PD_WIND:PD_UP):PE_UP)*(DOU.str.length?(pd?.62:.45):1):0);const u=clamp(v.pU,0,1);v.pY=lerp(v.pY1,v.pTop,ss(u)); // 들러붙은 살이 늘어나는 동안은 판이 무겁게 들린다
-  if(ok&&(hold||v.pq===1)&&u>=PE_TAP)pestleStart();else if(ok&&pd&&u>=PD_TOP){v.pHang=(v.pHang||0)+dt;if(v.pHang>=PD_HANG)pestleStart(1)}else if(u>=1)v.pS='ready'} // 끝까지 들어 올려 잠깐 멎었다가 내려찍는다
+  v.pLoad=damp(v.pLoad,0,7,dt);v.twA=damp(v.twA,0,10,dt);v.pU=(v.pU||0)+(v.pT>.05?dt/PE_UP*(DOU.str.length?.45:1):0);const u=clamp(v.pU,0,1);v.pY=lerp(v.pY1,PE_YR,ss(u)); // 들러붙은 살이 늘어나는 동안은 판이 무겁게 들린다
+  if(ok&&(v.pq||hold)&&u>=PE_TAP)pestleStart();else if(u>=1)v.pS='ready'}
 }
 // 판 밑에 깔린 것은 맨 윗켜만이 아니라 판 둘레 안의 더미 전체가 같이 눌린다. 판이 더미 윗면에 닿아 있는 동안 더미 전체가 고르게 납작해지고(v.cs),
 // 저마다 버틸 수 있는 두께(plim)에 닿은 놈은 압력이 쌓이다 뼈가 나간다. 눌린 만큼 옆으로 불어나 틈을 메우고 서로 짓누른다(부피는 터져 나간 만큼만 준다)
 function pressSolve(dt){
- const v=VC,T=v.tank,act=!!v.pg&&v.pg.visible&&(v.pS==='press'||v.pS==='down'),pressing=act&&v.pS==='press',hold=pressing&&(v.pHold||v.pT<(v.pPd?PD_HIT:PE_HIT));
+ const v=VC,T=v.tank,act=!!v.pg&&v.pg.visible&&(v.pS==='press'||v.pS==='down'),pressing=act&&v.pS==='press',hold=pressing&&(v.pHold||v.pT<PE_HIT);
  const dA=v.twA-(v.twA0||0);v.twA0=v.twA;const smT=dA&&time>(v.smT||0);if(smT)v.smT=time+.06;
  let topY=PE_YMIN,nP=0,minL=1;
  for(const c of T){c.prsd=0;if(c.gpin||c.gp>0)continue;const p=c.tp,d=Math.hypot(p.x,p.z);
@@ -5430,7 +5431,13 @@ function vacUpdate(dt,act,pedal,go2){
  v.g.updateMatrixWorld(true);
  v.mouth.set(P.x+.04,.05,P.z-.97);
  // 누름판: 오른쪽 화면(스페이스·마우스 왼쪽)이나 누르기 버튼을 누르는 동안 지그시 누른다
- {const pA=act,tapA=pA&&!v.aPrev;v.aPrev=pA;v.pA=pA;const on1=grinding&&v.ph===1;pestleUpdate(dt,on1&&pA,on1?(tapA?1:go2&&v.gr>.06?2:0):0,kk,on1&&pedal&&!pA)}
+ {const pA=act,tapA=pA&&!v.aPrev;v.aPrev=pA;v.pA=pA;const on1=grinding&&v.ph===1;let hold=on1&&pA;
+  if(on1&&pedal&&!pA){ // 찧기: 박힌 뒤 PD_PUSH초 동안(아직 꺼져 내려가면 PD_PUSHMAX초까지) 누르고 있다가 떼고, 판이 더미 위로 PD_CLEAR만큼 들리면 다시 누른다
+   if(v.pS==='press'||v.pS==='down'&&v.pAT>0){v.pAT=(v.pAT||0)+dt;hold=v.pAT<PD_PUSH||v.pAT<PD_PUSHMAX&&v.pY<(v.pAY??9)-.036*dt;v.pAY=v.pY}
+   else if(v.pS==='up'){v.pAT=0;hold=(v.pU||0)>=.9||v.pY-pestleTop(0,0)>=PD_CLEAR}
+   else{v.pAT=0;v.pAY=9;hold=true}}
+  else v.pAT=0;
+  pestleUpdate(dt,hold,on1&&(tapA||go2&&v.gr>.06),kk)}
  for(const l of v.lumps){if(l.u<0){l.m.visible=false;continue}l.u+=dt*1.9;if(l.u>=(l.end||1)){l.u=-1;l.m.visible=false;continue}l.m.visible=true;v.curve.getPoint(l.u,l.m.position);l.m.scale.setScalar(.043*(1.25+.3*Math.sin(l.u*Math.PI)))}
  // 호퍼 안: 산 채로 쌓여 버둥댄다. 유리벽에 붙은 것은 기어오르려다 미끄러진다. 통이 눈앞에 오면 봐 달라고 앞 유리에 붙고, 모터가 걸리면 기겁해 기어오른다
  const pre=v.ph===1&&!v.mot;
@@ -5496,7 +5503,7 @@ function vacUpdate(dt,act,pedal,go2){
    if(v.noC>(v.eat.length?.7:.3)&&n&&v.tank.filter(c=>c.drag).length<(n>2?2:1)){let low=null,lv=1e9;for(const c of v.tank){if(c.hold||c.gpin)continue;const k=c.tp.y+Math.abs(c.tp.z)*.6;if(k<lv){lv=k;low=c}}if(low){low.drag=1;low.cl=0;if(low.wl>0){low.wl=0;vacSlip(low)}v.noC=0}}
    v.idleT=v.eat.length?0:v.idleT+dt;
    if(v.idleT>3&&n){let low=v.tank[0];for(const c of v.tank)if(c.tp.y<low.tp.y)low=c;vacTake(low);v.idleT=0} // 어디 걸려 안 내려오는 것은 끌어내린다
-   {const dv=dt*(1+(v.pressT>0?(v.pPd?2.1:.6):1.15)*clamp((n-90)/160,0,1));for(let i=v.eat.length-1;i>=0;i--)if(vacVictim(v.eat[i],dv))v.eat.splice(i,1)} // 통에 많이 남아 있을수록 위에서 누르는 무게로 더 빨리 넘어간다 (예전 96명 때와 걸리는 시간이 비슷하게)
+   {const dv=dt*(1+(v.pressT>0?.6:1.15)*clamp((n-90)/160,0,1));for(let i=v.eat.length-1;i>=0;i--)if(vacVictim(v.eat[i],dv))v.eat.splice(i,1)} // 통에 많이 남아 있을수록 위에서 누르는 무게로 더 빨리 넘어간다 (예전 96명 때와 걸리는 시간이 비슷하게)
    if(!v.tank.length&&!v.eat.length){
     v.ph=2;v.pt=0;AU.cut();
     v.dots.push({x:rnd(-.03,.03),y:JT,z:0,vx:0,vy:-.05,vz:0,r:.0026,c:v.strM.color,drip:1});
