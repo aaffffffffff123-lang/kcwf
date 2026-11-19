@@ -19,7 +19,7 @@ button:disabled{opacity:.45;cursor:default}
 #lens{position:fixed;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
 #hud{position:fixed;inset:0;z-index:3;pointer-events:none;display:none}
 #hud button,#hud a{pointer-events:auto}
-.hud-brand{display:flex;align-items:center;gap:4px;min-width:0}
+.hud-brand{display:flex;align-items:center;gap:4px;min-width:0;flex:1 1 auto}
 .hud-brand .brand{flex-shrink:0}
 .hud-brand b,#money{white-space:nowrap}
 #r1 .right{flex-shrink:0}
@@ -29,7 +29,8 @@ button:disabled{opacity:.45;cursor:default}
 #arcadeFace:focus-visible{outline:3px solid #e1ae00;outline-offset:2px;border-radius:50%}
 .row{position:absolute;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));display:flex;justify-content:space-between;align-items:center;gap:8px}
 #r1{top:max(12px,env(safe-area-inset-top))}
-#r2{top:calc(max(12px,env(safe-area-inset-top)) + 54px);align-items:flex-start}
+#r2{top:calc(max(12px,env(safe-area-inset-top)) + 54px);justify-content:flex-end;display:none}
+#hud.pt #r2{display:flex}
 .pill{background:rgba(255,255,255,.94);border-radius:14px;box-shadow:0 2px 10px rgba(22,29,51,.12);padding:8px 12px;display:flex;align-items:center;gap:9px}
 .brand .mk{width:26px;height:26px;border-radius:8px;background:var(--blue);display:grid;place-items:center;flex:none}
 .brand .mk i{display:block;width:10px;height:10px;border-radius:50%;border:3px solid #fff}
@@ -38,22 +39,32 @@ button:disabled{opacity:.45;cursor:default}
 .right{display:flex;gap:6px;align-items:center}
 #money{font-weight:800;font-size:17px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .money{position:relative}
-#mgain{position:absolute;right:calc(100% + 6px);top:50%;font-size:11px;font-weight:800;line-height:1;color:#1f6b3f;background:rgba(255,255,255,.92);border-radius:7px;padding:4px 7px;box-shadow:0 1px 6px rgba(22,29,51,.12);font-variant-numeric:tabular-nums;white-space:nowrap;opacity:0;transform:translate(4px,-50%);transition:opacity .25s,transform .25s;pointer-events:none}
-#mgain.on{opacity:1;transform:translate(0,-50%)}
+#mgain{position:absolute;right:0;top:calc(100% + 5px);font-size:11px;font-weight:800;line-height:1;color:#1f6b3f;background:rgba(255,255,255,.92);border-radius:7px;padding:4px 7px;box-shadow:0 1px 6px rgba(22,29,51,.12);font-variant-numeric:tabular-nums;white-space:nowrap;opacity:0;transform:translateY(-4px);transition:opacity .25s,transform .25s;pointer-events:none}
+#mgain.on{opacity:1;transform:none}
 .money small{font-size:10px;color:var(--sub);font-weight:600}
 .ib{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.94);box-shadow:0 2px 10px rgba(22,29,51,.12);display:grid;place-items:center;font-size:16px;font-weight:700}
 .ib:active,.pri:active{transform:translateY(1px)}
-#zone{flex-direction:column;align-items:stretch;gap:5px;min-width:150px}
-#zone span{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
-#zone i{display:block;height:6px;border-radius:6px;background:#e3e8f3;overflow:hidden}
-#zone i b{display:block;height:100%;width:0;background:var(--blue);border-radius:6px;transition:width .2s}
-#r2{display:grid;grid-template-columns:minmax(0,1fr) 80px 100px;gap:8px;align-items:stretch}
-#zone{min-width:0;max-width:180px;justify-content:center;padding:9px 12px}
-#zone span{white-space:nowrap;font-size:11px}
+.prog{flex:0 1 190px;min-width:104px;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:4px 8px;padding:7px 11px}
+.prog.nomk{grid-template-columns:minmax(0,1fr)}.prog.nomk .zmk{display:none}
+.zmk{display:block;grid-row:1/3;width:27px;height:18px}.zmk svg{display:block;width:100%;height:100%}
+.prog>span{min-width:0;overflow:hidden;white-space:nowrap;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;line-height:14px}
+#ztxt em{font-style:normal}
+#extxt small{font-size:10.5px;font-weight:700;color:var(--sub)}#extxt b{font-size:13px;font-weight:900;letter-spacing:-.02em;margin-left:5px}
+.prog>i{display:block;height:6px;border-radius:6px;background:#e3e8f3;overflow:hidden}
+.prog>i b{display:block;height:100%;width:0;background:var(--blue);border-radius:6px;transition:width .2s}
+#exbar{display:none}#hud.ex #exbar{display:grid}#hud.ex #zone{display:none}
+#hudbtns{display:flex;gap:6px;align-items:stretch}
+#hudbtns .hud-menu{width:80px}#hudbtns #supportbtn,#hudbtns #exend{width:100px}
 .hud-menu{min-height:48px;border-radius:13px;background:var(--blue);color:#fff;box-shadow:0 3px 0 #163a9e,0 5px 12px #16213c1c;padding:7px 8px;text-align:center;line-height:1.3}
 .hud-menu b{display:block;font-size:13px;font-weight:800;white-space:nowrap}
 .hud-menu small{display:block;font-size:10px;margin-top:3px;white-space:nowrap;opacity:.85}
 #shopbtn{position:relative}
+#shopbtn b::after{content:'';display:inline-block;margin-left:5px;vertical-align:2px;border:4px solid transparent;border-top:5px solid currentColor;border-bottom:0}
+#shopbtn[aria-expanded=true]{transform:translateY(2px);box-shadow:0 1px 0 #163a9e}
+#hud.ex #shopbtn.new::after,#hud.tm #buybub{display:none}
+#exend{display:none;background:#eef1f7;color:var(--ink);box-shadow:0 3px 0 #d3d9e6,0 5px 12px #16213c1c;touch-action:manipulation}
+#hud.ex #exend{display:block}#hud.ex #supportbtn{display:none}
+#exend.armed{background:#ffe6e1;color:#c4321f;box-shadow:0 3px 0 #f2b8ad,0 5px 12px #16213c1c}
 #shopbtn.new::after{content:'';position:absolute;top:-4px;right:-4px;width:12px;height:12px;border-radius:50%;background:#ff4a3a;box-shadow:0 0 0 2px #fff}
 #buybub{position:absolute;left:0;top:0;display:flex;align-items:center;gap:8px;padding:7px 13px 7px 8px;border-radius:13px;background:#fff;color:var(--ink);box-shadow:0 4px 16px rgba(22,29,51,.22);text-align:left;white-space:nowrap;touch-action:manipulation}
 #buybub[hidden]{display:none}
@@ -70,8 +81,12 @@ button:disabled{opacity:.45;cursor:default}
 #zone.stall i b{background:#9aa3b5}#zone.stall span{color:#c0392b}
 .hud-menu:active{transform:translateY(1px)}
 button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
-#toast{position:absolute;left:50%;top:calc(max(12px,env(safe-area-inset-top)) + 180px);transform:translate(-50%,-6px);background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:10px 16px;border-radius:12px;opacity:0;transition:opacity .2s,transform .2s;white-space:pre-line;word-break:keep-all;line-height:1.45;width:max-content;max-width:min(92vw,520px);text-align:center}
+#toast{position:absolute;left:50%;top:calc(max(12px,env(safe-area-inset-top)) + 66px);transform:translate(-50%,-6px);background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:10px 16px;border-radius:12px;opacity:0;transition:opacity .2s,transform .2s,top .16s;white-space:pre-line;word-break:keep-all;line-height:1.45;width:max-content;max-width:min(92vw,520px);text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+#hud.pt #toast{top:calc(max(12px,env(safe-area-inset-top)) + 120px)}
+#buybub:not([hidden])~#toast{top:calc(max(12px,env(safe-area-inset-top)) + 116px)}
+#hud.pt #buybub:not([hidden])~#toast{top:calc(max(12px,env(safe-area-inset-top)) + 174px)}
+#hud.tm #toast{top:var(--tmb,300px)!important}
 #hint{word-break:keep-all;position:absolute;left:0;right:0;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 8px);text-align:center;font-size:13px;font-weight:700;color:var(--ink);transition:opacity .5s;line-height:1.7}
 #hint span{background:rgba(255,255,255,.9);padding:7px 13px;border-radius:12px;box-shadow:0 2px 8px rgba(22,29,51,.1);display:inline-block}
 #stick{position:absolute;width:112px;height:112px;margin:-56px 0 0 -56px;border-radius:50%;border:2px solid rgba(22,29,51,.28);background:rgba(255,255,255,.28);display:none}
@@ -87,6 +102,8 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 #act2.refill{background:#ab3028;color:#fff;box-shadow:0 0 0 3px #fff,0 5px 0 #79251f,0 9px 18px rgba(22,29,51,.28)}
 #act2.refill small{color:#fff}
 #act2.off{opacity:.42}
+#act2.nudge{animation:a2n 1s ease-out infinite}
+@keyframes a2n{0%{box-shadow:0 5px 0 #c9a100,0 9px 18px rgba(22,29,51,.24),0 0 0 3px #fff,0 0 0 3px rgba(31,79,216,.75)}75%,100%{box-shadow:0 5px 0 #c9a100,0 9px 18px rgba(22,29,51,.24),0 0 0 3px #fff,0 0 0 17px rgba(31,79,216,0)}}
 @media(pointer:fine){#act2 i{display:flex}}
 @media(max-height:480px){#hud{--act2-bottom:calc(max(18px,env(safe-area-inset-bottom)) + 74px)}#act2{width:68px;height:68px}#act2 b{font-size:15px}}
 #pops{position:absolute;inset:0;overflow:hidden}
@@ -114,6 +131,8 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 .bal{display:flex;justify-content:space-between;align-items:center;background:#f3f5fa;border-radius:12px;padding:11px 14px;font-size:13px;color:var(--sub);font-weight:600;margin-bottom:10px}
 .bal b{font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
 #shop .panel{width:600px}
+#shopnote{margin:0 2px 10px;line-height:1.55;color:#c0392b;font-weight:700}
+.gear.held .st{background:#e7eaf1;color:#7d869a}
 #gears{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .gear{display:flex;flex-direction:column;align-items:stretch;text-align:left;border:1px solid var(--line);border-radius:14px;padding:10px;min-width:0;background:#fff;color:var(--ink);box-shadow:0 3px 0 #e1e6f0;transition:transform .08s,box-shadow .08s}
 .gear:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #e1e6f0}
@@ -175,9 +194,9 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 .brand .mk,.org .mk,.sysbar .mk{width:38px;height:28px;border-radius:0;background:transparent;flex:none}
 .mk svg{display:block;width:100%;height:100%}
 .ph small{display:flex;align-items:center;gap:7px}.ph .mk{width:30px;height:20px}
-@media(max-width:600px){.brand{padding:8px 9px;gap:7px}.brand .mk{width:30px;height:23px}.brand b{font-size:12px}.brand small{font-size:9px}.right{gap:5px}.right .ib{width:36px;height:40px}.money{padding:5px 8px;gap:0;flex-direction:column;align-items:flex-end}.money small{font-size:9px;line-height:12px;transition:opacity .18s}.money.gain small{opacity:0}#money{font-size:14px}#mgain{right:8px;top:5px;font-size:10px;line-height:12px;padding:0;background:none;box-shadow:none;border-radius:0;transform:translateY(2px)}#mgain.on{transform:none}}
+@media(max-width:760px){.brand{padding:8px 9px;gap:7px}.brand .mk{width:30px;height:23px}.brand b{font-size:12px}.brand small{font-size:9px}.right{gap:5px}.right .ib{width:36px;height:40px}.money{padding:5px 8px;gap:0;flex-direction:column;align-items:flex-end}.money small{font-size:9px;line-height:12px;transition:opacity .18s}.money.gain small{opacity:0}#money{font-size:14px}#mgain{right:8px;top:5px;font-size:10px;line-height:12px;padding:0;background:none;box-shadow:none;border-radius:0;transform:translateY(2px)}#mgain.on{transform:none}}
 @media(max-width:420px){#r1 .brand .mk{display:none}}
-@media(max-width:350px){#r1 .brand{padding:8px 7px}#r1 .brand .mk{display:none}#r1 .brand b{font-size:11px}#r1 .right{gap:4px}#r1 .right .ib{width:29px;height:36px}#r1 .money{padding:3px 6px;gap:0}#r1 .money small{line-height:11px}#money{font-size:12px}#mgain{right:6px;top:3px;font-size:9px;line-height:11px}#r2{grid-template-columns:minmax(0,1fr) 62px 82px;gap:6px}#zone{padding:8px}#zone span{font-size:10px}.hud-menu{padding:6px 4px}.hud-menu b{font-size:12px}.hud-menu small{font-size:9px}#supportbtn.need small{font-size:8.5px;letter-spacing:-.04em}}
+@media(max-width:350px){#r1 .brand{padding:8px 7px}#r1 .brand .mk{display:none}#r1 .brand b{font-size:11px}#r1 .right{gap:4px}#r1 .right .ib{width:29px;height:36px}#r1 .money{padding:3px 6px;gap:0}#r1 .money small{line-height:11px}#money{font-size:12px}#mgain{right:6px;top:3px;font-size:9px;line-height:11px}#hudbtns .hud-menu{width:62px}#hudbtns #supportbtn,#hudbtns #exend{width:82px}.prog{padding:7px 8px;min-width:0}.prog>span{font-size:10px}#extxt b{font-size:12px}.hud-menu{padding:6px 4px}.hud-menu b{font-size:12px}.hud-menu small{font-size:9px}#supportbtn.need small{font-size:8.5px;letter-spacing:-.04em}}
 
 /* 심사: 한 사람, 수입, 발표 실적. 탐색과 선정은 하단에 고정한다. */
 #interview{padding:0;background:transparent;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);grid-template-rows:auto minmax(0,1fr) auto;align-items:stretch;justify-content:stretch;overflow:hidden}
@@ -218,6 +237,13 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 @media(max-width:350px){.int-controls.two #candidate-reject{font-size:14px}.int-controls.two #candidate-private{font-size:14px}.int-controls.two #candidate-private small{font-size:10px}}
 #candidate-private{background:#fff3c4;color:#5c4708;border:2px solid #d8b23a;flex-direction:column;gap:1px;font-size:15px;line-height:1.2;padding:4px 6px;word-break:keep-all}#candidate-private small{font-size:11px;font-weight:650;opacity:.85;font-variant-numeric:tabular-nums}
 #candidate-private.armed{background:#e2a400;border-color:#b98500;color:#fff;box-shadow:0 2px 0 #946a00}#candidate-private.done{background:#c98f00;border-color:#a67500;color:#fff}#candidate-private:disabled{opacity:1;cursor:default}#candidate-private:disabled:not(.done){background:#eeeade;border-color:#dcd6c4;color:#9a927c}
+.int-means{grid-column:1/-1;margin:8px 0 0;padding:8px 0 0;border-top:1px dashed #d5dacc;display:grid;gap:3px;font-size:12px;line-height:1.45}.int-means div{display:flex;gap:10px}.int-means dt{flex:none;min-width:6.6em;color:#7d8576}.int-means dd{margin:0;color:#3d4a37;font-weight:650;word-break:keep-all}
+@media(max-width:759px){.int-means{font-size:11px;margin-top:6px;padding-top:6px;gap:2px}}
+.int-prev{display:inline-block;font-style:normal;font-size:10px;font-weight:700;line-height:1.3;color:#3f5675;border:1px solid #b9c6d8;border-radius:4px;padding:2px 6px;margin-top:5px;white-space:nowrap}
+@media(max-width:759px){.int-prev{margin:0}}
+.int-selected-list button.again{background:#fff;border-color:#1f66d6;color:#1f4f9a;font-size:12px;font-weight:700;padding:5px 11px}
+.perk-goods button.want{box-shadow:0 0 0 2px #e1ae00}
+@media(max-height:560px) and (orientation:landscape){.int-selected-list.has-again{display:flex}}
 .int-award{margin:10px 0 0;font-size:13px;line-height:1.5;color:#5c4708;word-break:keep-all}
 .int-selected-list button.special{background:#fff3c4;border-color:#d8b23a;color:#5c4708}
 .int-seal.priv{background:#c98f00;color:#fff}
@@ -274,25 +300,17 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 @media(max-width:359px){.intro-wrap{padding-left:20px;padding-right:20px}.intro-brand b{font-size:16px}.intro-brand small{font-size:5.5px}.intro-mark{width:40px}#intro h1{font-size:38px}.intro-description{font-size:12px}}
 @media(max-height:600px) and (min-width:760px){.intro-header .intro-wrap{min-height:72px}.intro-hero{min-height:310px}.intro-hero .intro-wrap{padding-top:30px;padding-bottom:28px}#intro h1{font-size:44px;margin-bottom:16px}.intro-description{font-size:13px}.intro-entry{min-height:106px}.intro-footer{min-height:42px}}
 
-#exbar{position:absolute;left:max(12px,env(safe-area-inset-left));top:calc(max(12px,env(safe-area-inset-top)) + 54px);width:min(330px,calc(100% - 24px));display:none;grid-template-columns:1fr auto;align-items:center;gap:6px 12px;background:rgba(255,255,255,.95);border-radius:14px;box-shadow:0 2px 10px rgba(22,29,51,.12);padding:8px 10px 10px 13px}
-#hud.ex #r2{display:none}
-#hud.ex #exbar{display:grid}
-#exbar small{display:block;font-size:10.5px;font-weight:700;color:var(--sub);letter-spacing:-.01em;white-space:nowrap}
-#exbar .exl{min-width:0}
-#exbar .exl div{white-space:nowrap;line-height:1.05}
-#exbar .exl b{font-size:24px;font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-#exbar .exl div small{display:inline;font-size:11.5px}
-#exend{justify-self:end;min-height:38px;padding:0 13px;border-radius:11px;background:#eef1f7;color:var(--ink);font-size:12.5px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;box-shadow:0 2px 0 #d3d9e6;touch-action:manipulation}
-#exend:active{transform:translateY(1px);box-shadow:0 1px 0 #d3d9e6}
-#exend.armed{background:#ffe6e1;color:#c4321f;box-shadow:0 2px 0 #f2b8ad}
-#exbar i{grid-column:1/-1;display:block;height:5px;border-radius:5px;background:#e3e8f3;overflow:hidden}
-#exbar i b{display:block;height:100%;width:0;background:var(--blue);border-radius:5px;transition:width .25s linear}
-#excontrols{display:contents}
-#hud.ex #excontrols{position:absolute;top:0;bottom:0;right:max(10px,env(safe-area-inset-right));padding-top:calc(max(12px,env(safe-area-inset-top)) + 130px);display:flex;flex-direction:column;align-items:flex-end}
-#hud.ex #act2{right:calc(100% + 14px)}
-#extools{display:none;flex:none;flex-direction:column;gap:6px}
-#hud.ex #extools{display:flex}
-#hud.ex #extools.two{display:grid;grid-template-columns:repeat(2,var(--eb,56px));gap:6px}
+@media(max-width:999px){#r1 .brand{display:none}}
+@media(min-width:1000px){.zmk{display:none}.prog{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:400px){.prog{padding:7px 9px;min-width:0}#ztxt em{display:none}#arcadeFace{width:38px;height:38px;padding:5px}}
+@media(max-width:700px){#hud:not(.pt) .prog{min-width:92px;padding:7px 9px}#hud:not(.pt) #ztxt em{display:none}#hud:not(.pt) #hudbtns .hud-menu{width:68px}#hud:not(.pt) #hudbtns #supportbtn,#hud:not(.pt) #hudbtns #exend{width:86px}}
+@media(max-height:480px){#hudbtns .hud-menu{min-height:42px;padding:5px 6px}}
+#toolmenu{position:absolute;left:0;top:0;z-index:6;pointer-events:auto;touch-action:manipulation;background:rgba(255,255,255,.97);border-radius:16px;box-shadow:0 10px 28px rgba(22,29,51,.26);padding:10px;animation:tmIn .12s ease-out}
+#toolmenu[hidden]{display:none}
+@keyframes tmIn{from{opacity:0;transform:translateY(-6px)}}
+#extools{display:grid;grid-template-columns:repeat(var(--tn,4),56px);gap:8px}
+#toolnote{margin:0 0 9px;width:calc(var(--tn,4)*56px + (var(--tn,4) - 1)*8px);font-size:11.5px;font-weight:700;line-height:1.45;color:#c0392b;word-break:keep-all}
+#toolnote[hidden]{display:none}
 #exarrows{position:absolute;inset:0;display:none;pointer-events:none}
 #hud.ex #exarrows.on{display:block}
 #exarrows i{position:absolute;left:0;top:0;width:34px;height:34px;display:none;border-radius:50%;background:rgba(255,255,255,.95);box-shadow:0 2px 8px rgba(22,29,51,.25)}
@@ -309,12 +327,12 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 .exb.sel img{filter:drop-shadow(0 0 1.5px #fff)}
 #hud .exb:disabled{opacity:.42}
 .exb:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 #d3d9e6}
-@media(max-height:560px) and (orientation:landscape){
- #hud.ex #excontrols{padding-top:calc(max(12px,env(safe-area-inset-top)) + 54px);right:max(12px,env(safe-area-inset-right))}
- #extools{flex-direction:row;margin-bottom:14px}
- #hud.ex #act2{position:static;flex:none;margin-top:auto}
- #hud.ex #excontrols::after{content:"";flex:0 1 var(--act2-bottom);min-height:max(8px,env(safe-area-inset-bottom))}
- #exbar{width:min(300px,calc(100% - 36px - var(--ebw,366px)))}#extitle{top:56%}}
+#toolmenu .exb{background:#f1f4fa;box-shadow:none}
+#toolmenu .exb.sel{background:var(--blue);color:#fff}
+#toolmenu .exb:not(:disabled):active{transform:translateY(1px);box-shadow:none}
+#toolmenu .exb.shop{background:#fff;color:var(--blue);box-shadow:inset 0 0 0 1.5px #c6d1ef}
+#toolmenu .exb.shop svg{display:block;width:22px;height:22px;margin:5px 0 4px}
+@media(max-height:560px) and (orientation:landscape){#extitle{top:56%}}
 #extitle{position:absolute;left:50%;top:31%;transform:translate(-50%,-50%);width:max-content;max-width:88vw;text-align:center;background:rgba(255,255,255,.94);border-radius:18px;padding:15px 24px 14px;box-shadow:0 10px 30px rgba(22,29,51,.18);opacity:0;pointer-events:none}
 #extitle small{display:block;font-size:12px;font-weight:700;color:var(--sub);letter-spacing:-.01em}
 #extitle b{display:block;font-size:30px;font-weight:900;letter-spacing:-.05em;margin:3px 0 5px}
@@ -362,24 +380,19 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
      </svg>
    </a>
   <div class="pill brand"><div class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 24H35M21.5 24V50M43 24H70M49.5 24V50M63.5 24V50M79 17 89 50" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></div><div><b>한국창작인<br>복지재단</b></div></div>
+  <div class="pill prog" id="zone"><em class="zmk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 24H35M21.5 24V50M43 24H70M49.5 24V50M63.5 24V50M79 17 89 50" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></em><span id="ztxt"></span><i><b id="zbar"></b></i></div>
+  <div class="pill prog" id="exbar"><em class="zmk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 24H35M21.5 24V50M43 24H70M49.5 24V50M63.5 24V50M79 17 89 50" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></em><span id="extxt"><small>철수</small><b id="excount">0</b><small id="exof"> / 1,000</small></span><i><b id="exfill"></b></i></div>
   </div>
-  <div class="right"><div class="pill money"><small>재단 예산</small><span id="money">0원</span><b id="mgain" aria-hidden="true"></b></div><button class="ib" id="snd" aria-label="소리">♪</button><button class="ib" id="pz" aria-label="일시정지">Ⅱ</button></div>
+  <div class="right"><div id="hudbtns"><button class="hud-menu" id="shopbtn" aria-haspopup="true" aria-expanded="false"><b>장비</b><small id="toolname">맨손</small></button><button class="hud-menu" id="supportbtn" aria-haspopup="dialog"><b>창작지원</b><small id="supportstatus">운영 중</small></button><button class="hud-menu" id="exend" type="button"><b>철수 마치기</b></button></div><div class="pill money"><small>재단 예산</small><span id="money">0원</span><b id="mgain" aria-hidden="true"></b></div><button class="ib" id="snd" aria-label="소리">♪</button><button class="ib" id="pz" aria-label="일시정지">Ⅱ</button></div>
  </div>
- <div class="row" id="r2">
-  <div class="pill" id="zone"><span id="ztxt"></span><i><b id="zbar"></b></i></div>
-  <button class="hud-menu" id="shopbtn" aria-haspopup="dialog"><b>장비</b><small id="toolname">맨손</small></button>
-  <button class="hud-menu" id="supportbtn" aria-haspopup="dialog"><b>창작지원</b><small id="supportstatus">운영 중</small></button>
- </div>
- <div id="toast" role="status"></div>
+ <div class="row" id="r2"></div>
  <button id="buybub" type="button" hidden><img alt=""><span><b></b><small></small></span></button>
+ <div id="toast" role="status"></div>
  <div id="hint"><span id="hinttxt"></span></div>
  <div id="stick"><i></i></div>
- <div id="exbar"><div class="exl"><small>결과보고전 철수</small><div><b id="excount">0</b><small id="exof"> / 1,000</small></div></div><button id="exend" type="button">철수 마치기</button><i><b id="exfill"></b></i></div>
  <div id="exarrows" aria-hidden="true"></div>
- <div id="excontrols">
-  <div id="extools" role="toolbar" aria-label="장비 바꾸기"></div>
-  <button id="act2" hidden><b></b><small></small><i>Q</i></button>
- </div>
+ <button id="act2" hidden><b></b><small></small><i>Q</i></button>
+ <div id="toolmenu" role="group" aria-label="장비 바꾸기" hidden><p id="toolnote" hidden></p><div id="extools"></div></div>
  <div id="extitle" aria-hidden="true"><small id="ext1"></small><b id="ext2"></b><span id="ext3"></span></div>
 </div>
 <div class="ov" id="intro">
@@ -409,6 +422,7 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
  <section class="panel" role="dialog" aria-modal="true" aria-labelledby="shop-title">
   <div class="ph"><div><small><span class="mk" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 64"><path d="M8 24H35M21.5 24V50M43 24H70M49.5 24V50M63.5 24V50M79 17 89 50" fill="none" stroke="#1f4fd8" stroke-width="9" stroke-linejoin="miter"/></svg></span>한국창작인복지재단</small><h2 id="shop-title">장비</h2><p class="eyes">창작물이 봐 주는 줄 알고 모여들도록 장비마다 눈을 붙였습니다. 눈이 크고 많을수록 더 멀리서 모여듭니다.</p></div><button class="ib" id="shopx" aria-label="닫기" style="box-shadow:none;background:#f3f5fa">✕</button></div>
   <div class="bal">재단 예산 <b id="smoney"></b></div>
+  <p class="note" id="shopnote" hidden></p>
   <div id="gears"></div>
   <div class="stat"><span>누적 처리 <b id="stotal"></b>마리</span><span>수거량 <b id="sliters"></b>L</span></div>
   <p class="note">진행 상황은 이 기기에 자동으로 저장됩니다.</p>
@@ -446,11 +460,13 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
      <button id="perk-salon"><b>로코코 책상·의자</b><span></span></button>
      <button id="perk-mac"><b>맥북 프로</b><span></span></button>
     </div>
+    <p class="support-notice" id="perk-note" hidden></p>
    </section>
    <section class="support-card">
     <div class="support-heading"><h3>품위유지비</h3><span id="honor-period"></span></div>
     <div class="honor-setting"><label for="honor-rate">예술가 1인당</label><select id="honor-rate"><option value="0">미편성 · 0원</option><option value="500000">50만 원</option><option value="1000000">100만 원</option><option value="2000000">200만 원</option></select></div>
     <p id="honor-comparison"></p>
+     <p class="support-notice" id="honor-note" hidden></p>
     <button class="review-button" id="honor-pay"></button>
    </section>
    <span id="perk-feedback" role="status" class="perk-feedback"></span>
@@ -516,13 +532,14 @@ const TOOLS=[
  {id:'boot',name:'안전화',short:'안전화',price:30000,desc:'밟아서 처리합니다. 길게 누르면 체중이 실리고, 구르기 버튼을 누르고 있으면 양발로 번갈아 밟습니다.'},
  {id:'tong',name:'집게와 종량제 봉투',short:'집게',price:120000,desc:'몇 마리는 콕 집고, 몰린 곳은 훑어 한 번에 최대 20마리를 담습니다. 50L 봉투 정원은 160마리입니다. 가득 차거나 밟기 버튼을 누르면 봉투를 묶어 놓고, 누르는 동안 밟습니다.'},
  {id:'shovel',name:'수거용 삽',short:'삽',price:250000,desc:'내려칠 때마다 더 짓이겨집니다. 누르고 있으면 계속 내려치고, 퍼담기 버튼을 누르는 동안 긁어 담았다가 떼면 수거통에 텁니다.'},
- {id:'vac',name:'흡입 수거기',short:'흡입기',price:900000,desc:'300명까지 모아 담습니다. 가득 차거나 갈기 버튼을 누르면 롤러로 갈아 아래 통에 잘게 쌓습니다. 갈리는 동안 누르면 두꺼운 유리 누름판으로 내리찍고, 꾹 누르고 있으면 짓눌러 밀어 넣습니다. 떼면 판을 들어 올립니다.'},
+ {id:'vac',name:'흡입 수거기',short:'흡입기',price:900000,desc:'300명까지 모아 담습니다. 가득 차거나 갈기 버튼을 누르면 롤러로 갈아 아래 통에 잘게 쌓습니다. 갈리는 동안 찧기 버튼을 누르고 있으면 두꺼운 유리 누름판으로 계속 내리찍고, 화면을 누르고 있으면 꾹 짓눌러 밀어 넣습니다.'},
  {id:'trim',name:'예초기',short:'예초기',price:1400000,desc:'누르는 동안 줄이 돕니다. 누른 채 좌우로 끌면 휘두르고, 줄 풀기 버튼을 누르면 헤드를 바닥에 쳐서 감긴 것을 털고 새 줄을 뺍니다.'}
 ];
 
 const GRANT_T=96,SUPPORT_UNIT=10000,SUPPORT_T=14,ACTIVITY_T=90; // 예술가 한 명에게 건네는 활동비
 const PRIV=3000000,DEMAND_UNIT=100000,DEMAND_ZONE=5; // 특별 창작지원금 · 예술가 한 명에게 줘야 하는 창작지원금 · 돈을 안 주면 멈추기 시작하는 기수
-const demandPts=z=>z<DEMAND_ZONE?[]:z<7?[.5]:[.36,.72]; // 기수마다, 정산 목표의 어느 지점에서 예술가들이 돈을 받을 때까지 창작을 멈추는가
+const honorCut=()=>S.honor.previous>0&&(S.honor.unit??0)<S.honor.previous; // 직전 기수보다 품위유지비를 적게 줬거나 아직 안 줬다
+const demandPts=z=>z<DEMAND_ZONE?[]:honorCut()?(z<7?[.25,.6]:[.2,.45,.7]):z<7?[.5]:[.36,.72]; // 기수마다, 정산 목표의 어느 지점에서 예술가들이 돈을 받을 때까지 창작을 멈추는가
 const AP=[
  {"type":4,"field":"문학","title":"창문을 닫은 뒤","work":"시 7편 · 문예지 게재본","recT":"문예지 발표 7편","crit":"문예지 발표 5편 또는 작품집 1권","rec":"ok","incT":"원고료 48만 원 / 연","inc":"no","ev":"발표 지면 7건 · 원고료 입금내역","papers":[["거주","부 소유 주택 / 주거비 없음"],["작업실","모 소유 상가 / 사용료 없음"],["생활비","가족 카드 / 본인 원고료 월 4만 원"]],"income":"근로·사업소득과 본인 재산 반영","plan":"다음 호 원고 3편. 현재 초고 작성 중.","art":"pages","kind":"예술활동증명 (일반)","desk":4,"monthly":40000},
  {"type":4,"field":"옷 수선","title":"옷 줄여 입기","work":"얻어 온 옷이 안 맞으면 잘라서 자기 몸에 맞춘다. 주머니가 부족하면 다른 옷에서 떼어 붙인다.","recT":"고쳐 입은 옷 · 수선 전후 사진","crit":"지원 대상 분야의 예술활동 실적","rec":"out","incT":"인정된 예술활동 수입 없음","inc":"no","ev":"고쳐 입은 바지와 점퍼 · 수선 전후 사진","papers":[["직장","봉제 공장 / 주 4일·일부 연장근무"],["재료","얻어 온 옷 / 안 입는 옷"],["사용자","본인"]],"income":"근로소득과 본인 재산 반영","plan":"다음에는 안쪽에 주머니를 하나 더 답니다.","art":"clothes","kind":"예술활동증명 (일반)","wk":4,"monthly":2040000,"wages":[["기본급",1800000],["연장수당",240000]],"everyday":true,"frame":{"reason":"예술활동증명 기준 미충족","detail":"생활 수선으로 분류 · 예술활동 실적 불인정"}},
@@ -601,14 +618,15 @@ function restoreArtistPerks(raw,zone){
 }
 function artistSeatGear(i){return S.seatGear[i]||0}
 function loadSave(){
- const d={seen:[],money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0,exFeeZone:0,seatGear:[],honor:freshArtistPerks(1)};
+ const d={seen:[],hs:[],money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:false,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],wp:1,wf:1,exDone:0,exFeeZone:0,seatGear:[],honor:freshArtistPerks(1)};
  try{const r=JSON.parse(localStorage.getItem(KEY)||'null');
   if(r&&r.v===2){d.money=clamp(+r.money||0,0,1e9);d.total=clamp(Math.floor(+r.total||0),0,1e9);d.liters=clamp(+r.liters||0,0,1e9);
    d.zone=clamp(Math.floor(+r.zone||1),1,999);d.prog=clamp(Math.floor(+r.prog||0),0,quota(d.zone));d.paid=!!r.paid&&d.prog>=quota(d.zone);
    if(Array.isArray(r.owned)){for(const[id,pay]of[['glue',4000],['mop',6000],['truck',26000]])if(r.owned.includes(id)){d.money+=pay;d.rf=true}if(r.owned.includes('wash')&&!r.wf){d.money+=r.wp?4000:19000;d.rf=true}}d.owned=TOOLS.map(t=>t.id).filter(id=>id==='hand'||id==='wash'||Array.isArray(r.owned)&&r.owned.includes(id));d.tool=d.owned.includes(r.tool)?r.tool:'hand';d.muted=!!r.muted;d.ofn=!!r.ofn;
    if(Array.isArray(r.funds))d.funds=d.funds.map((v,i)=>Number.isFinite(r.funds[i])?clamp(r.funds[i],0,ACTIVITY_T):v);
+   if(Array.isArray(r.hs))d.hs=[...new Set(r.hs.filter(v=>typeof v==='string'&&v.length<12))].slice(0,24);
    d.advance=clamp(+r.advance||0,0,1e9);if(r.cu!==2){d.money=Math.min(1e9,d.money*100);d.advance*=100} // 예전 단위로 저장된 돈
-   if(r.dm&&typeof r.dm==='object')d.dm={n:clamp(Math.floor(+r.dm.n||0),0,9),on:!!r.dm.on};
+   if(r.dm&&typeof r.dm==='object'){d.dm={n:clamp(Math.floor(+r.dm.n||0),0,9),on:!!r.dm.on};if(Array.isArray(r.dm.hold))d.dm.hold=r.dm.hold.filter(h=>Array.isArray(h)&&Number.isInteger(h[0])&&h[0]>=0&&h[0]<30&&(h[1]===1||h[1]===2)).slice(0,9).map(h=>[h[0],h[1]])}
    d.specialIds=savedSpecialIds(r.specialIds??(r.priv?.zone===d.zone?r.priv.a:null),d.zone);
    if(Array.isArray(r.seatGear))d.seatGear=Array.from(r.seatGear.slice(0,30),v=>Number.isInteger(v)&&v>=0&&v<=3?v:0);
    d.honor=restoreArtistPerks(r.honor,d.zone);
@@ -1166,7 +1184,13 @@ const supportRecipients=()=>creators.filter(c=>!c.d.citizen&&creatorActive(c));
 const demandMode=()=>S.zone>=DEMAND_ZONE&&!!S.team; // 초반 기수는 싼 활동비를 주면 고마워하며 쏟아낸다. 이 기수부터는 정해진 지점마다 큰돈을 받을 때까지 손을 놓고, 받아도 하던 속도로만 다시 한다
 const supportUnit=()=>demandMode()?DEMAND_UNIT:SUPPORT_UNIT;
 function demandFrac(){const z=S.zone,q=quota(z),pts=demandPts(z),a=S.dm.n?Math.round(q*pts[S.dm.n-1]):0,b=pts[S.dm.n]!=null?Math.round(q*pts[S.dm.n]):q;return S.dm.on?0:clamp(1-(S.prog-a)/Math.max(1,b-a),.04,1)} // 책상 위 돈다발: 다음에 멈출 때까지 남은 만큼
-function activityLeft(c){return c.d.citizen?0:demandMode()?(S.dm.on?0:ACTIVITY_T):c.d.seat==null?S.funds[c.i]||0:S.grants[c.d.seat]?.left||0}
+const GEAR_NAME={1:'로코코 책상·의자',2:'맥북 프로'},seatNo=i=>String(i+1).padStart(2,'0');
+const holdOf=i=>(S.dm.hold||[]).find(h=>h[0]===i),holdOn=i=>{const h=holdOf(i);return !!h&&!(artistSeatGear(i)&h[1])}; // 비품이 없어서 쉬는 자리: [자리, 없는 비품]
+const heldSeats=()=>demandMode()?(S.dm.hold||[]).filter(h=>holdOn(h[0])):[];
+function gearHoldPick(){
+ const ids=artistDeskIds().filter(i=>(artistSeatGear(i)&3)!==3&&!holdOf(i)&&!(S.honor.unit>0&&S.honor.seats.includes(i)));if(!ids.length)return null;
+ const i=ids[(S.zone*7+S.dm.n*3)%ids.length],h=[i,artistSeatGear(i)&2?1:2];(S.dm.hold||(S.dm.hold=[])).push(h);return h}
+function activityLeft(c){return c.d.citizen?0:demandMode()?(S.dm.on||holdOn(c.i)?0:ACTIVITY_T):c.d.seat==null?S.funds[c.i]||0:S.grants[c.d.seat]?.left||0}
 function supportPayment(){
  const people=supportRecipients(),n=people.length,dm=demandMode(),due=!dm||S.dm.on;
  const cost=due?n*supportUnit():0,missing=Math.max(0,cost-S.money);
@@ -1180,7 +1204,7 @@ function startSupport(){
  if(!started||paused)return false;
  const {people:recipients,dm,cost,missing,payable}=supportPayment();if(!payable)return false;
  S.money=Math.max(0,S.money-cost);S.advance+=missing;
- if(dm){S.dm.on=false;S.dm.n++;toast('창작지원금 '+won(cost)+' 지급\n창작을 다시 시작합니다',3.2)}
+ if(dm){S.dm.on=false;S.dm.n++;const hd=gearHoldPick();toast('창작지원금 '+won(cost)+' 지급\n창작을 다시 시작합니다'+(hd?'\n'+seatNo(hd[0])+'번 자리는 '+GEAR_NAME[hd[1]]+'가 없어서 안 합니다':''),hd?5.5:3.2)}
  else for(const c of recipients){if(c.d.seat==null)S.funds[c.i]=ACTIVITY_T;else{const g=S.grants[c.d.seat];g.left=GRANT_T;apS(g.a).s='paid'}}
  S.support={t:0,zone:S.zone,ids:recipients.map(c=>c.i),quiet:dm};supportSoundT=0;
  AU.stopReactions();AU.wake();AU.buy();save();updateHUD(true);$('gl').focus();return true;
@@ -2127,10 +2151,10 @@ function syncReviewCitizens(){
   // Dispose only this desk's resources; the workshop's shared assets stay alive.
   scene.remove(c.g);const geos=new Set(),mats=new Set();c.g.traverse(m=>{if(m.geometry)geos.add(m.geometry);if(m.material)for(const v of(Array.isArray(m.material)?m.material:[m.material]))mats.add(v)});
   const band=ARTIST_LED.assets,sharedG=[bulgeGeo,supportEnvelopeGeo,band?.sleeve,band?.face],sharedM=[bodyMat,droolMat,supportEnvelopeMat,...Object.values(supportEnvelopeMat.userData),band?.sleeveMat,band?.faceMat];
-  sharedG.push(TEARG);sharedM.push(TEARM);
+  sharedG.push(TEARG);sharedM.push(TEARM);if(LODK.shade)sharedM.push(LODK.shade);
   citizenBandTemplate?.traverse(part=>{sharedG.push(part.geometry);sharedM.push(part.material)});
   c.tearM?.dispose();
-  for(const g of geos)if(!sharedG.includes(g)&&!pplShared(g))g.dispose();for(const m of mats)if(!sharedM.includes(m)&&m!==PPL.eyeMat){if(m.map)m.map.dispose();m.dispose()}
+  for(const g of geos)if(!sharedG.includes(g)&&!pplShared(g)&&!(g.userData&&g.userData.isLo))g.dispose();for(const m of mats)if(!sharedM.includes(m)&&m!==PPL.eyeMat){if(m.map)m.map.dispose();m.dispose()}
   buildDesk(d,c.i);creators[pos]=creators.pop();
  }
 }
@@ -2160,9 +2184,35 @@ function supportReaction(c,ft,prev){
  }
  return {kind,rt,mix};
 }
+/* ── 먼 책상 사람은 가볍게 ── */
+const LODK={shade:null,C:65,R:51};
+function headLo(g){ // 얼굴 격자(가로 65 × 세로 51 꼭짓점)를 가로·세로 한 칸씩 건너뛰어 다시 엮는다. 꼭짓점·색·법선은 원본과 같이 쓴다
+ if(g.userData.lo)return g.userData.lo;const C=LODK.C,R=LODK.R;if(!g.index||!g.attributes.position||g.attributes.position.count!==C*R)return g.userData.lo=g;
+ const idx=[];for(let j=0;j+2<R;j+=2)for(let i=0;i+2<C;i+=2){const a=j*C+i,b=a+2,c=a+2*C,d=c+2;idx.push(a,b,c,b,d,c)}
+ const lo=new THREE.BufferGeometry();for(const k in g.attributes)lo.setAttribute(k,g.attributes[k]);lo.setIndex(idx);lo.boundingSphere=g.boundingSphere;lo.boundingBox=g.boundingBox;lo.userData={key:g.userData.key,isLo:true};return g.userData.lo=lo}
+function handLo(g){ // 손 크기에 맞춘 둥근 덩어리 (색은 손의 평균색)
+ if(g.userData.lo)return g.userData.lo;g.computeBoundingBox();const b=g.boundingBox,c=b.getCenter(new THREE.Vector3()),s=b.getSize(new THREE.Vector3()).multiplyScalar(.5);
+ const lo=new THREE.SphereGeometry(1,8,6);lo.scale(s.x*.9,s.y*.9,s.z*.96);lo.translate(c.x,c.y,c.z);lo.computeVertexNormals();
+ const src=g.attributes.color,n=lo.attributes.position.count,col=new Float32Array(n*3);let r=1,gg=1,bl=1;if(src){r=gg=bl=0;const m=src.count,st=Math.max(1,m>>9);let k=0;for(let i=0;i<m;i+=st){r+=src.getX(i);gg+=src.getY(i);bl+=src.getZ(i);k++}r/=k;gg/=k;bl/=k}
+ for(let i=0;i<n;i++){col[i*3]=r;col[i*3+1]=gg;col[i*3+2]=bl}lo.setAttribute('color',new THREE.BufferAttribute(col,3));lo.userData={isLo:true};return g.userData.lo=lo}
+function applyLod(c,lod){
+ const m=c.head;if(m&&m.isMesh){const g=m.geometry;
+  if(lod){if(g.userData.key&&!g.userData.isLo){const lo=headLo(g);if(lo!==g){m.userData.hi=g;m.geometry=lo}}}else if(g.userData.isLo&&m.userData.hi)m.geometry=m.userData.hi;
+  {const hi=m.geometry.userData.isLo?m.userData.hi:m.geometry;if(hi&&hi.userData.key){const lo=headLo(hi);if(lo!==hi){ // 가까이서도 머리 그림자는 성긴 머리가 만든다
+    if(!m.userData.sh){const sh=new THREE.Mesh(lo,LODK.shade||(LODK.shade=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false})));sh.userData.cs=true;sh.castShadow=!c.behind;m.add(sh);m.userData.sh=sh}
+    m.userData.sh.visible=!lod;m.userData.cs=!!lod;m.castShadow=!!lod&&!c.behind}}}
+  for(const k of m.children){if(!k.userData.pplPart)continue;if(k.castShadow){k.userData.ear=1;k.castShadow=false;k.userData.cs=false}if(k.userData.ear)k.visible=!lod}}
+ for(const h of c.hands){const hm=h.hand;if(!hm||!hm.isMesh)continue;
+  if(!hm.userData.hi){hm.userData.hi=hm.geometry;const sh=new THREE.Mesh(handLo(hm.geometry),LODK.shade||(LODK.shade=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false})));sh.userData.cs=true;hm.add(sh);hm.userData.mit=sh}
+  const want=lod?handLo(hm.userData.hi):hm.userData.hi;if(hm.geometry!==want)hm.geometry=want;hm.userData.cs=!!lod;hm.userData.mit.visible=!lod}
+ c.lod=lod}
+function castSync(c){const off=!!c.behind;c.g.traverse(o=>{if(!o.isMesh)return;if(o.userData.cs===undefined)o.userData.cs=o.castShadow;const v=o.userData.cs&&!off;if(o.castShadow!==v)o.castShadow=v})}
+function lodTick(){ // 0.2초마다: 거리와 앞뒤를 보고 고른다 (경계에서 깜박이지 않게 들어갈 때와 나올 때 거리를 달리한다)
+ for(const c of creators){if(!c.g.visible||c.g.parent!==scene)continue;const dx=c.d.x-P.x,dz=c.d.z-P.z,lod=Math.hypot(dx,dz)>(c.lod?4:4.4)?1:0,behind=dz>(c.behind?1.2:1.6);
+  const ch=lod!==c.lod||behind!==c.behind;applyLod(c,lod);c.behind=behind;if(ch||behind)castSync(c)}}
 const CLOG={t:0};
 function countNearDesks(dt){ // 책상 앞 1m 안에서 기어 다니는 수 (0.2초마다)
- CLOG.t-=dt;if(CLOG.t>0)return;CLOG.t=.2;const act=[];for(const c of creators){c.near=0;if(c.g.visible)act.push(c)}
+ CLOG.t-=dt;if(CLOG.t>0)return;CLOG.t=.2;lodTick();const act=[];for(const c of creators){c.near=0;if(c.g.visible)act.push(c)}
  PVC.n=0;for(const k of creatures){if(k.pv&&!k.dead&&!k.ko)PVC.n++;if(k.st!=='walk')continue;for(const c of act){const d=c.d;if(Math.abs(k.x-d.x-d.fx)<1&&Math.abs(k.z-d.z-d.fz)<1)c.near++}}}
 const TEARG=new THREE.SphereGeometry(.0086,8,6),TEARM=new THREE.MeshStandardMaterial({color:0x58b4ff,emissive:0x1f6fe0,emissiveIntensity:.35,roughness:.08,envMapIntensity:1.2,transparent:true,opacity:.93});
 const tearLocal=new THREE.Matrix4(),tearDrop=new THREE.Matrix4(),tearEyes=[new THREE.Vector3(),new THREE.Vector3()];
@@ -2895,14 +2945,14 @@ const frac=x=>x-Math.floor(x);
 function receiveWage(n){const paid=Math.min(n,S.advance);S.advance-=paid;S.money+=n-paid;return n-paid}
 const MG={sum:0,t:0,shown:-1,on:false};
 function earn(n,x,z,y=.12){n=receiveWage(n);dirty=true;if(n>0){MG.sum+=n;MG.t=1.4}} // 번 돈은 장면 위에 띄우지 않고 위 예산 칸에 작게 모은다
-function updatePops(dt){ // 예산 칸의 '+번 돈': 버는 동안 모아서 보여 주고, 1.4초 동안 안 벌면 사라진다 (넓은 화면은 칸 왼쪽, 폰은 칸 안 '재단 예산' 글자 자리)
+function updatePops(dt){ // 예산 칸의 '+번 돈': 버는 동안 모아서 보여 주고, 1.4초 동안 안 벌면 사라진다 (넓은 화면은 칸 아래, 폰은 칸 안 '재단 예산' 글자 자리)
  if(MG.t<=0)return;MG.t-=dt;const el=$('mgain');
  if(MG.shown!==MG.sum){MG.shown=MG.sum;el.textContent='+'+Math.round(MG.sum).toLocaleString('ko-KR')}
  if(!MG.on){MG.on=true;el.classList.add('on');el.parentNode.classList.add('gain')}
  if(MG.t<=0){MG.on=false;el.classList.remove('on');el.parentNode.classList.remove('gain');MG.sum=0;MG.shown=-1}
 }
-function payFor(c,y){ // 치운 값: 통을 채우는 덤은 세지 않고, 특별 창작지원금을 받은 시민의 창작물은 재단 실적이 아니라서 예산도 정산도 오르지 않는다
- if(c.kept||c.dum)return;if(c.pv){S.total++;S.liters+=c.vol;return}credit(c);earn(EX.on?EX_PAY:TYPES[c.type].pay,c.x,c.z,y)}
+function payFor(c,y){ // 치운 값: 통을 채우는 덤은 세지 않는다. 특별 창작지원금을 받은 시민의 창작물은 예산은 안 오르고 정산 진행에만 들어간다
+ if(c.kept||c.dum)return;if(c.pv){credit(c);return}credit(c);earn(EX.on?EX_PAY:TYPES[c.type].pay,c.x,c.z,y)}
 function demandCheck(){ // 돈을 받을 때까지 멈출 지점에 닿았는가
  if(!demandMode()||S.paid||S.dm.on)return;const pt=demandPts(S.zone)[S.dm.n];if(pt==null||S.prog<Math.round(quota(S.zone)*pt))return;
  const n=supportRecipients().length;if(!n)return;S.dm.on=true;toast('돈을 안 줘서 예술가 '+n+'명이 창작을 멈췄습니다\n창작지원금 '+won(n*DEMAND_UNIT)+'을 주면 다시 합니다',6);AU.thud(.5);save();hudKey='';}
@@ -3028,9 +3078,11 @@ function buildBoot(){
  g.userData.res=[];scene.add(g);return g;
 }
 let reticle;
+let HEMCAP=null;
+function hemCap(){return HEMCAP||(HEMCAP=new THREE.MeshBasicMaterial({map:canvasTex(64,64,(g,w,h)=>{const r=g.createRadialGradient(w/2,h/2,2,w/2,h/2,w/2);r.addColorStop(0,'#0a1027');r.addColorStop(.55,'#111b40');r.addColorStop(.85,'#1d3379');r.addColorStop(1,'#27469f');g.fillStyle=r;g.fillRect(0,0,w,h)})}))}
 function buildLegs(){
  reticle=new THREE.Mesh(new THREE.RingGeometry(.05,.06,28),new THREE.MeshBasicMaterial({color:0x1f4fd8,transparent:true,opacity:.4,depthWrite:false}));reticle.rotation.x=-Math.PI/2;scene.add(reticle);
- for(let i=0;i<2;i++){const hem=addMesh(scene,CY(.044,.04,1,12),bootMat((i?bootL:bootR).userData.gu,{color:lin(0x24439e),roughness:.8,envMapIntensity:.4},true)),ol=new THREE.Mesh(hem.geometry,outlineMat(.005));hem.add(ol);legs.push({hem})}
+ for(let i=0;i<2;i++){const hem=addMesh(scene,CY(.044,.04,1,12),bootMat((i?bootL:bootR).userData.gu,{color:lin(0x24439e),roughness:.8,envMapIntensity:.4},true)),ol=new THREE.Mesh(hem.geometry,outlineMat(.005));hem.add(ol);hem.material=[hem.material,hemCap(),hem.material];legs.push({hem})}
 }
 const mkPose=()=>({x:0,y:0,z:0,hu:0,yaw:0,roll:0});
 function mixPose(o,a,b,t){o.x=lerp(a.x,b.x,t);o.y=lerp(a.y,b.y,t);o.z=lerp(a.z,b.z,t);o.hu=lerp(a.hu,b.hu,t);o.yaw=lerp(a.yaw,b.yaw,t);o.roll=lerp(a.roll,b.roll,t);return o}
@@ -4608,7 +4660,7 @@ function shovelUpdate(dt,act,a2,go2){
  if(!on){if(EX.on&&hallProps.blade)dropHallBlade();if(s.carry.length){for(const c of s.carry){c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1;c.y=0}s.carry.length=0}
   for(const c of s.pins){if(c.legs){c.st='walk';killCreature(c,'slam',c.ex,c.ez,c.enx,c.enz)}else{c.st='maim';c.t=0;c.life=rnd(5,9);c.sq=.3}}s.pins.length=0;
   for(const c of s.mashed)c.pin=0;s.mashed.length=0;
-  for(const c of s.binned)if(!c.dead)killCreature(c,'none');s.binned.length=0;
+  if(s.binned.some(c=>!c.dead))AU.flush();for(const c of s.binned)if(!c.dead)killCreature(c,'none');s.binned.length=0;
   for(const k of s.stuck.slice())bladeDrop(k);
   if(s.heap.length||s.fall.length){s.heap.length=0;s.fall.length=0;solidEnd(s.heapS,0);solidEnd(s.heapK,0);solidEnd(s.heapE,0);solidEnd(s.fallS,0);solidEnd(s.fallE,0)}
   if(s.ph!=='idle')clearThreads(4);s.load=0;s.ph='idle';s.lean=s.kick=0;s.scraping=false;s.rep=0;AU.loop('scrape',false);return}
@@ -4701,6 +4753,7 @@ const VAC_LOW_SPEED=.86, VAC_DRAIN_TIME=.78;
 // 누름판: 통 안지름의 91% · 두꺼운 강화유리 원반 · 가운데 쇠 허브. 넓어진 가장자리가 경사진 바닥판에 닿지 않게 하한을 둔다.
 // 떨어질 때 가속·최고 빠르기 · 한 번 찍고 최소로 눌러 두는 시간 · 들어 올리는 시간 · 들다가 다시 찍을 수 있는 때 · 짓눌린 것이 끌려 들어가는 빠르기 · 롤러로 밀어 넣는 간격 · 꾹 누를 때 밀고 내려가는 빠르기 · 꺼질 때 빠르기
 const PE_R=HR*.91,PE_TH=.036,PE_SH=.23,PE_YR=HH-.034,PE_YMIN=Math.max(NIP+RC+.012,DY+DS*(PE_R-DZ)+.008),PE_ACC=22,PE_VMAX=2.3,PE_HIT=.12,PE_UP=.24,PE_TAP=.3,PE_FEED=11,PE_PULSE=.3,PE_PUSH=.2,PE_LURCH=.5;
+const PD_V0=1.15,PD_ACC=36,PD_VMAX=2.7,PD_HIT=.09,PD_TOP=.96,PD_RISE=.085,PD_UP=.26,PD_WIND=.14,PD_HANG=.05,PD_DEEP=.03,PD_FX=6,PD_RAM=2.2; // 찧기: 내려찍는 첫 속도·가속·최고 속도 · 박힌 채 머무는 시간 · 다시 내려찍기 전에 들어 올리는 정도(0~1) · 통 위로 더 들어 올리는 높이 · 들어 올리는 시간(박힌 데서 / 쉬던 자리에서) · 꼭대기에서 잠깐 멎는 시간 · 한 번에 뼈가 나가는 켜의 두께 · 효과를 다 내는 마릿수
 // 눌린 놈이 단계마다 버틸 수 있는 두께(처음 두께에 대한 비율): 처음엔 물러서 조금 눌리고 → 뼈가 나가며 납작 → 눈알·팔다리 → 몸통이 터짐 → 고깃장
 const PE_STG=[.74,.54,.4,.3,.22],GS_Y0=NIP+.02,GS_H=HH-GS_Y0; // 통 유리 핏자국 그림이 덮는 높이
 // 단계마다 남은 부피(터져 나간 만큼 준다) · 판이 더미를 누르는 동안 더미 전체가 납작해지는 빠르기
@@ -5214,28 +5267,28 @@ function pestleEat(hy){const v=VC;let smashed=0;
   else if(e.ph==='limp')e.dg+=e.mash?.6:.8} // 넘어가는 중인 것은 더 깊이 밀어 넣는다
  return smashed}
 function pestleRam(){const v=VC,T=v.tank;let rammed=0; // 맨 밑 것들이 롤러 틈으로 밀려 들어간다
- if(v.mot&&v.ph===1){const n=T.length,K=n>40?7:n>24?5:3;
+ if(v.mot&&v.ph===1){const n=T.length,K=Math.round((n>40?7:n>24?5:3)*(v.pPd&&v.pS!=='up'?PD_RAM:1));
   const cand=T.filter(c=>!c.hold&&!(c.gp>0)&&!c.gpin&&Math.abs(c.tp.x)<PE_R+.012&&Math.abs(c.tp.z)<.075&&(c.ct&17||c.tp.y<NIP+.075)).sort((a,b)=>a.tp.y-(a.pc?.03:0)-b.tp.y+(b.pc?.03:0));
   for(const c of cand){if(rammed>=K)break;const xx=clamp(c.tp.x,-.088,.088),sd=c.tp.z>=0?1:-1;if(v.eat.some(e=>e.s===sd&&Math.abs(e.x-xx)<.012))continue;vacTake(c,{mash:true});rammed++}}
  return rammed}
 function pestleImpact(vI){ // 더미에 쿵 박힌다: 세게 찍을수록 맨 윗켜의 뼈가 그 자리에서 나가고 판이 쑥 파고든다
  const v=VC,T=v.tank,hy=v.pY,k=clamp((vI-.2)/1.9,0,1),drop=vI>1.55?2:vI>.6?1:0;v.pN++;v.pressT=.18;if(v.ph===1&&!v.mot&&v.gr>.3)v.gr=Math.max(v.gr,VM-.001); // 찍기 시작하면 모터도 바로 건다
  const top=c=>c.tp.y+(c.pflat>0?c.hv:Math.min(c.hv,c.hvN||c.hv));
- const hit=[];for(const c of T){if(c.gp>0||c.gpin)continue;if(Math.hypot(c.tp.x,c.tp.z)<PE_R-c.hr*.3&&top(c)>hy-.009)hit.push(c)}
+ const hit=[];for(const c of T){if(c.gp>0||c.gpin)continue;if(Math.hypot(c.tp.x,c.tp.z)<PE_R-c.hr*.3&&top(c)>hy-(v.pPd?.009+PD_DEEP*k:.009))hit.push(c)}
  hit.sort((a,b)=>top(b)-top(a));
  let fxN=0;for(const c of hit){const nw=!c.pflat;if(nw)pressFirst(c);c.pflat=Math.max(c.pflat,.45);
   if(nw&&!c.pwall&&c.type!==6&&Math.random()<.3){c.ptl=-rnd(1,1.3);c.prl=rnd(-.3,.3)} // 맨 윗켜 몇은 고개를 쳐들었다가 얼굴이 판 유리에 짓눌린다
-  for(let i=0;i<drop&&c.pstg<4;i++)pressCrack(c,fxN<4?1:0);if(drop)fxN++}
+  for(let i=0;i<drop&&c.pstg<4;i++)pressCrack(c,fxN<(v.pPd?PD_FX:4)?1:0);if(drop)fxN++}
  v.cs=Math.min(v.cs??1,1-(.1+.3*k)); // 찍힌 기세만큼 판 밑 더미 전체가 한 번에 눌린다
  for(const c of hit)c.fu=Math.max(c.fu||0,.28+.4*k); // 찍힌 켜는 그 자리에서 서로 들러붙기 시작한다
  if(v.pinN<2&&k>.25){let best=null,bs=-1;for(const c of T){if(c.gpin||c.gp>0||c.hold||c.pflat)continue;const p=c.tp,rd=Math.hypot(p.x,p.z),ax=Math.abs(p.x);if(rd>HR-.007-c.hr-.008&&Math.abs(p.y-hy)<c.hv*1.4&&p.z>.02){const sc=p.z-Math.abs(ax-.055)*.8;if(sc>bs){bs=sc;best=c}}}if(best)pinBody(best)} // 앞쪽 유리벽에 붙어 있던 놈이 판 가장자리 틈에 끼인다
- const smashed=pestleEat(hy);
+ const smashed=pestleEat(v.pPd&&k>.5?-1:hy);
  for(const c of T){if(c.wl>0&&Math.random()<.55){c.wl=0;vacSlip(c)} // 유리에 매달려 버티던 것들이 충격에 미끄러진다
   if(!c.hold&&!(c.gp>0)&&!c.gpin&&c.tp.y<hy){c.tv.y=Math.min(c.tv.y,-.15-.25*k);c.tv.z-=Math.sign(c.tp.z)*.1*k}} // 찍힌 충격에 밑 더미가 롤러 쪽으로 쑥 내려앉는다
  const rammed=pestleRam(),n=hit.length+smashed;
  if(n||rammed){AU.glassSlam(Math.min(6,n)+rammed*.5,.5+.5*k);if(time>v.bzT){v.bzT=time+.12;buzz(Math.round(8+10*k))}}else AU.tone('sine',70,35,.16,.18);
  v.jo=Math.max(v.jo,n?.14+.3*k:.05);v.joS=1; // 화면은 흔들지 않고 통만 덜컥한다
- if(n&&k>.35)hitstop=Math.max(hitstop,.02+.03*k);
+ if(n&&k>.35)hitstop=Math.max(hitstop,v.pPd?.018+.016*k:.02+.03*k);
  v.pDig=.09;v.pV0=vI*.5;v.pCmd=hy-(.008+.026*k);v.bncT=0;v.bncA=n?.0028*k:.0015;
  v.gsm=Math.min(1,v.gsm+(n?.03:0));v.pstain=Math.min(1,v.pstain+(n?.08:0));
  if(hit.length)v.pHit=hit.slice(0,6)}
@@ -5250,21 +5303,21 @@ function pestleLift(){const v=VC;let n=0; // 들어 올리면 밑면과 짓이�
    v.strs.push({c,ox,oz,bx:c.tp.x,by:c.tp.y,bz:c.tp.z,L:rnd(.09,.19),r:rnd(.0018,.0032),col:BLOOD.clone().lerp(c.ink,.3).multiplyScalar(.85),t:0})}}
  if(n){AU.unstick(.9);if(Math.random()<.5)AU.squelch(.35)}
  v.pHit.length=0}
-function pestleStart(){const v=VC;v.pq=0;v.pS='down';v.pT=0;v.pV=0;v.pY0=v.pY;v.pX=v.pZ=0;v.pPulse=PE_PULSE;v.twT=0;v.pNone=0;for(const s of v.strs)s.L=0}
-function pestleTap(main){const v=VC;if(!started||paused||S.tool!=='vac'||(EX.on&&EX.phase!=='run')||v.ph!==1||v.gr<=.06)return;v.pq=1}
-function pestleRelease(){const v=VC;v.pS='up';v.pT=0;v.pU=0;v.pY1=v.pY;v.pq=0;v.pressT=0;v.twT=0;v.pV=0;v.pBlkd=false;douLift();pestleLift();gapRelease();for(const c of v.tank)if(c.gpin)pinRelease(c)}
-function pestleUpdate(dt,hold,tap,kk){
+function pestleStart(pd){const v=VC;v.pPd=pd?1:0;v.pq=0;v.pS='down';v.pT=0;v.pV=pd?PD_V0:0;v.pY0=v.pY;v.pX=v.pZ=0;v.pPulse=PE_PULSE;v.twT=0;v.pNone=0;for(const s of v.strs)s.L=0}
+function pestleTap(main){const v=VC;if(!started||paused||S.tool!=='vac'||(EX.on&&EX.phase!=='run')||v.ph!==1||v.gr<=.06)return;v.pq=main?1:2}
+function pestleRelease(){const v=VC;v.pS='up';v.pT=0;v.pU=0;v.pY1=v.pY;v.pTop=PE_YR;v.pWind=0;v.pHang=0;v.pq=0;v.pressT=0;v.twT=0;v.pV=0;v.pBlkd=false;douLift();pestleLift();gapRelease();for(const c of v.tank)if(c.gpin)pinRelease(c)}
+function pestleUpdate(dt,hold,tap,kk,pound){ // hold: 꾹 누르기 · pound: 찧기(누르는 동안 되풀이) · tap: 1 화면, 2 찧기 버튼
  const v=VC,g=v.pg,live=v.ph===1;v.pHold=hold;
  v.pIn=damp(v.pIn,live&&kk>.4?1:0,live?10:7,dt);g.visible=v.pIn>.01;v.pressT=Math.max(0,v.pressT-dt);
  if(!g.visible){v.pS='ready';v.pq=0;v.pY=PE_YR;v.pT=0;v.pLoad=0;v.pV=0;v.twA=0;v.twT=0;return}
- if(tap&&live)v.pq=1;if(!live){v.pq=0;if(v.pS==='down'||v.pS==='press')pestleRelease()}
+ if(tap&&live)v.pq=tap;if(!live){v.pq=0;if(v.pS==='down'||v.pS==='press')pestleRelease()}
  const ok=live&&v.pIn>.9;v.pT+=dt;v.pX=v.pZ=0;
- if(v.pS==='ready'){v.pLoad=damp(v.pLoad,0,8,dt);v.pY=damp(v.pY,PE_YR,10,dt);if(ok&&(v.pq||hold))pestleStart()}
+ if(v.pS==='ready'){v.pLoad=damp(v.pLoad,0,8,dt);v.pY=damp(v.pY,PE_YR,10,dt);if(ok&&!hold&&(pound||v.pq===2)){v.pS='up';v.pT=1;v.pU=0;v.pY1=v.pY;v.pTop=v.pY;v.pWind=1;v.pHang=0}else if(ok&&(v.pq||hold))pestleStart()}
  else if(v.pS==='down'){ // 무게를 실어 떨어진다: 점점 빨라지다 더미에 박힌다
-  v.pressT=.18;v.pV=Math.min(PE_VMAX,v.pV+PE_ACC*dt);const y=v.pY-v.pV*dt,top=pestleTop(0,0);
+  v.pressT=.18;v.pV=Math.min(v.pPd?PD_VMAX:PE_VMAX,v.pV+(v.pPd?PD_ACC:PE_ACC)*dt);const y=v.pY-v.pV*dt,top=pestleTop(0,0);
   if(y<=top||y<=PE_YMIN){v.pY=Math.max(top,PE_YMIN);v.pS='press';v.pT=0;v.pPulse=PE_PULSE;v.pq=0;v.pCmd=v.pY;v.pBlk=PE_YMIN;v.pNone=0;v.pStuckT=0;pestleImpact(v.pV);v.pV=0}else v.pY=y}
  else if(v.pS==='press'){
-  v.pq=0;v.pressT=.18;const push=hold||v.pT<PE_HIT;
+  v.pq=0;v.pressT=.18;const hitT=v.pPd?PD_HIT:PE_HIT,push=hold||v.pT<hitT;
   if(push)v.pCmd=Math.max(PE_YMIN,v.pCmd-PE_PUSH*dt,v.pY-.032); // 꾹 누르는 동안 계속 밀고 내려간다 (버티는 놈이 있으면 거기서 멈춘다)
   v.pDig=Math.max(0,v.pDig-dt);
   const tgt=Math.max(v.pCmd,v.pBlk,PE_YMIN),sp=v.pDig>0?Math.max(PE_LURCH,(v.pV0||0)*v.pDig/.09):PE_LURCH;if(tgt<v.pY)v.pY=Math.max(tgt,v.pY-sp*dt); // 박힐 때는 찍은 기세로 파고들다 금세 멎고, 뼈가 나가면 다음에 버티는 데까지 툭 꺼진다 (밀려 올라가지는 않는다)
@@ -5273,15 +5326,16 @@ function pestleUpdate(dt,hold,tap,kk){
   if(v.twT>.22){v.tw+=dt;v.twA=Math.sin(v.tw*12.5)*.14*Math.min(1,(v.twT-.22)*4);if(time>(v.twS||0)){v.twS=time+.15;AU.grind2(.6)}}else v.twA=damp(v.twA,0,8,dt);
   if(push&&v.pNone>.1&&v.pY>PE_YMIN+.003){v.pS='down';v.pV=.25;v.pT=0} // 롤러가 먹어 밑이 꺼지면 다시 무게를 실어 떨어진다
   v.pPulse-=dt;if(v.pPulse<=0){v.pPulse=PE_PULSE;pestlePulse()}
-  if(!hold&&v.pT>=PE_HIT)pestleRelease()}
+  if(!hold&&v.pT>=hitT)pestleRelease()}
  else if(v.pS==='up'){ // 들러붙은 데서 잠깐 버티다 들린다
-  v.pLoad=damp(v.pLoad,0,7,dt);v.twA=damp(v.twA,0,10,dt);v.pU=(v.pU||0)+(v.pT>.05?dt/PE_UP*(DOU.str.length?.45:1):0);const u=clamp(v.pU,0,1);v.pY=lerp(v.pY1,PE_YR,ss(u)); // 들러붙은 살이 늘어나는 동안은 판이 무겁게 들린다
-  if(ok&&(v.pq||hold)&&u>=PE_TAP)pestleStart();else if(u>=1)v.pS='ready'}
+  const pd=!hold&&(pound||v.pq===2);v.pTop=damp(v.pTop??PE_YR,pd?PE_YR+PD_RISE:PE_YR,16,dt); // 찧을 때는 통 위로 더 들어 올린다
+  v.pLoad=damp(v.pLoad,0,7,dt);v.twA=damp(v.twA,0,10,dt);v.pU=(v.pU||0)+(v.pT>(pd?.03:.05)?dt/(pd?(v.pWind?PD_WIND:PD_UP):PE_UP)*(DOU.str.length?(pd?.62:.45):1):0);const u=clamp(v.pU,0,1);v.pY=lerp(v.pY1,v.pTop,ss(u)); // 들러붙은 살이 늘어나는 동안은 판이 무겁게 들린다
+  if(ok&&(hold||v.pq===1)&&u>=PE_TAP)pestleStart();else if(ok&&pd&&u>=PD_TOP){v.pHang=(v.pHang||0)+dt;if(v.pHang>=PD_HANG)pestleStart(1)}else if(u>=1)v.pS='ready'} // 끝까지 들어 올려 잠깐 멎었다가 내려찍는다
 }
 // 판 밑에 깔린 것은 맨 윗켜만이 아니라 판 둘레 안의 더미 전체가 같이 눌린다. 판이 더미 윗면에 닿아 있는 동안 더미 전체가 고르게 납작해지고(v.cs),
 // 저마다 버틸 수 있는 두께(plim)에 닿은 놈은 압력이 쌓이다 뼈가 나간다. 눌린 만큼 옆으로 불어나 틈을 메우고 서로 짓누른다(부피는 터져 나간 만큼만 준다)
 function pressSolve(dt){
- const v=VC,T=v.tank,act=!!v.pg&&v.pg.visible&&(v.pS==='press'||v.pS==='down'),pressing=act&&v.pS==='press',hold=pressing&&(v.pHold||v.pT<PE_HIT);
+ const v=VC,T=v.tank,act=!!v.pg&&v.pg.visible&&(v.pS==='press'||v.pS==='down'),pressing=act&&v.pS==='press',hold=pressing&&(v.pHold||v.pT<(v.pPd?PD_HIT:PE_HIT));
  const dA=v.twA-(v.twA0||0);v.twA0=v.twA;const smT=dA&&time>(v.smT||0);if(smT)v.smT=time+.06;
  let topY=PE_YMIN,nP=0,minL=1;
  for(const c of T){c.prsd=0;if(c.gpin||c.gp>0)continue;const p=c.tp,d=Math.hypot(p.x,p.z);
@@ -5370,7 +5424,7 @@ function vacUpdate(dt,act,pedal,go2){
  v.g.updateMatrixWorld(true);
  v.mouth.set(P.x+.04,.05,P.z-.97);
  // 누름판: 오른쪽 화면(스페이스·마우스 왼쪽)이나 누르기 버튼을 누르는 동안 지그시 누른다
- {const pA=act,tapA=pA&&!v.aPrev;v.aPrev=pA;v.pA=pA;pestleUpdate(dt,grinding&&v.ph===1&&(pA||pedal),grinding&&v.ph===1&&(tapA||go2&&v.gr>.06),kk)}
+ {const pA=act,tapA=pA&&!v.aPrev;v.aPrev=pA;v.pA=pA;const on1=grinding&&v.ph===1;pestleUpdate(dt,on1&&pA,on1?(tapA?1:go2&&v.gr>.06?2:0):0,kk,on1&&pedal&&!pA)}
  for(const l of v.lumps){if(l.u<0){l.m.visible=false;continue}l.u+=dt*1.9;if(l.u>=(l.end||1)){l.u=-1;l.m.visible=false;continue}l.m.visible=true;v.curve.getPoint(l.u,l.m.position);l.m.scale.setScalar(.043*(1.25+.3*Math.sin(l.u*Math.PI)))}
  // 호퍼 안: 산 채로 쌓여 버둥댄다. 유리벽에 붙은 것은 기어오르려다 미끄러진다. 통이 눈앞에 오면 봐 달라고 앞 유리에 붙고, 모터가 걸리면 기겁해 기어오른다
  const pre=v.ph===1&&!v.mot;
@@ -5436,7 +5490,7 @@ function vacUpdate(dt,act,pedal,go2){
    if(v.noC>(v.eat.length?.7:.3)&&n&&v.tank.filter(c=>c.drag).length<(n>2?2:1)){let low=null,lv=1e9;for(const c of v.tank){if(c.hold||c.gpin)continue;const k=c.tp.y+Math.abs(c.tp.z)*.6;if(k<lv){lv=k;low=c}}if(low){low.drag=1;low.cl=0;if(low.wl>0){low.wl=0;vacSlip(low)}v.noC=0}}
    v.idleT=v.eat.length?0:v.idleT+dt;
    if(v.idleT>3&&n){let low=v.tank[0];for(const c of v.tank)if(c.tp.y<low.tp.y)low=c;vacTake(low);v.idleT=0} // 어디 걸려 안 내려오는 것은 끌어내린다
-   {const dv=dt*(1+(v.pressT>0?.6:1.15)*clamp((n-90)/160,0,1));for(let i=v.eat.length-1;i>=0;i--)if(vacVictim(v.eat[i],dv))v.eat.splice(i,1)} // 통에 많이 남아 있을수록 위에서 누르는 무게로 더 빨리 넘어간다 (예전 96명 때와 걸리는 시간이 비슷하게)
+   {const dv=dt*(1+(v.pressT>0?(v.pPd?2.1:.6):1.15)*clamp((n-90)/160,0,1));for(let i=v.eat.length-1;i>=0;i--)if(vacVictim(v.eat[i],dv))v.eat.splice(i,1)} // 통에 많이 남아 있을수록 위에서 누르는 무게로 더 빨리 넘어간다 (예전 96명 때와 걸리는 시간이 비슷하게)
    if(!v.tank.length&&!v.eat.length){
     v.ph=2;v.pt=0;AU.cut();
     v.dots.push({x:rnd(-.03,.03),y:JT,z:0,vx:0,vy:-.05,vz:0,r:.0026,c:v.strM.color,drip:1});
@@ -5912,7 +5966,7 @@ function buildTong(){
  TG.shade=new THREE.Mesh(new THREE.CircleGeometry(1,32),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.13,depthWrite:false}));TG.shade.rotation.x=-Math.PI/2;TG.shade.renderOrder=1;bag.add(TG.shade);
  bag.visible=false;scene.add(bag);TG.bag=bag;
  // 봉투를 밟는 두 발
- for(const F of TG.F){F.boot=buildBoot();F.boot.visible=false;F.hem=addMesh(scene,CY(.044,.04,1,12),bootMat(F.boot.userData.gu,{color:lin(0x24439e),roughness:.8,envMapIntensity:.4},true));F.hem.add(new THREE.Mesh(F.hem.geometry,outlineMat(.005)));F.hem.visible=false}
+ for(const F of TG.F){F.boot=buildBoot();F.boot.visible=false;F.hem=addMesh(scene,CY(.044,.04,1,12),bootMat(F.boot.userData.gu,{color:lin(0x24439e),roughness:.8,envMapIntensity:.4},true));F.hem.add(new THREE.Mesh(F.hem.geometry,outlineMat(.005)));F.hem.material=[F.hem.material,hemCap(),F.hem.material];F.hem.visible=false}
  bagShape();
 }
 function bagRest(c,o){ // 더미 안에서 이 몸이 놓일 자리(봉투 기준, 눌리기 전)와 누운 방향(c.oq). 가장자리 것은 비닐에 등을 대고 벽을 따라 눕고, 속과 위의 것은 아무 쪽으로나 엎어져 있다
@@ -6579,7 +6633,7 @@ function buildInterview(){
 function layoutInterview(){if(!IV.open)return;const r=$('candidate-stage').getBoundingClientRect();IV.rect={x:r.left,y:r.top,w:Math.max(1,r.width),h:Math.max(1,r.height)};if(IV.camera){IV.camera.aspect=IV.rect.w/IV.rect.h;IV.camera.updateProjectionMatrix()}}
 function openInterview(){
  if(!started||paused||(!S.paid&&!needsReassignment())||stompLocked()||TD.on||shovelLocked()||tool2Locked())return false;
- paused=true;releaseAll();lensClear();buildInterview();const d=draftForZone();IV.open=true;IV.pendingOnly=false;privArm=-1;IV.sel=d.focus;IV.t=0;
+ clearNotices();paused=true;releaseAll();lensClear();buildInterview();const d=draftForZone();IV.open=true;IV.pendingOnly=false;privArm=-1;IV.sel=d.focus;IV.t=0;
  for(const c of IV.actors){c.verdict=d.ids.includes(c.applicant)?1:d.specialIds.includes(c.applicant)?2:d.rejected.includes(c.applicant)?-1:0;c.reactionT=9;poseInterview(c,0,true)}
  $('hud').style.display='none';$('hud').inert=true;$('interview').hidden=false;renderInterview();layoutInterview();save();AU.wake();$('candidate-next').focus();return true;
 }
@@ -6590,6 +6644,12 @@ function reactToVerdict(id,state){
  const c=IV.actors.find(c=>c.applicant===id);if(c){c.verdict=state;c.reactionT=0}
  AU.wake();if(state)AU.thwack();else AU.tick();save();renderInterview();
 }
+const prevCohort=()=>(S.team?S.team.slice():artistDeskIds().map(i=>DESKS[i]&&DESKS[i].ap)).filter(a=>a!=null&&a>=0&&ELIGIBLE.includes(a)); // 직전 기수에 지원받은 사람들
+function reselectPrevious(){ // 다음 기수 심사를 빈 명단에서 시작할 때, 직전 기수 선정자를 그대로 다시 올린다
+ if(!IV.open)return false;const d=draftForZone();if(d.zone!==S.zone+1||d.ids.length)return false;
+ const ids=prevCohort().slice(0,teamSize(d.zone));if(!ids.length)return false;
+ d.ids=ids;d.rejected=d.rejected.filter(v=>!ids.includes(v));for(const c of IV.actors)if(ids.includes(c.applicant)){c.verdict=1;c.reactionT=c.applicant===IV.sel?0:9}
+ AU.wake();AU.thwack();save();renderInterview();return true}
 function chooseCandidate(id){
  if(!IV.open||!ELIGIBLE.includes(id))return false;const d=draftForZone(),i=d.ids.indexOf(id);
  if(i>=0){d.ids.splice(i,1);reactToVerdict(id,0)}
@@ -6609,11 +6669,14 @@ function rejectCandidate(id){
  if(d.rejected.includes(id)||d.specialIds.includes(id))return false;
  d.rejected.push(id);reactToVerdict(id,-1);return true;
 }
+const MEANS=['생활비','대관료 결제자','유학','출판 비용','악기','차량','거주·작업실','거주','작업실','직장','근무','대관료']; // 서류에서 보여 줄 항목 (앞엣것부터 두 줄)
+function meansRows(a){const rows=(a.papers||[]).filter(p=>MEANS.includes(p[0])).sort((x,y)=>MEANS.indexOf(x[0])-MEANS.indexOf(y[0])).slice(0,2);
+ return rows.length?'<dl class="int-means">'+rows.map(p=>'<div><dt>'+esc(p[0])+'</dt><dd>'+esc(p[1])+'</dd></div>').join('')+'</dl>':''}
 function incomePanel(a){
  const over=a.monthly>INCOME_LIMIT;
  return '<section class="int-income'+(over?' over':'')+'" aria-label="월 소득 심사"><div class="int-income-top"><span>월 소득인정액</span><span>'+(over?'소득 기준 초과':'소득 기준 충족')+'</span></div>'
   +'<div class="int-income-amount">'+won(a.monthly)+'<small>/ 월</small></div>'
-  +'<div class="int-income-caption">선정 기준 월 '+won(INCOME_LIMIT)+' 이하</div></section>';
+  +'<div class="int-income-caption">선정 기준 월 '+won(INCOME_LIMIT)+' 이하</div>'+meansRows(a)+'</section>';
 }
 function activityRecord(id){
  const a=AP[id];
@@ -6626,6 +6689,7 @@ function activityRecord(id){
 function renderInterview(){
  const d=draftForZone(),a=AP[IV.sel],r=applicantReview(IV.sel),chosen=d.ids.includes(IV.sel),rejected=d.rejected.includes(IV.sel),priv=d.specialIds.includes(IV.sel),need=teamSize(d.zone),order=interviewOrder();
  const pending=order.filter(id=>isPendingApplicant(d,id)),filter=$('interview-pending');
+ const prev=d.zone===S.zone+1?prevCohort():[],again=!d.ids.length?Math.min(prev.length,need):0;
  // 방금 판정한 사람의 반응은 그대로 보여 주고, 다음 탐색부터는 목록에서 빠진다.
  IV.order=IV.pendingOnly?order.filter(id=>id===IV.sel||pending.includes(id)):order;
  filter.textContent='미처리만 보기 · '+pending.length+'명';
@@ -6639,7 +6703,7 @@ function renderInterview(){
  $('candidate-stage').setAttribute('aria-label',applicantLabel(IV.sel)+' · '+(chosen?'선정':priv?'시민 특별 선정':rejected?'탈락':r.pass?'적격':'부적격')+' 신청인');
  for(const c of IV.actors)c.g.visible=c.applicant===IV.sel;
  const field=a.choices?a.choices.map(v=>v.field).join(' · '):r.field;
- $('candidate-paper').innerHTML='<div class="int-person"><div><small>'+esc(field)+'</small><h3>'+applicantLabel(IV.sel)+'</h3></div><span class="int-seal'+(chosen?' chosen':priv?' priv':rejected?' rejected':!r.pass?' denied':'')+'" role="status">'+(chosen?'선정':priv?'시민 특별 선정':rejected?'탈락':r.pass?'적격':'부적격')+'</span></div>'
+ $('candidate-paper').innerHTML='<div class="int-person"><div><small>'+esc(field)+'</small><h3>'+applicantLabel(IV.sel)+'</h3>'+(prev.includes(IV.sel)?'<em class="int-prev">직전 기수 선정</em>':'')+'</div><span class="int-seal'+(chosen?' chosen':priv?' priv':rejected?' rejected':!r.pass?' denied':'')+'" role="status">'+(chosen?'선정':priv?'시민 특별 선정':rejected?'탈락':r.pass?'적격':'부적격')+'</span></div>'
   +'<section class="int-work" aria-label="신청 작업">'+(a.everyday?'<small class="int-work-label">'+(a.parody?'신청 제목':'하는 일')+'</small>':'')+'<h4>'+esc(a.title)+'</h4><p>'+esc(a.work)+'</p></section>'
   +(priv?'<p class="int-award">귀하께서도 창작 활동을 이어가실 수 있도록 특별 창작지원금 '+won(PRIV)+'을 지급합니다.</p>':'')
   +incomePanel(a)
@@ -6653,9 +6717,10 @@ function renderInterview(){
   const title=arm?'특별 창작지원금 지급':st==='done'?'✓ 시민 특별 선정':'시민 특별 선정';
   const detail=arm?won(PRIV)+' · 한 번 더 눌러 확정':st==='done'?won(PRIV)+' 지급 완료':st==='poor'?'예산 '+won(PRIV-S.money)+' 부족':st==='full'?'시민석 모두 배정됨':won(PRIV);
   b.innerHTML=title+'<small>'+detail+'</small>'}
- $('interview-chosen').innerHTML='<small>선정 <b>'+d.ids.length+' / '+need+'명</b>'+(d.specialIds.length?' · 시민 특별 선정 <b>'+d.specialIds.length+' / '+need+'명</b>':'')+'</small><div class="int-selected-list">'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+applicantLabel(id)+' 선정 취소">'+String(id+1).padStart(3,'0')+' ×</button>').join('')+d.specialIds.map(id=>'<button class="special" data-special="'+id+'" aria-label="'+applicantLabel(id)+' 시민 특별 선정 서류 보기">'+String(id+1).padStart(3,'0')+'</button>').join('')+(d.ids.length||d.specialIds.length?'':'<span class="empty">선정할 신청인을 골라 주세요</span>')+'</div>';
+ $('interview-chosen').innerHTML='<small>선정 <b>'+d.ids.length+' / '+need+'명</b>'+(d.specialIds.length?' · 시민 특별 선정 <b>'+d.specialIds.length+' / '+need+'명</b>':'')+'</small><div class="int-selected-list'+(again&&!d.specialIds.length?' has-again':'')+'">'+d.ids.map(id=>'<button data-id="'+id+'" aria-label="'+applicantLabel(id)+' 선정 취소">'+String(id+1).padStart(3,'0')+' ×</button>').join('')+d.specialIds.map(id=>'<button class="special" data-special="'+id+'" aria-label="'+applicantLabel(id)+' 시민 특별 선정 서류 보기">'+String(id+1).padStart(3,'0')+'</button>').join('')+(d.ids.length||d.specialIds.length?'':again?'<button class="again" data-again="1">직전 기수 '+again+'명 그대로 선정</button>':'<span class="empty">선정할 신청인을 골라 주세요</span>')+'</div>';
  $('interview-chosen').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-  if(b.hasAttribute('data-special')){IV.pendingOnly=false;showCandidate(+b.dataset.special)}
+  if(b.hasAttribute('data-again'))reselectPrevious();
+  else if(b.hasAttribute('data-special')){IV.pendingOnly=false;showCandidate(+b.dataset.special)}
   else chooseCandidate(+b.dataset.id);
  });
  $('interview-enter').hidden=d.ids.length!==need;$('interview-enter').disabled=d.ids.length!==need;$('interview-enter').textContent=need+'명 선정 완료 · '+(d.zone===S.zone?'작업 계속하기':'작업실로')+' →';
@@ -6837,10 +6902,16 @@ function wreathPattern(warm){
  }
  return {map,rgba,order,level,first,last,offsets,visible};
 }
+// 눈에서 흡입기 통까지 이어지는 길쭉한 굴 안에 든 화환·받침대 조각은 그리지 않는다
+const HALLCUT={a:{value:new THREE.Vector3()},b:{value:new THREE.Vector3()},r:{value:0}};
+function hallCut(mat){mat.onBeforeCompile=sh=>{sh.uniforms.uCutA=HALLCUT.a;sh.uniforms.uCutB=HALLCUT.b;sh.uniforms.uCutR=HALLCUT.r;
+  sh.vertexShader='varying vec3 vCutP;\n'+sh.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\n#ifdef USE_INSTANCING\n vCutP=(modelMatrix*instanceMatrix*vec4(transformed,1.)).xyz;\n#else\n vCutP=(modelMatrix*vec4(transformed,1.)).xyz;\n#endif');
+  sh.fragmentShader='uniform vec3 uCutA,uCutB;uniform float uCutR;varying vec3 vCutP;\n'+sh.fragmentShader.replace('void main() {','void main() {\n if(uCutR>0.){vec3 ab=uCutB-uCutA;float t=clamp(dot(vCutP-uCutA,ab)/dot(ab,ab),0.,1.);vec3 q=vCutP-uCutA-ab*t;q.y*=.58;if(length(q)<uCutR)discard;}')};return mat}
+function hallCutUpdate(){const on=EX.on&&S.tool==='vac'&&VC.g.visible,k=on?VC.can.scale.x:0;HALLCUT.r.value=.19*k;if(on){HALLCUT.a.value.copy(camera.position);VC.can.updateMatrixWorld();HALLCUT.b.value.set(0,.045,0).applyMatrix4(VC.can.matrixWorld)}}
 function makeHallWreath(base,geometry,pattern){
  const pixels=new Uint8Array(WREATH_COLS*WREATH_ROWS*4),mask=new THREE.DataTexture(pixels,WREATH_COLS,WREATH_ROWS,THREE.RGBAFormat);
  mask.minFilter=mask.magFilter=THREE.LinearFilter;mask.generateMipmaps=false;
- const mat=new THREE.MeshStandardMaterial({map:pattern.map,alphaMap:mask,alphaTest:.42,side:THREE.DoubleSide,roughness:.9});
+ const mat=hallCut(new THREE.MeshStandardMaterial({map:pattern.map,alphaMap:mask,alphaTest:.42,side:THREE.DoubleSide,roughness:.9}));
  const mesh=new THREE.Mesh(geometry,mat);base.add(mesh);mesh.castShadow=true;mesh.position.y=.87;mesh.rotation.x=-.13;
  mesh.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:pattern.map,alphaMap:mask,alphaTest:.42,side:THREE.DoubleSide});
  const wx=new Float32Array(WREATH_TRACKS),wz=new Float32Array(WREATH_TRACKS),p=new THREE.Vector3();
@@ -6885,7 +6956,7 @@ function hallCatalogueBundle(){
 function buildHallProps(){
  const h=hallProps;if(h.root)return;
  h.root=new THREE.Group();HALL.g.add(h.root);
- const faces=[wreathPattern(false),wreathPattern(true)],geometry=wreathGeometry(),wood=new THREE.MeshStandardMaterial({color:0xa47b48,roughness:.94});
+ const faces=[wreathPattern(false),wreathPattern(true)],geometry=wreathGeometry(),wood=hallCut(new THREE.MeshStandardMaterial({color:0xa47b48,roughness:.94}));
  const frame=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),wood,5*5);frame.frustumCulled=false;frame.castShadow=true;h.root.add(frame);
  const V=THREE.Vector3,up=new V(0,1,0),bar=new THREE.Object3D();let k=0;
  function rail(base,from,to,width){
@@ -7101,28 +7172,31 @@ function exFlinch(c,x,z,f){ // 옆에서 죽을 때와 같은 세기로 몸길�
 function exKillPre(c){const e=EX;e.kills++;e.pay+=EX_PAY;e.kw++;AU.hush=e.kw>4;FX.lite=e.kw>8;if(AU.hush)e.mass++;
  for(const k of creatures)if(k.st==='still'&&Math.abs(k.x-c.x)<.5&&Math.abs(k.z-c.z)<.5)k.wk=Math.min(k.wk,e.t+rnd(.03,.25))} // 옆에서 터지면 깨어난다
 let exEndArm=0;
-function exEndDisarm(){exEndArm=0;const b=$('exend');b.classList.remove('armed');b.textContent='철수 마치기'}
-function exEndPress(){if(!EX.on||EX.phase!=='run')return;AU.wake();if(exEndArm&&time<=exEndArm){exEndDisarm();exFinish();return}exEndArm=time+2.6;const b=$('exend');b.classList.add('armed');b.textContent='한 번 더 누르면 마침'} // 잘못 눌러 끝내지 않게 두 번 누른다
+function exEndDisarm(){exEndArm=0;const b=$('exend');b.classList.remove('armed');b.innerHTML='<b>철수 마치기</b>'}
+function exEndPress(){if(!EX.on||EX.phase!=='run')return;AU.wake();if(exEndArm&&time<=exEndArm){exEndDisarm();exFinish();return}exEndArm=time+2.6;const b=$('exend');b.classList.add('armed');b.innerHTML='<b>한 번 더</b><small>누르면 마침</small>'} // 잘못 눌러 끝내지 않게 두 번 누른다
 const exInVacuum=c=>c.st==='sucked'||c.st==='tank'; // 호스에서 끌려오는 중부터 롤러를 다 통과할 때까지
 function updateHall(dt){
- updateHallFlowers(dt);updateHallCatalogues(dt);
+ updateHallFlowers(dt);updateHallCatalogues(dt);hallCutUpdate();
  const e=EX;
  if(e.phase==='run')e.t+=dt;
  else if(e.phase==='done'){e.dt2+=dt;if(e.dt2>1.2&&!e.shown)exShowResult()}
  e.kwT-=dt;if(e.kwT<=0){e.kwT=.1;if(e.mass){AU.mass(e.mass);e.mass=0}e.kw=0}
  e.sndT-=dt;if(e.sndT<=0){e.sndT=.1; // 0.1초마다 한 번 센다
-  let free=0,held=0,inVacuum=0,near=0,move=0;const ex=P.x,ez=P.z-.8;
-  for(const c of creatures){if(c.dead||c.ko||c.dum)continue;
-   if(exInVacuum(c))inVacuum++;else if(busy(c))held++;else free++;
+  let free=0,held=0,inVacuum=0,inBin=0,dying=0,near=0,move=0;const ex=P.x,ez=P.z-.8;
+  for(const c of creatures){if(c.dead||c.dum)continue;if(c.ko){dying++;continue} // ko: 예초기에 잘려 이미 센 몸이 아직 버둥대는 중
+   if(exInVacuum(c))inVacuum++;else if(busy(c)){held++;if(c.st==='binned')inBin++}else free++;
    if(c.st!=='still'){if(c.st==='startle'||c.st==='crawl'||c.st==='maim'||c.st==='mash')move++;if(Math.abs(c.x-ex)<2.2&&Math.abs(c.z-ez)<2.2)near++}}
   e.free=free;e.held=held+inVacuum;
-  if(e.phase==='run'&&e.t>.5&&!free&&!inVacuum&&VC.gr===0)exFinish();
+  if(e.phase==='run'&&e.t>.5&&!free){
+   if(!held&&!inVacuum&&!dying&&!exToolBusy())exFinish();
+   else if(inBin&&held===inBin&&!inVacuum&&S.tool==='shovel'&&!shovelLocked()&&!SH.carry.length&&!SH.binDrain)SH.binDrain=1.8; // 수거통에 산 채로 든 것만 남았다: 통을 비운다
+   else if(!e.told&&stashOnly()){e.told=1;a2NudgeT=time+4;toast(S.tool==='tong'?'남은 것은 봉투에 담긴 '+TG.in.length+'마리입니다':'남은 것은 흡입기 통에 담긴 '+VC.nr+'마리입니다',3.6)}}
   const nr=Math.min(1,near/140);AU.crowdLevel((.04+.5*nr)*(e.phase==='run'?.22:.1),Math.min(1,move/50)*.4*(e.phase==='run'?1:.4))}
  if(exEndArm&&time>exEndArm)exEndDisarm();
  exHUD(false);exMarks()}
 function exFinish(){const e=EX;if(e.phase!=='run')return;e.phase='done';e.dt2=0;e.used=e.t;exEndDisarm();releaseAll();AU.exEnd();exHUD(true)}
 function exShowResult(){const e=EX;e.shown=true;
- let kept=0;for(const c of creatures)if(!c.dead&&!c.ko&&!c.dum&&busy(c)&&!exInVacuum(c)){kept++;c.kept=1;credit(c)} // 다른 장비의 수거분은 정산하고, 흡입기 안의 미분쇄분은 제외한다
+ let kept=0;for(const c of creatures)if(!c.dead&&!c.ko&&!c.dum&&busy(c)){kept++;c.kept=1;credit(c)} // 「철수 마치기」로 끝낼 때 봉투·수거통·흡입기 통에 담아 둔 것은 모두 정산한다
  e.kept=kept;if(kept){receiveWage(kept*EX_PAY);e.pay+=kept*EX_PAY}
  const done=Math.min(e.N,e.kills+kept);e.bonus=done>=e.N?100000+S.zone*50000:0;if(e.bonus)receiveWage(e.bonus);
  S.exDone=S.zone;dirty=true;
@@ -7136,7 +7210,7 @@ function enterExhibition(){
  const fee=exhibitionFeeDue();
  if(S.money<fee)return false;
  if(fee){S.money-=fee;S.exFeeZone=S.zone;save()}
- paused=true;releaseAll();AU.wake();
+ clearNotices();paused=true;releaseAll();AU.wake();
  exFade(1,()=>{try{hallIn()}catch(err){console.error(err)}paused=false;last=0;exFade(0);exTitle();$('gl').focus()});
  return true}
 function exExit(){if(!EX.on||!EX.shown)return false;$('exresult').hidden=true;$('hud').inert=false;
@@ -7154,10 +7228,10 @@ function hallIn(){
  roomShow(false);const L=hallLayout(N,ids);XB=L.xb;ZN=L.zn;ZF=L.zf;P.x=0;P.z=ZF-.35;camX=0;
  {const x0=-L.sx-.1,x1=L.sx+.1,z0=L.bz-.1,z1=ZF+.9,size=Math.max(x1-x0,z1-z0);inkFrame((x0+x1)/2,(z0+z1)/2,size)} // 전시장만 덮어서 자국을 촘촘하게 그린다
  inkClear();
- Object.assign(EX,{on:true,phase:'run',t:0,N,kills:0,kept:0,held:0,pay:0,bonus:0,kw:0,kwT:.1,mass:0,dt2:0,shown:false,free:N,sndT:0,used:0});
+ Object.assign(EX,{on:true,phase:'run',t:0,N,kills:0,kept:0,held:0,pay:0,bonus:0,kw:0,kwT:.1,mass:0,dt2:0,shown:false,free:N,sndT:0,used:0,told:0});
  hallSpawn(N,ids);
  EX.tool0=S.tool;if(!EX_TOOLS.includes(S.tool))S.tool=['trim','vac','shovel','tong','boot'].find(t=>S.owned.includes(t))||'hand';
- $('hud').classList.add('ex');exEndDisarm();exToolsRender();exKey='';exHUD(true);setHint();AU.crowdStart();save();
+ $('hud').classList.add('ex');exEndDisarm();toolMenuClose();exKey='';PF.zone=PF.exbar=-1;exHUD(true);setHint();AU.crowdStart();save();
 }
 function hallOut(){
  leaveHallProps();cleanTools();creatures.length=0;drops.length=0;chunks.length=0;lensClear();AU.crowdStop();
@@ -7167,23 +7241,31 @@ function hallOut(){
  EX.on=false;EX.phase='';EX.keep=null;XB=k.XB;ZN=k.ZN;ZF=k.ZF;roomShow(true);roomTarget(S.zone,true);
  if(!S.owned.includes(S.tool))S.tool=S.owned.includes(EX.tool0)?EX.tool0:'hand';
  P.x=0;P.z=.8;camX=0;spawnInitial();updateCreators(0);
- $('hud').classList.remove('ex');updateHUD(true);setHint();save();
+ $('hud').classList.remove('ex');toolMenuClose();PF.zone=PF.exbar=-1;updateHUD(true);setHint();save();
 }
 function exTitle(){const e=EX;$('ext1').textContent='2026 한국창작인복지재단 지원사업';$('ext2').textContent=S.zone+'기 결과보고전';$('ext3').textContent='0 / '+e.N.toLocaleString('ko-KR');const el=$('extitle');el.classList.remove('on');void el.offsetWidth;el.classList.add('on');el.onanimationend=()=>el.classList.remove('on');AU.chime()} // 화면을 다시 띄울 때 애니메이션이 되풀이되지 않게 끝나면 뗀다
 let exKey='';
 function exHUD(force){const e=EX;if(!e.on)return;const done=Math.min(e.N,e.kills),lock=stompLocked()||TD.on||shovelLocked()||tool2Locked()||e.phase!=='run',key=done+'|'+e.phase+'|'+S.tool+'|'+lock;if(!force&&key===exKey)return;exKey=key;
  $('excount').textContent=done.toLocaleString('ko-KR');$('exof').textContent=' / '+e.N.toLocaleString('ko-KR');
- $('exfill').style.width=(done/e.N*100).toFixed(1)+'%';$('exend').disabled=e.phase!=='run';
- for(const b of $('extools').children){const sel=b.dataset.t===S.tool;b.classList.toggle('sel',sel);b.disabled=lock&&!sel;b.setAttribute('aria-pressed',String(sel))}}
-function exToolsRender(){const el=$('extools');
- el.innerHTML=EX_TOOLS.map(id=>{const t=TOOLS.find(t=>t.id===id),own=S.owned.includes(id);return '<button class="exb'+(own?'':' rent')+'" data-t="'+id+'" aria-label="'+t.name+(own?'':' · 대여 장비')+'">'+(ICON[id]?'<img src="'+ICON[id]+'" alt="">':'')+'<span>'+t.short+'</span>'+(own?'':'<em>대여</em>')+'<i>'+(TOOLS.indexOf(t)+1)+'</i></button>'}).join('');
- el.querySelectorAll('button').forEach(b=>{b.addEventListener('mousedown',ev=>ev.preventDefault());b.onclick=()=>{AU.wake();setTool(b.dataset.t);exHUD(true);$('gl').focus()}});exToolsFit()}
-// 장비 버튼 크기: 세로 줄은 화면 높이에, 가로 줄(가로 화면)은 화면 폭에 맞춘다. 세로로 다 안 들어가면 두 줄로 놓는다
-function exToolsFit(){const el=$('extools'),n=el.children.length;if(!EX.on||!n)return;el.classList.remove('two');el.style.removeProperty('--eb');
- const g=6,row=getComputedStyle(el).flexDirection==='row';let s=56;
- if(row){s=Math.max(40,Math.min(56,Math.floor((W-36-250-(n-1)*g)/n)));$('hud').style.setProperty('--ebw',(n*s+(n-1)*g)+'px')}
- else{const avail=H-el.getBoundingClientRect().top-112;s=Math.floor((avail-(n-1)*g)/n);if(s<46){el.classList.add('two');const rows=Math.ceil(n/2);s=Math.floor((avail-(rows-1)*g)/rows)}s=Math.max(40,Math.min(56,s))}
- el.style.setProperty('--eb',s+'px')}
+ $('exfill').style.width=(done/e.N*100).toFixed(1)+'%';$('exend').disabled=e.phase!=='run';if(e.phase!=='run')toolMenuClose();progFit('exbar',$('extxt').textContent.length)}
+// 장비 목록(접이식): 「장비」 버튼을 누르면 그 밑에 펼쳐지고, 고르거나 다른 데를 누르면 닫힌다 (작업실·철수 공통)
+// 작업실에서는 가진 장비와 「구입·설명」(장비 창)을, 철수에서는 빌려 쓰는 장비까지 모두 보여 준다. 장비를 못 바꾸는 동안에는 까닭을 적고 칸을 흐리게 한다
+const TM={open:false,key:''};
+function toolMenuRender(){const el=$('extools'),ex=EX.on,ids=TOOLS.map(t=>t.id).filter(id=>ex?EX_TOOLS.includes(id):S.owned.includes(id));
+ el.innerHTML=ids.map(id=>{const t=TOOLS.find(t=>t.id===id),own=S.owned.includes(id);return '<button class="exb" data-t="'+id+'" aria-label="'+t.name+(own?'':' · 대여 장비')+'">'+(ICON[id]?'<img src="'+ICON[id]+'" alt="">':'')+'<span>'+t.short+'</span>'+(own?'':'<em>대여</em>')+'<i>'+(TOOLS.indexOf(t)+1)+'</i></button>'}).join('')
+  +(ex?'':'<button class="exb shop" data-shop="1" aria-label="장비 구입·설명"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg><span>구입·설명</span>'+(TOOLS.some(t=>!S.owned.includes(t.id)&&S.money>=t.price)?'<em>새 장비</em>':'')+'</button>');
+ $('toolmenu').style.setProperty('--tn',Math.min(4,el.children.length));
+ el.querySelectorAll('button').forEach(b=>{b.addEventListener('mousedown',ev=>ev.preventDefault());b.onclick=()=>{AU.wake();
+  if(b.dataset.shop){toolMenuClose();openShop();return}
+  if(b.dataset.t===S.tool)toolMenuClose();else setTool(b.dataset.t); // 바뀌면 setTool이 닫는다
+  if(EX.on)exHUD(true);$('gl').focus()}})}
+function toolMenuSync(){if(!TM.open)return;const why=switchBlock(),key=S.tool+'|'+why+'|'+S.owned.length+'|'+EX.on;if(key===TM.key)return;TM.key=key;
+ for(const b of $('extools').children){if(b.dataset.shop){b.disabled=!menuAvailable();continue}const sel=b.dataset.t===S.tool;b.classList.toggle('sel',sel);b.disabled=!!why&&!sel;b.setAttribute('aria-pressed',String(sel))}
+ const n=$('toolnote');n.hidden=!why;n.textContent=why;toolMenuPlace()}
+function toolMenuPlace(){if(!TM.open)return;const m=$('toolmenu'),r=$('shopbtn').getBoundingClientRect(),w=m.offsetWidth;m.style.left=clamp(r.left+r.width/2-w/2,8,Math.max(8,W-8-w))+'px';m.style.top=(r.bottom+9)+'px';$('hud').style.setProperty('--tmb',Math.round(r.bottom+9+m.offsetHeight+10)+'px')}
+function toolMenuOpen(){if(TM.open||!started||paused||EX.on&&EX.phase!=='run')return false;TM.open=true;TM.key='';toolMenuRender();$('toolmenu').hidden=false;$('shopbtn').setAttribute('aria-expanded','true');$('hud').classList.add('tm');toolMenuSync();if(stashWhy())a2NudgeT=time+3;AU.tick();return true}
+function toolMenuClose(){if(!TM.open)return;TM.open=false;$('toolmenu').hidden=true;$('shopbtn').setAttribute('aria-expanded','false');$('hud').classList.remove('tm');bubPlace()}
+function toolMenuToggle(){AU.wake();if(TM.open)toolMenuClose();else toolMenuOpen();$('gl').focus()}
 // 남은 게 얼마 안 되면(30 이하) 산 놈 발밑에 노란 고리를 깔고, 화면 밖(등 뒤 포함)에 있는 놈은 화면 가장자리에 방향과 마릿수를 띄운다
 const EXM={ring:null,arrows:[],bins:10},_xm=new THREE.Matrix4(),_xv=new THREE.Vector3();
 function exMarksBuild(){
@@ -7201,8 +7283,8 @@ function exMarks(){const e=EX,m=EXM.ring;if(!m)return;
   else{sx=(c.x-P.x)*.6;sy=1} // 등 뒤: 아래쪽(뒤로 물러서는 쪽)을 가리키고, 옆으로 치우친 만큼 비스듬히
   const b=((Math.round(Math.atan2(sy,sx)/(TAU/N))%N)+N)%N;cnt[b]++}
  m.count=n;m.instanceMatrix.needsUpdate=true;
- const hb=$('exbar').getBoundingClientRect(),tl=$('extools').getBoundingClientRect(),a2=$('act2');
- const L=14+17,R=W-14-17-(tl.width&&tl.left>W*.5&&tl.top>=hb.top?tl.width+10:0),T=hb.bottom+12+17,B=H-17-(a2.hidden?100:210),cx=(L+R)/2,cy=(T+B)/2;
+ const hb=$('hudbtns').getBoundingClientRect(),a2=$('act2');
+ const L=14+17,R=W-14-17,T=hb.bottom+12+17,B=H-17-(a2.hidden?100:210),cx=(L+R)/2,cy=(T+B)/2;
  for(let b=0;b<N;b++){const el=EXM.arrows[b];if(!cnt[b]){el.style.display='none';continue}
   const a=b*TAU/N,dx=Math.cos(a),dy=Math.sin(a),tx=dx>1e-3?(R-cx)/dx:dx<-1e-3?(L-cx)/dx:1e9,ty=dy>1e-3?(B-cy)/dy:dy<-1e-3?(T-cy)/dy:1e9,t=Math.min(tx,ty);
   el.style.display='block';el.style.transform='translate('+(cx+dx*t-17).toFixed(1)+'px,'+(cy+dy*t-17).toFixed(1)+'px)';{const ca=Math.cos(a),sa=Math.sin(a),pt=(x,y)=>(17+x*ca-y*sa).toFixed(1)+' '+(17+x*sa+y*ca).toFixed(1);el.firstChild.firstChild.setAttribute('d','M'+pt(-8,-2.6)+'L'+pt(1.5,-2.6)+'L'+pt(1.5,-7.5)+'L'+pt(10,0)+'L'+pt(1.5,7.5)+'L'+pt(1.5,2.6)+'L'+pt(-8,2.6)+'Z')}el.lastChild.textContent=cnt[b]>1?cnt[b]:''}}
@@ -7210,6 +7292,11 @@ function exMarks(){const e=EX,m=EXM.ring;if(!m)return;
 
 /* ───────── HUD ───────── */
 let toastT=0,hudKey='';
+// 진행 칸: 글자가 칸에 다 안 들어가면 로고를 뺀다. 글자 수가 바뀔 때만 다시 잰다
+const PF={zone:-1,exbar:-1};
+function progFit(id,n){const p=$(id);if(n===PF[id]||!p.offsetWidth)return;PF[id]=n;const t=p.children[1];p.classList.remove('nomk');if(t.scrollWidth>t.clientWidth+1)p.classList.add('nomk')}
+function progRefit(){PF.zone=PF.exbar=-1;progFit('zone',$('ztxt').textContent.length);progFit('exbar',$('extxt').textContent.length)}
+function clearNotices(){toastT=0;$('toast').classList.remove('on');MG.t=0;MG.sum=0;MG.shown=-1;if(MG.on){MG.on=false;const el=$('mgain');el.classList.remove('on');el.parentNode.classList.remove('gain')}}
 function toast(s,sec=2.6){$('toast').textContent=s;$('toast').classList.add('on');toastT=sec}
 // 아직 없는 장비를 살 돈이 처음 모이면 장비 버튼 밑에 말풍선을 6초 띄운다 (장비마다 한 번, 한꺼번에 여럿이면 비싼 것 하나에 '외 몇 개').
 // 누르면 장비 메뉴가 열린다. 말풍선이 사라져도 메뉴를 열 때까지 장비 버튼에 빨간 점이 남는다 (그사이 돈이 모자라게 되면 점도 지운다)
@@ -7223,15 +7310,19 @@ function buyBubble(){const b=$('buybub'),btn=$('shopbtn');
  const t=can.reduce((a,c)=>c.price>a.price?c:a);for(const c of can)seen.push(c.id);dirty=true;
  b.querySelector('img').src=ICON[t.id]||'';b.querySelector('b').textContent=t.name;b.querySelector('small').textContent='구매 가능 · '+won(t.price)+(can.length>1?' · 외 '+(can.length-1)+'개':'');
  b.setAttribute('aria-label',t.name+' 구매 가능 · 장비 메뉴 열기');b.hidden=false;b.classList.remove('on');bubPlace();void b.offsetWidth;b.classList.add('on');BUB.until=time+6;btn.classList.add('new');AU.chime()}
+let dryAll=false;
 function updateHUD(force){
  buyBubble();
- const running=!!S.support,recipients=supportRecipients().length,more=needsReassignment()&&!S.paid;
- const key=[Math.round(S.money),S.prog,S.zone,S.paid,S.tool,S.owned.length,S.muted,running,recipients,more,S.exDone,S.dm.on].join('|');if(!force&&key===hudKey)return;hudKey=key;
- $('money').textContent=won(S.money);$('ztxt').textContent=S.zone+'기 · '+S.prog+'/'+quota(S.zone)+(S.dm.on?' · 멈춤':'');$('zone').classList.toggle('stall',S.dm.on);$('zbar').style.width=Math.min(100,S.prog/quota(S.zone)*100)+'%';
+ const running=!!S.support,people=supportRecipients(),recipients=people.length,more=needsReassignment()&&!S.paid;
+ const dry=demandMode()||running||S.paid?0:people.filter(c=>activityLeft(c)<=0).length; // 활동비가 떨어져 손을 놓은 예술가 수
+ if(dry&&dry===recipients){if(!dryAll&&started&&!paused){dryAll=true;toast('활동비가 떨어져 예술가 '+dry+'명이 창작을 멈췄습니다\n지원금 '+won(dry*SUPPORT_UNIT)+'을 주면 다시 합니다',5);AU.thud(.4)}}else dryAll=false;
+ const held=S.dm.on||S.paid?0:heldSeats().length;
+ const key=[Math.round(S.money),S.prog,S.zone,S.paid,S.tool,S.owned.length,S.muted,running,recipients,more,S.exDone,S.dm.on,dry,held].join('|');if(!force&&key===hudKey)return;hudKey=key;
+ $('money').textContent=won(S.money);$('ztxt').innerHTML=S.zone+'기 · '+S.prog+'/'+quota(S.zone)+(S.dm.on?'<em> · 멈춤</em>':'');progFit('zone',$('ztxt').textContent.length);$('zone').classList.toggle('stall',S.dm.on);$('zbar').style.width=Math.min(100,S.prog/quota(S.zone)*100)+'%';
  $('toolname').textContent=TOOLS.find(t=>t.id===S.tool).short;
  $('shopbtn').setAttribute('aria-label','장비 · '+TOOLS.find(t=>t.id===S.tool).name+' 사용 중');
- $('supportstatus').textContent=S.paid?(exReady()?'결과보고전 철수':'다음 기수 심사'):more?'인원 추가 배정':S.dm.on?'미지급 '+won(recipients*DEMAND_UNIT):running?'지원금 지급 중':'예술가 '+recipients+'명';
- $('supportbtn').classList.toggle('ready',S.paid||more);$('supportbtn').classList.toggle('need',S.dm.on&&!S.paid&&!more);$('supportbtn').setAttribute('aria-label','창작지원 · '+$('supportstatus').textContent);
+ $('supportstatus').textContent=S.paid?(exReady()?'결과보고전 철수':'다음 기수 심사'):more?'인원 추가 배정':S.dm.on?'미지급 '+won(recipients*DEMAND_UNIT):running?'지원금 지급 중':dry?'활동비 소진 '+dry+'명':held?'쉬는 예술가 '+held+'명':'예술가 '+recipients+'명';
+ $('supportbtn').classList.toggle('ready',S.paid||more);$('supportbtn').classList.toggle('need',(S.dm.on||dry>0)&&!S.paid&&!more);$('supportbtn').setAttribute('aria-label','창작지원 · '+$('supportstatus').textContent);
  $('snd').style.opacity=S.muted?.4:1;
 }
 let a2Key='';
@@ -7241,23 +7332,32 @@ function updateAct2(){ // 보조 버튼: 안전화는 양발 구르기, 집게�
  if(t==='boot'){lab='구르기';say='양발 구르기'}
  else if(t==='tong'){lab='밟기';sub=TG.in.length+'/'+TG.CAP;ok=tongCollecting()?TG.in.length+TG.held.length+TG.tgts.length>0:TG.in.length>0&&(TG.ph==='ready'||TG.ph==='tread');say='봉투 밟기 · '+TG.in.length+'마리'}
  else if(t==='vac'){
-  if(VC.ph===1){lab='누르기';sub='남은 '+(VC.nr+VC.eat.reduce((n,e)=>n+(e.c.dum?0:1),0));say='누름판으로 누르기 · '+sub+'마리'}
+  if(VC.ph===1){lab='찧기';sub='남은 '+(VC.nr+VC.eat.reduce((n,e)=>n+(e.c.dum?0:1),0));say='누름판으로 찧기 · '+sub+'마리'}
   else if(VC.gr>0){lab='배출 중';ok=false;say=lab}
   else{lab='갈기';sub=VC.nr+'/'+VC.CAP;ok=VC.tank.length>0;say='갈기 · '+VC.nr+'마리'}}
  else if(t==='shovel'){const n=SH.carry.length+SH.heap.length;lab='퍼담기';sub=n?'날 위 '+n:'';ok=!['heave','dump','bang'].includes(SH.ph);say='퍼담기'+(n?' · '+n:'')}
  else if(t==='trim'){lab='줄 풀기';sub=refill?'보충 필요':'';ok=!TR.bp;say='줄 풀기'+(sub?' · '+sub:'')}
- const on=ok&&acting2()&&!paused,key=show+'|'+lab+'|'+sub+'|'+ok+'|'+on;if(key===a2Key)return;a2Key=key;
- el.hidden=!show;el.children[0].textContent=lab;el.children[1].textContent=sub;el.classList.toggle('off',!ok);el.classList.toggle('on',on);el.classList.toggle('refill',refill);el.setAttribute('aria-label',say);
+ const on=ok&&acting2()&&!paused,nd=show&&ok&&!on&&!paused&&(time<a2NudgeT||stashOnly())&&!!stashWhy(),key=show+'|'+lab+'|'+sub+'|'+ok+'|'+on+'|'+nd;if(key===a2Key)return;a2Key=key;
+ el.hidden=!show;el.children[0].textContent=lab;el.children[1].textContent=sub;el.classList.toggle('off',!ok);el.classList.toggle('on',on);el.classList.toggle('refill',refill);el.classList.toggle('nudge',nd);el.setAttribute('aria-label',say);
 }
-function setTool(id){if(!(S.owned.includes(id)||EX.on&&EX_TOOLS.includes(id))||S.tool===id||EX.on&&(!EX_TOOLS.includes(id)||EX.phase!=='run'))return;if(stompLocked()||TD.on||shovelLocked()||tool2Locked())return;S.tool=id;AU.tick();dirty=true;updateHUD(true);setHint()}
+// 봉투·흡입기 통에 담아 두고 아직 처리하지 않은 것이 있으면 장비를 바꾸지 못한다. 까닭을 글로 돌려준다 ('' = 담아 둔 게 없다)
+const stashWhy=()=>S.tool==='tong'?(!tongCollecting()?'묶은 봉투를 다 밟아야 장비를 바꿀 수 있습니다':TG.in.length||TG.held.length?'봉투에 담긴 것부터 밟아야 장비를 바꿀 수 있습니다':''):S.tool==='vac'?(VC.gr>0?'다 갈릴 때까지는 장비를 바꿀 수 없습니다':VC.tank.length?'흡입기 통에 담긴 것부터 갈아야 장비를 바꿀 수 있습니다':''):'';
+const switchBlock=()=>stashWhy()||(stompLocked()||TD.on||shovelLocked()||tool2Locked()?'하던 동작이 끝나면 장비를 바꿀 수 있습니다':''); // 지금 장비를 못 바꾸는 까닭 ('' = 바꿀 수 있다)
+const stashOnly=()=>EX.on&&EX.phase==='run'&&!EX.free&&(S.tool==='tong'?TG.in.length>0&&!TG.held.length&&tongCollecting():S.tool==='vac'&&VC.tank.length>0&&VC.gr===0); // 철수: 바닥은 비었고 봉투·통에 담긴 것만 남았다
+const exToolBusy=()=>S.tool==='hand'?HG.ph!=='idle':S.tool==='boot'?stompLocked()||TD.on:S.tool==='shovel'?shovelLocked()||SH.binDrain>0:S.tool==='tong'?TG.ph!=='idle':S.tool==='vac'?VC.gr>0:false; // 철수: 들고 있는 장비가 아직 동작 중인가 (손을 털어 내는 중 · 발을 떼는 중 · 봉투를 내던지는 중 …)
+let a2NudgeT=0; // 이때까지 노란 버튼이 깜빡인다
+function setTool(id){if(!(S.owned.includes(id)||EX.on&&EX_TOOLS.includes(id))||S.tool===id||EX.on&&(!EX_TOOLS.includes(id)||EX.phase!=='run'))return;
+ {const why=stashWhy();if(why){if(started&&!paused&&!TM.open){toast(why,2.8);a2NudgeT=time+3}return}}
+ if(stompLocked()||TD.on||shovelLocked()||tool2Locked())return;S.tool=id;AU.tick();dirty=true;toolMenuClose();updateHUD(true);setHint()}
 const fine=window.matchMedia&&matchMedia('(pointer:fine)').matches;
-let hintN=0;
+let hintN=0,hintKey='';
 function setHint(){
  const collecting=tongCollecting();
  const verb={hand:'누르면 집어 들고, 꾹 누르고 있으면 쥐어짭니다',boot:'꾹 눌러 밟고, 떼면 발을 듭니다',shovel:'누르면 내려치고, 누르고 있으면 계속 내려칩니다',tong:collecting?'누르면 집고, 몰린 곳은 훑어서 담습니다':TG.armed?'누르고 있으면 묶은 봉투를 밟습니다':'뗐다가 다시 누르고 있으면 묶은 봉투를 밟습니다',trim:fine?'누르는 동안 줄이 돌고, 가리키는 쪽으로 휘두릅니다':'누르는 동안 줄이 돌고, 누른 채 좌우로 끌면 휘두릅니다',wash:fine?'누르는 동안 물을 쏩니다. 가리키는 곳을 씻고, 계속 맞히면 살가죽이 벗겨지며 터집니다':'누르는 동안 물을 쏘고, 누른 채 끌면 물줄기가 따라옵니다. 계속 맞히면 살가죽이 벗겨지며 터집니다',vac:'누르는 동안 빨아들이고, 통이 가득 차면 갈아 냅니다'}[S.tool];
- const more={shovel:'누르는 동안 긁어 담고, 떼면 수거통에 텁니다',boot:'누르고 있으면 양발로 구릅니다',tong:collecting?'담긴 만큼 바로 밟습니다':'',vac:'눌러서 갈고, 갈리는 동안 누르면 유리판으로 찍고 꾹 누르면 짓누릅니다',trim:'헤드를 바닥에 쳐서 새 줄을 뺍니다'}[S.tool],b2={shovel:'퍼담기',boot:'구르기',tong:'밟기',vac:'갈기',trim:'줄 풀기'}[S.tool];
+ const more={shovel:'누르는 동안 긁어 담고, 떼면 수거통에 텁니다',boot:'누르고 있으면 양발로 구릅니다',tong:collecting?'담긴 만큼 바로 밟습니다':'',vac:'눌러서 갈고, 누르고 있으면 유리판으로 찧습니다. 갈리는 동안 '+(fine?'스페이스나 마우스 왼쪽을':'화면을')+' 누르면 꾹 짓누릅니다',trim:'헤드를 바닥에 쳐서 새 줄을 뺍니다'}[S.tool],b2={shovel:'퍼담기',boot:'구르기',tong:'밟기',vac:'갈기',trim:'줄 풀기'}[S.tool];
  $('hinttxt').textContent=(fine?'WASD 이동 · 스페이스나 마우스를 '+verb:'왼쪽 화면: 이동 · 오른쪽 화면: '+verb)+(more?(fine?' · Q나 오른쪽 클릭: ':' · '+b2+' 버튼: ')+more:'');
- $('hint').style.opacity=1;hintN=6;
+ hintKey=S.tool+(S.tool==='tong'?(collecting?'':TG.armed?'-b':'-c'):'');
+ if((S.hs||(S.hs=[])).includes(hintKey)){$('hint').style.opacity=0;hintN=0}else{$('hint').style.opacity=1;hintN=6}
 }
 // 장비 메뉴 그림: 게임 속 장비 모형을 그대로 따로 찍어서, 흰 테두리를 두른 스티커처럼 만든다 (처음 한 번만)
 const ICON={};
@@ -7316,14 +7416,16 @@ one('hand',()=>{handPose(.5,0);return shoot([[HG.g,0,0,0,-.55,.55,.3]],{dir:[.15
 const GEYES={hand:[],wash:[],boot:[1,1],tong:[1,0,1],shovel:[1,0,0,1],vac:[1,1,0,0,0],trim:[1,0,0,1,1,0,1]}; // 장비 메뉴에 그리는 눈 (1: 작은 눈)
 function renderShop(){
  $('smoney').textContent=won(S.money);$('stotal').textContent=S.total.toLocaleString('ko-KR');$('sliters').textContent=S.liters.toFixed(1);
- $('gears').innerHTML=TOOLS.map(t=>{const own=S.owned.includes(t.id),sel=S.tool===t.id,poor=!own&&S.money<t.price,st=sel?'사용 중':own?'사용하기':'구매 · '+won(t.price);
-  return '<button class="gear'+(sel?' sel':'')+(poor?' poor':'')+'" data-t="'+t.id+'"'+(sel||poor?' disabled':'')+' aria-label="'+t.name+' · '+st+(poor?' · 예산 부족':'')+'"><span class="gh"><span class="gi">'+(ICON[t.id]?'<img src="'+ICON[t.id]+'" alt="">':'')+'</span><span class="gn"><b>'+t.name+'</b><span class="st'+(!own&&!poor?' buy':'')+'">'+st+'</span></span></span><span class="ge">'+(t.id==='wash'?'<span>창작물이 모여들지 않음</span>':(GEYES[t.id].length?'<em>'+GEYES[t.id].map(s=>'<i'+(s?' class="s"':'')+'></i>').join('')+'</em>':'')+'<span>'+(GEYES[t.id].length?'':'눈 없음 · ')+EYEPOW[t.id][0]+'m 안에서 모여듦</span>')+'</span><small>'+t.desc+'</small></button>'}).join('');
+ const why=stashWhy(),note=$('shopnote');note.hidden=!why;note.textContent=why?why+'.'+(TOOLS.some(t=>!S.owned.includes(t.id))?' 새 장비는 지금 사 둘 수 있습니다.':''):'';
+ $('gears').innerHTML=TOOLS.map(t=>{const own=S.owned.includes(t.id),sel=S.tool===t.id,poor=!own&&S.money<t.price,hold=own&&!sel&&!!why,st=sel?'사용 중':own?'사용하기':'구매 · '+won(t.price);
+  return '<button class="gear'+(sel?' sel':'')+(poor?' poor':'')+(hold?' held':'')+'" data-t="'+t.id+'"'+(sel||poor||hold?' disabled':'')+' aria-label="'+t.name+' · '+st+(poor?' · 예산 부족':'')+(hold?' · 담긴 것부터 처리':'')+'"><span class="gh"><span class="gi">'+(ICON[t.id]?'<img src="'+ICON[t.id]+'" alt="">':'')+'</span><span class="gn"><b>'+t.name+'</b><span class="st'+(!own&&!poor?' buy':'')+'">'+st+'</span></span></span><span class="ge">'+(t.id==='wash'?'<span>창작물이 모여들지 않음</span>':(GEYES[t.id].length?'<em>'+GEYES[t.id].map(s=>'<i'+(s?' class="s"':'')+'></i>').join('')+'</em>':'')+'<span>'+(GEYES[t.id].length?'':'내 눈 · ')+EYEPOW[t.id][0]+'m 안에서 모여듦</span>')+'</span><small>'+t.desc+'</small></button>'}).join('');
  $('gears').querySelectorAll('.gear').forEach(b=>b.onclick=()=>buyOrEquip(b.dataset.t));
 }
 function buyOrEquip(id){
  if($('shop').hidden)return false;const t=TOOLS.find(t=>t.id===id);if(!t||S.tool===id)return false;
- if(!S.owned.includes(id)){if(S.money<t.price)return false;S.money-=t.price;S.owned.push(id);AU.buy()}else AU.tick();
- S.tool=id;save();updateHUD(true);setHint();closeShop();return true;
+ const why=stashWhy();
+ if(!S.owned.includes(id)){if(S.money<t.price)return false;S.money-=t.price;S.owned.push(id);AU.buy()}else{if(why)return false;AU.tick()}
+ if(!why){S.tool=id;setHint()}save();updateHUD(true);closeShop();if(why){toast(t.name+' 구입\n'+why,4.5);a2NudgeT=time+4}return true;
 }
 function menuAvailable(){return started&&!paused&&!EX.on&&!stompLocked()&&!TD.on&&!shovelLocked()&&!tool2Locked()}
 function openShop(){if(!menuAvailable())return false;$('buybub').hidden=true;$('shopbtn').classList.remove('new');paused=true;releaseAll();$('hud').inert=true;renderShop();$('shop').hidden=false;save();$('shopx').focus();return true}
@@ -7333,12 +7435,12 @@ let perkSeat=-1,perkPhotoKey='';
 function showSupportPage(perks){
  $('support-main').hidden=perks;$('support-perks').hidden=!perks;
  $('support-main-btn').setAttribute('aria-pressed',String(!perks));$('support-perks-btn').setAttribute('aria-pressed',String(perks));
- if(perks){const h=S.honor;$('honor-rate').value=String(h.unit??(h.previous||500000));renderArtistPerks()}
+ if(perks){const h=S.honor;$('honor-rate').value=String(h.unit??(h.previous||500000));const hd=heldSeats()[0];if(hd)perkSeat=hd[0];renderArtistPerks()}
 }
 // 메뉴에서 자리를 골랐을 때만 현재 작업대 실물을 한 장 촬영한다.
 function photographArtistSeat(id){
  const c=creators.find(c=>c.i===id);if(!c||GFX.lost)return;
- const key=id+'|'+artistSeatGear(id);if(key===perkPhotoKey)return;
+ const key=id+'|'+artistSeatGear(id);if(key===perkPhotoKey)return;applyLod(c,0); // 사진은 늘 가까이서 보는 모습으로
  const canvas=$('perk-photo'),w=canvas.width,h=canvas.height,sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,w/h,.05,12);
  sc.background=lin(0xe9e6e0);sc.environment=scene.environment;
  sc.add(new THREE.HemisphereLight(0xfffbef,0xc3b6ac,.79));const lamp=new THREE.DirectionalLight(0xffeed8,.82);lamp.position.set(-2,4,3);sc.add(lamp);
@@ -7355,22 +7457,24 @@ function photographArtistSeat(id){
 function renderArtistPerks(){
  const ids=artistDeskIds(),select=$('perk-seat');
  if(!ids.includes(perkSeat))perkSeat=ids[0]??-1;
- if(select.dataset.roster!==ids.join(',')){
+ const roster=ids.join(',')+'|'+heldSeats().map(h=>h[0]).join(',');
+ if(select.dataset.roster!==roster){
   select.replaceChildren();ids.forEach(i=>{
-   const d=DESKS[i],a=AP[d.seat==null?d.ap:S.grants[d.seat]?.a],label=String(i+1).padStart(2,'0')+'번 자리 · '+(a?a.field+' 〈'+a.title+'〉':'예술가');
+   const d=DESKS[i],a=AP[d.seat==null?d.ap:S.grants[d.seat]?.a],label=String(i+1).padStart(2,'0')+'번 자리 · '+(a?a.field+' 〈'+a.title+'〉':'예술가')+(holdOn(i)?' · 창작 중단':'');
    select.add(new Option(label,String(i)));
-  });select.dataset.roster=ids.join(',');
+  });select.dataset.roster=roster;
  }
  select.value=String(perkSeat);
  for(const item of ARTIST_GOODS){
   const b=$(item.button),owned=!!(artistSeatGear(perkSeat)&item.bit),short=Math.max(0,item.price-S.money);
-  b.disabled=perkSeat<0||owned||short>0;b.querySelector('span').textContent=owned?'설치 완료':short?won(short)+' 부족':won(item.price)+' 구입';
+  b.disabled=perkSeat<0||owned||short>0;b.querySelector('span').textContent=owned?'설치 완료':short?won(short)+' 부족':won(item.price)+' 구입';b.classList.toggle('want',holdOn(perkSeat)&&holdOf(perkSeat)[1]===item.bit);
  }
+ {const hd=holdOn(perkSeat)?holdOf(perkSeat):null,note=$('perk-note');note.hidden=!hd;note.textContent=hd?'이 자리 예술가는 '+GEAR_NAME[hd[1]]+'가 없어서 창작을 안 합니다.':''}
  photographArtistSeat(perkSeat);renderHonorarium();
 }
 function buyArtistGood(item){
  if($('supportmenu').hidden||$('support-perks').hidden||!artistDeskIds().includes(perkSeat)||(artistSeatGear(perkSeat)&item.bit)||S.money<item.price)return false;
- S.money-=item.price;S.seatGear[perkSeat]=artistSeatGear(perkSeat)|item.bit;save();syncArtistFurniture();AU.buy();updateHUD(true);renderSupportMenu();
+ S.money-=item.price;S.seatGear[perkSeat]=artistSeatGear(perkSeat)|item.bit;if(S.dm.hold)S.dm.hold=S.dm.hold.filter(h=>holdOn(h[0]));save();syncArtistFurniture();AU.buy();updateHUD(true);renderSupportMenu();
  $('perk-feedback').textContent=(perkSeat+1)+'번 자리 '+$(item.button).querySelector('b').textContent+' 설치 완료';return true;
 }
 function renderHonorarium(){
@@ -7380,6 +7484,8 @@ function renderHonorarium(){
  if(h.previous){const pct=Math.round((unit-h.previous)*100/h.previous);comparison+=' · '+(pct?Math.abs(pct)+'% '+(pct<0?'삭감':'증액'):'동결')}
  else if(unit)comparison+=' · 신규 편성';
  $('honor-comparison').textContent=comparison;
+ {const note=$('honor-note'),cut=demandMode()&&h.previous>0&&unit<h.previous,ease=!cut&&unit>0&&unpaid.some(i=>holdOn(i));
+  note.hidden=!cut&&!ease;note.textContent=cut?'직전 기수보다 적게 주면 이번 기수에는 창작 정지가 더 일찍, 한 번 더 옵니다.':ease?'품위유지비를 받은 예술가는 비품이 없어도 이번 기수에는 다시 창작합니다.':''}
  const closed=h.unit===0||!unpaid.length,short=Math.max(0,cost-S.money);
  b.disabled=closed||short>0;b.textContent=h.unit===0?'미편성 확정':!unpaid.length?'지급 완료 · '+won(unit*h.seats.length):short?won(short)+' 부족':!unit?'이번 기수 미편성 확정':unpaid.length+'명 · '+won(cost)+(h.unit===null?' 지급':' 추가 지급');
 }
@@ -7387,7 +7493,7 @@ function payHonorarium(){
  if($('supportmenu').hidden||$('support-perks').hidden)return false;
  const h=S.honor,unit=h.unit??Number($('honor-rate').value),seats=artistDeskIds().filter(i=>!h.seats.includes(i)),cost=unit*seats.length;
  if(!HONOR_RATES.includes(unit)||h.unit===0||!seats.length||S.money<cost)return false;
- h.unit=unit;h.seats.push(...seats);S.money-=cost;save();if(cost)AU.buy();else AU.tick();updateHUD(true);renderSupportMenu();
+ h.unit=unit;h.seats.push(...seats);S.money-=cost;if(unit>0&&S.dm.hold)S.dm.hold=S.dm.hold.filter(q=>!seats.includes(q[0]));save();if(cost)AU.buy();else AU.tick();updateHUD(true);renderSupportMenu();
  $('perk-feedback').textContent=cost?'품위유지비 '+won(cost)+' 지급 완료':'이번 기수 품위유지비 미편성';return true;
 }
 function renderSupportMenu(){
@@ -7395,8 +7501,9 @@ function renderSupportMenu(){
  $('support-title').textContent=S.zone+'기 창작지원';$('supportmoney').textContent=won(S.money);$('supportpeople').textContent='예술가 '+n+'명 · 시민 '+creators.filter(c=>c.d.citizen&&creatorActive(c)).length+'명'+(S.specialIds.length?' (특별 선정 '+S.specialIds.length+'명)':'');$('supportwaiting').textContent=waiting?(dm?'창작 중단 ':'활동비 소진 ')+waiting+'명':'창작 활동 중';
  $('supportamount').previousElementSibling.textContent=dm?(idle?'창작지원금':'창작지원금 미지급'):'지원금 지급';
  $('supportamount').textContent=idle?'지급 완료':won(cost);$('supportdetail').textContent=idle?'예술가들이 창작 활동 중입니다.':dm?'예술가 '+n+'명 × '+won(DEMAND_UNIT)+' · 돈을 줄 때까지 창작을 하지 않습니다. 그동안은 정산 목표가 오르지 않습니다.':'예술가 '+n+'명 × '+won(SUPPORT_UNIT)+' · 예술가에게 지급합니다.';
- $('supportnotice').hidden=!running&&!missing&&!S.advance;
- $('supportnotice').textContent=running?'현재 지원금으로 창작 활동 중입니다.':refused?'미상계 선지급금 '+won(S.advance)+' · 이번 지급 부족액 '+won(missing)+'. 작업을 계속하면 수입으로 선지급금을 갚을 수 있습니다.':credit?'부족분 '+won(missing)+'은 다음 수입에서 먼저 상계합니다. 상계 전에는 추가 선지급이 제한됩니다.':missing?'재단 예산 '+won(missing)+'이 부족합니다.':S.advance?'미상계 선지급금 '+won(S.advance):'';
+ const held=heldSeats(),heldText=held.length?held.map(h=>seatNo(h[0])+'번 자리('+GEAR_NAME[h[1]]+')').join(', ')+' 예술가는 비품이 없어서 창작을 안 합니다. 비품·품위유지비에서 사 줄 수 있습니다.':'';
+ $('supportnotice').hidden=!running&&!missing&&!S.advance&&!heldText;
+ $('supportnotice').textContent=running?'현재 지원금으로 창작 활동 중입니다.':refused?'미상계 선지급금 '+won(S.advance)+' · 이번 지급 부족액 '+won(missing)+'. 작업을 계속하면 수입으로 선지급금을 갚을 수 있습니다.':credit?'부족분 '+won(missing)+'은 다음 수입에서 먼저 상계합니다. 상계 전에는 추가 선지급이 제한됩니다.':missing?'재단 예산 '+won(missing)+'이 부족합니다.':S.advance?'미상계 선지급금 '+won(S.advance):heldText;
  $('supportreport').hidden=!refused;
  $('supportpay').disabled=!payable;$('supportpay').textContent=refused?'추가 선지급 거절':running?'지급 완료':idle?'지급 완료':credit?'예술가 선지급':dm?'창작지원금 지급':'예술가 지급';
  const more=needsReassignment()&&!S.paid,target=targetWorkshop(),ready=S.paid||more;
@@ -7436,8 +7543,8 @@ function resumeGame(){$('pause').hidden=true;$('hud').inert=false;paused=false;l
 
 /* ───────── 입력 ───────── */
 const PT={mx:0,my:0,mok:false,id:null,x0:0,y0:0,x:0,y:0}; // 마우스 위치 · 작업 손가락이 처음 닿은 자리와 지금 자리
-const keys={};let stickId=null,stickX=0,stickY=0,sx0=0,sy0=0,actIds=new Set(),mouseAct=false,mouseOn=false,mouse2=false,act2Ids=new Set(),was2=false;
-function releaseAll(){AU.stopReactions();PT.id=null;for(const k in keys)keys[k]=false;stickId=null;stickX=stickY=0;actIds.clear();act2Ids.clear();mouseAct=mouseOn=mouse2=false;$('stick').style.display='none';AU.loop('scrape',false);AU.loop('vac',false);AU.loop('grind',false);AU.engine(false);AU.loop('wash',false);AU.loop('squeak',false);VC.on=false;TR.on=false;WS.on=false}
+const keys={};let stickId=null,stickX=0,stickY=0,sx0=0,sy0=0,actIds=new Set(),mouseAct=false,mouseOn=false,mouse2=false,act2Ids=new Set(),was2=false,tapA=false,tap2=false; // tapA·tap2: 지난 프레임 뒤로 누름·보조 버튼이 눌린 적이 있다
+function releaseAll(){toolMenuClose();tapA=tap2=false;AU.stopReactions();PT.id=null;for(const k in keys)keys[k]=false;stickId=null;stickX=stickY=0;actIds.clear();act2Ids.clear();mouseAct=mouseOn=mouse2=false;$('stick').style.display='none';AU.loop('scrape',false);AU.loop('vac',false);AU.loop('grind',false);AU.engine(false);AU.loop('wash',false);AU.loop('squeak',false);VC.on=false;TR.on=false;WS.on=false}
 const acting=()=>mouseAct||actIds.size>0||!!keys.Space,acting2=()=>mouse2||act2Ids.size>0||!!keys.KeyQ;
 function bindInterviewSwipe(){
  const panel=$('interview');
@@ -7468,11 +7575,11 @@ function bind(){
  const cv=$('gl');
  bindInterviewSwipe();
  $('interview-pending').onclick=togglePendingApplicants;
- const mousePedal=e=>{const down=!!(e.buttons&2);if(down&&!mouse2){pestleTap(false);vacGrind()}mouse2=down};
- cv.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();
-  if(e.pointerType==='mouse'){mouseOn=true;mouseAct=!!(e.buttons&1)||!e.buttons;if(mouseAct)pestleTap(true);mousePedal(e);PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true}
+ const mousePedal=e=>{const down=!!(e.buttons&2);if(down&&!mouse2){tap2=true;pestleTap(false);vacGrind()}mouse2=down};
+ cv.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();toolMenuClose();
+  if(e.pointerType==='mouse'){mouseOn=true;mouseAct=!!(e.buttons&1)||!e.buttons;if(mouseAct){tapA=true;pestleTap(true)}mousePedal(e);PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true}
   else if(e.clientX<W*.45&&stickId===null){stickId=e.pointerId;sx0=e.clientX;sy0=e.clientY;stickX=stickY=0;const s=$('stick');s.style.display='block';s.style.left=sx0+'px';s.style.top=sy0+'px';s.firstElementChild.style.transform=''}
-  else{actIds.add(e.pointerId);pestleTap(true);if(PT.id===null){PT.id=e.pointerId;PT.x0=PT.x=e.clientX;PT.y0=PT.y=e.clientY}}
+  else{actIds.add(e.pointerId);tapA=true;pestleTap(true);if(PT.id===null){PT.id=e.pointerId;PT.x0=PT.x=e.clientX;PT.y0=PT.y=e.clientY}}
   try{cv.setPointerCapture(e.pointerId)}catch(_){}});
  cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true;if(mouseOn){mouseAct=!!(e.buttons&1);mousePedal(e)}} // 다른 단추를 겹쳐 누르거나 떼면 이쪽으로 온다
   if(e.pointerId===PT.id){PT.x=e.clientX;PT.y=e.clientY}
@@ -7481,15 +7588,15 @@ function bind(){
  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('lostpointercapture',up);
  cv.addEventListener('contextmenu',e=>e.preventDefault());
  {const b=$('act2'),up2=e=>act2Ids.delete(e.pointerId);
-  b.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();act2Ids.add(e.pointerId);pestleTap(false);vacGrind();try{b.setPointerCapture(e.pointerId)}catch(_){}});
+  b.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();toolMenuClose();act2Ids.add(e.pointerId);tap2=true;pestleTap(false);vacGrind();try{b.setPointerCapture(e.pointerId)}catch(_){}});
   b.addEventListener('pointerup',up2);b.addEventListener('pointercancel',up2);b.addEventListener('lostpointercapture',up2);b.addEventListener('contextmenu',e=>e.preventDefault());b.addEventListener('mousedown',e=>e.preventDefault())} // 마우스로 눌러도 초점은 화면에 둔다
  addEventListener('keydown',e=>{if(!started)return;if(EX.on&&(EX.shown||$('exfade').classList.contains('on'))){if(e.code==='Escape'||e.code==='KeyP')e.preventDefault();return} // 결과 카드·전환 중
-  if(e.code==='Escape'||e.code==='KeyP'){e.preventDefault();if(e.repeat)return;if(IV.open)closeInterview();else if(!$('shop').hidden)closeShop();else if(!$('supportmenu').hidden)closeSupportMenu();else if(paused)resumeGame();else pauseGame();return}
+  if(e.code==='Escape'||e.code==='KeyP'){e.preventDefault();if(e.repeat)return;if(TM.open&&e.code==='Escape'){toolMenuClose();return}if(IV.open)closeInterview();else if(!$('shop').hidden)closeShop();else if(!$('supportmenu').hidden)closeSupportMenu();else if(paused)resumeGame();else pauseGame();return}
   if(e.code==='Tab'&&paused){const modal=IV.open?$('interview'):!$('shop').hidden?$('shop'):!$('supportmenu').hidden?$('supportmenu'):$('pause'),items=Array.from(modal.querySelectorAll('button:not(:disabled),select,summary')).filter(el=>el.getClientRects().length);if(items.length){const i=items.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();items[items.length-1].focus()}else if(!e.shiftKey&&(i<0||i===items.length-1)){e.preventDefault();items[0].focus()}}return}
   if(IV.open){if(e.code==='ArrowLeft'||e.code==='ArrowRight'){e.preventDefault();focusCandidate(e.code==='ArrowLeft'?-1:1)}return}
   if(paused)return;
   if(['Space','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyW','KeyA','KeyS','KeyD','KeyQ'].includes(e.code)){e.preventDefault();AU.wake()}
-  keys[e.code]=true;if(e.code==='KeyQ'&&!e.repeat){pestleTap(false);vacGrind()}if(e.code==='Space'&&!e.repeat)pestleTap(true);
+  keys[e.code]=true;if(e.code==='KeyQ'&&!e.repeat){tap2=true;pestleTap(false);vacGrind()}if(e.code==='Space'&&!e.repeat){tapA=true;pestleTap(true)}
   if(e.code.startsWith('Digit')){const t=TOOLS[+e.code.slice(5)-1];if(t)setTool(t.id)}
   if(!e.repeat&&(e.code==='KeyB'||e.code==='KeyE'))openShop();
   if(!e.repeat&&(e.code==='Enter'||e.code==='KeyF')){e.preventDefault();openSupportMenu()}});
@@ -7506,7 +7613,7 @@ function bind(){
  for(const item of ARTIST_GOODS)$(item.button).onclick=()=>buyArtistGood(item);
  $('honor-rate').onchange=renderHonorarium;$('honor-pay').onclick=payHonorarium;
  $('supportbtn').onclick=openSupportMenu;$('supportx').onclick=closeSupportMenu;$('supportpay').onclick=payFromSupport;$('supportreport').onclick=reportClosure;$('supportreview').onclick=reviewFromSupport;
- $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=openShop;$('buybub').onclick=()=>{AU.wake();openShop()};$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('candidate-reject').onclick=()=>rejectCandidate(IV.sel);$('candidate-private').onclick=()=>privateCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
+ $('pz').onclick=pauseGame;$('resume').onclick=resumeGame;$('shopbtn').onclick=toolMenuToggle;$('shopbtn').addEventListener('mousedown',e=>e.preventDefault());$('buybub').onclick=()=>{AU.wake();openShop()};$('shopx').onclick=closeShop;$('interview-back').onclick=closeInterview;$('candidate-prev').onclick=()=>focusCandidate(-1);$('candidate-next').onclick=()=>focusCandidate(1);$('candidate-approve').onclick=()=>chooseCandidate(IV.sel);$('candidate-reject').onclick=()=>rejectCandidate(IV.sel);$('candidate-private').onclick=()=>privateCandidate(IV.sel);$('interview-enter').onclick=enterNextWorkshop;$('exr-next').onclick=exExit;$('exend').onclick=()=>{exEndPress();$('gl').focus()};$('exend').addEventListener('mousedown',e=>e.preventDefault());
  $('shop').addEventListener('pointerdown',e=>{if(e.target===$('shop'))closeShop()});
  $('supportmenu').addEventListener('pointerdown',e=>{if(e.target===$('supportmenu'))closeSupportMenu()});
  $('reset').onclick=()=>{if(!confirm('예산과 장비를 포함한 진행 기록을 모두 지우고 처음부터 시작할까요?'))return;exAbort();const m=S.muted;S={money:0,total:0,liters:0,zone:1,prog:0,paid:false,owned:['hand','wash'],tool:'hand',muted:m,wp:1,wf:1,ap:{},cu:2,dm:{n:0,on:false},specialIds:[],grants:[null,null,null],ofn:false,support:null,funds:Array.from({length:15},(_,i)=>65+i*2),advance:0,team:null,draft:null,civic:[],exDone:0,exFeeZone:0,seatGear:[],honor:freshArtistPerks(1)};syncArtistFurniture();roomTarget(1,true);resetRoom();save();updateHUD(true);setHint();resumeGame()};
@@ -7546,20 +7653,20 @@ function refreshGraphics(){
  GFX.suspended=false;GFX.rebuild=false;resize();renderer.setViewport(0,0,W,H);GFX.wake=false;last=0;return true;
 }
 
-function resize(){FR.need=true;W=Math.max(1,innerWidth);H=Math.max(1,innerHeight);portrait=H>W;const cv=renderer.domElement;if(cv.width!==Math.floor(W*pr)||cv.height!==Math.floor(H*pr))renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=portrait?CAM.fp:CAM.fl;camera.updateProjectionMatrix();lensSize();if(IV.open)layoutInterview();if(EX.on)exToolsFit();bubPlace()}
+function resize(){FR.need=true;W=Math.max(1,innerWidth);H=Math.max(1,innerHeight);portrait=H>W;{const two=W<530||portrait&&W<=600,hud=$('hud');if(hud.classList.contains('pt')!==two){hud.classList.toggle('pt',two);const hb=$('hudbtns');if(two)$('r2').appendChild(hb);else{const r=$('r1').querySelector('.right');r.insertBefore(hb,r.firstChild)}}}const cv=renderer.domElement;if(cv.width!==Math.floor(W*pr)||cv.height!==Math.floor(H*pr))renderer.setSize(W,H,false);camera.aspect=W/H;camera.fov=portrait?CAM.fp:CAM.fl;camera.updateProjectionMatrix();lensSize();if(IV.open)layoutInterview();progRefit();toolMenuPlace();bubPlace()}
 
 /* ───────── 루프 ───────── */
 let last=0,slow=0,pr=1;const FR={prev:0,vs:16.7,odd:false,need:true,drawn:0,ft:.0167,hold:0,mem:0};
 function sim(dt){
  time+=dt;blobI=0;extraBlobs.length=0;if(!EX.on)updateRoom(dt);
- const lock=EX.on&&EX.phase!=='run',act=acting()&&!paused&&started&&!lock,act2=acting2()&&!paused&&started&&!lock,go2=act2&&!was2;was2=act2; // lock: 철수 시간이 끝났다
+ const lock=EX.on&&EX.phase!=='run',act=(acting()||tapA)&&!paused&&started&&!lock,act2=(acting2()||tap2)&&!paused&&started&&!lock,go2=act2&&!was2;was2=act2;tapA=tap2=false; // lock: 철수 시간이 끝났다
  let mx=0,mz=0;
  if(started&&!paused&&!lock){mx=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+stickX;mz=(keys.KeyS||keys.ArrowDown?1:0)-(keys.KeyW||keys.ArrowUp?1:0)+stickY;
   let m=Math.hypot(mx,mz);if(m>1){mx/=m;mz/=m;m=1}if(m<.12){mx=mz=0}else{const k=Math.pow(m,1.4)/m;mx*=k;mz*=k}
   if(stompLocked()||(S.tool==='shovel'?shovelMoveLocked():shovelLocked())||tool2Locked())mx=mz=0;
   const v=TD.on?.62:S.tool==='trim'&&act?1.5:S.tool==='wash'&&act?1.1:S.tool==='vac'&&act?1.5:SH.ph==='hold'?1.3:S.tool==='shovel'&&shovelLocked()?.85:2.3;mx*=v;mz*=v;
   const pb=XB-.15;P.x=clamp(P.x+mx*dt,-pb,pb);P.z=clamp(P.z+mz*dt,ZN+.95,EX.on?ZF+.75:ZF-.1); // 전시장에서는 맨 뒷줄 뒤까지 물러서서 끝에 붙은 것도 앞에 두고 칠 수 있다
-  if((mx||mz||act||act2)&&hintN>0){hintN-=dt;if(hintN<=0)$('hint').style.opacity=0}}
+  if((mx||mz||act||act2)&&hintN>0){hintN-=dt;if(hintN<=0){$('hint').style.opacity=0;if(hintKey&&!(S.hs||(S.hs=[])).includes(hintKey)){S.hs.push(hintKey);dirty=true}}}}
  stompUpdate(dt,act,act2);
  updateBody(dt,mx,mz);updateGoogly();
  handUpdate(dt,act);shovelUpdate(dt,act,act2,go2);vacUpdate(dt,act,act2,go2);trimUpdate(dt,act,go2);tongUpdate(dt,act,act2,go2);washUpdate(dt,act);
@@ -7582,17 +7689,19 @@ function frame(now){
  // 프레임이 계속 밀리면(폰이 버거우면) 그때 해상도를 조금씩 낮춘다
  if(started&&!paused){if(PPL.busy)PPL.busy=0;else FR.ft+=(Math.min(raw,.1)-FR.ft)*.025;if(FR.ft>.0235&&pr>1&&now>FR.hold){pr=Math.max(1,Math.round((pr-.25)*4)/4);renderer.setPixelRatio(pr);renderer.setSize(W,H,false);FR.hold=now+5000;FR.ft=.0167;FR.need=true}}else FR.ft=.0167
  if(!paused||IV.open)ARTIST_LED.t.value+=dt;
+ if(paused){const rd=Math.min(raw,.3);if(toastT>0){toastT-=rd;if(toastT<=0)$('toast').classList.remove('on')}updatePops(rd)} // 멈춘 동안에도 알림은 실제 시간대로 사라진다
  if(IV.open){drawInterview(dt);return}
  pplPump(started&&!paused?3:14,!started||paused);
  if(!paused){if(hitstop>0){hitstop-=raw}else sim(dt)}
- drawCreatures();drawBits();inkFlush();wetFlush(paused?0:dt);if(INK.journal.length>=16000||INK.journal.length>=8192&&now-FR.mem>20000){FR.mem=now;rememberFloor()}updatePops(paused?0:dt);if(started){updateHUD(false);updateAct2()} // 바닥 그림 백업(GPU에서 읽어 오기)은 20초에 한 번 이하로
+ drawCreatures();drawBits();inkFlush();wetFlush(paused?0:dt);if(INK.journal.length>=16000||INK.journal.length>=8192&&now-FR.mem>20000){FR.mem=now;rememberFloor()}updatePops(paused?0:dt);if(started){updateHUD(false);updateAct2();toolMenuSync()} // 바닥 그림 백업(GPU에서 읽어 오기)은 20초에 한 번 이하로
+ FR.sh=!FR.sh;if(FR.sh)renderer.shadowMap.needsUpdate=true; // 그림자 지도는 두 프레임에 한 번
  renderer.render(scene,camera);
 }
 function init(){
  const cv=$('gl');
  renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false,powerPreference:'high-performance'});
  pr=Math.min(window.devicePixelRatio||1,2);renderer.setPixelRatio(pr);
- renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.NoToneMapping;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+ renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.NoToneMapping;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
  scene=new THREE.Scene();scene.background=lin(0xeef1f7);
  camera=new THREE.PerspectiveCamera(66,1,.08,40);camera.rotation.order='YXZ';
  scene.add(new THREE.HemisphereLight(0xffffff,0xc8c2b8,.38));
@@ -7618,7 +7727,7 @@ addEventListener('storage',event=>{
  if((record?.closed===true)!==closedHome){closedHome=true;location.reload()}
 });
 function loadEngine(i){
- const urls=['./vendor/three.min.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'],msg=t=>{document.getElementById('load').textContent=t};
+ const urls=['./three.min.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','./vendor/three.min.js'],msg=t=>{document.getElementById('load').textContent=t};
  const go=()=>{try{MAIN()}catch(e){console.error(e);msg('그래픽을 시작하지 못했습니다. 페이지를 새로 열어 주세요.')}};
  if(window.THREE){go();return}
  if(i>=urls.length){msg('그래픽 파일을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');return}
