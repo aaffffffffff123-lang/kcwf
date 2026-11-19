@@ -4146,7 +4146,7 @@ function fitBinCreature(c,o){
 function binContents(dt){
  const s=SH;
  if(s.binN>=72&&!s.binDrain)s.binDrain=1.8;
- if(s.binDrain){s.binDrain=Math.max(0,s.binDrain-dt);if(!s.binDrain){s.binN=0;s.binPieces.length=0;AU.flush();for(const c of s.binned)if(!c.dead)killCreature(c,'bin');s.binned.length=0}}
+ if(s.binDrain){s.binDrain=Math.max(0,s.binDrain-dt);if(!s.binDrain){if(EX.on)clearHallBin();s.binN=0;s.binPieces.length=0;AU.flush();for(const c of s.binned)if(!c.dead)killCreature(c,'bin');s.binned.length=0}}
  s.binLv=damp(s.binLv,Math.min(1,s.binN/72),s.binN?7:3,dt);
  s.pulp.visible=s.binLv>.02;s.pulp.position.y=.045+.105*s.binLv;s.pulp.material.color.copy(s.binC).lerp(GUT,.35);s.pulp.material.roughness=.55;
  const scale=binInnerRadius(s.pulp.position.y+s.pulp.userData.bottom)/s.pulp.userData.radius;s.pulp.scale.set(scale,1,scale);
@@ -4358,6 +4358,7 @@ function drawHeap(dt){
 function bladeOver(rx,ry,rz,h,o){_se.set(rx,ry,rz,'YXZ');_sq.setFromEuler(_se);_sv.set(-SHW*.55,.02,SHD*.5).applyQuaternion(_sq);const b=SH.bin.position;o.x=b.x-_sv.x;o.y=h-_sv.y;o.z=b.z-_sv.z;o.rx=rx;o.ry=ry;o.rz=rz;return o}
 function bladeDump(){ // 날을 기울여 통에 쏟는다
  const s=SH,g=s.g,b=s.bin.position;g.updateMatrixWorld(true);
+ if(EX.on&&hallProps.blade)dumpHallPack();
  const n=s.carry.length,T=.3,ty=b.y+binTop();
  for(const c of s.carry){c.st='tossed';c.t=0;c.tt=T;c.vx=(b.x+rnd(-.05,.05)-c.x)/T;c.vz=(b.z+rnd(-.05,.05)-c.z)/T;c.vy=(ty-c.y+4.9*T*T)/T}
  s.carry.length=0;s.tossN=n;
@@ -4377,7 +4378,7 @@ function bladeShake(){ // 통 테두리에 날을 친다: 눌어붙어 있던 �
 }
 function shovelUpdate(dt,act,a2,go2){
  const s=SH,g=s.g,on=S.tool==='shovel';g.visible=s.bin.visible=on;bladeContact.active.value=false;
- if(!on){if(s.carry.length){for(const c of s.carry){c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1;c.y=0}s.carry.length=0}
+ if(!on){if(EX.on&&hallProps.blade)dropHallBlade();if(s.carry.length){for(const c of s.carry){c.st='flee';c.t=0;c.fx=P.x;c.fz=P.z;c.fleeT=1;c.y=0}s.carry.length=0}
   for(const c of s.pins){if(c.legs){c.st='walk';killCreature(c,'slam',c.ex,c.ez,c.enx,c.enz)}else{c.st='maim';c.t=0;c.life=rnd(5,9);c.sq=.3}}s.pins.length=0;
   for(const c of s.mashed)c.pin=0;s.mashed.length=0;
   for(const c of s.binned)if(!c.dead)killCreature(c,'none');s.binned.length=0;
@@ -4423,6 +4424,7 @@ function shovelUpdate(dt,act,a2,go2){
   // 긁기: 날 끝이 지나간 자리를 날 폭대로 지운다. 핏자국 위를 긁으면 밀린 피가 날 양옆에 줄로 남는다
   const ex=p.x,ez=p.z;if(!s.scraping){s.scraping=true;s.lastX=ex;s.lastZ=ez}
   const L=Math.hypot(ex-s.lastX,ez-s.lastZ);
+  if(EX.on&&EX.phase==='run'&&p.y<.035)scoopHallPack(ex,ez,s.lastX,s.lastZ);
   if(L>.012&&p.y<.02){const n=Math.min(16,Math.ceil(L/.03));for(let i=1;i<=n;i++){const t=i/n,x=lerp(s.lastX,ex,t),z=lerp(s.lastZ,ez,t);for(const o of[-.105,0,.105])stamp(x+o,z+.035,.15,.15,0,1,6,null,.95,true)}
    const st=stainNear(ex,ez+.05,.2);if(st){s.ridgeC=st.c;s.ridge+=L}else s.ridge=0;
    if(s.ridgeC&&s.ridge>0){const dx=ex-s.lastX,dz=ez-s.lastZ,dl=Math.hypot(dx,dz)||1;if(Math.abs(dz)>Math.abs(dx)*1.5)for(const sd of[-1,1])stamp((s.lastX+ex)/2+sd*(SHW+.012),(s.lastZ+ez)/2+.04,.03,L+.03,dx/dl,dz/dl,6,s.ridgeC,.9)} // 앞으로 밀 때만 날 양옆에 밀린 피가 줄로 남는다
@@ -4435,7 +4437,7 @@ function shovelUpdate(dt,act,a2,go2){
   for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];if(k.stick)continue;if(k.rest&&Math.abs(k.x-p.x)<.19&&k.z>p.z-.03&&k.z<p.z+.14){s.load++;heapAdd(k);chunks.splice(i,1);S.liters+=.2;if(!EX.on)earn(500,k.x,k.z);
     if(time>s.sndT){s.sndT=time+.07;if(k.kind===1||k.kind===7){AU.peel(.35);AU.squelch(.25)}else AU.bubble(rnd(220,380),.12)}}} // 소리는 몰려도 0.07초에 하나씩
   if(s.ph==='thrust'&&u>=1){s.ph='hold';AU.loop('scrape',false)}
-  if(s.ph==='hold'){AU.loop('scrape',a2&&moveK>.3);if(!a2){s.from=Object.assign({},p);s.t=0;AU.loop('scrape',false);s.scraping=false;s.ph=s.carry.length||s.heap.length||s.stuck.length?'heave':'back'}}
+  if(s.ph==='hold'){AU.loop('scrape',a2&&moveK>.3);if(!a2){s.from=Object.assign({},p);s.t=0;AU.loop('scrape',false);s.scraping=false;s.ph=s.carry.length||s.heap.length||s.stuck.length||hallProps.blade?'heave':'back'}}
  }
  else if(s.ph==='heave'){ // 통 오른쪽 위로 들어 옮긴다
   const u=Math.min(1,s.t/.3),e=ss(u);bladeOver(.1,1,.3,.54,tmpP);p.x=lerp(s.from.x,tmpP.x,e);p.y=lerp(s.from.y,tmpP.y,eo(u))+Math.sin(u*Math.PI)*.05;p.z=lerp(s.from.z,tmpP.z,e);p.rx=lerp(s.from.rx,.1,e);p.ry=lerp(s.from.ry,1,e);p.rz=lerp(s.from.rz,.3,e);s.lean=.3*(1-e);
@@ -5580,6 +5582,7 @@ function trimUpdate(dt,act,go2){
  // 자르기
  let load=0;t.nb=t.nl=0;t.bm=12;t.bf=1;t.bd=4;t.chopN=0; // 한 프레임에 뿌리는 양은 묶어 둔다 (여럿이 한꺼번에 갈려도 끊기지 않게)
  if(t.hs>.22&&started){const R=t.R,hx=t.hx,hz=t.hz,rr=(R+.12)*(R+.12);
+  if(EX.on&&EX.phase==='run')load+=cutHallWreaths(hx,hz,R,dt);
   for(const c of creatures){if(c.dead)continue;const st=c.st;if(st==='fall'||st==='pinned'||st==='carried'||st==='tossed'||st==='tank'||st==='held'||st==='bag'||st==='binned'||st==='sucked')continue;
    const dx=c.x-hx,dz=c.z-hz;if(dx*dx+dz*dz>rr)continue;load+=trimHit(c,dt,R,hx,hz)}
   // 바닥에 깔린 것도 다시 갈려 더 잘게 흩어진다 (먼저 골라 두고 처리한다: 새 조각이 오래된 것을 밀어내므로)
@@ -6537,6 +6540,212 @@ const exhibitionFeeDue=()=>S.exFeeZone===S.zone?0:exhibitionFee(S.zone);
 const exCount=z=>Math.min(1600,1000+(z-1)*150);
 function exArtists(){const ids=S.team?S.team.slice():artistDeskIds().map(i=>DESKS[i]&&DESKS[i].ap).filter(a=>a!=null&&a>=0&&AP[a]);return ids.length?ids:REVIEW_ORDER.slice(0,4)}
 const HALL={g:null,mat:null,walls:[],base:[],title:null,vinyl:null,pools:[],poolGeo:null,poolMat:null,F:'"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif'};
+// 결과보고전 입구의 화환과 양장 도록. 같은 소품을 기수마다 다시 배치한다.
+const hallProps={root:null,wreaths:[],piles:[],packs:[],blade:null,flight:null,inBin:[],petals:[],petalMesh:null};
+function wreathFace(warm){
+ return canvasTex(512,768,c=>{
+  let seed=warm?3741:1097;
+  const rand=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+  function oval(x,y,w,h,a,col){c.fillStyle=col;c.beginPath();c.ellipse(x,y,w,h,a,0,Math.PI*2);c.fill()}
+  const leaf=['#1b4431','#335d39','#477148','#779253'];
+  const petals=warm?['#ffe5cf','#f9ba46','#ef8050','#cf485e','#ffe5ac']:['#fff3cb','#f4c2cc','#df6b94','#cf3c67','#fff9df'];
+  // 아래 단은 넓고 윗단은 좁다. 부채꼴 잎맥 위에 국화와 거베라를 겹친다.
+  for(const [cy,rx,ry] of [[449,191,122],[314,166,115],[170,133,101]]){
+   oval(256,cy,rx*.88,ry*.88,0,'#284b32');
+   for(let i=0;i<67;i++){
+    const a=i*2.39996,cs=Math.cos(a),sn=Math.sin(a),x=256+cs*rx*.63,y=cy+sn*ry*.68;
+    const dx=cs*rx*(.34+rand()*.2),dy=sn*ry*(.42+rand()*.22),tilt=Math.atan2(dy,dx);
+    c.strokeStyle='#567845';c.lineWidth=2;c.beginPath();c.moveTo(x,y);c.lineTo(x+dx,y+dy);c.stroke();
+    for(let k=0;k<7;k++){const u=k/8,v=(1-u)*6+3;for(const side of [-1,1])oval(x+u*dx-side*Math.sin(tilt)*v,y+u*dy+side*Math.cos(tilt)*v,10*(1-u*.6),3,tilt+side*.56,leaf[(k+i)%4])}
+   }
+   for(let i=0;i<68;i++){
+    const a=i*2.39996+rand()*.11,r=Math.sqrt((i+.3)/68),x=256+Math.cos(a)*rx*r*.84,y=cy+Math.sin(a)*ry*r*.8;
+    const size=9+rand()*5,angle=rand()*3,col=petals[(rand()*5)|0];
+    oval(x+1,y+3,size,size*.81,0,'#765740');
+    for(let j=0;j<10;j++){const t=angle+j*Math.PI/5;oval(x+Math.cos(t)*size*.53,y+Math.sin(t)*size*.48,size*.57,size*.26,t,col)}
+    for(let j=0;j<7;j++){const t=j*Math.PI*2/7;oval(x+Math.cos(t)*size*.23,y+Math.sin(t)*size*.23,size*.31,size*.16,t,'#ffdbb2')}
+    oval(x,y,size*.18,size*.16,0,'#a87927');
+   }
+  }
+  for(const side of [-1,1]){
+   c.save();c.translate(256,0);c.scale(side,1);
+   const ribbon=c.createLinearGradient(64,0,189,0);ribbon.addColorStop(0,'#cb6c95');ribbon.addColorStop(.43,'#ffe2e8');ribbon.addColorStop(.68,'#efadc1');ribbon.addColorStop(1,'#d889a7');c.fillStyle=ribbon;
+   c.beginPath();c.moveTo(71,103);c.bezierCurveTo(112,180,143,375,143,492);c.bezierCurveTo(145,548,168,592,167,661);c.lineTo(150,644);c.lineTo(135,662);c.bezierCurveTo(135,596,113,548,112,496);c.bezierCurveTo(110,345,83,184,61,116);c.closePath();c.fill();
+   oval(69,107,32,13,-.53,'#e9a9ba');oval(71,108,20,7,-.55,'#b76a81');oval(60,116,10,9,0,'#f8c8d1');c.restore();
+  }
+ });
+}
+function wreathHalf(side){
+ const pos=[],uv=[],indices=[],nx=6,ny=12;
+ for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){
+  const u=(i/nx+(side<0?0:1))*.5,v=j/ny,x=(u-.5)*.88;
+  pos.push(x,(v-.5)*1.24,.045+.092*Math.max(0,1-(2*u-1)**2)*Math.sin(v*Math.PI));uv.push(u,v);
+  if(i<nx&&j<ny){const a=j*(nx+1)+i;indices.push(a,a+1,a+nx+1,a+1,a+nx+2,a+nx+1)}
+ }
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();return g;
+}
+function hallCatalogueBundle(){
+ // 정수리에서는 금박 표지, 옆에서는 천을 씌운 책등과 켜켜이 겹친 종이가 보인다.
+ const tex=canvasTex(512,512,c=>{
+  c.fillStyle='#293c40';c.fillRect(0,0,512,512);
+  for(let x=0;x<256;x+=3){c.fillStyle=x%2?'#354a4b':'#2a4041';c.fillRect(x,0,1,320)}
+  c.strokeStyle='#c9ac70';c.lineWidth=2;c.strokeRect(20,19,216,279);c.lineWidth=1;c.strokeRect(24,23,208,271);
+  c.fillStyle='#e3c283';c.textAlign='center';c.font='bold 29px serif';c.fillText('결과보고전',131,105);c.font='16px serif';c.fillText('도　록',131,138);
+  c.font='11px serif';c.fillText('한국창작인복지재단',131,259);
+  c.fillStyle='#ded5b9';c.fillRect(260,0,250,318);
+  for(let y=0;y<318;y+=6){c.fillStyle=y%4?'#b9ad91':'#f1ead5';c.fillRect(260,y,250,2)}
+  c.fillStyle='#314747';c.fillRect(0,324,512,188);c.fillStyle='#c3a367';for(const x of [28,33,460,465])c.fillRect(x,350,2,120);
+ });
+ const coords={cover:[2,2,254,316],pages:[262,4,506,314],spine:[2,328,510,505],cloth:[2,332,16,494]};
+ const xyz=[],norm=[],uv=[],base=new THREE.BoxGeometry(1,1,1).toNonIndexed(),p=base.attributes.position,n=base.attributes.normal,t=base.attributes.uv;
+ function part(cx,cy,cz,w,h,d,a,faces){
+  const cs=Math.cos(a),sn=Math.sin(a);
+  for(let i=0;i<p.count;i++){
+   const x=p.getX(i)*w,z=p.getZ(i)*d,nx=n.getX(i),nz=n.getZ(i),r=coords[faces[i/6|0]];
+   xyz.push(cx+cs*x+sn*z,cy+p.getY(i)*h,cz-sn*x+cs*z);norm.push(cs*nx+sn*nz,n.getY(i),-sn*nx+cs*nz);
+   uv.push((r[0]+(r[2]-r[0])*t.getX(i))/512,1-(r[1]+(r[3]-r[1])*(1-t.getY(i)))/512);
+  }
+ }
+ const cloth=['cloth','cloth','cover','cloth','cloth','cloth'],pages=['pages','spine','cloth','cloth','pages','pages'];
+ for(let j=0;j<4;j++){
+  const y=j*.016,a=Math.sin(j*2)*.026,x=.002*Math.cos(j*3),z=.002*Math.sin(j*3);
+  part(x,y+.0015,z,.158,.003,.200,a,cloth);
+  part(x-.001,y+.008,z,.153,.010,.195,a,pages);
+  part(x,y+.0145,z,.158,.003,.200,a,cloth);
+ }
+ base.dispose();const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(xyz,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(norm,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+ return new THREE.Mesh(g,new THREE.MeshStandardMaterial({map:tex,roughness:.68}));
+}
+function buildHallProps(){
+ const h=hallProps;if(h.root)return;
+ h.root=new THREE.Group();HALL.g.add(h.root);
+ const faces=[false,true].map(warm=>new THREE.MeshStandardMaterial({map:wreathFace(warm),alphaTest:.42,side:THREE.DoubleSide,roughness:.9}));
+ const half=[wreathHalf(-1),wreathHalf(1)],wood=new THREE.MeshStandardMaterial({color:0xa47b48,roughness:.94});
+ const frame=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),wood,5*5);frame.frustumCulled=false;frame.castShadow=true;h.root.add(frame);
+ const V=THREE.Vector3,up=new V(0,1,0),bar=new THREE.Object3D();let k=0;
+ function rail(base,from,to,width){
+  const a=new V(...from),b=new V(...to);base.localToWorld(a);base.localToWorld(b);const d=b.clone().sub(a);
+  bar.position.copy(a).lerp(b,.5);bar.scale.set(width,d.length(),width*.8);bar.quaternion.setFromUnitVectors(up,d.normalize());bar.updateMatrix();frame.setMatrixAt(k++,bar.matrix);
+ }
+ for(const [x,z,yaw,height] of [[-.46,-1.60,.17,1],[-1.46,-1.54,.24,.93],[-2.12,-1.94,.31,1.04],[.59,-2.12,-.18,1.03],[1.7,-1.66,-.27,.95]]){
+  const base=new THREE.Group();base.position.set(x,0,z);base.rotation.y=yaw;base.scale.setScalar(height);h.root.add(base);base.updateMatrixWorld(true);
+  rail(base,[-.225,.014,.115],[-.05,1.28,-.08],.028);rail(base,[.225,.014,.115],[.05,1.28,-.08],.028);
+  rail(base,[0,.014,-.27],[0,1.21,-.08],.026);rail(base,[-.16,.41,.06],[.16,.41,.06],.026);rail(base,[-.11,.86,-.006],[.11,.86,-.006],.023);
+  const halves=half.map((geo,i)=>{
+   const mesh=new THREE.Mesh(geo,faces[h.wreaths.length%2]);base.add(mesh);mesh.castShadow=true;
+   const side=i?1:-1,foot=new V(side*.153,0,.07);base.localToWorld(foot);
+   return {mesh,side,x:foot.x,z:foot.z,cut:0,t:-1};
+  });
+  h.wreaths.push({x,z,halves});
+ }
+ h.petalMesh=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,0),new THREE.MeshStandardMaterial({roughness:.87}),100);
+ h.petalMesh.frustumCulled=false;h.petalMesh.count=0;h.petalMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);h.root.add(h.petalMesh);
+ h.petalPose=new THREE.Object3D();
+ const book=hallCatalogueBundle();
+ for(const [x,z,qty,yaw] of [[.43,-.48,4,-.16],[.69,-.51,3,.09],[.46,-.75,5,.05],[.75,-.8,2,-.31]]){
+  h.piles.push({x,z});
+  for(let j=0;j<qty;j++){
+   const mesh=book.clone();mesh.castShadow=mesh.receiveShadow=true;h.root.add(mesh);
+   h.packs.push({mesh,x:x+.006*Math.sin(j*3),z:z+.004*Math.cos(j),y:.003+j*.064,yaw:yaw+.035*Math.sin(j*2),state:'floor'});
+  }
+ }
+}
+function setHallPackFloor(p,x,y,z,yaw){
+ const h=hallProps;h.root.add(p.mesh);p.mesh.position.set(x,y,z);p.mesh.rotation.set(0,yaw,0);p.mesh.visible=true;p.state='floor';
+}
+function resetHallProps(){
+ buildHallProps();const h=hallProps;h.blade=h.flight=null;h.inBin.length=h.petals.length=0;h.petalMesh.count=0;h.petalMoving=false;
+ for(const p of h.packs)setHallPackFloor(p,p.x,p.y,p.z,p.yaw);
+ for(const w of h.wreaths)for(const f of w.halves){
+  f.cut=0;f.t=-1;f.mesh.visible=true;f.mesh.position.set(0,.87,0);f.mesh.rotation.set(-.13,0,0);f.mesh.scale.set(1,1,1);
+ }
+}
+function hallPropFootprint(x,z){
+ if(z<-2.4||z>-.27)return false;
+ const h=hallProps;
+ return h.wreaths.some(w=>Math.abs(x-w.x)<.31&&Math.abs(z-w.z)<.25)||h.piles.some(p=>Math.abs(x-p.x)<.13&&Math.abs(z-p.z)<.15);
+}
+function cutHallWreaths(x,z,r,dt){
+ const h=hallProps;let hits=0;
+ for(const w of h.wreaths){
+  if(Math.abs(w.z-z)>r+.25||Math.abs(w.x-x)>r+.3)continue;
+  for(const f of w.halves){
+   if(f.t>=0||(x-f.x)**2+(z-f.z)**2>(r+.04)**2)continue;
+   f.cut=Math.min(1,f.cut+dt*8);f.mesh.rotation.z=-f.side*.09*f.cut;
+   if(f.cut<1)continue;
+   f.t=0;hits++;AU.noise('highpass',1700,680,.75,.08,.12);
+   const col=['#e784aa','#f8d1cf','#f5b451','#faf0d5','#6f9653'];
+   for(let i=0;i<10;i++){
+    const n=h.petals.length,px=f.x+f.side*rnd(.01,.16),py=rnd(.42,1.36);
+    h.petals.push({x:px,y:py,z:f.z+rnd(-.03,.08),vx:f.side*rnd(.1,.46),vy:rnd(-.5,.32),vz:rnd(.05,.4),a:rnd(0,6),spin:rnd(-7,7),size:rnd(.012,.027),rest:false});
+    h.petalMesh.setColorAt(n,new THREE.Color(col[i%5]));
+   }
+   h.petalMesh.count=h.petals.length;h.petalMesh.instanceColor.needsUpdate=true;h.petalMoving=true;
+  }
+ }
+ return hits*.16;
+}
+function updateHallFlowers(dt){
+ const h=hallProps;
+ for(const w of h.wreaths)for(const f of w.halves)if(f.t>=0&&f.mesh.visible){
+  f.t+=dt;const u=Math.min(1,f.t/.46),m=f.mesh;
+  m.position.set(f.side*.19*u,.87-.7*u*u,.21*u);m.rotation.set(-.13+.77*u,0,-f.side*(.09+.88*u));m.scale.setScalar(1-u*.94);if(u>=1)m.visible=false;
+ }
+ if(!h.petalMoving)return;
+ const o=h.petalPose;h.petalMoving=false;
+ for(let i=0;i<h.petals.length;i++){
+  const p=h.petals[i];if(p.rest)continue;
+  p.vy-=3.8*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;p.a+=p.spin*dt;
+  if(p.y<=.011){p.y=.011;p.rest=true}else h.petalMoving=true;
+  o.position.set(p.x,p.y,p.z);o.rotation.set(p.rest?0:p.a*.52,p.a,0);o.scale.set(p.size,p.size*.23,p.size*.58);o.updateMatrix();h.petalMesh.setMatrixAt(i,o.matrix);
+ }
+ h.petalMesh.instanceMatrix.needsUpdate=true;
+}
+function scoopHallPack(x,z,oldX,oldZ){
+ const h=hallProps;if(h.blade||h.flight)return;
+ const dx=x-oldX,dz=z-oldZ,len2=dx*dx+dz*dz;let best=null;
+ for(const p of h.packs){
+  if(p.state!=='floor')continue;
+  const v=p.mesh.position,u=len2?clamp(((v.x-oldX)*dx+(v.z-.065-oldZ)*dz)/len2,0,1):1;
+  if(Math.abs(v.x-oldX-u*dx)>.20||Math.abs(v.z-.065-oldZ-u*dz)>.14)continue;
+  if(!best||v.y>best.mesh.position.y)best=p;
+ }
+ if(!best)return;
+ const m=best.mesh;SH.g.add(m);m.position.set(0,.021,.15);m.rotation.set(0,.045,0);best.state='blade';h.blade=best;
+ AU.noise('bandpass',910,420,.8,.05,.13);
+}
+function dropHallBlade(){
+ const h=hallProps,p=h.blade;if(!p)return;
+ const v=p.mesh.getWorldPosition(new THREE.Vector3());let y=.003;
+ for(const q of h.packs)if(q.state==='floor'&&Math.abs(v.x-q.mesh.position.x)<.16&&Math.abs(v.z-q.mesh.position.z)<.2)y=Math.max(y,q.mesh.position.y+.064);
+ setHallPackFloor(p,v.x,y,v.z,0);h.blade=null;
+}
+function dumpHallPack(){
+ const h=hallProps,p=h.blade;if(!p)return;
+ h.root.attach(p.mesh);h.flight={pack:p,start:p.mesh.position.clone(),rotation:p.mesh.quaternion.clone(),t:0};p.state='fall';h.blade=null;
+}
+function clearHallBin(){
+ for(const p of hallProps.inBin){p.mesh.visible=false;p.state='discarded'}hallProps.inBin.length=0;
+}
+function updateHallCatalogues(dt){
+ const h=hallProps,f=h.flight;if(!f)return;
+ const b=SH.bin.position,m=f.pack.mesh;if(S.tool!=='shovel'){setHallPackFloor(f.pack,b.x,.003,b.z,0);h.flight=null;return}
+ const u=Math.min(1,(f.t+=dt)/.28),y=.027+Math.min(3,h.inBin.length)*.064;
+ const center=Math.min(1,u/.48),fall=Math.max(0,(u-.48)/.52);
+ m.position.set(lerp(f.start.x,b.x,center),lerp(f.start.y,y,fall*fall)+.035*Math.sin(center*Math.PI),lerp(f.start.z,b.z,center));
+ m.quaternion.copy(f.rotation).slerp(h.root.quaternion,center);
+ if(u>=1){
+  if(h.inBin.length===4){const oldest=h.inBin.shift();oldest.mesh.visible=false;oldest.state='discarded';h.inBin.forEach((p,i)=>p.mesh.position.y=.027+i*.064)}
+  SH.bin.add(m);m.position.set(0,y,0);m.rotation.set(0,.13*h.inBin.length,0);f.pack.state='bin';h.inBin.push(f.pack);h.flight=null;
+  AU.noise('lowpass',390,150,.8,.075,.23);
+  if(h.inBin.length>=4&&!SH.binDrain)SH.binDrain=1.8;
+ }
+}
+function leaveHallProps(){
+ const h=hallProps;if(!h.root)return;
+ for(const p of h.packs){h.root.add(p.mesh);p.mesh.visible=false}h.blade=h.flight=null;h.inBin.length=0;
+}
+
 function buildHall(){
  if(HALL.g)return;const H=HALL,g=H.g=new THREE.Group();g.visible=false;scene.add(g);
  // 바닥: 밝게 갈아 광을 낸 콘크리트. 깨알 반점을 줄여 튄 핏방울이 무늬에 묻히지 않게 한다. 6m마다 되풀이하고 2m마다 줄눈
@@ -6577,14 +6786,14 @@ function hallLayout(N,ids){
  // 벽에는 아무것도 걸지 않는다. 전시된 것은 바닥에 깔린 것들뿐이다. 조명은 정면 벽 제목에만 둔다
  for(const o of H.pools)g.remove(o);H.pools.length=0;
  const p=new THREE.Mesh(H.poolGeo,H.poolMat);p.position.set(0,1.15,bz+.003);p.scale.set(3.6,2.4,1);p.renderOrder=3;g.add(p);H.pools.push(p);
- hallTexts(N,ids);
+ hallTexts(N,ids);resetHallProps();
  return{xb,zn,zf,bz,sx};
 }
 function hallSpawn(N,ids){
  const types=ids.map(id=>AP[id].type).filter(t=>t>=0&&t<5);if(!types.length)types.push(0,1,2,3,4);
  const x0=-XB+.14,x1=XB-.14,z0=ZN+.14,z1=ZF-.14,pts=[];let s=Math.sqrt((x1-x0)*(z1-z0)/N);
  for(let it=0;it<16;it++){pts.length=0;const nx=Math.max(1,Math.floor((x1-x0)/(s*.8))),nz=Math.max(1,Math.floor((z1-z0)/(s*1.25))),sx=(x1-x0)/nx,sz=(z1-z0)/nz;
-  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=x0+(i+.5+rnd(-.3,.3))*sx,z=z0+(j+.5+rnd(-.3,.3))*sz;if(z>P.z-.3||z>P.z-1.5&&Math.abs(x-P.x)<.72)continue;pts.push(x,z)}
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=x0+(i+.5+rnd(-.3,.3))*sx,z=z0+(j+.5+rnd(-.3,.3))*sz;if(z>P.z-.3||z>P.z-1.5&&Math.abs(x-P.x)<.72||hallPropFootprint(x,z))continue;pts.push(x,z)}
   if(pts.length/2>=N)break;s*=.96}
  const m=pts.length/2,order=Array.from({length:m},(_,i)=>i);for(let i=m-1;i>0;i--){const j=Math.random()*(i+1)|0,t=order[i];order[i]=order[j];order[j]=t}
  for(let k=0;k<Math.min(N,m);k++){const x=pts[order[k]*2],z=pts[order[k]*2+1],u=Math.random(),ty=u<.09?6:u<.14?5:pick(types),c=spawnCreature(ty,x,z);if(!c)break;
@@ -6616,6 +6825,7 @@ function exEndDisarm(){exEndArm=0;const b=$('exend');b.classList.remove('armed')
 function exEndPress(){if(!EX.on||EX.phase!=='run')return;AU.wake();if(exEndArm&&time<=exEndArm){exEndDisarm();exFinish();return}exEndArm=time+2.6;const b=$('exend');b.classList.add('armed');b.textContent='한 번 더 누르면 마침'} // 잘못 눌러 끝내지 않게 두 번 누른다
 const exInVacuum=c=>c.st==='sucked'||c.st==='tank'; // 호스에서 끌려오는 중부터 롤러를 다 통과할 때까지
 function updateHall(dt){
+ updateHallFlowers(dt);updateHallCatalogues(dt);
  const e=EX;
  if(e.phase==='run')e.t+=dt;
  else if(e.phase==='done'){e.dt2+=dt;if(e.dt2>1.2&&!e.shown)exShowResult()}
@@ -6670,7 +6880,7 @@ function hallIn(){
  $('hud').classList.add('ex');exEndDisarm();exToolsRender();exKey='';exHUD(true);setHint();AU.crowdStart();save();
 }
 function hallOut(){
- cleanTools();creatures.length=0;drops.length=0;chunks.length=0;lensClear();AU.crowdStop();
+ leaveHallProps();cleanTools();creatures.length=0;drops.length=0;chunks.length=0;lensClear();AU.crowdStop();
  INK.q.length=0;const k=EX.keep;if(INK.backup&&INK.backup!==k.backup&&!EX.lost){INK.backup.rt.dispose();INK.backup.texture.dispose()}$('extitle').classList.remove('on');
  INK.rt=k.rt;INK.size=k.size;INK.stains=k.stains;INK.journal=k.journal;INK.backup=k.backup;INK.uInk.value=INK.rt.texture;INK.uInkPx.value=1/INK.size;if(EX.rt){if(!EX.lost)EX.rt.dispose();EX.rt=null}inkFrame(0,0,WORLD_SIZE);wetClear();
  if(EX.lost)restoreFloor(); // 전시장에 있는 동안 그래픽이 끊겼으면 작업장 바닥을 기록으로 다시 그린다
