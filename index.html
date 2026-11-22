@@ -121,6 +121,8 @@ button:focus-visible{outline:3px solid #e1ae00;outline-offset:3px}
 #mixbtn i{position:absolute;top:-4px;right:-2px;min-width:24px;height:24px;padding:0 6px;border-radius:7px;background:var(--ink);color:#fff;font-style:normal;font-size:12px;font-weight:800;display:none;align-items:center;justify-content:center}
 #mixbtn.on{transform:translateY(4px);box-shadow:0 1px 0 #9e1f22,0 3px 8px rgba(22,29,51,.2);background:#c9272a}
 #mixbtn.off{opacity:.45}
+#mixbtn.full{animation:mxp 1.1s ease-in-out infinite}
+@keyframes mxp{0%,100%{box-shadow:0 5px 0 #9e1f22,0 0 0 0 rgba(229,56,59,.6)}50%{box-shadow:0 5px 0 #9e1f22,0 0 0 15px rgba(229,56,59,0)}}
 @media(pointer:fine){#mixbtn i{display:flex}}
 @media(max-height:480px){#mixbtn{width:68px;height:68px}#mixbtn b{font-size:15px}#hud.a2 #mixbtn{bottom:calc(var(--act2-bottom) + 80px)}}
 #pops{position:absolute;inset:0;overflow:hidden}
@@ -552,7 +554,7 @@ const TOOLS=[
  {id:'shovel',name:'수거용 삽',short:'삽',price:250000,desc:'내려칠 때마다 더 짓이겨집니다. 누르고 있으면 계속 내려치고, 퍼담기 버튼을 누르는 동안 긁어 담았다가 떼면 수거통에 텁니다.'},
  {id:'vac',name:'흡입 수거기',short:'흡입기',price:900000,desc:'300명까지 모아 담습니다. 가득 차거나 갈기 버튼을 누르면 롤러로 갈아 아래 통에 잘게 쌓습니다. 갈리는 동안 찧기 버튼을 누르고 있으면 두꺼운 유리 누름판으로 내리찍어 짓누르기를 되풀이하고, 화면을 누르고 있으면 계속 꾹 짓눌러 밀어 넣습니다.'},
  {id:'trim',name:'예초기',short:'예초기',price:1400000,desc:'누르는 동안 줄이 돕니다. 누른 채 좌우로 끌면 휘두르고, 줄 풀기 버튼을 누르면 헤드를 바닥에 쳐서 감긴 것을 털고 새 줄을 뺍니다.'},
- {id:'robot',name:'로봇청소기',short:'로봇청소기',price:2000000,machine:true,desc:'혼자 바닥을 훑으며 빨아들이고, 먼지통이 차면 충전대 위 믹서 통에 비웁니다. 충전대 앞에서 믹서 버튼을 누르는 동안 갈리고, 다 갈린 뒤 손을 떼면 배수구로 흘려보냅니다.'}
+ {id:'robot',name:'로봇청소기',short:'로봇청소기',price:2000000,machine:true,desc:'혼자 바닥을 훑으며 빨아들여 충전대 위 믹서 통에 모읍니다. 믹서 버튼이나 충전대를 누르고 있으면 그 앞으로 가서 갈리고, 다 갈리면 알아서 배수구로 흘려보냅니다. 통이 가득 차면 15초 뒤에 알아서 갑니다.'}
 ];
 
 const GRANT_T=96,SUPPORT_UNIT=10000,SUPPORT_T=14,ACTIVITY_T=90; // 예술가 한 명에게 건네는 활동비
@@ -2553,7 +2555,7 @@ function buildFlocks(){
  });
 }
 function spawnCreature(type,x,z,o={}){
- if(creatures.length>=(EX.on?CAP:o.over?CAP-130:WCAP))return null;
+ if(creatures.length-(EX.on?0:MIX.list.length+MIX.tube.length+ROBO.bin.length)>=(EX.on?CAP:o.over?CAP-130:WCAP))return null; // 로봇 먼지통·믹서 통에 든 것은 방 안 상한에 넣지 않는다
  const T=TYPES[type],r=rnd(T.r[0],T.r[1]),ti=Math.random()*T.tintsL.length|0,tintL=T.tintsL[ti],gi=ti;
  const c={type,x,z,y:0,r,h:T.h*r,yaw:rnd(0,TAU),tint:tintL,ink:T.gooL[gi],gi,skin:T.skinL[ti],age:0,tr:rnd(0,.6),life:0,beg:0,fear:0,pt:0,cut:0,flay:0,jt:0,clip:-100,tough:rnd(T.tough[0],T.tough[1]),st:'walk',t:0,ph:rnd(0,TAU),sq:1,sqT:1,sc:1,spd:T.speed*rnd(.8,1.25),turn:0,turnT:0,herd:o.herd||0,react:rnd(.06,.3),panic:0,fx:0,fz:0,roll:0,str:1,vol:Math.pow(r*2,3)*600,dead:false};
  if(o.ai){c.tough=.3;c.ph=o.ph;c.spd=T.speed;c.turnT=1.5}
@@ -2784,7 +2786,7 @@ function drawCreatures(){
  const T=LODV.px;
  for(let i=0;i<n;i++){const c=creatures[i],px=PXS[i];
   if(px<0){ptStep(c);c.lod=null;continue} // 화면 밖: 자세만 따라간다
-  let lv=px>T0?0:px>T[1]?1:px>T[2]?2:3;if(c.lod!=null&&lv>c.lod&&px>(c.lod?T[c.lod]:T0)*.88)lv=c.lod;if(!lv&&c.st==='tank'&&!c.vic&&VC.tank.length>70)lv=1;if(!lv&&c.st==='jar'&&MIX.list.length>60)lv=1;c.lod=lv; // 문턱 근처에서 깜빡이지 않게 · 흡입기 통에 많이 담겨 있는 동안은 한 단계 가벼운 모형까지만
+  let lv=px>T0?0:px>T[1]?1:px>T[2]?2:3;if(c.lod!=null&&lv>c.lod&&px>(c.lod?T[c.lod]:T0)*.88)lv=c.lod;if(!lv&&c.st==='tank'&&!c.vic&&VC.tank.length>70)lv=1;if(c.st==='jar'&&MIX.list.length>60&&lv<2)lv=seenGap(c.jx,c.jz)<.03?Math.max(lv,1):2;c.lod=lv; // 문턱 근처에서 깜빡이지 않게 · 흡입기 통에 많이 담겨 있는 동안은 한 단계 가벼운 모형까지만
   const F=flocks[c.type],L=F.lv[lv];if(L.n>=CAP)continue;
   drawOne(c,L);
   if(shn<LODV.shn&&F.sn<SHCAP&&c.st!=='tank'&&c.st!=='bag'&&c.st!=='jar'&&c.st!=='tube'&&Math.hypot(c.x-cp.x,c.z-cp.z)<LODV.shd){F.sh.instanceMatrix.array.set(L.body.instanceMatrix.array.subarray((L.n-1)*16,L.n*16),F.sn*16);F.sn++;shn++}}
@@ -3397,13 +3399,13 @@ function updateBody(dt,mx,mz){
   for(const r of b.userData.res)blobAt(r.lx,-.004,r.lz,r.s,r.s*.45,r.s,r.color,b)}
  reticle.visible=started&&(S.tool==='boot'&&!TD.on&&(ST.ph==='idle'||ST.ph==='back')||S.tool==='hand'&&HG.ph==='idle');reticle.position.set(P.x+AIMX,.006,P.z-AIMZ);
  // 카메라: 지그시 밟을 때와 구를 때는 발밑을 더 내려다본다
- camX=damp(camX,(TD.on||ST.ph==='idle'||ST.ph==='back'?0:(ST.T.x-P.x)*.75-.03)+MIX.look*(DOCK.x+.1-P.x)*.9,6,dt); // 믹서를 돌리는 동안은 통이 화면 가운데 오도록 옆으로 비켜 선다 (고개는 돌리지 않는다)
+ camX=damp(camX,TD.on||ST.ph==='idle'||ST.ph==='back'?0:(ST.T.x-P.x)*.75-.03,6,dt);
  shake=Math.max(0,shake-dt*7);SH.kick=damp(SH.kick,0,22,dt);const shovelKick=S.tool==='shovel'?SH.kick:0,camShake=shake*(S.tool==='shovel'?.22:1);
  const eye=CAM.eye,basePitch=portrait?CAM.pp:CAM.pl,tk=ss(TD.k),bk=ss(TG.k); // bk: 묶은 봉투를 밟는 동안
  const bob=Math.sin(walkPh*2)*.008*moveK;
  camera.position.set(P.x+camX+(Math.random()-.5)*.006*camShake,eye-.3*lean-CAM.te*tk-CAM.be*bk+bob-camShake*.006+TD.bob-.005*shovelKick,P.z-.02*lean-CAM.bz*bk);
- camera.rotation.set(lerp(basePitch+MIX.look*.11-.05*lean-CAM.sp*look-(portrait?CAM.tp:CAM.tl)*tk-(portrait?CAM.bp:CAM.bl-TG.zp)*bk,portrait?-.3:-.17,ss(introK))-.002*shovelKick,0,0,'YXZ');
- {const fov=(portrait?CAM.fp:CAM.fl)-((portrait?CAM.bfp:CAM.bfl)+TG.zm)*bk-MIX.look*5;if(Math.abs(camera.fov-fov)>.02){camera.fov=fov;camera.updateProjectionMatrix()}}
+ camera.rotation.set(lerp(lerp(basePitch,MIX.lookP,MIX.look)-.05*lean-CAM.sp*look-(portrait?CAM.tp:CAM.tl)*tk-(portrait?CAM.bp:CAM.bl-TG.zp)*bk,portrait?-.3:-.17,ss(introK))-.002*shovelKick,0,0,'YXZ');
+ {const fov=lerp(portrait?CAM.fp:CAM.fl,portrait?MX_ZP:MX_ZL,MIX.look)-((portrait?CAM.bfp:CAM.bfl)+TG.zm)*bk;if(Math.abs(camera.fov-fov)>.02){camera.fov=fov;camera.updateProjectionMatrix()}}
  if(!started)introK=1;else introK=Math.max(0,introK-dt/1.0);
  sun.position.set(P.x-1.4,6,P.z+.4);sun.target.position.set(P.x,0,P.z-2);sun.target.updateMatrixWorld();
 }
@@ -4697,8 +4699,7 @@ function shovelUpdate(dt,act,a2,go2){
   if(s.ph!=='idle')clearThreads(4);s.load=0;s.ph='idle';s.lean=s.kick=0;s.scraping=false;s.rep=0;AU.loop('scrape',false);return}
  s.t+=dt;const p=s.pose;
  // 삽은 오른쪽, 통은 왼쪽 앞. 세로 화면에서도 통 전체와 삽날 사이를 비운다.
- let bx=P.x-Math.min(.66,W/H*.55),bz=P.z-1.35;if(DOCK.g&&DOCK.g.visible){const ex=DOCK.x+.42-bx,ez=DOCK.z+.7-bz;if(bx>DOCK.x-.4&&bz>DOCK.z-.37&&ex>0&&ez>0){if(ex<ez)bx+=ex;else bz+=ez}} // 로봇 충전대에 겹치면 비켜 놓는다
- s.bin.position.set(bx,0,bz);
+ const bq=dockDodge({x:P.x-Math.min(.66,W/H*.55),z:P.z-1.35},.17),bx=bq.x,bz=bq.z;s.bin.position.set(bx,0,bz); // 로봇 충전대에 겹치면 비켜 놓는다
  binContents(dt);binnedUpdate(dt);binStainTick(dt);
  {const u=s.gu;if(u.uGore.value>0){u.uGoreWet.value=Math.max(.35,u.uGoreWet.value-dt*.06);u.uGore.value=Math.max(0,u.uGore.value-dt*.003)}} // 날에 묻은 피는 번들거리다 마른다
  s.wet*=Math.exp(-dt/7); // 고인 것은 천천히 스며든다
@@ -6401,7 +6402,7 @@ function tongUpdate(dt,act,a2,go2){
  const g=TG,on=S.tool==='tong';g.g.visible=g.bag.visible=on;
  if(!on){if(g.held.length||g.in.length||g.remains.length||g.ph!=='idle')tongDrop();g.k=0;g.fr=0;for(const F of g.F)F.boot.visible=F.hem.visible=false;return}
  g.t+=dt;if(go2&&tongCollecting()&&(g.in.length||g.held.length||g.tgts.length))g.q2=true;
- const bx=P.x-Math.min(.6,W/H*.45),bz=P.z-1.35,sx=P.x,sz=P.z-BG_Z,tip=g.tip,push=act&&g.armed||a2;
+ const bq=dockDodge({x:P.x-Math.min(.6,W/H*.45),z:P.z-1.35},.16),bx=bq.x,bz=bq.z,sx=P.x,sz=P.z-BG_Z,tip=g.tip,push=act&&g.armed||a2; // 종량제 봉투도 충전대에 겹치면 비켜 놓는다
  let bX=bx,bY=0,bZ=bz,open=1,tongs=true;
  {const n=g.in.length+g.dead;g.nv=damp(g.nv,n,9,dt);g.sz=damp(g.sz,bagSz(n),7,dt)}
  if(g.ph==='idle'){tip.set(P.x+.12,.3+Math.sin(time*2)*.004,P.z-.62);
@@ -6844,22 +6845,27 @@ function workImage(a){
 // 로봇 안내 음성 (청소를 시작합니다 · 충전대로 돌아갑니다 · 먼지통을 비워 주세요)
 const RBV={start:'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',home:'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R36Zll/LpoENVdA1EQoeJ1TaMVfUOJxBJ5h+aZl5iqUa9NMVeKD8SNgoYuKPAuq/FNG2n+qAIyfU//NkxHAbAsZQMkBRwGIAW+eduY+5vgDgjtqq9Lqp9U6uinGQH1JSVVpc7TxTRaP3NWbZTDJUwomU5kWpZrzXK5qDkxgE+ZJEMVgo+4nqAMEffjoRNWEnKpbX8xApcvG2NMocEknQ3nmhsYUsc7Nf0rplaoLzS4WEo0xKPm15uEQByjSOxjGdU/YxlQeIkt5Z//NkxIcaUsJE0EBRpLtKt0Tl33la9L5n0rr0qjiqOtpdTOJB55REARxgCAZ3ERUVQBhZRp2VlSUpUmUuYpSsqlZVESiJQGiJ7D0OiIKBpiUnako0feJbe/XVAl6biLupunOdHYiT0rSHtU8/FY4GALvxIcc6Va2A2RMggkSWd4uTpalKJoH+hwvr3iV2ywGV//NkxKAaSro0oUcoAuxBiE7ME5kZE1GefMFW6gxal1AI0KMpGkvia9KengxfBr0WkmhNKNOJKmqUxjH3Zttmsm62VqFw043qFHvIGNf63/f43Gltv4tu1t7b4yPeP21uVFH7xa37398++d73/v41bf9v5K2+dOD+sk1Y7yNLHf4zFj5+f/in+v9a9P8f29cf//NkxLkzXBoUA5h4Aes6/z/8/Ov60gV+6XrH80PEczx2ChZCuckHQKLMOBq4mOJQ5SB5Q1GJRlGRVmLlrNLKx/vb0+abn7c1xoCCiXVJlJNWRtOpnxfbs7d8XhggRJG0D0tw7cqP/78Z2eutx27/vXss/9t1+qoIJczCoZdYyxmOlGX/X22NmZjWgIiEoah0//NkxG4VEWo8FcgwAIiUFQ6p51bg0oO5Y9WCp3ET4ud63FXLBV3xLK9hU74ilg7qBo9/6/WAXeR6xj7JU7+DTxNnRLUrzBEEjIwDMjIyMj//sssstllllChgoIGCDhHssssv/////9llllsssstllllssBgg4QGFDBQwMEHCBwYIKGBgg4QPVVVVf//6qqqq//NkxJwT2JocDgpGAOmmmmqqqqummmmqqqqummmmqqqqtUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NkxM8YIokcDAgGsVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV',empty:'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'};
 /* ───────── 로봇청소기 · 믹서 충전대 ───────── */
-// 로봇청소기는 혼자 바닥을 지그재그로 훑으며 창작물을 빨아들이고, 먼지통이 차면 충전대로 돌아가 위의 투명 믹서 통에 비운다.
-// 통 안에서는 산 채로 쌓여 유리에 붙어 이쪽을 본다. 통이 차면 사람이 충전대 앞에서 믹서를 돌려 갈아야 하고, 다 갈린 것은 호스로 옆 배수구에 흘려보낸다.
-const RB_R=.17,RB_SP=.3,RB_TURN=2.6,RB_CAP=26,RB_LANE=.31,RB_LURE=2.5;
-const MX_A=.13,MX_H=.4,MX_Y=.64,MX_MAX=.3,MX_CAP=200,MX_SC=.62; // 통 안쪽 반폭·높이 · 통 바닥 높이(충전대 바닥 기준) · MAX 눈금 높이 · 정원 · 통 안 몸 크기
+// 업소용 대형 로봇청소기: 예술가 책상 앞을 돌며 쏟아져 나온 무리를 한꺼번에 빨아들이고, 먼지통이 차면 충전대로 돌아가 위의 투명 믹서 통에 쏟는다.
+// 통 안에서는 산 채로 쌓여 유리에 붙어 이쪽을 본다. MAX까지 차면 로봇이 비워 달라고 하고, 15초 동안 아무도 안 돌리면 충전대가 알아서 갈아 배수구로 흘려보낸다.
+// 믹서 버튼(또는 충전대)을 누르면 어디서든 충전대 앞 자리로 걸어가 누르는 동안 갈고, 다 갈리면 누르고 있어도 멈춰 알아서 흘려보낸다.
+const RB_K=1.4,RB_R=.17*RB_K,RB_SP=.45,RB_TURN=3.2,RB_CAP=100,RB_LANE=.42,RB_LURE=2.5,RB_NEAR=1.5,DOCK_RZ=.43,DOCK_FZ=.85; // 모형 배율 · 반지름 · 속도 · 회전 · 먼지통 · 줄 간격 · 눈이 끄는 거리 · 장비보다 로봇을 따라가는 거리 · 도킹 자리 · 충전대 앞 구역
+const MX_A=.13,MX_H=.4,MX_Y=.64,MX_MAX=.3,MX_CAP=600,MX_LID=MX_CAP+RB_CAP,MX_SC=.62,MX_AUTO=15; // 통 안쪽 반폭·높이 · 통 바닥 높이 · MAX 눈금 높이 · MAX까지 차는 수 · 뚜껑 밑까지 밀어 넣는 수 · 통 안 몸 크기 · 가득 찬 뒤 알아서 갈 때까지
+const MX_SPOT=[-.02,1.72],MX_ZP=34,MX_ZL=30,DOCK_FRONT=1.64,SECT_CAP=180,JDROP_CAP=300; // 믹서 앞에 서는 자리(충전대 기준) · 그 자리에서 통을 당겨 볼 때의 시야각(세로·가로 화면) · 충전대 앞으로 다가설 수 있는 한계(든 장비 끝이 도킹한 로봇에 안 닿게) · 통 안 토막·핏방울 상한
 const ROBO={g:null,x:0,z:0,yaw:0,mode:'dock',t:0,plan:[],phase:'shift',dirL:1,dirZ:1,bin:[],brush:null,brA:0,ledM:null,grimeM:null,dirt:0,mv:0,turning:0,
- ey:{x:0,z:0,r:.23,w:.24,R:RB_LURE,sp:1,on:1,two:0},lure:false,run:false,sayStart:0,bumps:[],ignT:0,wd:0,wx:0,wz:0,ink:[0,0],inkC:[null,null],inkD:0,sayAt:{},waitSay:0,unT:0,nextCap:0,hub:new THREE.Vector3()};
+ ey:{x:0,z:0,r:.3,w:.24,R:RB_LURE,sp:1,on:1,two:0},lure:false,run:false,sayStart:0,bumps:[],ignT:0,wd:0,wx:0,wz:0,scanT:0,idleT:0,unOK:0,ink:[0,0],inkC:[null,null],inkD:0,sayAt:{},waitSay:0,unT:0,nextCap:0,hub:new THREE.Vector3(),
+ seen:{},lastCap:0,slT:0,guT:0};
 const DOCK={g:null,x:0,z:0,jar:null,blades:null,blur:null,blurM:null,knob:null,tube:null,curve:null,hoseCurve:null,coreM:null,core:null,led:null,ledM:null,wallM:[],walls:[],liq:null,liqM:null,mar:null,marM:null,foam:null,foamM:null,lqPos:null,
  bArm:null,bLeg:null,bEye:null,bGut:null,bLump:null,shake:new THREE.Vector3(),ox:0,oz:0};
 const MIX={list:[],sects:[],bits:[],tube:[],w:0,flow:0,hold:false,load:0,ang:0,swirl:0,liq:0,liqMax:0,cw:0,cr:0,cg:0,cb:0,flesh:0,blood:0,op:.4,col:new THREE.Color(.3,.02,.03),foam:0,
  bridge:0,bridgeY:0,bT:0,bLife:0,drain:0,drainT:0,done:false,look:0,near:0,climbT:0,cooT:0,sndT:0,hitT:0,knockT:0,squealT:0,thudT:0,wasOn:false,gs:null,gx:null,gsTex:null,gsDirty:0,gsT:0,
- mk:null,mx:null,mkTex:null,mkDirty:0,drips:[],settleT:0,lastPress:0,tapT:0,cool:0,first:true,drainReq:0,runT:0,slam:0,zp:0,zb:0,nHeap:0,Hs:.07,cH:.07};
+ mk:null,mx:null,mkTex:null,mkDirty:0,drips:[],settleT:0,lastPress:0,tapT:0,cool:0,first:true,drainReq:0,runT:0,slam:0,zp:0,zb:0,nHeap:0,Hs:.07,cH:.07,auto:0,autoT:-1,pulse:0,vw:[1,1,0,0],
+ lookP:-.4,drops:[],cutB:0,zoneN:0,bAge:0,stopDone:0,walk:0,press:false,pressWas:false,atSpot:false,chopT:0,slapT:0,eyeT:0,chT:0,limbT:0,boneT:0};
 const JARU={uJar:{value:new THREE.Vector4(0,MX_A,MX_H,0)},uJarO:{value:new THREE.Vector3()}};
 const mixIds=new Set();
 const roboActive=()=>!!ROBO.g&&S.owned.includes('robot')&&!EX.on;
-const jarFull=()=>MIX.list.length>=MX_CAP;
+const jarFull=()=>MIX.list.length+MIX.tube.length>=MX_CAP;
 const mixBusy=()=>MIX.w>.04||MIX.drain>0||MIX.drainReq||MIX.hold;
+const mixCanTake=()=>MIX.list.length+MIX.tube.length<MX_CAP&&!MIX.drain&&!MIX.drainReq; // 로봇이 쏟기 시작해도 되나 (믹서가 돌고 있으면 도는 통에 그대로 쏟는다)
 
 // 바닥에 놓인 상자: 둥근 모서리 사각 기둥 (위아래 가장자리를 살짝 깎는다). 원점은 밑면 가운데
 function rboxGeo(w,h,d,r,bev=.004){const s=new THREE.Shape(),x=w/2,z=d/2;r=Math.min(r,x,z);
@@ -6871,37 +6877,38 @@ function glassEdge(m,k,col=0x6e8796){m.onBeforeCompile=sh=>{sh.uniforms.uEdge={v
  m.customProgramCacheKey=()=>'glassEdge'+k;return m}
 function rrShape(x,z,r,hole){const s=hole?new THREE.Path():new THREE.Shape();s.moveTo(-x+r,-z);s.lineTo(x-r,-z);s.quadraticCurveTo(x,-z,x,-z+r);s.lineTo(x,z-r);s.quadraticCurveTo(x,z,x-r,z);s.lineTo(-x+r,z);s.quadraticCurveTo(-x,z,-x,z-r);s.lineTo(-x,-z+r);s.quadraticCurveTo(-x,-z,-x+r,-z);return s}
 
-/* ── 로봇청소기 모형: 흰 원반 몸통 · 검은 유리 윗판 · 라이다 탑 · 앞 범퍼 · 사이드 브러시 · 작은 인형 눈 두 개 ── */
+/* ── 로봇청소기 모형 (업소용 대형): 흰 원반 몸통 · 검은 유리 윗판 · 라이다 탑 · 앞 범퍼 · 사이드 브러시 · 인형 눈 두 개 ── */
 function buildRobo(){
  const g=new THREE.Group();g.visible=false;scene.add(g);ROBO.g=g;
+ const m=new THREE.Group();m.scale.setScalar(RB_K);g.add(m);const R0=.17; // 가정용 크기로 만들어 1.4배로 키운다
  const white=new THREE.MeshStandardMaterial({color:lin(0xf2f1ed),roughness:.18,metalness:.04,envMapIntensity:1.2});
  const glossK=new THREE.MeshStandardMaterial({color:lin(0x17191e),roughness:.1,metalness:.15,envMapIntensity:1.5});
  const matK=new THREE.MeshStandardMaterial({color:lin(0x2a2e36),roughness:.5,envMapIntensity:.6});
  const bump=new THREE.MeshStandardMaterial({color:lin(0x3a3f48),roughness:.42,envMapIntensity:.7});
- const body=new THREE.Mesh(new THREE.CylinderGeometry(RB_R-.004,RB_R,.064,52),white);body.position.y=.044;body.castShadow=body.receiveShadow=true;g.add(body);
- const rim=new THREE.Mesh(new THREE.TorusGeometry(RB_R-.0115,.008,8,52),white);rim.rotation.x=Math.PI/2;rim.position.y=.0765;rim.castShadow=true;g.add(rim);
- const top=new THREE.Mesh(new THREE.CylinderGeometry(RB_R-.012,RB_R-.012,.006,52),white);top.position.y=.08;g.add(top);
- const panel=new THREE.Mesh(new THREE.CylinderGeometry(.126,.126,.003,52),glossK);panel.position.y=.0838;g.add(panel);
- const seam=new THREE.Mesh(new THREE.TorusGeometry(.127,.0013,5,52),matK);seam.rotation.x=Math.PI/2;seam.position.y=.0845;g.add(seam);
+ const body=new THREE.Mesh(new THREE.CylinderGeometry(R0-.004,R0,.064,52),white);body.position.y=.044;body.castShadow=body.receiveShadow=true;m.add(body);
+ const rim=new THREE.Mesh(new THREE.TorusGeometry(R0-.0115,.008,8,52),white);rim.rotation.x=Math.PI/2;rim.position.y=.0765;rim.castShadow=true;m.add(rim);
+ const top=new THREE.Mesh(new THREE.CylinderGeometry(R0-.012,R0-.012,.006,52),white);top.position.y=.08;m.add(top);
+ const panel=new THREE.Mesh(new THREE.CylinderGeometry(.126,.126,.003,52),glossK);panel.position.y=.0838;m.add(panel);
+ const seam=new THREE.Mesh(new THREE.TorusGeometry(.127,.0013,5,52),matK);seam.rotation.x=Math.PI/2;seam.position.y=.0845;m.add(seam);
  // 라이다 탑: 검은 몸통에 둘레 창이 돌아간다
- const tur=new THREE.Mesh(new THREE.CylinderGeometry(.04,.043,.026,32),matK);tur.position.set(0,.097,-.05);tur.castShadow=true;g.add(tur);
- const turTop=new THREE.Mesh(new THREE.CylinderGeometry(.035,.04,.006,32),glossK);turTop.position.set(0,.113,-.05);g.add(turTop);
- const win=new THREE.Mesh(new THREE.CylinderGeometry(.0433,.0433,.009,32,1,true),new THREE.MeshStandardMaterial({color:lin(0x0b2332),roughness:.04,metalness:.4,envMapIntensity:1.8}));win.position.set(0,.093,-.05);g.add(win);
+ const tur=new THREE.Mesh(new THREE.CylinderGeometry(.04,.043,.026,32),matK);tur.position.set(0,.097,-.05);tur.castShadow=true;m.add(tur);
+ const turTop=new THREE.Mesh(new THREE.CylinderGeometry(.035,.04,.006,32),glossK);turTop.position.set(0,.113,-.05);m.add(turTop);
+ const win=new THREE.Mesh(new THREE.CylinderGeometry(.0433,.0433,.009,32,1,true),new THREE.MeshStandardMaterial({color:lin(0x0b2332),roughness:.04,metalness:.4,envMapIntensity:1.8}));win.position.set(0,.093,-.05);m.add(win);
  // 앞 범퍼 (앞쪽 반 바퀴)
- const bp=new THREE.Mesh(new THREE.CylinderGeometry(RB_R+.003,RB_R+.0042,.044,52,1,true,-1.78,3.56),bump);bp.position.y=.042;bp.castShadow=true;g.add(bp);
+ const bp=new THREE.Mesh(new THREE.CylinderGeometry(R0+.003,R0+.0042,.044,52,1,true,-1.78,3.56),bump);bp.position.y=.042;bp.castShadow=true;m.add(bp);
  // 먹은 것이 범퍼 아래에 묻어 점점 벌게진다
  const grimeTex=canvasTex(256,32,(c,w,h)=>{c.clearRect(0,0,w,h);for(let i=0;i<150;i++){const x=Math.random()*w,y=h*(.3+Math.random()*.7),r=1+Math.random()*4;c.fillStyle='rgba(255,255,255,'+(.25+Math.random()*.6)+')';c.beginPath();c.ellipse(x,y,r*rnd(.6,2.6),r,0,0,TAU);c.fill()}
   for(let i=0;i<40;i++){const x=Math.random()*w;c.fillStyle='rgba(255,255,255,'+rnd(.3,.7)+')';c.fillRect(x,h*rnd(.05,.6),rnd(1,2.5),h)}},false);
  ROBO.grimeM=new THREE.MeshStandardMaterial({color:lin(0x5c0f14),roughness:.28,envMapIntensity:.7,transparent:true,opacity:0,alphaMap:grimeTex,depthWrite:false});
- const gr=new THREE.Mesh(new THREE.CylinderGeometry(RB_R+.0052,RB_R+.006,.036,52,1,true,-1.9,3.8),ROBO.grimeM);gr.position.y=.03;gr.renderOrder=2;g.add(gr);
+ const gr=new THREE.Mesh(new THREE.CylinderGeometry(R0+.0052,R0+.006,.036,52,1,true,-1.9,3.8),ROBO.grimeM);gr.position.y=.03;gr.renderOrder=2;m.add(gr);
  // 상태 불빛: 윗판 앞쪽 가장자리의 가는 호 (청소 중 하늘색 · 돌아갈 때 주황 · 기다릴 때 빨강 깜빡임)
  ROBO.ledM=new THREE.MeshBasicMaterial({color:lin(0x6fd0ff)});
- const led=new THREE.Mesh(new THREE.TorusGeometry(.112,.0026,6,28,.95),ROBO.ledM);led.rotation.set(-Math.PI/2,0,-Math.PI/2-.475);led.position.y=.0858;g.add(led);
- const btn=new THREE.Mesh(new THREE.CylinderGeometry(.011,.011,.003,20),new THREE.MeshStandardMaterial({color:lin(0x9aa3ad),roughness:.3,metalness:.6}));btn.position.set(0,.0858,.045);g.add(btn);
+ const led=new THREE.Mesh(new THREE.TorusGeometry(.112,.0026,6,28,.95),ROBO.ledM);led.rotation.set(-Math.PI/2,0,-Math.PI/2-.475);led.position.y=.0858;m.add(led);
+ const btn=new THREE.Mesh(new THREE.CylinderGeometry(.011,.011,.003,20),new THREE.MeshStandardMaterial({color:lin(0x9aa3ad),roughness:.3,metalness:.6}));btn.position.set(0,.0858,.045);m.add(btn);
  // 관객인 줄 알고 따라오게 만드는 작은 인형 눈 두 개 (윗판 앞쪽, 살짝 앞으로 기울였다)
- googly(g,0,.0868,.088,.0215,.38,1.3);
+ googly(m,0,.0868,.088,.0215,.38,1.3);
  // 사이드 브러시: 오른쪽 앞 모서리 밑에서 돈다. 털 다발 셋
- const br=new THREE.Group();br.position.set(.112,.0075,.118);g.add(br);ROBO.brush=br;
+ const br=new THREE.Group();br.position.set(.112,.0075,.118);m.add(br);ROBO.brush=br;
  br.add(new THREE.Mesh(new THREE.CylinderGeometry(.013,.016,.008,14),matK));
  const bristM=new THREE.MeshStandardMaterial({color:lin(0x9aa3ad),roughness:.65,envMapIntensity:.5});
  const brG=new THREE.CylinderGeometry(.0017,.001,.072,4);brG.rotateZ(Math.PI/2);brG.translate(.04,0,0);
@@ -6921,7 +6928,7 @@ function buildDock(){
  {const t=canvasTex(256,192,(c,w,h)=>{c.clearRect(0,0,w,h);c.strokeStyle='#8fd6ff';c.lineWidth=9;c.lineJoin='round';c.beginPath();c.moveTo(w*.56,h*.16);c.lineTo(w*.4,h*.52);c.lineTo(w*.56,h*.52);c.lineTo(w*.44,h*.86);c.stroke();
   });
   const s=new THREE.Mesh(new THREE.PlaneGeometry(.2,.15),new THREE.MeshBasicMaterial({map:t,transparent:true,depthWrite:false}));s.position.set(0,.27,.1785);g.add(s);DOCK.ledM=s.material}
- const plate=add(rboxGeo(.38,.012,.33,.06,.002),grey,0,0,.335,false);plate.castShadow=false;
+ const plate=add(rboxGeo(.54,.012,.5,.08,.002),grey,0,0,DOCK_RZ-.01,false);plate.castShadow=false;
  for(const s of[-1,1])add(BX(.05,.004,.012),steel,s*.06,.0135,.2,false);
  // 모터 받침 · 다이얼 · 전원 불빛
  add(rboxGeo(.34,.1,.32,.05),dark,0,.52,0);
@@ -6989,8 +6996,10 @@ function buildDock(){
    DOCK.foamM=new THREE.MeshStandardMaterial({color:lin(0xf3c9c9),roughness:.85,envMapIntensity:.4,transparent:true,opacity:0,alphaMap:ft,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
    DOCK.foam=new THREE.Mesh(tg2,DOCK.foamM);DOCK.foam.renderOrder=4;DOCK.foam.visible=false;DOCK.foam.frustumCulled=false;jg.add(DOCK.foam)}}
  // 통 안 조각 묶음 (통 기준 좌표): 팔 · 다리 · 눈알 · 창자 · 살점·뼛조각·종잇조각
- DOCK.bArm=solidBatch(jg,90,armIM.geometry,.3);DOCK.bLeg=solidBatch(jg,90,legIM.geometry,.3);DOCK.bEye=solidBatch(jg,60,eyeIM.geometry,.1);DOCK.bGut=solidBatch(jg,40,gutIM.geometry,.12);DOCK.bLump=solidBatch(jg,420,null,.4);
+ DOCK.bArm=solidBatch(jg,140,armIM.geometry,.3);DOCK.bLeg=solidBatch(jg,140,legIM.geometry,.3);DOCK.bEye=solidBatch(jg,90,eyeIM.geometry,.1);DOCK.bGut=solidBatch(jg,50,gutIM.geometry,.12);DOCK.bLump=solidBatch(jg,460,null,.4);
  for(const m of[DOCK.bArm,DOCK.bLeg,DOCK.bEye,DOCK.bGut,DOCK.bLump])m.castShadow=false;
+ // 통 안에서 튀는 핏방울 (날아가는 쪽으로 길쭉하게)
+ DOCK.bDrop=new THREE.InstancedMesh(SP(6,5),new THREE.MeshStandardMaterial({roughness:.12,envMapIntensity:1}),JDROP_CAP);DOCK.bDrop.instanceMatrix.setUsage(THREE.DynamicDrawUsage);DOCK.bDrop.setColorAt(0,WHITE);DOCK.bDrop.count=0;DOCK.bDrop.frustumCulled=false;DOCK.bDrop.visible=false;jg.add(DOCK.bDrop);
  // 투명 관: 도킹 판 뒤에서 나와 탑 오른쪽 앞 모서리를 타고 올라가 뚜껑으로 들어간다 (충전대 기준 좌표)
  {const P=[[.06,.03,.2],[.16,.045,.205],[.205,.1,.19],[.212,.34,.186],[.208,.66,.184],[.2,1.02,.16],[.17,1.11,.11],[.1,1.105,.07],[.071,1.07,.062],[.068,1.0,.06]].map(p=>new THREE.Vector3(...p));
   DOCK.curve=new THREE.CatmullRomCurve3(P,false,'centripetal');DOCK.curveLen=DOCK.curve.getLength();
@@ -7017,26 +7026,39 @@ function buildDock(){
 }
 function dockPlace(){ // 방 왼쪽 앞 구석에 붙인다 (방이 넓어지면 따라간다)
  if(!DOCK.g)return;const x=-XB+.32,z=ZN+.28;DOCK.x=x;DOCK.z=z;DOCK.g.position.set(x+DOCK.shake.x,DOCK.shake.y,z+DOCK.shake.z);
- if(ROBO.mode==='dock'||ROBO.mode==='wait'||ROBO.mode==='unload'){ROBO.x=x;ROBO.z=z+.36;ROBO.yaw=0}}
-/* ── 로봇청소기 움직임: 지그재그 줄 청소 · 사람 발에 부딪히면 비켜 돈다 · 먼지통이 차면 충전대로 돌아가 후진 도킹 ── */
+ if(ROBO.mode==='dock'||ROBO.mode==='wait'||ROBO.mode==='unload'){ROBO.x=x;ROBO.z=z+DOCK_RZ;ROBO.yaw=0}}
+/* ── 로봇청소기 움직임: 예술가 책상 앞(쏟아져 나오는 자리)을 돌며 무리를 쓸어 담는다 · 사람 앞 무리는 건드리지 않는다 · 먼지통이 차면 충전대로 돌아가 후진 도킹 ── */
 const roboNear=()=>{const dx=P.x-ROBO.x,dz=P.z-ROBO.z;return clamp(1.25/(.55+Math.hypot(dx,dz)),.16,1)}; // 소리 크기 (가까울수록 크다)
-const dockNear=()=>{const dx=P.x-DOCK.x,dz=P.z-DOCK.z;return clamp(1.3/(.4+Math.hypot(dx,dz*.9)),.16,1)};
-function roboBounds(){return{xl:-XB+.22,xr:XB-.22,zf:ZN+.26,zb:ZF-.24}}
-function roboXL(z,b){return z<DOCK.z+.7?Math.max(b.xl,DOCK.x+.5+RB_R):b.xl} // 충전대·옆 배수구 앞 줄에서는 왼쪽 끝을 비킨다
+const dockNear=()=>{const dx=P.x-DOCK.x,dz=P.z-DOCK.z;return clamp(2/(.4+Math.hypot(dx,dz*.9)),.16,1)}; // 믹서 앞 자리에서 가장 크게
+function roboBounds(){return{xl:-XB+.1+RB_R,xr:XB-.1-RB_R,zf:ZN+.1+RB_R,zb:ZF-.06-RB_R}}
+const inDockZone=(x,z)=>z<DOCK.z+DOCK_FZ&&x<DOCK.x+.5+RB_R; // 충전대·옆 배수구 앞 구역 (도킹할 때만 들어간다)
+function roboXL(z,b){return z<DOCK.z+DOCK_FZ?Math.max(b.xl,DOCK.x+.5+RB_R):b.xl}
 function roboFwd(d){const R=ROBO;R.x+=Math.sin(R.yaw)*d;R.z+=Math.cos(R.yaw)*d;R.mv+=Math.abs(d)}
 function roboBlocked(){const R=ROBO,dx=P.x-R.x,dz=(P.z-.08)-R.z,d=Math.hypot(dx,dz);if(d>RB_R+.23)return 0;const s=Math.sin(R.yaw),co=Math.cos(R.yaw),f=(dx*s+dz*co)/(d||1);if(f<.1)return 0;return dx*co-dz*s>0?1:-1} // 앞에 사람 발이 있으면 그쪽 (1 오른쪽 · -1 왼쪽)
 function roboObstacle(){const R=ROBO,s=roboBlocked();if(!s||R.plan[0]&&R.plan[0].det||time<R.ignT)return false;
- if(R.mode==='leave'||Math.hypot(R.x-DOCK.x,R.z-DOCK.z)<1.15)return false; // 충전대 둘레에서는 발 사이로 비집고 지나간다 (믹서 앞에 선 사람 때문에 드나들지 못하거나 구석에 갇히지 않게)
+ if(R.mode==='leave'||Math.hypot(R.x-DOCK.x,R.z-DOCK.z)<1.3)return false; // 충전대 둘레에서는 발 사이로 비집고 지나간다 (믹서 앞에 선 사람 때문에 드나들지 못하거나 구석에 갇히지 않게)
  R.bumps=R.bumps.filter(t=>time-t<8);R.bumps.push(time);if(R.bumps.length>=3){R.bumps.length=0;R.ignT=time+3} // 같은 자리에서 자꾸 막히면 잠깐은 무시하고 지나간다
- const a=rnd(1.15,1.6);let yaw=R.yaw-s*a;if(!roboFree(yaw,.32)){yaw=R.yaw+s*a;if(!roboFree(yaw,.32))yaw=R.yaw+Math.PI} // 사람 반대쪽으로 비켜 돌되, 그쪽이 벽이면 다른 쪽으로
- R.plan.unshift({k:'go',d:.06,dir:-1,sp:.16,det:1},{k:'turn',yaw,det:1},{k:'go',d:rnd(.22,.34),dir:1,det:1});AU.roboBump(roboNear());return true}
-function roboFree(yaw,d){const R=ROBO,b=roboBounds(),x=R.x+Math.sin(yaw)*d,z=R.z+Math.cos(yaw)*d;return x>b.xl-.05&&x<b.xr+.05&&z>b.zf-.05&&z<b.zb+.05&&!(z<DOCK.z+.68&&x<DOCK.x+.5+RB_R)}
+ const a=rnd(1.15,1.6);let yaw=R.yaw-s*a;if(!roboFree(yaw,.4)){yaw=R.yaw+s*a;if(!roboFree(yaw,.4))yaw=R.yaw+Math.PI} // 사람 반대쪽으로 비켜 돌되, 그쪽이 벽이면 다른 쪽으로
+ R.plan.unshift({k:'go',d:.08,dir:-1,sp:.2,det:1},{k:'turn',yaw,det:1},{k:'go',d:rnd(.3,.45),dir:1,det:1});AU.roboBump(roboNear());return true}
+function roboFree(yaw,d){const R=ROBO,b=roboBounds(),x=R.x+Math.sin(yaw)*d,z=R.z+Math.cos(yaw)*d;return x>b.xl-.05&&x<b.xr+.05&&z>b.zf-.05&&z<b.zb+.05&&!inDockZone(x,z)}
 // 방 테두리 선 밖 · 충전대 몸통 · 옆 배수구와 호스 위로는 못 간다 (비켜 돌 때 밀려 들어가지 않게)
-function roboClamp(){const R=ROBO,bx=XB-.07;R.x=clamp(R.x,-bx,bx);R.z=clamp(R.z,ZN+.09,ZF-.07);
- for(const[xr,zf]of[[.2,.15],[.46,.12]]){const ex=DOCK.x+xr+RB_R-R.x,ez=DOCK.z+zf+RB_R-R.z;if(ex>0&&ez>0){if(ex<ez)R.x+=ex;else R.z+=ez}}}
-function roboStationAhead(){const R=ROBO,s=Math.sin(R.yaw),co=Math.cos(R.yaw),ax=R.x+s*.2,az=R.z+co*.2,b=roboBounds(); // 가는 쪽으로 테두리 밖이나 충전대 앞 구역이 있으면 멈춘다 (이미 밀려 나가 있으면 들어오는 쪽으로는 간다)
- if(az<DOCK.z+.68&&ax<DOCK.x+.5+RB_R&&(s<-.3||co<-.3))return true;
+function roboClamp(){const R=ROBO,bx=XB+.12-RB_R;R.x=clamp(R.x,-bx,bx);R.z=clamp(R.z,ZN-.14+RB_R,ZF+.1-RB_R);
+ for(const[xr,zf]of[[.2,.16],[.46,.12]]){const ex=DOCK.x+xr+RB_R-R.x,ez=DOCK.z+zf+RB_R-R.z;if(ex>0&&ez>0){if(ex<ez)R.x+=ex;else R.z+=ez}}}
+function roboStationAhead(){const R=ROBO,s=Math.sin(R.yaw),co=Math.cos(R.yaw),ax=R.x+s*.26,az=R.z+co*.26,b=roboBounds(); // 가는 쪽으로 테두리 밖이나 충전대 앞 구역이 있으면 멈춘다 (이미 밀려 나가 있으면 들어오는 쪽으로는 간다)
+ if(inDockZone(ax,az)&&(s<-.3||co<-.3))return true;
  return s<-.3&&ax<b.xl-.02||s>.3&&ax>b.xr+.02||co<-.3&&az<b.zf-.02||co>.3&&az>b.zb+.02}
+// 쓸어 담을 자리 고르기: 예술가 책상 앞(갓 쏟아져 나와 쌓이는 자리)과 바닥에 몰린 무리. 사람이 든 장비 눈 앞 무리는 건드리지 않는다
+const freeC=c=>!c.dead&&!c.ko&&!c.pv&&!busy(c);
+function roboSpotOK(x,z){const b=roboBounds();x=clamp(x,b.xl,b.xr);z=clamp(z,b.zf,b.zb);if(inDockZone(x,z)){if(DOCK.x+.55+RB_R-x<DOCK.z+DOCK_FZ+.05-z)x=DOCK.x+.55+RB_R;else z=DOCK.z+DOCK_FZ+.05}return[x,z]}
+function roboCount(x,z,r){let n=0;const r2=r*r;for(const c of creatures){if(!freeC(c))continue;const dx=c.x-x,dz=c.z-z;if(dx*dx+dz*dz<r2)n++}return n}
+function roboNearPlayer(x,z){return EY.on&&Math.hypot(EY.x-x,EY.z-z)<1.25} // 사람이 지금 다루는 무리
+function roboPick(){const R=ROBO;let best=null,bs=-1;
+ for(const k of creators){if(!k.g.visible)continue;const d=k.d,[x,z]=roboSpotOK(d.x+d.fx*1.1,d.z+d.fz*1.1),key=k.i;
+  let sc=roboCount(x,z,.95)+Math.min(3,(time-(R.seen[key]??-99))*.04); // 오래 안 들른 책상일수록 가 본다
+  if(roboNearPlayer(x,z))sc*=.2;if(Math.hypot(x-R.x,z-R.z)<.3&&time-(R.seen[key]??-99)<4)sc*=.3;if(sc>bs){bs=sc;best={x,z,key}}}
+ // 책상과 상관없이 바닥에 몰려 있는 무리 (사람 앞 무리는 뺀다)
+ const fr=creatures.filter(freeC);for(let i=0;i<fr.length&&i<400;i+=Math.max(1,fr.length/40|0)){const c=fr[i];if(roboNearPlayer(c.x,c.z))continue;const n=roboCount(c.x,c.z,.5);if(n>=4&&n*1.2>bs){const[x,z]=roboSpotOK(c.x,c.z);bs=n*1.2;best={x,z,key:'c'}}}
+ return best}
 function roboTask(dt){const R=ROBO,t=R.plan[0];R.turning=0;if(!t)return;
  if(t.k==='turn'){const d=wrapA(t.yaw-R.yaw),s=RB_TURN*dt;if(Math.abs(d)<=s){R.yaw=t.yaw;R.plan.shift()}else{R.yaw+=Math.sign(d)*s;R.turning=1}return}
  if(t.k==='wait'){t.t-=dt;if(t.t<=0)R.plan.shift();return}
@@ -7046,73 +7068,78 @@ function roboTask(dt){const R=ROBO,t=R.plan[0];R.turning=0;if(!t)return;
   if(rem<=.004||roboStationAhead()){R.plan.shift();return}roboFwd(Math.min(RB_SP*dt,rem));return}
  if(t.k==='to'){const dx=t.x-R.x,dz=t.z-R.z,d=Math.hypot(dx,dz);if(d<.025){R.plan.shift();return}const e=wrapA(Math.atan2(dx,dz)-R.yaw);
   if(Math.abs(e)>.3){R.yaw+=Math.sign(e)*Math.min(Math.abs(e),RB_TURN*dt);R.turning=1;return}R.yaw+=e*Math.min(1,dt*5);if(roboObstacle())return;roboFwd(Math.min((t.sp||RB_SP)*dt,d));return}
+ if(t.k==='seek'){ // 무리 자리로 가서 빙글빙글 돌며 넓혀 가며 쓸어 담는다
+  t.t+=dt;t.rt-=dt;if(t.rt<=0){t.rt=.6;const n=roboCount(t.x,t.z,.8);if(t.spin&&n===0){t.empty=(t.empty||0)+.6;if(t.empty>1.8){R.plan.shift();return}}else t.empty=0}
+  const dx=t.x-R.x,dz=t.z-R.z,d=Math.hypot(dx,dz);if(!t.spin&&(d<.36||t.t>9)){t.spin=1;t.r=clamp(d,.16,.36);t.st=0}
+  let aim;if(!t.spin)aim=Math.atan2(dx,dz);else{t.st+=dt;t.r=Math.min(.6,t.r+dt*.05);const a=Math.atan2(R.x-t.x,R.z-t.z)+t.dir*.9;aim=Math.atan2(t.x+Math.sin(a)*t.r-R.x,t.z+Math.cos(a)*t.r-R.z);if(t.st>7){R.plan.shift();return}}
+  const e=wrapA(aim-R.yaw);R.yaw+=Math.sign(e)*Math.min(Math.abs(e),RB_TURN*dt);R.turning=Math.abs(e)>.35?1:0;roboFwd((Math.abs(e)>1.3?.3:1)*RB_SP*dt);return}
  R.plan.shift()}
-function roboNext(){const R=ROBO,b=roboBounds();
+function roboNext(){const R=ROBO,b=roboBounds(); // 쓸 데가 없으면 줄 맞춰 훑는다
  if(R.phase!=='lane'){R.phase='lane';const yaw=R.dirL>0?Math.PI/2:-Math.PI/2;R.plan=[{k:'line',yaw,x:R.dirL>0?b.xr:roboXL(R.z,b)}]}
  else{R.phase='shift';let nz=R.z+R.dirZ*RB_LANE;if(nz>b.zb||nz<b.zf){R.dirZ=-R.dirZ;nz=R.z+R.dirZ*RB_LANE}nz=clamp(nz,b.zf,b.zb);R.dirL=-R.dirL;
   R.plan=[{k:'line',yaw:R.dirZ>0?0:Math.PI,z:nz}]}}
-function roboHome(){const R=ROBO;if(R.mode==='clean')R.res={x:R.x,z:R.z,dirL:R.dirL,dirZ:R.dirZ}; // 비우고 나면 하던 줄로 돌아가 이어서 한다
- R.mode='home';R.plan=[{k:'to',x:DOCK.x,z:DOCK.z+.78,sp:.32},{k:'turn',yaw:0},{k:'go',d:.42,dir:-1,sp:.14}];roboSay('home',roboNear())}
-function roboLeave(){const R=ROBO;R.mode='leave';R.plan=[{k:'go',d:.42,dir:1,sp:.2}];if(R.sayStart){R.sayStart=0;roboSay('start',Math.max(.5,roboNear()),true)}}
+function roboHome(){const R=ROBO;R.mode='home';R.plan=[{k:'to',x:DOCK.x,z:DOCK.z+DOCK_RZ+.5,sp:RB_SP*.85},{k:'turn',yaw:0},{k:'go',d:.5,dir:-1,sp:.18}];roboSay('home',roboNear())}
+function roboLeave(){const R=ROBO;R.mode='leave';R.plan=[{k:'go',d:.5,dir:1,sp:.24}];if(R.sayStart){R.sayStart=0;roboSay('start',Math.max(.5,roboNear()),true)}}
 function roboSay(name,k,force){const R=ROBO,gap={start:3,home:28,empty:26}[name]||3;if(!force&&time-(R.sayAt[name]??-99)<gap)return;R.sayAt[name]=time;if(name==='start')AU.roboChime(k);AU.voiceLine(name,Math.max(.45,k),name==='start'?.7:0)}
-// 창작물을 끌어당기는 눈: 사람이 든 장비의 눈과 로봇 눈 중 가까운 쪽으로 간다 (특별 창작지원금 받은 시민의 것은 늘 사람 쪽)
-function roboLure(c){const R=ROBO;if(!R.lure||c.pv)return EY;const e=R.ey,dr=Math.hypot(e.x-c.x,e.z-c.z);if(dr>e.R)return EY;if(EY.on){const de=Math.hypot(EY.x-c.x,EY.z-c.z);if(de<EY.R&&de<=dr)return EY}return e}
-function roboGrab(c,lx,lz){const R=ROBO;c.st='robo';c.t=0;c.rb={t:0,T:rnd(.45,.68),lx,lz,w:0,a0:0,t0:0,mk:0};c.panic=1;c.beg=0;c.hb=.55;c.str=1;
- if(c.type!==5&&Math.random()<.6&&Math.hypot(c.x-R.hub.x,c.z-R.hub.z)<.11){c.rb.w=1;c.rb.a0=Math.atan2(c.x-R.hub.x,c.z-R.hub.z)} // 탯줄이 사이드 브러시에 감긴다
- const k=roboNear();if(time>MIX.squealT){MIX.squealT=time+.07;AU.squeal(c.type,.95*k,0,rnd(.3,.55))}AU.roboSlurp(k);startleNear(c.x,c.z,.42,.6)}
+// 창작물을 끌어당기는 눈: 로봇 코앞(1.5m)에 있는 것은 사람이 든 장비보다 로봇 눈을 따라가고, 그 밖에서는 더 가까운 쪽으로 간다 (특별 창작지원금 받은 시민의 것은 늘 사람 쪽)
+function roboLure(c){const R=ROBO;if(!R.lure||c.pv)return EY;const e=R.ey,dr=Math.hypot(e.x-c.x,e.z-c.z);if(dr>e.R)return EY;if(dr<RB_NEAR)return e;if(EY.on){const de=Math.hypot(EY.x-c.x,EY.z-c.z);if(de<EY.R&&de<=dr)return EY}return e}
+function roboGrab(c,lx,lz){const R=ROBO;c.st='robo';c.t=0;c.rb={t:0,T:rnd(.26,.4),lx,lz,w:0,a0:0,t0:0,mk:0};c.panic=1;c.beg=0;c.hb=.55;c.str=1;R.lastCap=time;
+ if(c.type!==5&&Math.random()<.45&&Math.hypot(c.x-R.hub.x,c.z-R.hub.z)<.15){c.rb.w=1;c.rb.a0=Math.atan2(c.x-R.hub.x,c.z-R.hub.z)} // 탯줄이 사이드 브러시에 감긴다
+ const k=roboNear();if(time>MIX.squealT){MIX.squealT=time+.06;AU.squeal(c.type,.95*k,0,rnd(.3,.55))}if(time>R.slT){R.slT=time+.05;AU.roboSlurp(k)}startleNear(c.x,c.z,.5,.6)}
 function roboSuck(){const R=ROBO,s=Math.sin(R.yaw),co=Math.cos(R.yaw);let n=0;for(const c of creatures)if(c.st==='robo')n++;
- for(const c of creatures){if(c.dead||c.ko||busy(c))continue;const dx=c.x-R.x,dz=c.z-R.z;if(dx>.32||dx<-.32||dz>.32||dz<-.32)continue;
+ for(const c of creatures){if(c.dead||c.ko||busy(c))continue;const dx=c.x-R.x,dz=c.z-R.z;if(dx>.45||dx<-.45||dz>.45||dz<-.45)continue;
   const d=Math.hypot(dx,dz),lz=dx*s+dz*co,lx=dx*co-dz*s;
-  if(d<RB_R+.035&&lz>-.03&&R.bin.length+n<RB_CAP&&n<4&&time>=R.nextCap){roboGrab(c,lx,lz);n++;R.nextCap=time+rnd(.09,.2);continue}
+  if(d<RB_R+.05&&lz>-.06&&R.bin.length+n<RB_CAP&&n<10&&time>=R.nextCap){roboGrab(c,lx,lz);n++;R.nextCap=time+rnd(.02,.05);continue}
   const m=RB_R+c.r*.7;if(d<m&&d>1e-4){const k=(m-d)/d;c.x+=dx*k;c.z+=dz*k}}} // 못 빨아들인 것은 범퍼에 밀려난다
 function roboDrag(dt){const R=ROBO,s=Math.sin(R.yaw),co=Math.cos(R.yaw);
  for(const c of creatures){if(c.st!=='robo'||c.dead)continue;const q=c.rb;q.t+=dt;c.y=0;c.panic=1;
-  if(q.w&&!q.ws){const u=Math.min(1,q.t/.5),a=q.a0+u*u*5.5,rr=lerp(.09,.03,u);c.x=R.hub.x+Math.sin(a)*rr;c.z=R.hub.z+Math.cos(a)*rr;c.yaw=a;c.roll=Math.sin(time*25+c.ph)*.3;c.str=1+.3*u; // 등에 달린 탯줄이 허브 쪽으로 감겨 빙글 끌려온다
-   if(u>=1){q.ws=1;q.t0=q.t;const dx=c.x-R.x,dz=c.z-R.z;q.lx=dx*co-dz*s;q.lz=dx*s+dz*co;q.T=q.t+rnd(.3,.42)}continue}
-  const u=clamp((q.t-q.t0)/Math.max(.05,q.T-q.t0),0,1),e=u<.5?.26*u/.5:.26+.74*Math.pow((u-.5)/.5,1.7); // 처음엔 바닥을 긁으며 버티다가 한순간 빨려 들어간다
+  if(q.w&&!q.ws){const u=Math.min(1,q.t/.32),a=q.a0+u*u*5.5,rr=lerp(.12,.04,u);c.x=R.hub.x+Math.sin(a)*rr;c.z=R.hub.z+Math.cos(a)*rr;c.yaw=a;c.roll=Math.sin(time*25+c.ph)*.3;c.str=1+.3*u; // 등에 달린 탯줄이 허브 쪽으로 감겨 빙글 끌려온다
+   if(u>=1){q.ws=1;q.t0=q.t;const dx=c.x-R.x,dz=c.z-R.z;q.lx=dx*co-dz*s;q.lz=dx*s+dz*co;q.T=q.t+rnd(.2,.3)}continue}
+  const u=clamp((q.t-q.t0)/Math.max(.05,q.T-q.t0),0,1),e=u<.45?.24*u/.45:.24+.76*Math.pow((u-.45)/.55,1.6); // 바닥을 긁으며 잠깐 버티다가 한순간 빨려 들어간다
   const lx=lerp(q.lx,0,e),lz=lerp(q.lz,.02,e);c.x=R.x+lx*co+lz*s;c.z=R.z-lx*s+lz*co;
   c.yaw=Math.atan2(c.x-R.x,c.z-R.z)+Math.sin(time*13+c.ph)*.25;c.roll=Math.sin(time*21+c.ph)*.18;c.str=1+.6*e;c.pt=-.12;
   c.arL=-.75-.25*Math.sin(time*17+c.ph);c.arR=-.75-.25*Math.sin(time*17+c.ph+1.7); // 팔을 앞으로 뻗어 바닥을 긁는다
   q.mk+=dt;if(q.mk>.05&&u<.8){q.mk=0;stamp(c.x+Math.sin(c.yaw)*c.r*1.3,c.z+Math.cos(c.yaw)*c.r*1.3,.016,.05,Math.sin(c.yaw),Math.cos(c.yaw),3,c.ink,.4)}
-  if(u>=1){c.st='rbin';c.rb=null;c.str=1;c.arL=c.arR=0;R.bin.push(c);R.dirt=Math.min(1,R.dirt+.025);for(let i=0;i<2;i++){R.ink[i]=Math.min(1,R.ink[i]+.3);R.inkC[i]=c.ink}AU.roboGulp(roboNear())}}}
-function roboSmear(){const R=ROBO;if(R.mv<.045)return;R.mv=0;const s=Math.sin(R.yaw),co=Math.cos(R.yaw); // 바퀴에 묻은 것을 지나간 길대로 끌고 다닌다
- for(let i=0;i<2;i++){const lx=i?-.118:.118,wx=R.x+lx*co,wz=R.z-lx*s;
-  if(R.ink[i]<.8)for(const t of INK.stains){if(t.a<.45)continue;const dx=t.x-wx,dz=t.z-wz;if(dx*dx+dz*dz<.005){R.ink[i]=Math.min(1,R.ink[i]+.45);if(t.c)R.inkC[i]=t.c;break}}
-  if(R.ink[i]>.03){stamp(wx,wz,.026,.064,s,co,5,R.inkC[i]||BLOOD,Math.min(.92,.28+R.ink[i]*.75));R.ink[i]-=.028}}}
+  if(u>=1){c.st='rbin';c.rb=null;c.str=1;c.arL=c.arR=0;R.bin.push(c);R.dirt=Math.min(1,R.dirt+.01);for(let i=0;i<2;i++){R.ink[i]=Math.min(1,R.ink[i]+.3);R.inkC[i]=c.ink}if(time>R.guT){R.guT=time+.07;AU.roboGulp(roboNear())}}}}
+function roboSmear(){const R=ROBO;if(R.mv<.05)return;R.mv=0;const s=Math.sin(R.yaw),co=Math.cos(R.yaw); // 바퀴에 묻은 것을 지나간 길대로 끌고 다닌다
+ for(let i=0;i<2;i++){const lx=(i?-.118:.118)*RB_K,wx=R.x+lx*co,wz=R.z-lx*s;
+  if(R.ink[i]<.8)for(const t of INK.stains){if(t.a<.45)continue;const dx=t.x-wx,dz=t.z-wz;if(dx*dx+dz*dz<.006){R.ink[i]=Math.min(1,R.ink[i]+.45);if(t.c)R.inkC[i]=t.c;break}}
+  if(R.ink[i]>.03){stamp(wx,wz,.034,.08,s,co,5,R.inkC[i]||BLOOD,Math.min(.92,.28+R.ink[i]*.75));R.ink[i]-=.028}}}
 function roboUpdate(dt){
  const R=ROBO,on=roboActive();if(R.g){R.g.visible=on;DOCK.g.visible=on}R.lure=on&&started;
  if(!on){AU.roboHum(0,0);AU.dockSuck(false);return}
- if(!R.run){R.run=true;R.mode='dock';R.plan=[];R.sayStart=1;dockPlace()}
- R.t+=dt;const prev=R.mode;
- if(R.mode==='dock'){R.x=DOCK.x;R.z=DOCK.z+.36;R.yaw=0;
-  if(R.bin.length)R.mode=jarFull()?'wait':'unload';else if(started)roboLeave()}
+ if(!R.run){R.run=true;R.mode='dock';R.plan=[];R.sayStart=1;R.lastCap=time;dockPlace()}
+ R.t+=dt;
+ if(R.mode==='dock'){R.x=DOCK.x;R.z=DOCK.z+DOCK_RZ;R.yaw=0;
+  if(R.bin.length){if(mixCanTake()){R.mode='unload';R.unOK=1}else{R.mode='wait';if(jarFull())roboSay('empty',Math.max(.6,dockNear()))}}else if(started)roboLeave()} // 통이 꽉 차 있으면 비워 달라고 한다
  else if(R.mode==='unload'){R.unT-=dt;
-  if(!R.bin.length){if(!MIX.tube.length)R.unT2=(R.unT2||0)+dt;if(R.unT2>.45){R.unT2=0;roboLeave()}}
-  else if(MIX.list.length+MIX.tube.length>=MX_CAP||mixBusy()){if(!MIX.tube.length)R.mode='wait'}
-  else if(R.unT<=0){R.unT=rnd(.13,.2);const c=R.bin.shift();c.st='tube';c.tu=0;c.tv=rnd(.85,1.15);c.tf=Math.random()<.55;c.sc=.5;c.panic=1;MIX.tube.push(c);if(time>MIX.thudT){MIX.thudT=time+.05;AU.dockThunk(dockNear())}}}
- else if(R.mode==='wait'){R.waitSay-=dt;if(R.waitSay<=0&&jarFull()){R.waitSay=30;roboSay('empty',roboNear(),true)}
-  if(!jarFull()&&!mixBusy()&&R.bin.length&&MIX.list.length+MIX.tube.length<MX_CAP){R.mode='unload';R.sayStart=1;R.waitSay=0}
-  else if(!R.bin.length&&!jarFull()){R.sayStart=1;roboLeave()}}
+  if(!R.bin.length){R.unOK=0;if(!MIX.tube.length)R.unT2=(R.unT2||0)+dt;if(R.unT2>.4){R.unT2=0;roboLeave()}}
+  else if(MIX.list.length+MIX.tube.length>=MX_LID||MIX.drain||MIX.drainReq){R.unOK=0;R.mode='wait'} // 뚜껑 밑까지 꽉 찼거나 배수 중이면 기다린다
+  else if(R.unT<=0){R.unT=rnd(.045,.08);const c=R.bin.shift();c.st='tube';c.tu=0;c.tv=rnd(.85,1.15);c.tf=Math.random()<.55;c.sc=.5;c.panic=1;MIX.tube.push(c);if(time>MIX.thudT){MIX.thudT=time+.06;AU.dockThunk(dockNear())}}}
+ else if(R.mode==='wait'){ // 통이 MAX를 넘었거나 배수 중: MAX 밑으로 내려가면(돌고 있으면 도는 통에) 다시 쏟는다
+  if(R.bin.length&&mixCanTake()){R.mode='unload';R.unOK=1;R.sayStart=1}
+  else if(!R.bin.length){R.sayStart=1;roboLeave()}}
  else{
   roboTask(dt);roboClamp();
-  R.wd+=dt;if(R.wd>4){if(Math.hypot(R.x-R.wx,R.z-R.wz)<.05&&R.mode!=='leave'){const un=[{k:'go',d:.08,dir:-1,sp:.16,det:1},{k:'turn',yaw:R.yaw+Math.PI*rnd(.6,1.2),det:1},{k:'go',d:.3,dir:1,det:1}]; // 4초 넘게 제자리면 뒤로 빠져 방향을 틀고 다시 간다
-    R.plan=R.mode==='home'?un.concat({k:'to',x:DOCK.x,z:DOCK.z+.78,sp:.32},{k:'turn',yaw:0},{k:'go',d:.42,dir:-1,sp:.14}):un;R.phase='shift'}R.wd=0;R.wx=R.x;R.wz=R.z}
-  if(R.mode==='leave'&&!R.plan.length){R.mode='clean';R.phase='shift';const b=roboBounds();
-   if(R.res){const q=R.res;R.res=null;R.dirL=q.dirL;R.dirZ=q.dirZ;const z=clamp(q.z,b.zf,b.zb);R.plan=[{k:'to',x:clamp(q.x,roboXL(z,b),b.xr),z,sp:.3}]}
-   else{R.dirL=1;R.dirZ=R.z<(b.zf+b.zb)/2?1:-1}}
-  if(R.mode==='clean'){if(R.bin.length>=RB_CAP)roboHome();else if(!R.plan.length)roboNext()}
-  if(R.mode==='home'&&!R.plan.length){R.mode='dock';R.x=DOCK.x;R.z=DOCK.z+.36;R.yaw=0}}
- if(prev!=='wait'&&R.mode==='wait'){R.waitSay=0}
+  R.wd+=dt;if(R.wd>4){if(Math.hypot(R.x-R.wx,R.z-R.wz)<.05&&R.mode!=='leave'){const un=[{k:'go',d:.1,dir:-1,sp:.2,det:1},{k:'turn',yaw:R.yaw+Math.PI*rnd(.6,1.2),det:1},{k:'go',d:.35,dir:1,det:1}]; // 4초 넘게 제자리면 뒤로 빠져 방향을 틀고 다시 간다
+    R.plan=R.mode==='home'?un.concat({k:'to',x:DOCK.x,z:DOCK.z+DOCK_RZ+.5,sp:RB_SP*.85},{k:'turn',yaw:0},{k:'go',d:.5,dir:-1,sp:.18}):un;R.phase='shift'}R.wd=0;R.wx=R.x;R.wz=R.z}
+  if(R.mode==='leave'&&!R.plan.length){R.mode='clean';R.phase='shift';R.dirL=1;const b=roboBounds();R.dirZ=R.z<(b.zf+b.zb)/2?1:-1;R.scanT=0}
+  if(R.mode==='clean'){
+   const idle=time-R.lastCap,cur=R.plan[0];
+   if(R.bin.length>=RB_CAP||R.bin.length>=RB_CAP*.4&&idle>8||R.bin.length&&idle>20)roboHome(); // 먼지통이 찼거나, 한동안 더 담을 게 없으면 들고 있는 것부터 비우러 간다
+   else{R.scanT-=dt;if(R.scanT<=0&&!(cur&&cur.det)&&!(cur&&cur.k==='seek')){R.scanT=rnd(.5,.8);const q=roboPick();if(q){R.plan=[{k:'seek',x:q.x,z:q.z,t:0,rt:.6,dir:Math.random()<.5?1:-1}];if(q.key!=='c')R.seen[q.key]=time}}
+    if(!R.plan.length)roboNext()}}
+  if(R.mode==='home'&&!R.plan.length){R.mode='dock';R.x=DOCK.x;R.z=DOCK.z+DOCK_RZ;R.yaw=0}}
  // 둘레·사이드 브러시 · 빨아들이기
  const s=Math.sin(R.yaw),co=Math.cos(R.yaw),moving=R.mode==='clean'||R.mode==='home'||R.mode==='leave';
- R.hub.set(R.x+.112*co+.118*s,.008,R.z-.112*s+.118*co);
- R.brA+=dt*(moving?26:R.mode==='unload'?6:0);R.brush.rotation.y=-R.brA;
+ R.hub.set(R.x+(.112*co+.118*s)*RB_K,.01,R.z+(-.112*s+.118*co)*RB_K);
+ R.brA+=dt*(moving?30:R.mode==='unload'?6:0);R.brush.rotation.y=-R.brA;
  if(moving)roboSuck();
  for(const c of creatures)if(!c.dead&&!busy(c))dockKeepOut(c);
  if(AU.c&&!AU.vprep){AU.vprep=1;AU.voicePrep()}
  roboDrag(dt);roboSmear();
  R.g.position.set(R.x,0,R.z);R.g.rotation.y=R.yaw;
- R.ey.x=R.x+s*.09;R.ey.z=R.z+co*.09;
+ R.ey.x=R.x+s*.09*RB_K;R.ey.z=R.z+co*.09*RB_K;
  R.grimeM.opacity=R.dirt*.9;
  {const m=R.mode,blink=Math.sin(time*7)>0;R.ledM.color.setHex(m==='wait'?(blink?0xff2a1f:0x3a0a08):m==='home'?0xffa23a:m==='unload'?(Math.sin(time*12)>0?0xffffff:0x9fd8ff):m==='dock'?0x39d07a:0x6fd0ff).convertSRGBToLinear()}
  DOCK.ledM.opacity=R.mode==='unload'?.6+.4*Math.sin(time*10):R.mode==='wait'?.25:.85;
@@ -7121,17 +7148,21 @@ function roboUpdate(dt){
 // 충전대 둘레로는 기어 들어가지 못한다 (도킹 판 위는 로봇 자리)
 function dockKeepOut(c){if(!DOCK.g||!DOCK.g.visible)return;const x0=DOCK.x-.22-c.r,x1=DOCK.x+.22+c.r,z0=DOCK.z-.2-c.r,z1=DOCK.z+.19+c.r;if(c.x<x0||c.x>x1||c.z<z0||c.z>z1)return;
  const dl=c.x-x0,dr=x1-c.x,db=c.z-z0,df=z1-c.z,m=Math.min(dl,dr,db,df);if(m===df)c.z=z1;else if(m===dr)c.x=x1;else if(m===dl)c.x=x0;else c.z=z0}
-/* ── 믹서 통 안: 떨어져 쌓이고 · 유리에 붙어 기어오르고 · 믹서가 돌면 버티다 휩쓸려 갈린다 ── */
+/* ── 믹서 통 안: 떨어져 쌓이고 · 유리에 붙어 기어오르고 · 믹서가 돌면 날에 걸리는 족족 예초기처럼 토막 나 사방으로 튀고 · 토막은 다시 날에 걸려 잘게 쪼개지다 국물이 된다 ── */
 const JW=MX_A-.013; // 몸 한가운데가 갈 수 있는 끝 (유리를 넘은 살은 유리에 납작하게 눌린다)
+const BLADE_R=JW*.86,BLADE_Y=.072,LQ_BODY=.22/MX_CAP; // 날이 닿는 자리 (바닥 가운데) · 몸 하나가 다 갈리면 오르는 국물 높이 (MAX만큼 갈면 통 절반을 조금 넘는다)
+const MARB0=lin(0x14131a);
 const jarW=new THREE.Vector3(); // 통 원점(안쪽 바닥 가운데)의 월드 좌표
-function jarHeap(){let v=0;for(const s of MIX.sects)v+=(s.zh-s.zl)*.0011;for(const b of MIX.bits)v+=b.s*.03;return Math.min(.1,v)} // 갈린 찌꺼기가 가라앉아 쌓인 높이
+function jarHeap(){let v=0;for(const s of MIX.sects)if(!(s.fly>0))v+=(s.zh-s.zl)*.0009;for(const b of MIX.bits)if(!(b.fly>0))v+=b.s*.025;return Math.min(.09,v)} // 갈린 찌꺼기가 가라앉아 쌓인 높이
 function jarTop(){let n=0;for(const c of MIX.list)if(c.jmode==='pile'||c.jmode==='heap')n++;return .016+jarHeap()+MX_MAX*n/MX_CAP}
 const wallGap=(x,z)=>JW-Math.max(Math.abs(x),Math.abs(z));
+function seenGap(x,z){const v=MIX.vw;let g=1;if(v[0])g=Math.min(g,JW-z);if(v[1])g=Math.min(g,JW-x);if(v[2])g=Math.min(g,JW+z);if(v[3])g=Math.min(g,JW+x);return g} // 카메라 쪽 유리까지 거리 (뒤쪽 유리에 붙은 것은 더미에 가려 안 보인다)
 function jarPos(c){c.x=jarW.x+c.jx;c.y=jarW.y+c.jy;c.z=jarW.z+c.jz}
+function jarCeil(x,z){return MIX.nHeap>20&&MIX.w>.06&&wallGap(x,z)>.04?Math.max(.075,MIX.Hs+.01):MX_H-.03} // 튀는 조각·핏방울이 닿는 천장: 갈리는 동안 가운데는 위에 뜬 더미 밑바닥까지, 유리를 따라서는 뚜껑까지 솟구친다
 function jarEnter(c){c.st='jar';c.sc=MX_SC;c.jmode='fall';c.jx=.068+rnd(-.008,.008);c.jy=MX_H-.035;c.jz=.06+rnd(-.008,.008);c.jvy=-rnd(.45,.85);c.jvx=rnd(-.55,.12);c.jvz=rnd(-.5,.08);c.jland=null;
- c.pt=rnd(-1,1);c.yaw=rnd(0,TAU);c.roll=rnd(-1.4,1.4);c.jwp=rnd(-6,6);c.jwr=rnd(-8,8);c.jdmg=c.jdmg||0;c.jph=rnd(0,TAU);c.jhid=0;c.jt=0;c.hb=0;c.arL=c.arR=0;
- c.lp={ph:rnd(0,TAU),th:rnd(0,TAU),k:rnd(.75,1.3),ka:rnd(.8,1.25),ra:rnd(.7,1),ya:rnd(.75,1)};c.jlv=0;MIX.list.push(c);jarPos(c);
- if(time>MIX.squealT){MIX.squealT=time+.06;AU.squeal(c.type,.75*dockNear(),0,rnd(.2,.36),true)}}
+ c.pt=rnd(-1,1);c.yaw=rnd(0,TAU);c.roll=rnd(-1.4,1.4);c.jwp=rnd(-6,6);c.jwr=rnd(-8,8);c.jph=rnd(0,TAU);c.jhid=0;c.jt=0;c.hb=0;c.arL=c.arR=0;c.jcut=0;c.jfz=0;c.scr=null;
+ c.lp={ph:rnd(0,TAU),th:rnd(0,TAU),k:rnd(.75,1.3),ka:rnd(.8,1.25),ra:rnd(.7,1),ya:rnd(.75,1)};c.jlv=0;MIX.list.push(c);jarPos(c);MIX.stopDone=0;
+ if(time>MIX.squealT){MIX.squealT=time+.06;AU.squeal(c.type,.75*MIX.near,0,rnd(.2,.36),true)}}
 const WALL_YAW=[0,Math.PI/2,Math.PI,-Math.PI/2]; // 0 앞(+z) · 1 오른쪽(+x) · 2 뒤 · 3 왼쪽
 function wallPose(c,wall,k=1){const tp=-Math.PI/2+.06*Math.sin(time*3+c.jph),ty=WALL_YAW[wall|0],tr=.12*Math.sin(time*2.3+c.jph); // 머리를 위로, 배를 유리 쪽으로 붙이고 고개를 숙여 바깥을 본다
  if(k>=1){c.pt=tp;c.yaw=ty;c.roll=tr}else{c.pt+=wrapA(tp-c.pt)*k;c.yaw+=wrapA(ty-c.yaw)*k;c.roll+=wrapA(tr-c.roll)*k}c.hb=-.75}
@@ -7140,9 +7171,10 @@ function jarRest(c){const k=Math.random(); // 떨어진 자리에서 엎어지�
  c.pt=c.jtp+wrapA(c.pt-c.jtp);c.roll=c.jtr+wrapA(c.roll-c.jtr)}
 function wallStick(c,wall){const e=JW+.006;if(wall===0)c.jz=e;else if(wall===1)c.jx=e;else if(wall===2)c.jz=-e;else c.jx=-e}
 function jarClimbPick(top){const want=Math.min(9,2+Math.round(MIX.near*7));let n=0;for(const c of MIX.list)if(c.jmode==='climb')n++;if(n>=want)return;
- const cs=MIX.list.filter(c=>c.jmode==='pile'&&!c.jhid&&c.jy>top-.06&&c.jdmg<.5&&(c.cut|0)!==15);if(!cs.length)return;const c=pick(cs);
- c.jmode='climb';c.jt=0;c.jwall=Math.random()<.72?0:1;c.jsx=c.jx;c.jsy=c.jy;c.jsz=c.jz;c.jdur=rnd(7,14);c.jtop=Math.min(MX_H-.045,top+rnd(.07,.17));
- if(c.jwall===0){c.jtx=clamp(c.jx+rnd(-.05,.05),-JW+.012,JW-.012);c.jtz=JW+.006}else{c.jtx=JW+.006;c.jtz=clamp(c.jz+rnd(-.05,.05),-JW+.012,JW-.012)}}
+ const cs=MIX.list.filter(c=>c.jmode==='pile'&&!c.jhid&&c.jy>top-.06&&(c.cut|0)!==15);if(!cs.length)return;const c=pick(cs);
+ const vis=[0,1,2,3].filter(w=>MIX.vw[w]),w=vis.length?(vis.includes(0)&&Math.random()<.72?0:pick(vis)):0; // 보는 사람 쪽 유리로 붙는다
+ c.jmode='climb';c.jt=0;c.jwall=w;c.jsx=c.jx;c.jsy=c.jy;c.jsz=c.jz;c.jdur=rnd(7,14);c.jtop=Math.min(MX_H-.045,top+rnd(.07,.17));const e=JW+.006;
+ if(w===0||w===2){c.jtx=clamp(c.jx+rnd(-.05,.05),-JW+.012,JW-.012);c.jtz=w===0?e:-e}else{c.jtx=w===1?e:-e;c.jtz=clamp(c.jz+rnd(-.05,.05),-JW+.012,JW-.012)}}
 function jarIdle(c,dt,top){ // 믹서가 멎어 있을 때
  c.jt+=dt;
  if(c.jmode!=='pile')c.jhid=0;
@@ -7151,12 +7183,12 @@ function jarIdle(c,dt,top){ // 믹서가 멎어 있을 때
   if(c.jland==null)c.jland=rnd(-.012,.01);const land=Math.max(.016,top+c.jland); // 떨어지는 동안 먼저 떨어진 것들이 쌓이면 그 위에 얹힌다
   if(c.jy<=land){c.jy=land;c.jland=null;c.jmode='pile';c.jt=0;c.jvx=c.jvz=0;jarRest(c);
    if(Math.random()<.8)c.jsl={x0:c.jx,z0:c.jz,x1:rnd(-.9,.9)*JW,z1:rnd(-.9,.9)*JW,t:0,T:rnd(.3,.6)}; // 쌓인 더미 비탈을 타고 굴러 내려가 고르게 깔린다
-   if(time>MIX.thudT){MIX.thudT=time+.05;AU.jarThud(dockNear())}}return}
- if(c.jmode==='climb'){const k=c.jwall;
+   if(time>MIX.thudT){MIX.thudT=time+.05;AU.jarThud(MIX.near)}}return}
+ if(c.jmode==='climb'){const k=c.jwall,alongX=k===0||k===2;
   if(c.jt<.6){const u=ss(c.jt/.6);c.jx=lerp(c.jsx,c.jtx,u);c.jz=lerp(c.jsz,c.jtz,u);c.jy=lerp(c.jsy,c.jsy+.02,u);wallPose(c,k,Math.min(1,dt*(3+12*u)))} // 몸을 일으켜 유리 쪽으로 붙는다
   else{wallPose(c,k);const step=Math.pow(.5+.5*Math.sin(time*6+c.jph),2);c.jy=Math.min(c.jtop,c.jy+dt*.034*step);
-   if(k===0)c.jx=clamp(c.jx+Math.sin(time*1.7+c.jph)*dt*.012,-JW+.01,JW-.01);else c.jz=clamp(c.jz+Math.sin(time*1.7+c.jph)*dt*.012,-JW+.01,JW-.01);
-   if(Math.random()<dt*.13&&c.jy>c.jsy+.04){c.jy-=rnd(.03,.06);AU.glassSqueak(dockNear())} // 미끄러진다
+   if(alongX)c.jx=clamp(c.jx+Math.sin(time*1.7+c.jph)*dt*.012,-JW+.01,JW-.01);else c.jz=clamp(c.jz+Math.sin(time*1.7+c.jph)*dt*.012,-JW+.01,JW-.01);
+   if(Math.random()<dt*.13&&c.jy>c.jsy+.04){c.jy-=rnd(.03,.06);AU.glassSqueak(MIX.near)} // 미끄러진다
    if(MIX.gsBlood>.15&&Math.random()<dt*.5)gsPrint(c.jx,c.jy+.03,c.jz,c)}
   c.arL=-.75-.3*Math.max(0,Math.sin(time*6+c.jph));c.arR=-.75-.3*Math.max(0,Math.sin(time*6+c.jph+Math.PI));c.jlv=.9; // 손바닥으로 유리를 짚으며 오른다
   if(c.jt>c.jdur||c.jy<top-.02&&c.jt>1){c.jmode='fall';c.jvy=0;c.jvx=-Math.sign(c.jx)*rnd(.05,.2);c.jvz=-Math.sign(c.jz)*rnd(.05,.2);c.jland=null;c.hb=0;c.arL=c.arR=0}
@@ -7165,36 +7197,41 @@ function jarIdle(c,dt,top){ // 믹서가 멎어 있을 때
  if(c.jy>top+.03){c.jmode='fall';c.jvy=0;c.jvx=c.jvz=0;c.jland=null;c.jsl=null;return}
  if(c.jsl){const q=c.jsl;q.t+=dt;const u=eo(q.t/q.T);c.jx=lerp(q.x0,q.x1,u);c.jz=lerp(q.z0,q.z1,u);c.jtr+=dt*5*(1-u);if(q.t>=q.T)c.jsl=null}
  if(c.jtp==null)jarRest(c);
- const dead=c.jdmg>.45,e=Math.min(1,dt*(c.jt<.4?8:2.5)); // 누운 채 꿈틀거린다 (죽어 가는 것은 경련)
- c.pt+=(c.jtp+Math.sin(time*3.1+c.jph*2)*.12-c.pt)*e;c.roll+=(c.jtr+Math.sin(time*(dead?9:4)+c.jph)*(dead?.3:.16)-c.roll)*e;c.jlv=dead?1.5:c.jhid?0:.75;c.hb=0;
- if(dead){c.jlife=(c.jlife??rnd(4,9))-dt;if(c.jlife<=0){jarKill(c,true);return}}
- c.jhid=top-c.jy>.065&&wallGap(c.jx,c.jz)>.024?1:0}
+ const e=Math.min(1,dt*(c.jt<.4?8:2.5)); // 누운 채 꿈틀거린다
+ c.pt+=(c.jtp+Math.sin(time*3.1+c.jph*2)*.12-c.pt)*e;c.roll+=(c.jtr+Math.sin(time*4+c.jph)*.16-c.roll)*e;c.hb=0;
+ c.jhid=top-c.jy>.065&&seenGap(c.jx,c.jz)>.024?1:0;c.jlv=c.jhid?0:.75}
 function jarSwirl(c,dt,H){ // 소용돌이: 벽을 타고 올라가 가운데로 빨려 내려와 날을 지나 다시 벽으로 (위에서 보면 빙빙 돈다)
  const lp=c.lp,rr0=Math.hypot(c.jx,c.jz);
  lp.ph+=dt*MIX.flow*2.7*lp.k;lp.th+=dt*MIX.flow*(7+4.5*(1-Math.min(1,rr0/JW)))*lp.ka;
  const rc=.5*JW,ra=.44*JW*lp.ra,yc=H*.5,ya=H*.46*lp.ya,rr=rc+ra*Math.cos(lp.ph),y=Math.max(.016,yc+ya*Math.sin(lp.ph)),tx=Math.sin(lp.th)*rr,tz=Math.cos(lp.th)*rr,k=Math.min(1,dt*10);
  c.jx+=(clamp(tx,-JW,JW)-c.jx)*k;c.jz+=(clamp(tz,-JW,JW)-c.jz)*k;c.jy+=(y-c.jy)*k;
  c.yaw=lp.th+Math.PI/2+Math.sin(time*7+c.jph)*.5;c.pt+=c.jwp*dt*MIX.flow*.8;c.roll+=c.jwr*dt*MIX.flow*.8;c.jlv=1.7;c.hb=0}
+const ZB=[];
 function jarBodies(dt){
- const on=MIX.w>.06,top=jarTop();
+ const on=MIX.w>.06,top=jarTop(),n=MIX.list.length;
  MIX.climbT-=dt;if(!on&&MIX.climbT<=0){MIX.climbT=rnd(.5,.9);jarClimbPick(top)}
- if(!on&&MIX.near>.55&&MIX.list.length){MIX.cooT-=dt;if(MIX.cooT<=0){MIX.cooT=rnd(1.2,2.6);const cs=MIX.list.filter(c=>c.jmode==='climb');if(cs.length)AU.cooM(pick(cs).type,MIX.near)}} // 봐 주는 줄 알고 좋아한다
+ if(!on&&MIX.near>.55&&n){MIX.cooT-=dt;if(MIX.cooT<=0){MIX.cooT=rnd(1.2,2.6);const cs=MIX.list.filter(c=>c.jmode==='climb');if(cs.length)AU.cooM(pick(cs).type,MIX.near)}} // 봐 주는 줄 알고 좋아한다
  // 더미(아직 안 휩쓸린 덩어리)의 밑바닥 높이: 소용돌이는 그 밑에서만 돈다. 국물이 차오르면 잠긴 데까지 소용돌이가 올라온다
- let hb=1,nh=0;for(const c of MIX.list)if(c.jmode==='heap'){nh++;if(c.jy<hb)hb=c.jy}
+ let hb=1,nh=0;for(const c of MIX.list)if(c.jmode==='heap'&&!c.jcut){nh++;if(c.jy<hb)hb=c.jy}
  MIX.nHeap=nh;const Hs=MIX.Hs=nh?clamp(Math.max(hb-.004,MIX.liq+.03),.055,MIX.cH):MIX.cH;
- const sink=MIX.slam>0?dt*.3:dt*MIX.w*.05*clamp(1-MIX.zp/12,0,1); // 날 둘레가 비는 만큼 더미가 내려앉는다 (날에 걸린 게 많으면 버틴다)
- const rot=dt*MIX.flow*.5,cr=Math.cos(rot),sr=Math.sin(rot); // 더미는 통째로 천천히 돈다
- let zone=0;
- for(let i=MIX.list.length-1;i>=0;i--){const c=MIX.list[i];if(c.dead){MIX.list.splice(i,1);continue}
+ const sink=MIX.slam>0?dt*.32:dt*MIX.w*.075*clamp(1-MIX.zoneN/14,0,1); // 날 둘레가 비는 만큼 더미가 내려앉는다 (날에 걸린 게 많으면 버틴다)
+ const rot=dt*MIX.flow*1.3,cr=Math.cos(rot),sr=Math.sin(rot); // 더미는 통째로 휘돈다
+ for(let i=n-1;i>=0;i--){const c=MIX.list[i];if(c.dead){MIX.list.splice(i,1);continue}
+  if(c.jcut){jarDoomed(c,dt);if(!c.dead)jarPos(c);continue} // 날에 물려 토막 나기 직전
   if(!on&&c.jmode!=='swirl'&&c.jmode!=='heap'&&c.jmode!=='cling'){jarIdle(c,dt,top);jarPos(c);continue}
   // 믹서가 돌기 시작하면: 맨 밑은 바로 날에 걸리고, 벽에 붙은 것은 매달려 버티고, 나머지는 더미째 남는다
   if(on&&(c.jmode==='pile'||c.jmode==='climb'||c.jmode==='fall'||c.jmode==='drop')){c.jhid=0;c.jsl=null;
-   const wasClimb=c.jmode==='climb';if(c.jy<.07)c.jmode='swirl';else if(wasClimb||wallGap(c.jx,c.jz)<.022){c.jmode='cling';c.jgrip=rnd(.4,1.1)+(wasClimb?.5:0)+c.jy/MX_H*.9;c.jwall=wasClimb?c.jwall:Math.abs(c.jz)>=Math.abs(c.jx)?(c.jz>0?0:2):(c.jx>0?1:3)}else c.jmode='heap'}
-  if(c.jmode==='heap'){c.jhid=0;
+   const wasClimb=c.jmode==='climb',loose=c.jmode==='fall'||c.jmode==='drop';
+   if(c.jy<.07||loose&&nh<20)c.jmode='swirl';
+   else if(wasClimb||wallGap(c.jx,c.jz)<.022){c.jmode='cling';c.jgrip=rnd(.4,1.1)+(wasClimb?.5:0)+c.jy/MX_H*.9;c.jwall=wasClimb?c.jwall:Math.abs(c.jz)>=Math.abs(c.jx)?(c.jz>0?0:2):(c.jx>0?1:3)}
+   else c.jmode='heap'}
+  if(c.jmode==='heap'){
    if(!c.jfz){c.jy-=sink;const x=c.jx,z=c.jz;c.jx=x*cr+z*sr;c.jz=-x*sr+z*cr;
     if(c.jy<MIX.liq+.012&&Math.random()<dt*MIX.flow*2.5)c.jmode='swirl'; // 국물에 잠긴 밑부분부터 소용돌이에 딸려 간다
     if(c.jy<.062)c.jmode='swirl'}
-   c.roll+=Math.sin(time*13+c.jph)*dt*MIX.w*2.2;c.pt+=Math.sin(time*9+c.jph*2)*dt*MIX.w*1.2;c.jhid=top-c.jy>.065&&wallGap(c.jx,c.jz)>.024?1:0;c.jlv=c.jhid?0:1.6; // 더미 속 깊이 묻힌 것은 가볍게 그린다
+   c.roll+=Math.sin(time*13+c.jph)*dt*MIX.w*3.2;c.pt+=Math.sin(time*9+c.jph*2)*dt*MIX.w*1.8;c.yaw+=rot;
+   const low=c.jy<Hs+.05;if(low)c.flay=Math.min(1,(c.flay||0)+dt*MIX.w*.3); // 날 바로 위에 깔린 것들은 튀는 피를 뒤집어쓰고 버둥댄다
+   c.jhid=top-c.jy>.065&&seenGap(c.jx,c.jz)>.024?1:0;c.jlv=c.jhid?0:low?2.1:1.6;
    if(!on&&!c.jfz){c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null}}
   else if(c.jmode==='cling'){ // 유리·뚜껑에 매달려 버틴다: 휩쓸리는 힘만큼 힘이 빠지다가 놓친다
    wallPose(c,c.jwall,Math.min(1,dt*14));wallStick(c,c.jwall);c.arL=-.95+.25*Math.sin(time*19+c.jph);c.arR=-.95+.25*Math.sin(time*19+c.jph+1.3);c.jlv=1.8;
@@ -7203,168 +7240,243 @@ function jarBodies(dt){
    if(!on){c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null;c.hb=0}}
   else if(c.jmode==='swirl'){if(!on){c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null}else jarSwirl(c,dt,Hs)}
   // 날에 닿는 자리 (바닥 가운데)
-  if(on&&c.jy<.068&&Math.hypot(c.jx,c.jz)<JW*.68&&c.jmode!=='cling'){zone++;ZB.push(c)}else c.jin=0;
-  if(!c.dead){if(on&&c.jmode==='swirl'&&wallGap(c.jx,c.jz)<.02&&MIX.flow>.35)gsSmear(c.jx,c.jy,c.jz,c.ink,c.jdmg>.25?.55:.3);jarPos(c)}}
- MIX.zone=zone;MIX.zb=zone;
- // 날에 한꺼번에 걸리는 몸은 몇 개뿐: 이미 걸려 찢기고 있는 것 · 가장 깊이 박힌 것부터 갈리고, 나머지는 스치기만 한다
- if(ZB.length){for(const c of ZB)c.jsc=c.jdmg+(.068-c.jy)*4+Math.random()*.15;ZB.sort((a,b)=>b.jsc-a.jsc);const base=dt*MIX.w*(MIX.bridge?1.6:1);
-  for(let i=0;i<ZB.length;i++){const c=ZB[i];if(c.dead)continue;c.jdmg+=base*(1.1/(.35+c.tough))*(i<9?1:.08);jarHurt(c);
-   if(c.type===2&&!c.jin){c.jin=1;if(time>MIX.knockT){MIX.knockT=time+.07;AU.clunk(MIX.near*MIX.w)}}} // 점토는 얼음 갈 때처럼 날에 부딪혀 덜그럭거린다
-  ZB.length=0}}
-const ZB=[];
-function jarHurt(c){ // 맞은 만큼 팔다리가 떨어지고 · 살가죽이 벗겨지고 · 눈알이 빠지고 · 몸통이 토막 난다
- const d=c.jdmg,near=MIX.near;
- for(const th of[.12,.26,.4,.53])if(d>=th&&(c.jlvl||0)<th){c.jlvl=th;const L=limbsOf(c).filter(q=>q.i<4&&!(c.cut&q.bit));if(L.length){const q=pick(L);c.cut|=q.bit;bitAdd(q.bit<4&&q.arm?'arm':'leg',c);liqAdd(.00002,c.ink,0);gsSplat(c.jx,c.jy,c.jz,c.ink,.7);
-   if(time>MIX.hitT){MIX.hitT=time+.045;AU.limbOff(.75*near);if(Math.random()<.6)AU.squeal(c.type,1.2*near,0,rnd(.25,.45),true)}}}
- if(d>.3)c.flay=Math.max(c.flay,Math.min(1,(d-.3)*1.6));
- c.tw=Math.max(c.tw||0,Math.min(1,Math.max(0,d-.2)*1.4));
- if(d>.6&&!c.noeye&&c.type!==6){c.noeye=1;bitAdd('eye',c);bitAdd('eye',c);if(time>MIX.hitT){MIX.hitT=time+.04;AU.eyePop(.6*near)}}
- if(d>=.9)jarKill(c,false)}
-const SEC_H=[[-2.3,-.45],[-.45,.58],[.58,2.2]],SEC_P=[[-2.3,-.7],[-.7,.45],[.45,2.2]];
-function jarKill(c,quiet){ // 몸통이 머리 · 윗몸 · 아랫몸으로 토막 나서 같이 돈다
- if(c.dead)return;const i=MIX.list.indexOf(c);if(i>=0)MIX.list.splice(i,1);
- const secs=c.type===6?SEC_P:SEC_H;for(const[zl,zh]of secs)sectAdd(c,zl,zh);
- if(c.type!==6){bitAdd('gut',c);for(let k=0;k<3;k++)bitAdd('lump',c,BONE,.004);bitAdd('lump',c,BRAIN,.006)}
- else for(let k=0;k<4;k++)bitAdd('lump',c,c.tint,.008);
- if(c.type===1)marbleStroke(c.tint,1);if(c.type===0)marbleStroke(lin(0x14131a),.6);
- liqAdd(.00012,c.ink,0);gsSplat(c.jx,c.jy,c.jz,c.ink,1.1);
- if(!quiet&&time>MIX.hitT){MIX.hitT=time+.05;AU.chop(2);AU.crunch()}
+  if(on&&c.jy<BLADE_Y&&c.jmode!=='cling'&&Math.hypot(c.jx,c.jz)<BLADE_R)ZB.push(c);
+  if(c.type===2&&on&&c.jy<BLADE_Y&&!c.jin){c.jin=1;if(time>MIX.knockT){MIX.knockT=time+.07;AU.clunk(MIX.near*MIX.w)}}else if(c.jy>=BLADE_Y)c.jin=0; // 점토는 얼음 갈 때처럼 날에 부딪혀 덜그럭거린다
+  if(on&&c.jmode==='swirl'&&wallGap(c.jx,c.jz)<.02&&MIX.flow>.35)gsSmear(c.jx,c.jy,c.jz,c.ink,c.flay>.25?.55:.3);
+  jarPos(c)}
+ MIX.zoneN=ZB.length;
+ // 날에 걸리는 족족 토막 낸다. 1초에 걸리는 수는 남은 몸 수에 따라 (많을수록 빽빽하게 연달아, 적게 남으면 금방 끝난다). 엉겨 붙어 헛돌 때는 날 둘레 몇 개만
+ if(on){const run=clamp((MIX.w-.18)/.4,0,1),rate=24+30*Math.min(1,n/300);MIX.cutB=Math.min(6,MIX.cutB+dt*rate*run*(MIX.bridge?.35:1));
+  if(ZB.length&&MIX.cutB>=1){ZB.sort((a,b)=>a.jy-b.jy+(Math.random()-.5)*.02);for(const c of ZB){if(MIX.cutB<1)break;MIX.cutB-=1;jarDoom(c)}}}
+ else MIX.cutB=0;
+ ZB.length=0}
+function jarDoom(c){c.jcut=time+rnd(.05,.16);c.jmode='swirl';c.jfz=0; // 날이 문다: 비명을 지르기 시작하고, 그 비명이 토막 나는 순간 뚝 끊긴다
+ if(!c.scr&&time>MIX.squealT){MIX.squealT=time+.04;c.scr=AU.squeal(c.type,1.15*MIX.near,0,rnd(.45,.8),true)}}
+function jarDoomed(c,dt){ // 날 쪽으로 빨려 들며 발버둥 친다
+ const a=Math.atan2(c.jx,c.jz)+dt*MIX.flow*14,r=lerp(Math.hypot(c.jx,c.jz),BLADE_R*.9,Math.min(1,dt*10));c.jx=Math.sin(a)*r;c.jz=Math.cos(a)*r;c.jy=Math.max(.022,c.jy-dt*.7);
+ c.roll+=dt*28*Math.sin(time*31+c.jph);c.pt+=dt*14*Math.sin(time*23+c.jph);c.yaw+=dt*9;c.jlv=2.4;c.jhid=0;c.arL=-1+.5*Math.sin(time*29+c.jph);c.arR=-1+.5*Math.sin(time*29+c.jph+1.4);
+ if(time>=c.jcut){if(MIX.w>.02)jarSever(c);else{c.jcut=0;AU.cutVoice(c.scr);c.scr=null;c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null}}}
+// 날이 몸통을 끊는 순간: 예초기처럼 머리 · 윗몸 · (다리 붙은) 아랫몸으로 토막 나서 날이 도는 쪽으로 튀어 나간다. 잘린 자리에서 피와 뼛조각이 뿜고, 팔다리·눈알이 따로 날아간다
+function jarSever(c){if(c.dead)return;
+ const poop=c.type===6,zt=poop?1.45:1.32,zb=poop?-2:-1.66,zc=rnd(-1.15,1);let cuts;
+ if(poop){cuts=[clamp(zc,-1.1,.9)];if(Math.random()<.6)cuts.push(zc>-.1?-.95:.6)}
+ else if(zc>.35){cuts=[.62];if(Math.random()<.55)cuts.push(-.3)}
+ else if(zc<-.4){cuts=[-.45];if(Math.random()<.55)cuts.push(.62)}
+ else{cuts=[clamp(zc,-.25,.3)];if(Math.random()<.5)cuts.push(Math.random()<.5?.62:-.48)}
+ cuts.sort((a,b)=>a-b);const E=[zb-1].concat(cuts,[zt+1]);
+ const rr=Math.hypot(c.jx,c.jz)||.01,ux=c.jx/rr,uz=c.jz/rr,tx=uz,tz=-ux,hs=.55+.45*MIX.w,near=MIX.near,R=c.r*MX_SC,ceil=MX_H-.03; // 날이 위에서 보아 반시계로 돈다: 그 접선 쪽으로 튄다
+ const cp=Math.cos(c.pt),ax=Math.sin(c.yaw)*cp,ay=-Math.sin(c.pt),az=Math.cos(c.yaw)*cp; // 몸 길이 방향 (머리 쪽)
+ const popEyes=!poop&&!c.noeye&&Math.random()<.45,nsec=E.length-1,lq=LQ_BODY*.62/nsec;
+ for(let i=0;i<nsec;i++){const zl=E[i],zh=E[i+1],a=Math.max(zl,zb),b=Math.min(zh,zt),zm=(a+b)/2,head=zh>zt&&zl>.3,big=b-a>1.3,off=(zm+.15)*R;
+  const an=rnd(-.8,.8),dx=tx*Math.cos(an)-tz*Math.sin(an)+ux*rnd(-.1,.5),dz=tx*Math.sin(an)+tz*Math.cos(an)+uz*rnd(-.1,.5),dl=Math.hypot(dx,dz)||1,sp=(head?rnd(2,3.2):big?rnd(1,1.8):rnd(1.4,2.6))*hs;
+  sectAdd(c,zl,zh,clamp(c.jx+ax*off,-JW,JW),clamp(c.jy+ay*off,.015,.09),clamp(c.jz+az*off,-JW,JW),dx/dl*sp,rnd(.9,2.4)*(head?1.2:1),dz/dl*sp,head&&!popEyes&&!c.noeye,lq)}
+ for(const z of cuts){const off=(z+.15)*R,px=clamp(c.jx+ax*off,-JW,JW),py=clamp(c.jy+ay*off,.02,ceil),pz=clamp(c.jz+az*off,-JW,JW); // 잘린 자리: 굵은 피와 살점, 뼈
+  for(let j=0;j<10;j++){const s2=rnd(.9,3),sd=rnd(-.6,.6);jarDrop(px,py,pz,(tx+ux*sd)*s2,rnd(.4,2.6),(tz+uz*sd)*s2,rnd(.0022,.0048),c.ink)}
+  for(let j=0;j<2;j++)bitAdd('lump',c,j?INTEST:BONE,rnd(.004,.007),[tx*rnd(1,2.4)+rnd(-.3,.3),rnd(.4,1.2),tz*rnd(1,2.4)+rnd(-.3,.3)],px,py,pz,LQ_BODY*.015)}
+ if(!poop){const L=limbsOf(c).filter(q=>q.i<4&&!(c.cut&q.bit));for(const q of L)if(Math.random()<.55){c.cut|=q.bit; // 남은 팔다리가 날에 채여 따로 날아간다
+   bitAdd(q.arm?'arm':'leg',c,null,null,[tx*rnd(1.2,2.6)+rnd(-.4,.4),rnd(.5,1.3),tz*rnd(1.2,2.6)+rnd(-.4,.4)],c.jx+rnd(-.01,.01),c.jy,c.jz+rnd(-.01,.01),LQ_BODY*.05)}
+  if(L.length&&time>MIX.limbT){MIX.limbT=time+.07;AU.limbOff(.7*near)}}
+ if(popEyes){c.noeye=1;const hx=clamp(c.jx+ax*1.3*R,-JW,JW),hy=clamp(c.jy+ay*1.3*R,.02,ceil),hz=clamp(c.jz+az*1.3*R,-JW,JW); // 머리가 갈릴 때 눈알이 튀어 나간다
+  for(let s=0;s<2;s++)bitAdd('eye',c,null,null,[tx*rnd(1.2,2.6)+rnd(-.4,.4),rnd(.6,1.6),tz*rnd(1.2,2.6)+rnd(-.4,.4)],hx,hy,hz,LQ_BODY*.02);
+  for(let j=0;j<2;j++)bitAdd('lump',c,BRAIN,rnd(.006,.01),[tx*rnd(.8,2)+rnd(-.4,.4),rnd(.5,1.3),tz*rnd(.8,2)+rnd(-.4,.4)],hx,hy,hz,LQ_BODY*.015);
+  if(time>MIX.eyeT){MIX.eyeT=time+.06;AU.eyePop(.7*near)}}
+ if(c.type===1)marbleStroke(c.tint,1);else if(c.type===0)marbleStroke(MARB0,.6);
+ liqAdd(LQ_BODY*.1,c.ink,0);gsHit(c.jx+tx*.05,c.jy+.01,c.jz+tz*.05,c.ink,1.1);
+ AU.cutVoice(c.scr);c.scr=null;
+ if(time>MIX.chopT){MIX.chopT=time+rnd(.04,.065);AU.jarChop(cuts.length,near)}
+ if(time>MIX.chT&&Math.random()<.3){MIX.chT=time+.14;AU.choke(c.type,.7*near,.16)}
+ if(time>MIX.boneT&&Math.random()<.3){MIX.boneT=time+.09;AU.snapBone(.45*near)}
+ const i=MIX.list.indexOf(c);if(i>=0)MIX.list.splice(i,1);
  killCreature(c,'blend',c.x,c.z,0,1)}
-// 토막: 몸 모형을 그대로 쓰고 범위(zl~zh) 밖은 시뻘건 단면으로 접힌다
-function sectAdd(c,zl,zh){if(MIX.sects.length>=150){liqAdd(.0002,c.skin,1);return}
- const s={type:c.type,tint:c.tint,ink:c.ink,skin:c.skin,r:c.r,sc:MX_SC,zl,zh,zc:(Math.max(zl,-1.66)+Math.min(zh,1.32))/2,cut:c.cut|0,eyes:!c.noeye&&zh>1.2,flay:Math.min(1,(c.flay||0)+.3),
-  jx:c.jx,jy:c.jy,jz:c.jz,pt:c.pt,yaw:c.yaw,roll:c.roll,wp:rnd(-9,9),wy:rnd(-7,7),wr:rnd(-9,9),lp:{ph:rnd(0,TAU),th:Math.atan2(c.jx,c.jz),k:rnd(.8,1.3),ka:rnd(.8,1.25),ra:rnd(.6,1),ya:rnd(.6,1)},liq:.00026,tw:rnd(.6,1.6)};
+// 토막: 몸 모형을 그대로 쓰고 범위(zl~zh) 밖은 시뻘건 단면으로 접힌다. 처음엔 날아가며 유리에 부딪혀 튀다가 소용돌이에 딸려 간다
+function sectAdd(c,zl,zh,x,y,z,vx,vy,vz,eyes,liq){
+ if(MIX.sects.length>=SECT_CAP){for(let k=0;k<2;k++)bitAdd('lump',c,k?RAWC:c.skin||SKINC,rnd(.006,.01),[vx*rnd(.5,.9),vy,vz*rnd(.5,.9)],x,y,z,liq/2);return null} // 너무 많으면 바로 살점으로 흩어진다
+ const pb=c.type===6,s={type:c.type,tint:c.tint,ink:c.ink,skin:c.skin,r:c.r,sc:MX_SC,zl,zh,zc:(Math.max(zl,pb?-2:-1.66)+Math.min(zh,pb?1.45:1.32))/2,cut:c.cut|0,eyes:!!eyes,flay:Math.min(1,(c.flay||0)+.35),
+  jx:x,jy:y,jz:z,vx,vy,vz,fly:rnd(.28,.5),pt:c.pt,yaw:c.yaw,roll:c.roll,wp:rnd(-16,16),wy:rnd(-12,12),wr:rnd(-16,16),lp:{ph:0,th:0,k:rnd(.8,1.3),ka:rnd(.8,1.25),ra:rnd(.6,1),ya:rnd(.6,1)},liq,tw:rnd(.6,1.6),t0:time,leak:rnd(1.4,2.6)};
  MIX.sects.push(s);return s}
-function bitAdd(k,c,col,size){if(MIX.bits.length>=400){liqAdd(.00005,c.skin,1);return}
- const r=c.r*MX_SC,b={k,col:col||(k==='eye'?WHITE:k==='gut'?INTEST:c.type===6?c.tint:c.type===5?AISK:SKINC),s:size||(k==='eye'?r*.15:k==='gut'?r*.32:r),
-  jx:c.jx+rnd(-.01,.01),jy:c.jy+rnd(-.01,.01),jz:c.jz+rnd(-.01,.01),rx:rnd(0,TAU),ry:rnd(0,TAU),rz:rnd(0,TAU),wx:rnd(-12,12),wy:rnd(-12,12),wz:rnd(-12,12),
-  lp:{ph:rnd(0,TAU),th:Math.atan2(c.jx,c.jz),k:rnd(.8,1.4),ka:rnd(.8,1.3),ra:rnd(.5,1),ya:rnd(.5,1)},liq:k==='lump'?.00002:.00008,ink:c.ink,ty:c.type};
+function bitAdd(k,c,col,size,vel,x,y,z,liq){const lq=liq??(k==='lump'?LQ_BODY*.015:LQ_BODY*.04),cc=col||(k==='eye'?WHITE:k==='gut'?INTEST:c.type===6?c.tint:c.type===5?AISK:SKINC);
+ if(MIX.bits.length>=400){liqAdd(lq,cc,1);return null}
+ const r=c.r*MX_SC,b={k,col:cc,s:size||(k==='eye'?r*.15:k==='gut'?r*.32:r),
+  jx:x??c.jx+rnd(-.01,.01),jy:y??c.jy+rnd(-.01,.01),jz:z??c.jz+rnd(-.01,.01),rx:rnd(0,TAU),ry:rnd(0,TAU),rz:rnd(0,TAU),wx:rnd(-14,14),wy:rnd(-14,14),wz:rnd(-14,14),
+  lp:{ph:0,th:0,k:rnd(.8,1.4),ka:rnd(.8,1.3),ra:rnd(.5,1),ya:rnd(.5,1)},liq:lq,ink:c.ink,ty:c.type,fly:0,vx:0,vy:0,vz:0};
+ if(vel){b.vx=vel[0];b.vy=vel[1];b.vz=vel[2];b.fly=rnd(.22,.45)}else lpInit(b);
  MIX.bits.push(b);return b}
-function liqAdd(v,col,flesh){v*=.62;MIX.liq=Math.min(MX_H-.03,MIX.liq+v);MIX.liqMax=Math.max(MIX.liqMax,MIX.liq);const w=v*(flesh?1:1.3),k=flesh?.62:0; // 살은 겉 피부색이 아니라 속살 색으로 섞인다
+function lpInit(p){const lp=p.lp,H=MIX.Hs||MIX.cH||.1;lp.th=Math.atan2(p.jx,p.jz);lp.ph=Math.asin(clamp((p.jy-H*.5)/(H*.47*lp.ya),-1,1));if(Math.hypot(p.jx,p.jz)<.5*JW)lp.ph=Math.PI-lp.ph} // 지금 자리에서 소용돌이를 탄다
+function liqAdd(v,col,flesh){MIX.liq=Math.min(MX_H-.03,MIX.liq+v);MIX.liqMax=Math.max(MIX.liqMax,MIX.liq);const w=v*(flesh?1:1.3),k=flesh?.62:0; // 살은 겉 피부색이 아니라 속살 색으로 섞인다
  MIX.cr+=lerp(col.r,RAWC.r,k)*w;MIX.cg+=lerp(col.g,RAWC.g,k)*w;MIX.cb+=lerp(col.b,RAWC.b,k)*w;MIX.cw+=w;if(flesh)MIX.flesh+=v;else MIX.blood+=v;MIX.gsBlood=Math.min(1,(MIX.gsBlood||0)+v*400)}
+// 날아가는 조각: 떨어지며 돌고, 유리에 부딪히면 피를 찍고 튀어나온다. 소용돌이가 돌면 옆으로 끌린다
+function flyStep(p,dt){const ceil=jarCeil(p.jx,p.jz);p.fly-=dt;p.vy-=9.8*dt;const dr=Math.exp(-dt*(p.jy<MIX.liq?6:1.5));p.vx*=dr;p.vz*=dr;
+ if(MIX.flow>.1){const rr=Math.hypot(p.jx,p.jz)||.01,a=dt*MIX.flow*9;p.vx+=p.jz/rr*a;p.vz-=p.jx/rr*a}
+ p.jx+=p.vx*dt;p.jy+=p.vy*dt;p.jz+=p.vz*dt;let hit=0;const L=JW+.004;
+ if(p.jx>L){p.jx=L;hit=Math.abs(p.vx);p.vx=-Math.abs(p.vx)*.3}else if(p.jx<-L){p.jx=-L;hit=Math.abs(p.vx);p.vx=Math.abs(p.vx)*.3}
+ if(p.jz>L){p.jz=L;hit=Math.max(hit,Math.abs(p.vz));p.vz=-Math.abs(p.vz)*.3}else if(p.jz<-L){p.jz=-L;hit=Math.max(hit,Math.abs(p.vz));p.vz=Math.abs(p.vz)*.3}
+ if(p.jy<.012){p.jy=.012;p.vy=Math.abs(p.vy)*.25;p.vx*=.7;p.vz*=.7}
+ if(p.jy>ceil){p.jy=ceil;p.vy=-Math.abs(p.vy)*.3}
+ if(hit>.45){gsHit(p.jx,p.jy,p.jz,p.ink,Math.min(1.3,.4+hit*.35));if(time>MIX.slapT){MIX.slapT=time+.045;AU.glassHit(Math.min(1,.35+hit*.25)*MIX.near)}}
+ if(p.fly<=0)lpInit(p)}
 // 조각: 몸과 같이 돌다가 날에 맞을 때마다 잘게 쪼개지고, 다 잘아지면 국물이 된다
-function pieceLoop(p,dt,H,on){const lp=p.lp;
- if(!on||MIX.flow<.1){ // 가라앉는다
-  p.jy=Math.max(p.rest??(p.rest=.008+Math.random()*Math.max(.004,jarHeap()*.9)),p.jy-dt*.25);return}
+function pieceLoop(p,dt,H,on){if(p.fly>0){flyStep(p,dt);return}
+ const lp=p.lp;
+ if(!on||MIX.flow<.1){p.jy=Math.max(p.rest??(p.rest=.008+Math.random()*Math.max(.004,jarHeap()*.9)),p.jy-dt*.25);return} // 가라앉는다
  p.rest=null;const rr0=Math.hypot(p.jx,p.jz);lp.ph+=dt*MIX.flow*3*lp.k;lp.th+=dt*MIX.flow*(7.5+5*(1-Math.min(1,rr0/JW)))*lp.ka;
- const rc=.5*JW,ra=.45*JW*lp.ra,rr=rc+ra*Math.cos(lp.ph),y=Math.max(.012,H*.5+H*.47*lp.ya*Math.sin(lp.ph)),k=Math.min(1,dt*12);
+ const top=MIX.nHeap>20?Math.max(H,MIX.cH-.02):H,co=Math.cos(lp.ph),hh=co>0?lerp(H,top,Math.min(1,co*2)):H,rc=.5*JW,ra=.45*JW*lp.ra,rr=rc+ra*co,y=Math.max(.012,hh*.5+hh*.47*lp.ya*Math.sin(lp.ph)),k=Math.min(1,dt*12);
  p.jx+=(clamp(Math.sin(lp.th)*rr,-JW-.004,JW+.004)-p.jx)*k;p.jz+=(clamp(Math.cos(lp.th)*rr,-JW-.004,JW+.004)-p.jz)*k;p.jy+=(y-p.jy)*k}
 const inBlades=p=>p.jy<.06&&Math.hypot(p.jx,p.jz)<JW*.7;
 function jarPieces(dt){
  const on=MIX.w>.06,H=MIX.Hs||MIX.cH;let zone=0;
  for(let i=MIX.sects.length-1;i>=0;i--){const s=MIX.sects[i];pieceLoop(s,dt,H,on);
-  if(on){s.pt+=s.wp*dt*MIX.flow;s.yaw+=s.wy*dt*MIX.flow;s.roll+=s.wr*dt*MIX.flow;if(wallGap(s.jx,s.jz)<.02&&MIX.flow>.35)gsSmear(s.jx,s.jy,s.jz,s.ink,.45)}
-  if(on){const ib=inBlades(s);if(ib)zone+=.5;if(Math.random()<dt*MIX.w*(ib?(MIX.bridge?12:8):MIX.liq>.03?(MIX.list.length?.5:1.6):0)){MIX.sects.splice(i,1);sectChop(s)}}}
- for(let i=MIX.bits.length-1;i>=0;i--){const b=MIX.bits[i];pieceLoop(b,dt,H,on);if(on){b.rx+=b.wx*dt*MIX.flow;b.ry+=b.wy*dt*MIX.flow;b.rz+=b.wz*dt*MIX.flow}
-  if(on){if(inBlades(b)){zone+=b.k==='lump'?.05:.2;if(Math.random()<dt*MIX.w*(b.k==='lump'?5:4)){MIX.bits.splice(i,1);bitChop(b);continue}}
-   if(MIX.liq>.02)b.s-=dt*MIX.w*.0028;if(b.s<.004){MIX.bits.splice(i,1);liqAdd(b.liq,b.col,1);if(b.ty===1&&Math.random()<.3)marbleStroke(b.col,.5)}}}
+  const spin=s.fly>0?1.3:on?MIX.flow:0;s.pt+=s.wp*dt*spin;s.yaw+=s.wy*dt*spin;s.roll+=s.wr*dt*spin;
+  if(s.leak>0){s.leak-=dt;if(Math.random()<dt*(s.fly>0?14:on?6:2))sectLeak(s)} // 잘린 단면에서 피가 맥박 치듯 튄다
+  if(on&&!(s.fly>0)){if(wallGap(s.jx,s.jz)<.02&&MIX.flow>.35)gsSmear(s.jx,s.jy,s.jz,s.ink,.45);
+   const ib=inBlades(s);if(ib)zone+=.5;if(Math.random()<dt*MIX.w*(ib?(MIX.bridge?16:13):MIX.liq>.03?(MIX.list.length?.9:2.2):.5)){MIX.sects.splice(i,1);sectChop(s)}}}
+ for(let i=MIX.bits.length-1;i>=0;i--){const b=MIX.bits[i];pieceLoop(b,dt,H,on);const spin=b.fly>0?1.2:on?MIX.flow:0;b.rx+=b.wx*dt*spin;b.ry+=b.wy*dt*spin;b.rz+=b.wz*dt*spin;
+  if(on&&!(b.fly>0)){if(inBlades(b)){zone+=b.k==='lump'?.05:.2;if(Math.random()<dt*MIX.w*(b.k==='lump'?5:6)){MIX.bits.splice(i,1);bitChop(b);continue}}
+   if(MIX.liq>.02)b.s-=dt*MIX.w*(MIX.list.length||MIX.sects.length?.0028:.009);if(b.s<.004){MIX.bits.splice(i,1);liqAdd(b.liq,b.col,1);if(b.ty===1&&Math.random()<.3)marbleStroke(b.col,.5)}}}
  MIX.zone+=zone}
-function sectChop(s){ // 토막이 날에 맞아 반으로 갈리거나 살점으로 흩어진다
- const near=MIX.near,c={type:s.type,tint:s.tint,ink:s.ink,skin:s.skin,r:s.r,jx:s.jx,jy:s.jy,jz:s.jz};
- if(s.zh-s.zl>1.05&&MIX.sects.length<150){const zm=(Math.max(s.zl,-1.66)+Math.min(s.zh,1.32))/2+rnd(-.12,.12);for(const[a,b]of[[s.zl,zm],[zm,s.zh]]){const q=Object.assign({},s,{zl:a,zh:b,zc:(Math.max(a,-1.66)+Math.min(b,1.32))/2,eyes:s.eyes&&b>=s.zh,lp:Object.assign({},s.lp,{ph:s.lp.ph+rnd(-1,1),k:rnd(.8,1.3)}),liq:s.liq*.5,wp:rnd(-11,11),wr:rnd(-11,11)});MIX.sects.push(q)}}
- else{const n=2+(Math.random()*3|0);for(let k=0;k<n;k++){const b=bitAdd('lump',c,k?(Math.random()<.5?s.skin:RAWC):s.ink,rnd(.007,.013));if(b)b.liq=s.liq/n}if(s.type===1)marbleStroke(s.tint,.8);if(s.eyes&&Math.random()<.7){bitAdd('eye',c)}}
- liqAdd(.00003,s.ink,0);gsSplat(s.jx,s.jy+.02,s.jz,s.ink,.8);
- if(time>MIX.hitT){MIX.hitT=time+.04;AU.chop(1);if(Math.random()<.5)AU.crunch()}}
-function bitChop(b){const c={type:b.ty,tint:b.col,ink:b.ink,skin:b.col,r:.05,jx:b.jx,jy:b.jy,jz:b.jz};
- if(b.k==='eye'){if(time>MIX.hitT){MIX.hitT=time+.03;AU.eyePop(.45*MIX.near)}liqAdd(.00002,b.ink,0);const q=bitAdd('lump',c,WHITE,b.s*.7);if(q)q.liq=b.liq;return}
+function sectLeak(s){const a=Math.random()<.5?1:-1,o=a>0?s.zh:s.zl,pb=s.type===6,cut=a>0?s.zh<(pb?1.45:1.3):s.zl>(pb?-2:-1.6);if(!cut)return;
+ const cp=Math.cos(s.pt),ax=Math.sin(s.yaw)*cp,ay=-Math.sin(s.pt),az=Math.cos(s.yaw)*cp,d=(clamp(o,-1.7,1.4)-s.zc)*s.r*s.sc;
+ jarDrop(s.jx+ax*d,s.jy+ay*d,s.jz+az*d,ax*a*rnd(.3,.9)+rnd(-.2,.2),ay*a*rnd(.3,.9)+rnd(0,.4),az*a*rnd(.3,.9)+rnd(-.2,.2),rnd(.002,.004),s.ink)}
+function sectChop(s){ // 토막이 날에 다시 걸려 반으로 갈려 튀거나 살점으로 흩어진다
+ const near=MIX.near,c={type:s.type,tint:s.tint,ink:s.ink,skin:s.skin,r:s.r,jx:s.jx,jy:s.jy,jz:s.jz,cut:s.cut,pt:s.pt,yaw:s.yaw,roll:s.roll,flay:s.flay},rr=Math.hypot(s.jx,s.jz)||.01,ux=s.jx/rr,uz=s.jz/rr,tx=uz,tz=-ux;
+ const pb=s.type===6,a=Math.max(s.zl,pb?-2:-1.66),b=Math.min(s.zh,pb?1.45:1.32);
+ if(b-a>.95&&MIX.sects.length<SECT_CAP-1){const zm=(a+b)/2+rnd(-.12,.12);for(const[l,h]of[[s.zl,zm],[zm,s.zh]]){const sp=rnd(.9,2.2)*(.5+.5*MIX.w),an=rnd(-.8,.8),dx=tx*Math.cos(an)-tz*Math.sin(an)+ux*rnd(-.1,.4),dz=tx*Math.sin(an)+tz*Math.cos(an)+uz*rnd(-.1,.4),dl=Math.hypot(dx,dz)||1;
+   const q=sectAdd(c,l,h,s.jx,s.jy,s.jz,dx/dl*sp,rnd(.3,1),dz/dl*sp,s.eyes&&h>=s.zh,s.liq*.5);if(q){q.fly=rnd(.15,.3);q.leak=rnd(.8,1.6);q.flay=Math.min(1,s.flay+.2)}}}
+ else{const n=2+(Math.random()*3|0);for(let k=0;k<n;k++)bitAdd('lump',c,k?(Math.random()<.5?s.skin||SKINC:RAWC):s.ink,rnd(.005,.009),[tx*rnd(.8,2)+rnd(-.3,.3),rnd(.2,.9),tz*rnd(.8,2)+rnd(-.3,.3)],s.jx,s.jy,s.jz,s.liq/n);
+  if(s.type===1)marbleStroke(s.tint,.8);if(s.eyes&&Math.random()<.7)bitAdd('eye',c,null,null,[tx*rnd(1,2),rnd(.4,1),tz*rnd(1,2)],s.jx,s.jy,s.jz,LQ_BODY*.02)}
+ for(let j=0;j<3;j++){const s2=rnd(.8,2.2),sd=rnd(-.6,.6);jarDrop(s.jx,s.jy,s.jz,(tx+ux*sd)*s2,rnd(.2,1),(tz+uz*sd)*s2,rnd(.002,.0045),s.ink)}
+ liqAdd(LQ_BODY*.02,s.ink,0);
+ if(time>MIX.chopT){MIX.chopT=time+rnd(.045,.08);AU.jarChop(1,near);if(Math.random()<.35)AU.jarCrunch(near)}}
+function bitChop(b){const c={type:b.ty,tint:b.col,ink:b.ink,skin:b.col,r:.05,jx:b.jx,jy:b.jy,jz:b.jz},rr=Math.hypot(b.jx,b.jz)||.01,tx=b.jz/rr,tz=-b.jx/rr,v=()=>[tx*rnd(.6,1.8)+rnd(-.3,.3),rnd(.2,.8),tz*rnd(.6,1.8)+rnd(-.3,.3)];
+ if(b.k==='eye'){if(time>MIX.eyeT){MIX.eyeT=time+.05;AU.eyePop(.5*MIX.near)}liqAdd(LQ_BODY*.01,b.ink,0);bitAdd('lump',c,WHITE,b.s*.7,v(),b.jx,b.jy,b.jz,b.liq);jarDrop(b.jx,b.jy,b.jz,tx*rnd(.6,1.4),rnd(.3,.8),tz*rnd(.6,1.4),.003,b.ink);return} // 눈알이 터진다
  const n=b.k==='lump'?2:3,s=b.k==='lump'?b.s*.62:.009;if(s<.004){liqAdd(b.liq,b.col,1);return}
- for(let k=0;k<n;k++){const q=bitAdd('lump',c,b.k==='lump'?b.col:k?b.col:BONE,s*rnd(.85,1.1));if(q){q.liq=b.liq/n;q.ty=b.ty}}
- if(b.k!=='lump'&&time>MIX.hitT){MIX.hitT=time+.04;AU.snapBone(.5*MIX.near)}}
+ for(let k=0;k<n;k++)bitAdd('lump',c,b.k==='lump'?b.col:k?b.col:BONE,s*rnd(.85,1.1),v(),b.jx,b.jy,b.jz,b.liq/n);
+ for(let j=0;j<2;j++)jarDrop(b.jx,b.jy,b.jz,tx*rnd(.6,1.6),rnd(.2,.9),tz*rnd(.6,1.6),rnd(.002,.0035),b.ink);
+ if(b.k!=='lump'&&time>MIX.boneT){MIX.boneT=time+.05;AU.snapBone(.5*MIX.near)}}
+// 통 안 핏방울: 날아가다 유리에 맞으면 번지고, 국물이나 위에 뜬 더미에 떨어지면 섞인다
+function jarDrop(x,y,z,vx,vy,vz,r,col){if(MIX.drops.length<JDROP_CAP)MIX.drops.push({x,y,z,vx,vy:vy+.001,vz,r,col,t:0})}
+function jarDrops(dt){const D2=MIX.drops,L=MX_A-.0025;
+ for(let i=D2.length-1;i>=0;i--){const d=D2[i];d.t+=dt;d.vy-=9.8*dt;
+  if(MIX.flow>.1){const rr=Math.hypot(d.x,d.z)||.01,a=dt*MIX.flow*7;d.vx+=d.z/rr*a;d.vz-=d.x/rr*a}
+  d.x+=d.vx*dt;d.y+=d.vy*dt;d.z+=d.vz*dt;let gone=d.t>1;
+  if(Math.abs(d.x)>L||Math.abs(d.z)>L){const k=L/Math.max(Math.abs(d.x),Math.abs(d.z));d.x*=k;d.z*=k;gsDot(d.x,d.y,d.z,d.col,d.r,Math.hypot(d.vx,d.vz));gone=1}
+  else if(d.y<Math.max(.004,MIX.liq)||d.vy>0&&d.y>jarCeil(d.x,d.z)+.02)gone=1;
+  if(gone)D2.splice(i,1)}}
 // 물감이 국물 윗면에 줄무늬로 번진다 (믹서가 돌수록 섞여 흐려진다)
 function marbleStroke(col,k){const g=MIX.mx;if(!g)return;g.save();g.translate(128,128);g.rotate(rnd(0,TAU));const st='rgba('+Math.round(Math.pow(col.r,1/2.2)*255)+','+Math.round(Math.pow(col.g,1/2.2)*255)+','+Math.round(Math.pow(col.b,1/2.2)*255)+',';
  for(let i=0;i<3;i++){const r0=rnd(20,110);g.strokeStyle=st+(.55*k)+')';g.lineWidth=rnd(3,10)*k;g.beginPath();for(let a=0;a<4;a+=.12){const r=r0+a*rnd(2,6);g.lineTo(Math.cos(a)*r,Math.sin(a)*r)}g.stroke()}g.restore();MIX.mkDirty=1}
 /* ── 통 유리 안쪽 자국 (앞 · 오른쪽 · 뒤 · 왼쪽 네 면을 이어 그린 그림) ── */
 function gsUV(x,y,z){const A=MX_A;let w,u;if(Math.abs(z)>=Math.abs(x)){if(z>0){w=0;u=(x+A)/(2*A)}else{w=2;u=(A-x)/(2*A)}}else{if(x>0){w=1;u=(A-z)/(2*A)}else{w=3;u=(z+A)/(2*A)}}return[w*256+clamp(u,0,1)*255,clamp(1-y/MX_H,0,1)*255,w]}
 const rgbStr=(c,a)=>'rgba('+Math.round(Math.pow(clamp(c.r,0,1),1/2.2)*255)+','+Math.round(Math.pow(clamp(c.g,0,1),1/2.2)*255)+','+Math.round(Math.pow(clamp(c.b,0,1),1/2.2)*255)+','+a+')';
-function gsSplat(x,y,z,col,k){const g=MIX.gx;if(!g||Math.random()>.45)return;const a=rnd(0,TAU),dx=Math.sin(a),dz=Math.cos(a),e=MX_A*.999/Math.max(Math.abs(dx),Math.abs(dz)); // 튄 피는 아무 쪽 유리에나 (주로 위로) 맞고, 돌고 있으면 옆으로 끌린다
- const[u,v]=gsUV(dx*e,clamp(y+rnd(-.03,.1),.01,MX_H-.01),dz*e),r=rnd(3,7)*k,st=1+2.2*MIX.flow;g.fillStyle=rgbStr(col,.7);g.beginPath();g.ellipse(u,v,r*st,r*rnd(.5,.85),rnd(-.15,.15),0,TAU);g.fill();
- for(let i=0;i<4;i++){const a=rnd(0,TAU),d=r*rnd(1.1,2.4),rr=rnd(.8,2.4)*k;g.beginPath();g.ellipse(u+Math.cos(a)*d*st,v+Math.sin(a)*d,rr*st,rr,0,0,TAU);g.fill()}
- if(Math.random()<.22)MIX.drips.push({u:u+rnd(-r,r)*.5,v,len:rnd(10,40),t:0,col,w:rnd(1.5,3)});MIX.gsDirty=1}
+const gsK=w=>MIX.vw[w]?.4:1; // 보는 쪽 유리는 속이 비쳐 보이게 옅게 묻는다
+function gsHit(x,y,z,col,k){const g=MIX.gx;if(!g)return;const m=Math.max(Math.abs(x),Math.abs(z))||1,ex=x*MX_A/m,ez=z*MX_A/m; // 가장 가까운 유리면, 맞은 자리에 터진 피
+ const[u,v,w]=gsUV(ex,clamp(y,.006,MX_H-.006),ez),q=gsK(w);k*=.75+.25*q;const r=rnd(4,8)*k,st=1+2*MIX.flow;g.fillStyle=rgbStr(col,.72*q);g.beginPath();g.ellipse(u,v,r*st,r*rnd(.55,.9),rnd(-.2,.2),0,TAU);g.fill();
+ for(let i=0;i<5;i++){const a=rnd(0,TAU),d=r*rnd(1.1,2.6),rr=rnd(.8,2.6)*k;g.beginPath();g.ellipse(u+Math.cos(a)*d*st,v+Math.sin(a)*d,rr*st,rr,0,0,TAU);g.fill()}
+ if(Math.random()<.3)MIX.drips.push({u:u+rnd(-r,r)*.5,v,len:rnd(12,44),t:0,col,w:rnd(1.5,3)});MIX.gsDirty=1}
+function gsDot(x,y,z,col,r,sp){const g=MIX.gx;if(!g)return;const[u,v,w]=gsUV(x,clamp(y,.004,MX_H-.004),z),q=gsK(w),s=r*rnd(700,1100)*(.7+.3*q),st=1+Math.min(2.5,sp*.6)*(MIX.flow>.2?1:.3); // 핏방울 하나: 도는 동안은 옆으로 길게 끌린다
+ g.fillStyle=rgbStr(col,.62*q);g.beginPath();g.ellipse(u,v,s*st,s,0,0,TAU);g.fill();
+ if(Math.random()<.35){const a=rnd(0,TAU),d=s*rnd(1.5,3);g.fillStyle=rgbStr(col,.5*q);g.beginPath();g.ellipse(u+Math.cos(a)*d*st,v+Math.sin(a)*d,s*.4,s*.4,0,0,TAU);g.fill()}
+ if(MIX.w<.3&&Math.random()<.12*q)MIX.drips.push({u,v,len:rnd(8,26),t:0,col,w:rnd(1,2)});MIX.gsDirty=1}
 // 돌아가는 동안 국물이 유리에 얇게 덮이고, 묵은 자국은 씻겨 옅어진다 (계속 쓰면 늘 그만큼 지저분한 채로 남는다)
 function gsCoat(){const g=MIX.gx;if(!g)return;const L=MIX.liq,d=Math.min(L*.85,.15*MIX.flow*MIX.flow),top=clamp(L+d*.5+.01,0,MX_H),v0=(1-top/MX_H)*256;
- g.globalCompositeOperation='destination-out';g.fillStyle='rgba(0,0,0,.04)';g.fillRect(0,0,1024,256);g.globalCompositeOperation='source-over';
- if(L>.01){g.fillStyle=rgbStr(MIX.col,.016*MIX.w);g.fillRect(0,v0,1024,256-v0);for(let i=0;i<3;i++){g.fillStyle=rgbStr(MIX.col,.06);g.fillRect(rnd(0,1024),v0+rnd(-3,6),rnd(1.5,4),rnd(6,30))}}
+ g.globalCompositeOperation='destination-out';for(let w=0;w<4;w++){g.fillStyle=MIX.vw[w]?'rgba(0,0,0,.11)':'rgba(0,0,0,.045)';g.fillRect(w*256,0,256,256)}g.globalCompositeOperation='source-over';
+ if(L>.01)for(let w=0;w<4;w++){if(MIX.vw[w])continue;g.fillStyle=rgbStr(MIX.col,.016*MIX.w);g.fillRect(w*256,v0,256,256-v0);for(let i=0;i<2;i++){g.fillStyle=rgbStr(MIX.col,.06);g.fillRect(w*256+rnd(0,256),v0+rnd(-3,6),rnd(1.5,4),rnd(6,30))}}
  MIX.gsDirty=1}
-function gsSmear(x,y,z,col,a){if(time<(MIX.smT||0))return;MIX.smT=time+.03;const g=MIX.gx;if(!g)return;const[u,v]=gsUV(x,y,z),dir=-1,len=rnd(10,26)*MIX.flow; // 어느 면에서 보나 소용돌이는 왼쪽에서 오른쪽으로 돈다: 꼬리는 왼쪽으로 끌린다
+function gsSmear(x,y,z,col,a){if(time<(MIX.smT||0))return;MIX.smT=time+.03;const g=MIX.gx;if(!g)return;const[u,v,w]=gsUV(x,y,z),dir=-1,len=rnd(10,26)*MIX.flow;a*=gsK(w); // 어느 면에서 보나 소용돌이는 왼쪽에서 오른쪽으로 돈다: 꼬리는 왼쪽으로 끌린다
  const gr=g.createLinearGradient(u,v,u+dir*len,v);gr.addColorStop(0,rgbStr(col,a));gr.addColorStop(1,rgbStr(col,0));g.fillStyle=gr;g.beginPath();g.ellipse(u+dir*len/2,v+rnd(-2,2),len/2,rnd(1.5,4),rnd(-.08,.08),0,TAU);g.fill();MIX.gsDirty=1}
 function gsPrint(x,y,z,c){const g=MIX.gx;if(!g)return;const[u,v]=gsUV(x,y,z),col=c.flay>.1?c.ink:MIX.col;g.fillStyle=rgbStr(col,.55);g.beginPath();g.ellipse(u,v,2.6,3.2,0,0,TAU);g.fill();for(let f=0;f<4;f++){g.fillRect(u-2.4+f*1.6,v-6.5,.9,3.4)}MIX.gsDirty=1} // 손바닥 자국
 function gsDrips(dt){const g=MIX.gx;if(!g||!MIX.drips.length)return;for(let i=MIX.drips.length-1;i>=0;i--){const d=MIX.drips[i];if(MIX.w>.3){d.t=0;continue}const v0=d.v+d.t;d.t+=dt*rnd(6,16);if(d.t>d.len){MIX.drips.splice(i,1);continue}
   g.fillStyle=rgbStr(d.col,.4);g.fillRect(d.u-d.w/2,v0,d.w,d.v+d.t-v0+1);MIX.gsDirty=1}if(MIX.drips.length>90)MIX.drips.splice(0,MIX.drips.length-90)}
 function gsRing(h){const g=MIX.gx;if(!g||h<.01)return;const v=(1-h/MX_H)*255;g.fillStyle=rgbStr(MIX.col,.5);g.fillRect(0,v-2,1024,4);g.fillStyle=rgbStr(MIX.col,.18);g.fillRect(0,v+2,1024,14);MIX.gsDirty=1} // 국물이 빠진 높이에 남는 띠
-/* ── 믹서 한 번 돌리기: 모터 · 소용돌이 · 엉겨 붙어 뜬 더미(빈 공간) · 다 갈리면 배수 ── */
+/* ── 믹서: 모터 · 소용돌이 · 엉겨 붙어 뜬 더미 · 가득 차면 15초 뒤 알아서 · 다 갈리면 멈추고 배수 ── */
+function mixTip(k,msg,sec){const h=S.hs||(S.hs=[]),id='mx_'+k;if(h.includes(id))return;h.push(id);dirty=true;toast(msg,sec)} // 처음 한 번만 알려 준다
 function mixUpdate(dt){
- if(!roboActive()){if(MIX.w||MIX.hold){MIX.w=0;MIX.flow=0}MIX.look=0;AU.blendMotor(0);return}
- const near=MIX.near=dockNear(),want=MIX.hold&&!MIX.drain;
+ if(!roboActive()){if(MIX.w||MIX.hold){MIX.w=0;MIX.flow=0}MIX.look=damp(MIX.look,0,4,dt);AU.blendMotor(0);return}
+ const near=MIX.near=dockNear();
  jarW.copy(DOCK.g.position).add(DOCK.jar.position);
- const kUp=1.25/(1+2.6*MIX.load);MIX.w+=((want?1-.32*MIX.load:0)-MIX.w)*(1-Math.exp(-(want?kUp:3.6)*dt));if(MIX.w<.002)MIX.w=0; // 덩어리가 날에 걸려 있으면 다 못 올라간다
+ {const v=MIX.vw,cx=camera.position.x-jarW.x,cz=camera.position.z-jarW.z;v[0]=cz>MX_A?1:0;v[1]=cx>MX_A?1:0;v[2]=cz<-MX_A?1:0;v[3]=cx<-MX_A?1:0} // 카메라 쪽 유리면
+ const n=MIX.list.length,has=n+MIX.sects.length+MIX.bits.length+MIX.tube.length>0;
+ if(n&&started)mixTip('in','로봇이 빨아들인 것은 충전대 위 믹서 통에 쌓입니다\n믹서 버튼이나 충전대를 누르고 있으면 그 앞으로 가서 갈립니다',6);
+ // 가득 차면 로봇이 비워 달라고 하고, 15초 동안 아무도 안 돌리면 충전대가 알아서 갈아 흘려보낸다
+ if(n+MIX.tube.length>=MX_CAP&&!MIX.auto&&MIX.autoT<0&&MIX.w<.05&&!MIX.hold&&!MIX.drain&&!MIX.drainReq){MIX.autoT=MX_AUTO;roboSay('empty',Math.max(.6,near));mixTip('full','믹서 통이 가득 찼습니다\n그냥 두면 15초 뒤에 알아서 갈고 배수구로 흘려보냅니다',6)}
+ if(MIX.autoT>=0){if(MIX.hold||MIX.w>.05)MIX.autoT=-1;else{MIX.autoT-=dt;if(MIX.autoT<=0){MIX.autoT=-1;MIX.auto=1;MIX.stopDone=0}}}
+ if(MIX.auto&&!has)MIX.auto=0;
+ MIX.pulse=Math.max(0,MIX.pulse-dt);
+ const want=(MIX.hold||MIX.auto)&&has&&!MIX.drain&&!MIX.drainReq&&!MIX.stopDone&&MIX.pulse<=0;
+ const kUp=2.4/(1+1.2*MIX.load);MIX.w+=((want?1-.3*MIX.load:0)-MIX.w)*(1-Math.exp(-(want?kUp:3.6)*dt));if(MIX.w<.002)MIX.w=0; // 덩어리가 날에 많이 걸려 있으면 버겁게 올라가고 다 못 올라간다
  MIX.runT=want?MIX.runT+dt:0;MIX.slam=Math.max(0,MIX.slam-dt);
  if(want&&!MIX.wasOn){MIX.wasOn=true;mixPress()}else if(!want&&MIX.wasOn){MIX.wasOn=false;mixRelease()}
  MIX.flow=damp(MIX.flow,MIX.bridge?.5*MIX.w:MIX.w,MIX.w>MIX.flow?2.3:1.5,dt);MIX.ang+=dt*MIX.w*100;MIX.swirl+=dt*MIX.flow*6;
  // 내용물 높이 (휩쓸려 도는 높이)
- {let n=0;for(const c of MIX.list)if(c.jmode==='swirl'||c.jmode==='heap'||c.jmode==='cling')n++;MIX.cH=clamp(.07+MX_MAX*(n+.35*MIX.sects.length+.03*MIX.bits.length)/MX_CAP,.07,MX_H-.05);MIX.cH=Math.max(MIX.cH,MIX.liq+.025)}
- MIX.zone=0;tubeUpdate(dt);jarBodies(dt);jarPieces(dt);
- MIX.zp=MIX.zone;MIX.load=damp(MIX.load,clamp(MIX.zone*.09,0,1),8,dt);
+ {let m=0;for(const c of MIX.list)if(c.jmode==='swirl'||c.jmode==='heap'||c.jmode==='cling')m++;MIX.cH=clamp(.07+MX_MAX*(m+.35*MIX.sects.length+.03*MIX.bits.length)/MX_CAP,.07,MX_H-.05);MIX.cH=Math.max(MIX.cH,MIX.liq+.025)}
+ MIX.zone=0;tubeUpdate(dt);jarBodies(dt);jarPieces(dt);jarDrops(dt);
+ MIX.zp=MIX.zone;MIX.load=damp(MIX.load,clamp(MIX.zoneN*.01+MIX.zone*.03,0,.8),8,dt);
  bridgeUpdate(dt);
- // 국물 색 · 거품 · 물감 무늬가 섞여 흐려진다
- if(MIX.cw>0){MIX.col.setRGB(MIX.cr/MIX.cw*.5,MIX.cg/MIX.cw*.34,MIX.cb/MIX.cw*.35);MIX.op=clamp(.42+.4*MIX.flesh/(MIX.flesh+MIX.blood+1e-6)+MIX.liq*.6,.42,.86)}
+ if(MIX.bridge){MIX.bAge+=dt;if(MIX.auto&&MIX.bAge>1.1&&MIX.pulse<=0)MIX.pulse=.6}else MIX.bAge=0; // 알아서 돌 때 엉겨 붙어 헛돌면 잠깐 끊었다가 다시 돌린다 (뜬 더미가 날에 처박힌다)
+ // 국물: 통째로 남은 몸이 많을 때는 묽게 비쳐 보이고, 다 갈려 갈수록 걸쭉해진다
+ if(MIX.cw>0){MIX.col.setRGB(MIX.cr/MIX.cw*.5,MIX.cg/MIX.cw*.34,MIX.cb/MIX.cw*.35);const solid=n+MIX.sects.length*.35+MIX.bits.length*.04;
+  MIX.op=damp(MIX.op,solid>25?.17+.06*Math.min(1,MIX.liq/.2):clamp(.45+.35*MIX.flesh/(MIX.flesh+MIX.blood+1e-6)+MIX.liq*.6,.45,.86),1.2,dt)}
  if(MIX.w>.35&&MIX.liq>.01)MIX.foam=Math.min(1,MIX.foam+dt*MIX.w*MIX.flow*.16);else MIX.foam=Math.max(0,MIX.foam-dt*.008);
  MIX.mkT=(MIX.mkT||0)-dt;if(MIX.w>.3&&MIX.mkT<=0&&MIX.mx){MIX.mkT=.12;MIX.mx.globalCompositeOperation='destination-out';MIX.mx.fillStyle='rgba(0,0,0,'+(.05*MIX.w)+')';MIX.mx.fillRect(0,0,256,256);MIX.mx.globalCompositeOperation='source-over';MIX.mkDirty=1}
  gsDrips(dt);MIX.coT=(MIX.coT||0)-dt;if(MIX.w>.3&&MIX.coT<=0){MIX.coT=.15;gsCoat()}
- // 다 갈렸나
- MIX.done=!MIX.list.length&&!MIX.tube.length&&!MIX.sects.length&&MIX.bits.every(b=>b.s<.0075);
+ // 다 갈렸나: 다 갈리면 누르고 있어도 멈추고 알아서 배수구로 흘려보낸다
+ MIX.done=!n&&!MIX.tube.length&&!MIX.sects.length&&MIX.bits.every(b=>b.s<.0075&&!(b.fly>0))&&(MIX.liq>.003||MIX.bits.length>0);
+ if(MIX.done&&!MIX.stopDone&&!MIX.drain&&!MIX.drainReq){MIX.stopDone=1;MIX.auto=0;MIX.drainReq=1}
  if(MIX.done&&MIX.bits.length&&MIX.w<.05&&!MIX.drain){for(const b of MIX.bits)liqAdd(b.liq,b.col,1);MIX.bits.length=0}
+ if(MIX.stopDone&&!MIX.press&&!MIX.drain&&!MIX.drainReq)MIX.stopDone=0;
  drainUpdate(dt);
  // 흔들림 · 날 · 다이얼 · 전원 불빛
- const a=.0018*MIX.w*(.3+MIX.load)+(MIX.bridge?.0007*MIX.w:0);DOCK.jar.position.set(Math.sin(time*91)*a,MX_Y+Math.abs(Math.sin(time*67))*a*.4,Math.cos(time*83)*a);
+ const a=.0018*MIX.w*(.3+MIX.load)+(MIX.bridge?.0007*MIX.w:0)+MIX.slam*.004;DOCK.jar.position.set(Math.sin(time*91)*a,MX_Y+Math.abs(Math.sin(time*67))*a*.4,Math.cos(time*83)*a);
  if(near>.6&&MIX.w>.2)shake=Math.max(shake,.22*MIX.w*(.25+MIX.load)*near);
- MIX.look=damp(MIX.look,(MIX.w>.05||MIX.hold)&&near>.5?1:0,MIX.look<.5?3:2,dt);
+ MIX.look=damp(MIX.look,mixSpotD()<.45&&(MIX.press||MIX.w>.05||MIX.drain>0)?1:0,MIX.look<.5?2.6:2,dt);MIX.lookP=-Math.atan2(CAM.eye-(MX_Y+.15),Math.max(.6,P.z-DOCK.z)); // 믹서 앞에 서서 돌리는 동안은 통 아래쪽(날이 도는 데)을 당겨 본다 (고개는 위아래로만)
  AU.blendMotor(MIX.w,MIX.load,Math.min(1,MIX.liq*8),MIX.bridge?1:0,near);
  if(MIX.w>.5&&MIX.load>.25&&time>MIX.sndT){MIX.sndT=time+rnd(.05,.11);AU.crackle(1+Math.round(MIX.load*3),.5*near*MIX.load,0,500,1500,.022);if(Math.random()<.4)AU.squelch(.35*near*MIX.load)}
 }
-function mixPress(){MIX.lastPress=time;const n=MIX.list.length;
- if(n&&MIX.w<.2){let k=0;for(const c of MIX.list){if(k>2)break;if(Math.random()<.3){AU.squeal(c.type,1.05*MIX.near,rnd(0,.12),rnd(.3,.55),true);k++}}} // 날이 걸리는 순간 비명
- if(MIX.first&&MIX.near>.4){MIX.first=false}}
-function mixRelease(){if(MIX.bridge)bridgeCollapse();if(MIX.done)MIX.drainReq=1;else if(MIX.list.length||MIX.sects.length){for(const d of MIX.drips)d.t=0}}
-function bridgeUpdate(dt){ // 꽉 차고 마른 채 꾹 누르고만 있으면 날 둘레만 갈려 빈 공간이 생기고, 위 더미는 서로 엉겨 붙은 채 떠서 버틴다
- if(!MIX.bridge){if(MIX.runT>1.8&&MIX.zb<8&&MIX.nHeap>35&&MIX.liq<.14&&MIX.w>.3){MIX.bT+=dt;if(MIX.bT>.5){MIX.bridge=1;MIX.bT=0;MIX.bLife=rnd(8,10);MIX.erT=.8;
-    for(const c of MIX.list)if(c.jmode==='heap'){if(c.jy<.078)c.jmode='swirl';else c.jfz=1}}}else MIX.bT=Math.max(0,MIX.bT-dt*2);return}
+function mixPress(){MIX.lastPress=time;MIX.cutB=Math.max(MIX.cutB,1);if(MIX.slamNext){MIX.slamNext=0;MIX.slam=.5;MIX.cutB+=4}const n=MIX.list.length;
+ if(n&&MIX.w<.2){let k=0;for(const c of MIX.list){if(k>2)break;if(Math.random()<.3){AU.squeal(c.type,1.05*MIX.near,rnd(0,.12),rnd(.3,.55),true);k++}}}} // 날이 걸리는 순간 비명
+function mixRelease(){if(MIX.bridge)bridgeCollapse();for(const d of MIX.drips)d.t=0}
+function bridgeUpdate(dt){ // 꽉 차고 마른 채 돌리면 날 둘레만 갈려 빈 공간이 생기고, 위 더미는 서로 엉겨 붙은 채 떠서 버틴다
+ if(!MIX.bridge){if(MIX.runT>2.6&&MIX.nHeap>70&&MIX.liq<.1&&MIX.w>.45&&MIX.slam<=0&&Math.random()<dt*.3){MIX.bridge=1;MIX.bLife=rnd(2.4,3.4);MIX.erT=.5;
+   for(const c of MIX.list)if(c.jmode==='heap'&&!c.jcut){if(c.jy<.078)c.jmode='swirl';else c.jfz=1}}return}
  MIX.bLife-=dt;MIX.erT-=dt;
  if(MIX.erT<=0){MIX.erT=rnd(.35,.7);let lo=null;for(const c of MIX.list)if(c.jfz&&(!lo||c.jy<lo.jy))lo=c;if(lo){lo.jfz=0;lo.jmode='swirl';if(time>MIX.squealT){MIX.squealT=time+.05;AU.squeal(lo.type,MIX.near,0,rnd(.2,.4),true)}}} // 밑에서 하나씩 떨어져 날에 갈린다
  if(MIX.w<.35||MIX.bLife<=0||!MIX.list.some(c=>c.jfz))bridgeCollapse()}
 function bridgeCollapse(){MIX.bridge=0;MIX.runT=0;let n=0;const on=MIX.w>.35;for(const c of MIX.list)if(c.jfz){c.jfz=0;if(on)c.jmode='heap';else{c.jmode='drop';c.jvy=-rnd(0,.35);c.jvx=c.jvz=0;c.jland=null}n++}
- if(n){AU.collapse(MIX.near);if(on)MIX.slam=.45}} // 무너진 더미가 날에 처박힌다 (손을 뗐다 누르면 다시 쌓였다가 처음부터 갈린다)
+ if(n){AU.collapse(MIX.near);if(on){MIX.slam=.45;MIX.cutB+=3}else MIX.slamNext=1}} // 무너진 더미가 날에 처박힌다 (멈춘 동안 무너졌으면 다시 돌 때 처박힌다)
 function drainUpdate(dt){
- if(MIX.drainReq&&MIX.w<.08){MIX.drainReq=0;if(MIX.done){if(MIX.liq>.002){MIX.drain=1;AU.gurgle(true,MIX.near)}else mixEmptied()}} // 다 갈린 채 손을 떼면 날이 멎는 대로 배수구로 흘려보낸다
+ if(MIX.drainReq&&MIX.w<.08){MIX.drainReq=0;if(MIX.liq>.002){MIX.drain=1;AU.gurgle(true,MIX.near)}else mixEmptied()} // 날이 멎는 대로 배수구로 흘려보낸다
  DOCK.coreTex.offset.x-=dt*(MIX.drain?2.6:0);
  if(!MIX.drain){DOCK.coreM.opacity=Math.max(0,DOCK.coreM.opacity-dt*.6);return}
- MIX.liq=Math.max(0,MIX.liq-dt*.1);MIX.foam=Math.max(0,MIX.foam-dt*.5);DOCK.coreM.opacity=Math.min(.95,DOCK.coreM.opacity+dt*4);DOCK.coreM.color.copy(MIX.col);
+ MIX.liq=Math.max(0,MIX.liq-dt*.075);MIX.foam=Math.max(0,MIX.foam-dt*.5);DOCK.coreM.opacity=Math.min(.95,DOCK.coreM.opacity+dt*4);DOCK.coreM.color.copy(MIX.col);
  MIX.spT=(MIX.spT||0)-dt;if(MIX.spT<=0){MIX.spT=rnd(.08,.16);const x=DOCK.x+DOCK.drainX+rnd(-.05,.05),z=DOCK.z+DOCK.drainZ+rnd(-.05,.05);stamp(x,z,rnd(.05,.09),rnd(.05,.09),0,1,6,MIX.col,.5)} // 배수구 둘레로 넘친 국물
  AU.gurgle(true,MIX.near);
- if(MIX.liq<=0){mixEmptied()}}
-function mixEmptied(){gsRing(MIX.liqMax);MIX.drain=0;MIX.liq=0;MIX.liqMax=0;MIX.cw=MIX.cr=MIX.cg=MIX.cb=0;MIX.flesh=MIX.blood=0;MIX.foam=0;MIX.bits.length=0;MIX.sects.length=0;MIX.done=false;AU.gurgle(false);
+ if(MIX.liq<=0)mixEmptied()}
+function mixEmptied(){gsRing(MIX.liqMax);MIX.drain=0;MIX.drainReq=0;MIX.liq=0;MIX.liqMax=0;MIX.cw=MIX.cr=MIX.cg=MIX.cb=0;MIX.flesh=MIX.blood=0;MIX.foam=0;MIX.bits.length=0;MIX.sects.length=0;MIX.drops.length=0;MIX.done=false;MIX.auto=0;MIX.autoT=-1;AU.gurgle(false);
  DOCK.resM.color.copy(MIX.col);DOCK.resM.opacity=Math.min(.45,DOCK.resM.opacity+.12); // 호스 안에 남는 얼룩
  if(MIX.mx){MIX.mx.clearRect(0,0,256,256);MIX.mkDirty=1}}
 function tubeUpdate(dt){const o=DOCK.g.position;for(let i=MIX.tube.length-1;i>=0;i--){const c=MIX.tube[i];c.tu+=dt*c.tv*(.75+2.2*c.tu);const u=Math.min(1,c.tu);
   DOCK.curve.getPointAt(u,_p1);DOCK.curve.getTangentAt(u,_p2);const f=c.tf?-1:1;
   c.x=o.x+_p1.x;c.y=o.y+_p1.y;c.z=o.z+_p1.z;c.yaw=Math.atan2(_p2.x*f,_p2.z*f);c.pt=-Math.asin(clamp(_p2.y*f,-1,1));c.roll=Math.sin(time*19+c.ph)*.5;c.str=1.28;c.arL=c.arR=-.9;
   if(c.tu>=1){MIX.tube.splice(i,1);c.str=1;jarEnter(c)}}}
-/* ── 그리기: 날 · 통 안 조각 · 국물 · 유리 자국 ── */
+/* ── 그리기: 날 · 통 안 조각 · 핏방울 · 국물 · 유리 자국 ── */
 const FOAMW=lin(0xfff1ee);
 function drawJar(){
  if(!DOCK.g||!DOCK.g.visible)return;
  const bv=clamp((MIX.w-.28)/.4,0,1);DOCK.blades.rotation.y=MIX.ang;DOCK.blades.visible=bv<.98;DOCK.blurM.opacity=bv*.8;DOCK.blur.rotation.z=MIX.ang*.13;
  DOCK.knob.rotation.z=-MIX.w*2.3;DOCK.led.material.color.setHex(MIX.w>.04?0xff3b2f:0x5d1010).convertSRGBToLinear();
- let na=0,nl=0,ne=0,ng=0,nm=0;
+ let na=0,nl=0,ne=0,ng=0,nm=0;const cA=140,cE=90,cG=50,cM=460;
  for(const b of MIX.bits){const s=b.s;
-  if(b.k==='arm')solidAt(DOCK.bArm,na++,b.jx,b.jy,b.jz,s,s,s*.85,b.col,b.rx,b.ry,b.rz);
-  else if(b.k==='leg')solidAt(DOCK.bLeg,nl++,b.jx,b.jy,b.jz,s*1.05,s*1.05,s,b.col,b.rx,b.ry,b.rz);
-  else if(b.k==='eye')solidAt(DOCK.bEye,ne++,b.jx,b.jy,b.jz,s,s,s,b.col,b.rx,b.ry,b.rz);
-  else if(b.k==='gut')solidAt(DOCK.bGut,ng++,b.jx,b.jy,b.jz,s,s,s,b.col,b.rx,b.ry,b.rz);
-  else solidAt(DOCK.bLump,nm++,b.jx,b.jy,b.jz,s,s*.78,s*1.12,b.col,b.rx,b.ry,b.rz)}
+  if(b.k==='arm'){if(na<cA)solidAt(DOCK.bArm,na++,b.jx,b.jy,b.jz,s,s,s*.85,b.col,b.rx,b.ry,b.rz)}
+  else if(b.k==='leg'){if(nl<cA)solidAt(DOCK.bLeg,nl++,b.jx,b.jy,b.jz,s*1.05,s*1.05,s,b.col,b.rx,b.ry,b.rz)}
+  else if(b.k==='eye'){if(ne<cE)solidAt(DOCK.bEye,ne++,b.jx,b.jy,b.jz,s,s,s,b.col,b.rx,b.ry,b.rz)}
+  else if(b.k==='gut'){if(ng<cG)solidAt(DOCK.bGut,ng++,b.jx,b.jy,b.jz,s,s,s,b.col,b.rx,b.ry,b.rz)}
+  else if(nm<cM)solidAt(DOCK.bLump,nm++,b.jx,b.jy,b.jz,s,s*.78,s*1.12,b.col,b.rx,b.ry,b.rz)}
  solidEnd(DOCK.bArm,na);solidEnd(DOCK.bLeg,nl);solidEnd(DOCK.bEye,ne);solidEnd(DOCK.bGut,ng);solidEnd(DOCK.bLump,nm);
  for(const m of[DOCK.bArm,DOCK.bLeg,DOCK.bEye,DOCK.bGut,DOCK.bLump])m.visible=m.count>0;
+ {const m=DOCK.bDrop;let nd=0;for(const d of MIX.drops){if(nd>=JDROP_CAP)break;const sp=Math.hypot(d.vx,d.vy,d.vz),st=1+Math.min(1.6,sp*.3),q=d.r/Math.sqrt(st); // 날아가는 쪽으로 길쭉하게
+   D.position.set(d.x,d.y,d.z);D.quaternion.setFromUnitVectors(UP,_a.set(d.vx,d.vy,d.vz).normalize());D.scale.set(q,d.r*st,q);D.updateMatrix();m.setMatrixAt(nd,D.matrix);m.setColorAt(nd,d.col);nd++}
+  m.count=nd;m.visible=nd>0;if(nd){m.instanceMatrix.needsUpdate=true;m.instanceColor.needsUpdate=true}}
  liquidDraw();
- if(MIX.gsDirty&&time>MIX.gsT){MIX.gsT=time+.12;MIX.gsDirty=0;MIX.gsTex.needsUpdate=true}
+ if(MIX.gsDirty&&time>MIX.gsT){MIX.gsT=time+.08;MIX.gsDirty=0;MIX.gsTex.needsUpdate=true}
  if(MIX.mkDirty&&time>(MIX.mkT2||0)){MIX.mkT2=time+.1;MIX.mkDirty=0;MIX.mkTex.needsUpdate=true}
  // 카메라 쪽을 보는 유리면 자국은 국물 위에, 뒤쪽 면 자국은 국물 밑에 그린다
  const cx=camera.position.x-jarW.x,cz=camera.position.z-jarW.z;DOCK.walls[0].renderOrder=cz>MX_A?5:3;DOCK.walls[1].renderOrder=cx>MX_A?5:3;DOCK.walls[2].renderOrder=cz<-MX_A?5:3;DOCK.walls[3].renderOrder=cx<-MX_A?5:3;
@@ -7381,9 +7493,9 @@ function liquidDraw(){const L=MIX.liq,vis=L>.0025;DOCK.liq.visible=DOCK.mar.visi
  DOCK.liqM.color.copy(MIX.col);DOCK.liqM.opacity=MIX.op;
  DOCK.foamM.opacity=Math.min(.95,MIX.foam*1.15);DOCK.foamM.color.copy(MIX.col).lerp(FOAMW,.6);DOCK.foamTex.rotation=-sw*.85;
  MIX.mkTex.rotation=-sw}
-// 통 안 토막은 몸 모형으로 그린다 (조각 가운데를 축으로 돌고, 범위 밖은 단면으로 접힌다)
-function drawJarSects(cp,T,K){for(const k of MIX.sects){const x=jarW.x+k.jx,y=jarW.y+k.jy,z=jarW.z+k.jz;
-  const d=Math.max(.05,Math.hypot(x-cp.x,y-cp.y,z-cp.z)),r=k.r*k.sc,px=r*3*K/d*.7,lv=px>T[0]?0:px>T[1]?1:px>T[2]?2:3,F=flocks[k.type],f=F.lv[lv];if(f.n>=CAP)continue;
+// 통 안 토막은 몸 모형으로 그린다 (조각 가운데를 축으로 돌고, 범위 밖은 단면으로 접힌다). 많을 때는 한 단계 가벼운 모형으로
+function drawJarSects(cp,T,K){const lv0=MIX.sects.length>60?2:1;for(const k of MIX.sects){const x=jarW.x+k.jx,y=jarW.y+k.jy,z=jarW.z+k.jz;
+  const d=Math.max(.05,Math.hypot(x-cp.x,y-cp.y,z-cp.z)),r=k.r*k.sc,px=r*3*K/d*.7,lv=Math.max(lv0,px>T[0]?0:px>T[1]?1:px>T[2]?2:3),F=flocks[k.type],f=F.lv[lv];if(f.n>=CAP)continue;
   const i=f.n++;D.position.set(x,y,z);D.rotation.set(k.pt,k.yaw,k.roll,'YXZ');D.scale.set(r,r,r);D.updateMatrix();
   const m=D.matrix.elements,cy=.45,cz=k.zc;m[12]-=m[4]*cy+m[8]*cz;m[13]-=m[5]*cy+m[9]*cz;m[14]-=m[6]*cy+m[10]*cz;
   f.body.setMatrixAt(i,D.matrix);f.body.setColorAt(i,k.tint);
@@ -7448,6 +7560,10 @@ Object.assign(AU,{vbuf:{},vdec:{},vwant:null,
  glassSqueak(k=1){if(!this.ok)return;this.noise('bandpass',rnd(2300,2900),rnd(3200,3800),9,.17,.09*k);this.tone('sine',rnd(1800,2200),rnd(2300,2700),.14,.025*k)},
  cooM(type,k=1){if(!this.ok||!this.muf)return;k*=this.voiceLevel*1.6;const b=[1280,1080,860,1560,1180,990,620][type]*.42*rnd(.94,1.06);for(let i=0;i<2;i++){const d=i*.115,f=b*(1+.2*i);this.tone('triangle',f,f*1.34,.09,.05*k,d,this.muf);this.tone('sine',f*2,f*2.7,.07,.02*k,d,this.muf)}},
  clunk(k=1){if(k<.03)return;this.tone('triangle',rnd(330,420),180,.06,.3*k);this.noise('highpass',3200,2200,.8,.02,.24*k);this.tone('sine',rnd(2100,2500),2050,.14,.05*k,.01)}, // 단단한 것이 날에 튕겨 유리를 친다
+ // 통 안에서 날이 몸통을 끊는 소리: 예초기에 토막 나는 소리와 같은 짜임에, 충전대와의 거리만큼 줄인다
+ jarChop(n=1,k=1){if(!this.ok||k<.05)return;this.noise('bandpass',1500,420,1.3,.06,.62*k);this.noise('highpass',3300,2500,.8,.02,.34*k);this.tone('sine',190,70,.09,.5*k);this.crackle(1+n,.8*k,.004,1600,3400,.014);this.bubble(rnd(260,460),.18*k,.03)},
+ jarCrunch(k=1){if(!this.ok||k<.05)return;this.noise('bandpass',rnd(600,1100),200,2.5,.09,.6*k);this.tone('sawtooth',rnd(140,220),55,.08,.3*k);this.bubble(rnd(300,600),.3*k,.02);this.noise('highpass',3000,2400,.7,.03,.22*k)},
+ glassHit(k=1){if(!this.ok||k<.05)return;this.noise('bandpass',900,300,1.2,.05,.42*k);this.tone('sine',rnd(150,210),70,.06,.3*k);this.tone('sine',rnd(2300,2900),rnd(1900,2300),.07,.05*k,.002)}, // 토막이 유리를 퍽 치는 소리
  collapse(k=1){this.noise('lowpass',700,140,.8,.3,.55*k);this.tone('sine',96,40,.24,.6*k);for(let i=0;i<4;i++)this.bubble(rnd(140,320),.18*k,.03+i*.04);this.crackle(3,.6*k,.04,500,1300,.03)},
  gl:0,
  gurgle(on,k=1){if(!this.ok){this.gl=0;return}if(!on){this.gl=0;return}const now=this.c.currentTime;if(!this.gl){this.gl=1;this.flush()}if(now<(this.glT||0))return;this.glT=now+rnd(.07,.15);
@@ -7481,21 +7597,52 @@ Object.assign(AU,{vbuf:{},vdec:{},vwant:null,
 });
 {const sl=AU.sleep;AU.sleep=function(){sl.call(this);this.blendStop();this.humStop();this.suckStop();this.gl=0}}
 
-/* ── 믹서 버튼: 충전대 앞에 서면 오른쪽 가장자리에 뜬다 (PC는 R키) ── */
+/* ── 믹서 버튼: 통에 뭐가 들어 있으면 어디서든 오른쪽 가장자리에 뜬다 (PC는 R키). 누르면 충전대 앞 자리로 걸어가 누르는 동안 간다. 충전대를 직접 눌러도 같다 ── */
 let mixKey='';
-const mixNear=()=>{const dx=P.x-DOCK.x,dz=P.z-DOCK.z;return roboActive()&&Math.abs(dx)<1.1&&dz>0&&dz<1.9};
+const mixSpot=()=>[DOCK.x+MX_SPOT[0],DOCK.z+MX_SPOT[1]];
+function mixSpotD(){const[s,t]=mixSpot();return Math.hypot(P.x-s,P.z-t)}
+const mixShow=()=>started&&!paused&&roboActive()&&!EX.on&&(MIX.list.length+MIX.sects.length+MIX.bits.length+MIX.tube.length>0||MIX.liq>.003||ROBO.mode==='wait'||MIX.autoT>=0||MIX.drain>0);
 function updateMixBtn(){const el=$('mixbtn');if(!el)return;
- const near=started&&!paused&&mixNear(),has=MIX.list.length+MIX.sects.length+MIX.bits.length+MIX.tube.length>0||MIX.liq>.003||MIX.w>.05,show=near&&(has||ROBO.mode==='wait');
- const lab=MIX.drain?'배수 중':'믹서',sub=MIX.drain?'':MIX.list.length?(jarFull()?'가득':MIX.list.length+'마리'):MIX.done&&MIX.liq>.003?'다 갈림':'',on=MIX.hold&&!MIX.drain,key=show+'|'+lab+'|'+sub+'|'+on+'|'+!!MIX.drain;
- if(!show&&mixIds.size)mixIds.clear();if(key===mixKey)return;mixKey=key;
- el.hidden=!show;el.children[0].textContent=lab;el.children[1].textContent=sub;el.classList.toggle('on',on);el.classList.toggle('off',!!MIX.drain);el.setAttribute('aria-label','믹서'+(sub?' · '+sub:''));
- if(show&&!(S.hs||(S.hs=[])).includes('mix')){S.hs.push('mix');dirty=true;toast('믹서 버튼을 누르고 있는 동안 갈립니다\n꽉 차서 헛돌면 뗐다가 다시 누르세요',5)}}
-function mixInput(){MIX.hold=started&&!paused&&(mixIds.size>0||!!keys.KeyR)&&mixNear()}
+ const show=mixShow(),n=MIX.list.length;let lab='믹서',sub='';
+ if(MIX.drain||MIX.drainReq)lab='배수 중';
+ else if(MIX.auto){lab='자동';sub=n?n+'마리':'마무리'}
+ else if(MIX.walk)sub='가는 중';
+ else if(MIX.autoT>=0)sub='가득 · '+Math.ceil(MIX.autoT)+'초';
+ else if(n)sub=n+'마리';else if(MIX.sects.length||MIX.bits.length)sub='조각';
+ const busy=!!(MIX.drain||MIX.drainReq),pr=MIX.press&&!busy,key=show+'|'+lab+'|'+sub+'|'+pr+'|'+busy+'|'+(MIX.autoT>=0);
+ if(!show&&mixIds.size){mixIds.clear();MXT.clear()}if(key===mixKey)return;mixKey=key;
+ el.hidden=!show;el.children[0].textContent=lab;el.children[1].textContent=sub;el.classList.toggle('on',pr);el.classList.toggle('off',busy);el.classList.toggle('full',MIX.autoT>=0&&!pr);el.setAttribute('aria-label',lab+(sub?' · '+sub:''))}
+function mixInput(){const on=started&&!paused&&roboActive()&&!EX.on,press=on&&(mixIds.size>0||!!keys.KeyR),d=mixSpotD();
+ MIX.atSpot=d<.2;
+ if(press&&!MIX.pressWas&&d>.03)MIX.walk=1; // 멀리서 누르면 충전대 앞 자리로 걸어가 딱 맞춰 선다 (가다가 직접 움직이면 그만둔다)
+ if(!on||d<.03)MIX.walk=0;
+ MIX.pressWas=press;MIX.press=press;MIX.hold=press&&MIX.atSpot}
+function mixWalkVel(){const[sx,sz]=mixSpot(),dx=sx-P.x,dz=sz-P.z,d=Math.hypot(dx,dz);if(d<.01)return[0,0];const sp=Math.min(2.1,d*5+.3);return[dx/d*sp,dz/d*sp]}
+// 충전대에는 몸이 있다: 사람은 파고들지 못하고, 앞으로는 든 장비 끝이 도킹한 로봇에 닿지 않을 만큼만 다가선다
+function dockPush(){if(!DOCK.g||!DOCK.g.visible||EX.on)return;const x0=DOCK.x-.62,x1=DOCK.x+.55,z0=DOCK.z-.6,z1=DOCK.z+DOCK_FRONT;
+ if(P.x<=x0||P.x>=x1||P.z<=z0||P.z>=z1)return;const dl=P.x-x0,dr=x1-P.x,db=P.z-z0,df=z1-P.z,m=Math.min(dl,dr,db,df);
+ if(m===df)P.z=z1;else if(m===dr)P.x=x1;else if(m===dl)P.x=x0;else P.z=z0}
+// 바닥에 내려놓는 통·봉투가 충전대에 겹치면 비켜 놓는다
+function dockDodge(o,r){if(!DOCK.g||!DOCK.g.visible||EX.on)return o;const x0=DOCK.x-.24-r,x1=DOCK.x+.47+r,z0=DOCK.z-.21-r,z1=DOCK.z+.7+r;
+ if(o.x<=x0||o.x>=x1||o.z<=z0||o.z>=z1)return o;if(x1-o.x<z1-o.z)o.x=x1;else o.z=z1;return o}
+// 충전대(도킹해 있는 로봇 포함)를 화면에서 누르면 믹서 버튼과 같다. 왼쪽(이동) 쪽에서 누른 채 끌면 이동 스틱이 된다
+const _mray=new THREE.Raycaster(),_mrb=new THREE.Box3(),_mrv=new THREE.Vector2(),MXT=new Map();
+function stationHit(cx,cy){if(!mixShow()||!DOCK.g||!DOCK.g.visible)return false;const r=renderer.domElement.getBoundingClientRect();_mrv.set((cx-r.left)/r.width*2-1,-(cy-r.top)/r.height*2+1);_mray.setFromCamera(_mrv,camera);
+ _mrb.min.set(DOCK.x-.24,0,DOCK.z-.2);_mrb.max.set(DOCK.x+.25,1.13,DOCK.z+.24);if(_mray.ray.intersectsBox(_mrb))return true;
+ const R=ROBO;if(R.mode==='dock'||R.mode==='wait'||R.mode==='unload'){_mrb.min.set(R.x-RB_R,0,R.z-RB_R);_mrb.max.set(R.x+RB_R,.2,R.z+RB_R);if(_mray.ray.intersectsBox(_mrb))return true}
+ return false}
+function mixTapDown(e){if(e.pointerType==='mouse'&&e.button!==0||!stationHit(e.clientX,e.clientY))return false;mixIds.add(e.pointerId);MXT.set(e.pointerId,{x:e.clientX,y:e.clientY,stick:e.pointerType!=='mouse'&&e.clientX<W*.45});
+ try{renderer.domElement.setPointerCapture(e.pointerId)}catch(_){}return true}
+function mixTapMove(e){const t=MXT.get(e.pointerId);if(!t||!t.stick||stickId!==null||Math.hypot(e.clientX-t.x,e.clientY-t.y)<14)return;
+ MXT.delete(e.pointerId);mixIds.delete(e.pointerId);MIX.walk=0;stickId=e.pointerId;sx0=t.x;sy0=t.y;stickX=stickY=0;const s=$('stick');s.style.display='block';s.style.left=sx0+'px';s.style.top=sy0+'px';s.firstElementChild.style.transform=''}
+function mixTapUp(e){if(MXT.delete(e.pointerId))mixIds.delete(e.pointerId)}
 // 장비 바꿀 때·방을 비울 때: 로봇은 충전대로, 통은 비운다 (유리에 묻은 자국은 남는다)
-function roboReset(){const R=ROBO;R.bin.length=0;R.plan=[];R.mode='dock';R.run=false;R.phase='shift';R.res=null;for(let i=0;i<2;i++)R.ink[i]=0;
- MIX.list.length=0;MIX.sects.length=0;MIX.bits.length=0;MIX.tube.length=0;MIX.w=MIX.flow=MIX.load=0;MIX.bridge=0;MIX.runT=0;MIX.slam=0;MIX.zp=0;MIX.nHeap=0;MIX.drain=0;MIX.drainT=0;MIX.drainReq=0;MIX.liq=0;MIX.liqMax=0;MIX.foam=0;MIX.cw=MIX.cr=MIX.cg=MIX.cb=MIX.flesh=MIX.blood=0;MIX.done=false;MIX.drips.length=0;MIX.wasOn=false;
- if(MIX.mx){MIX.mx.clearRect(0,0,256,256);MIX.mkDirty=1}mixIds.clear();AU.blendStop();AU.suckStop();AU.gurgle(false);dockPlace()}
-function mixClear(){mixIds.clear();MIX.hold=false}
+function roboReset(){const R=ROBO;R.bin.length=0;R.plan=[];R.mode='dock';R.run=false;R.phase='shift';R.res=null;R.unOK=0;R.scanT=0;R.idleT=0;R.seen={};for(let i=0;i<2;i++)R.ink[i]=0;
+ MIX.list.length=0;MIX.sects.length=0;MIX.bits.length=0;MIX.tube.length=0;MIX.drops.length=0;MIX.w=MIX.flow=MIX.load=0;MIX.bridge=0;MIX.bAge=0;MIX.runT=0;MIX.slam=0;MIX.slamNext=0;MIX.zp=0;MIX.zoneN=0;MIX.cutB=0;MIX.nHeap=0;
+ MIX.drain=0;MIX.drainT=0;MIX.drainReq=0;MIX.liq=0;MIX.liqMax=0;MIX.foam=0;MIX.cw=MIX.cr=MIX.cg=MIX.cb=MIX.flesh=MIX.blood=0;MIX.done=false;MIX.drips.length=0;MIX.wasOn=false;
+ MIX.auto=0;MIX.autoT=-1;MIX.pulse=0;MIX.stopDone=0;MIX.walk=0;MIX.press=MIX.pressWas=MIX.hold=false;
+ if(MIX.mx){MIX.mx.clearRect(0,0,256,256);MIX.mkDirty=1}mixIds.clear();MXT.clear();AU.blendStop();AU.suckStop();AU.gurgle(false);dockPlace()}
+function mixClear(){mixIds.clear();MXT.clear();MIX.hold=MIX.press=false;MIX.walk=0}
 
 /* ───────── 진행 ───────── */
 function spawnInitial(){
@@ -7853,7 +8000,7 @@ function exDanger(){const t=S.tool;let x=P.x+AIMX,z=P.z-AIMZ,r=.24,on=true;
  if(t==='trim'){x=TR.hx;z=TR.hz;r=TR.R+.17}
  else if(t==='shovel'){x=P.x+.05;z=P.z-.86;r=.3;on=SH.ph==='idle'}
  else if(t==='vac'){x=VC.mouth.x;z=VC.mouth.z;r=.32}
- else if(t==='tong'){x=P.x-Math.min(.6,W/H*.45);z=P.z-1.35;r=.3;on=TG.ph==='idle'}
+ else if(t==='tong'){const bq=dockDodge({x:P.x-Math.min(.6,W/H*.45),z:P.z-1.35},.16);x=bq.x;z=bq.z;r=.3;on=TG.ph==='idle'}
  else if(t==='boot'){if(TD.on){x=P.x;z=P.z-TDZ;r=.32}else{r=.26;on=ST.ph==='idle'||ST.ph==='back'}}
  else if(t==='hand'){r=.24;on=HG.ph==='idle'}
  else if(t==='wash'){x=WS.aim.x;z=WS.aim.z;r=.3;on=WS.on} // 물줄기가 닿는 자리
@@ -8274,15 +8421,15 @@ function bind(){
  bindInterviewSwipe();
  $('interview-pending').onclick=togglePendingApplicants;
  const mousePedal=e=>{const down=!!(e.buttons&2);if(down&&!mouse2){tap2=true;pestleTap(false);vacGrind()}mouse2=down};
- cv.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();toolMenuClose();
+ cv.addEventListener('pointerdown',e=>{if(!started||paused)return;e.preventDefault();AU.wake();toolMenuClose();if(mixTapDown(e))return; // 충전대를 누르면 믹서 버튼과 같다
   if(e.pointerType==='mouse'){mouseOn=true;mouseAct=!!(e.buttons&1)||!e.buttons;if(mouseAct){tapA=true;pestleTap(true)}mousePedal(e);PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true}
   else if(e.clientX<W*.45&&stickId===null){stickId=e.pointerId;sx0=e.clientX;sy0=e.clientY;stickX=stickY=0;const s=$('stick');s.style.display='block';s.style.left=sx0+'px';s.style.top=sy0+'px';s.firstElementChild.style.transform=''}
   else{actIds.add(e.pointerId);tapA=true;pestleTap(true);if(PT.id===null){PT.id=e.pointerId;PT.x0=PT.x=e.clientX;PT.y0=PT.y=e.clientY}}
   try{cv.setPointerCapture(e.pointerId)}catch(_){}});
- cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true;if(mouseOn){mouseAct=!!(e.buttons&1);mousePedal(e)}} // 다른 단추를 겹쳐 누르거나 떼면 이쪽으로 온다
+ cv.addEventListener('pointermove',e=>{mixTapMove(e);if(e.pointerType==='mouse'){PT.mx=e.clientX;PT.my=e.clientY;PT.mok=true;if(mouseOn){mouseAct=!!(e.buttons&1);mousePedal(e)}} // 다른 단추를 겹쳐 누르거나 떼면 이쪽으로 온다
   if(e.pointerId===PT.id){PT.x=e.clientX;PT.y=e.clientY}
   if(e.pointerId!==stickId)return;let dx=e.clientX-sx0,dy=e.clientY-sy0;const d=Math.hypot(dx,dy),m=52;if(d>m){dx*=m/d;dy*=m/d}stickX=dx/m;stickY=dy/m;$('stick').firstElementChild.style.transform='translate('+dx+'px,'+dy+'px)'});
- const up=e=>{if(e.pointerType==='mouse'){mouseAct=!!(e.buttons&1);mouse2=!!(e.buttons&2);if(!e.buttons)mouseOn=false}if(e.pointerId===stickId){stickId=null;stickX=stickY=0;$('stick').style.display='none'}if(e.pointerId===PT.id)PT.id=null;actIds.delete(e.pointerId)};
+ const up=e=>{mixTapUp(e);if(e.pointerType==='mouse'){mouseAct=!!(e.buttons&1);mouse2=!!(e.buttons&2);if(!e.buttons)mouseOn=false}if(e.pointerId===stickId){stickId=null;stickX=stickY=0;$('stick').style.display='none'}if(e.pointerId===PT.id)PT.id=null;actIds.delete(e.pointerId)};
  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);cv.addEventListener('lostpointercapture',up);
  cv.addEventListener('contextmenu',e=>e.preventDefault());
  {const b=$('act2'),up2=e=>act2Ids.delete(e.pointerId);
@@ -8362,9 +8509,10 @@ function sim(dt){
  let mx=0,mz=0;
  if(started&&!paused&&!lock){mx=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+stickX;mz=(keys.KeyS||keys.ArrowDown?1:0)-(keys.KeyW||keys.ArrowUp?1:0)+stickY;
   let m=Math.hypot(mx,mz);if(m>1){mx/=m;mz/=m;m=1}if(m<.12){mx=mz=0}else{const k=Math.pow(m,1.4)/m;mx*=k;mz*=k}
-  if(stompLocked()||(S.tool==='shovel'?shovelMoveLocked():shovelLocked())||tool2Locked())mx=mz=0;
+  const mvLock=stompLocked()||(S.tool==='shovel'?shovelMoveLocked():shovelLocked())||tool2Locked();if(mvLock)mx=mz=0;
   const v=TD.on?.62:S.tool==='trim'&&act?1.5:S.tool==='wash'&&act?1.1:S.tool==='vac'&&act?1.5:SH.ph==='hold'?1.3:S.tool==='shovel'&&shovelLocked()?.85:2.3;mx*=v;mz*=v;
-  const pb=XB-.15;P.x=clamp(P.x+mx*dt,-pb,pb);P.z=clamp(P.z+mz*dt,ZN+.95,EX.on?ZF+.75:ZF-.1); // 전시장에서는 맨 뒷줄 뒤까지 물러서서 끝에 붙은 것도 앞에 두고 칠 수 있다
+  if(MIX.walk){if(mx||mz)MIX.walk=0;else if(!mvLock){const w=mixWalkVel();mx=w[0];mz=w[1]}} // 믹서 버튼을 누르면 충전대 앞 자리로 걸어간다 (직접 움직이면 그만둔다)
+  const pb=XB-.15;P.x=clamp(P.x+mx*dt,-pb,pb);P.z=clamp(P.z+mz*dt,ZN+.95,EX.on?ZF+.75:ZF-.1);dockPush(); // 전시장에서는 맨 뒷줄 뒤까지 물러서서 끝에 붙은 것도 앞에 두고 칠 수 있다
   if((mx||mz||act||act2)&&hintN>0){hintN-=dt;if(hintN<=0){$('hint').style.opacity=0;if(hintKey&&!(S.hs||(S.hs=[])).includes(hintKey)){S.hs.push(hintKey);dirty=true}}}}
  stompUpdate(dt,act,act2);
  updateBody(dt,mx,mz);updateGoogly();
