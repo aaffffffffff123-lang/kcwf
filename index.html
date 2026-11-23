@@ -2810,7 +2810,7 @@ function drawCreatures(){
  const T=LODV.px;
  for(let i=0;i<n;i++){const c=creatures[i],px=PXS[i];
   if(px<0){ptStep(c);c.lod=null;continue} // 화면 밖: 자세만 따라간다
-  let lv=px>T0?0:px>T[1]?1:px>T[2]?2:3;if(c.lod!=null&&lv>c.lod&&px>(c.lod?T[c.lod]:T0)*.88)lv=c.lod;if(!lv&&c.st==='tank'&&!c.vic&&VC.tank.length>70)lv=1;if(c.st==='jar'&&MIX.list.length>60&&lv<2)lv=seenGap(c.jx,c.jz)<.03?Math.max(lv,1):2;c.lod=lv; // 문턱 근처에서 깜빡이지 않게 · 흡입기 통에 많이 담겨 있는 동안은 한 단계 가벼운 모형까지만
+  let lv=px>T0?0:px>T[1]?1:px>T[2]?2:3;if(c.lod!=null&&lv>c.lod&&px>(c.lod?T[c.lod]:T0)*.88)lv=c.lod;if(!lv&&c.st==='tank'&&!c.vic&&VC.tank.length>70)lv=1;if(c.st==='jar'&&MIX.list.length>60&&lv<2)lv=seenGap(c.jx,c.jz)<.03?Math.max(lv,1):2;if(c.st==='jar'&&(c.jh||c.skP&&c.jmode==='sink'))lv=0;c.lod=lv; // 문턱 근처에서 깜빡이지 않게 · 흡입기 통에 많이 담겨 있는 동안은 한 단계 가벼운 모형까지만
   const F=flocks[c.type],L=F.lv[lv];if(L.n>=CAP)continue;
   drawOne(c,L);
   if(shn<LODV.shn&&F.sn<SHCAP&&c.st!=='tank'&&c.st!=='bag'&&c.st!=='jar'&&c.st!=='tube'&&Math.hypot(c.x-cp.x,c.z-cp.z)<LODV.shd){F.sh.instanceMatrix.array.set(L.body.instanceMatrix.array.subarray((L.n-1)*16,L.n*16),F.sn*16);F.sn++;shn++}}
@@ -3429,7 +3429,7 @@ function updateBody(dt,mx,mz){
  const bob=Math.sin(walkPh*2)*.008*moveK;
  camera.position.set(P.x+camX+(Math.random()-.5)*.006*camShake,eye-.3*lean-CAM.te*tk-CAM.be*bk+bob-camShake*.006+TD.bob-.005*shovelKick,P.z-.02*lean-CAM.bz*bk);
  camera.rotation.set(lerp(lerp(basePitch,MIX.lookP,MIX.look)-.05*lean-CAM.sp*look-(portrait?CAM.tp:CAM.tl)*tk-(portrait?CAM.bp:CAM.bl-TG.zp)*bk,portrait?-.3:-.17,ss(introK))-.002*shovelKick,0,0,'YXZ');
- {const fov=lerp(portrait?CAM.fp:CAM.fl,portrait?lerp(MX_ZP-6,MX_ZP,MIX.lookZ??1):lerp(MX_ZL-8,MX_ZL-2,MIX.lookZ??1),MIX.look)-((portrait?CAM.bfp:CAM.bfl)+TG.zm)*bk;if(Math.abs(camera.fov-fov)>.02){camera.fov=fov;camera.updateProjectionMatrix()}}
+ {const fov=lerp(portrait?CAM.fp:CAM.fl,portrait?lerp(MX_ZP-9,MX_ZP-1,MIX.lookZ??1):lerp(MX_ZL-16.5,MX_ZL-6,MIX.lookZ??1),MIX.look)-((portrait?CAM.bfp:CAM.bfl)+TG.zm)*bk;if(Math.abs(camera.fov-fov)>.02){camera.fov=fov;camera.updateProjectionMatrix()}}
  if(!started)introK=1;else introK=Math.max(0,introK-dt/1.0);
  sun.position.set(P.x-1.4,6,P.z+.4);sun.target.position.set(P.x,0,P.z-2);sun.target.updateMatrixWorld();
 }
@@ -6971,7 +6971,7 @@ const MIX={list:[],sects:[],bits:[],tube:[],w:0,flow:0,hold:false,load:0,ang:0,s
  bridge:0,bridgeY:0,bT:0,bLife:0,drain:0,drainT:0,done:false,look:0,near:0,climbT:0,cooT:0,sndT:0,hitT:0,knockT:0,squealT:0,thudT:0,wasOn:false,gs:null,gx:null,gsTex:null,gsDirty:0,gsT:0,
  mk:null,mx:null,mkTex:null,mkDirty:0,drips:[],settleT:0,lastPress:0,tapT:0,cool:0,first:true,drainReq:0,runT:0,slam:0,zp:0,zb:0,nHeap:0,Hs:.07,cH:.07,auto:0,autoT:-1,pulse:0,vw:[1,1,0,0],
  lookP:-.4,drops:[],cutB:0,zoneN:0,bAge:0,stopDone:0,walk:0,press:false,pressWas:false,atSpot:false,chopT:0,slapT:0,eyeT:0,chT:0,limbT:0,boneT:0,
- sl:0,dimp:0,la:0,rot:0,lin:0,fy:0,fs:0,ck:0,mrb:0,ac:new THREE.Color(.5,.04,.05),bub:[],bubN:0,bubT:0,glT:0,strs:[],strT:0,thick:0};
+ sl:0,dimp:0,la:0,rot:0,lin:0,fy:0,fs:0,ck:0,mrb:0,ac:new THREE.Color(.5,.04,.05),bub:[],bubN:0,bubT:0,glT:0,strs:[],strT:0,thick:0,pk:0,bog:0,bogT:0,heroT:0,heroS:0,gurT:0}; // pk: 걸쭉한 정도(죽) · bog: 뼈가 걸려 모터가 처지는 정도 · heroT: 유리를 따라 끌려 내려갈 놈을 고르는 때
 const JARU={uJar:{value:new THREE.Vector4(0,MX_A,MX_H,0)},uJarO:{value:new THREE.Vector3()}};
 /* ── 곤죽: 믹서 통 안은 밟을 때 나오는 진액에 갈린 속살·뼛가루가 섞인 불투명한 곤죽이다.
    유리에 닿거나 거의 닿은 것만 보이고, 그보다 안쪽은 지나는 곤죽 두께만큼 곤죽 색에 묻힌다 (걸쭉한 액체가 실제로 보이는 방식).
@@ -6983,41 +6983,68 @@ uniform vec4 uSl;uniform vec3 uSlO;uniform vec3 uSlE;uniform vec4 uSlS;uniform v
 varying vec3 vSlW;
 float slHash(vec2 p){vec3 q=fract(vec3(p.xyx)*.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}
 float slNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(slHash(i),slHash(i+vec2(1.,0.)),f.x),mix(slHash(i+vec2(0.,1.)),slHash(i+vec2(1.,1.)),f.x),f.y);}
-float slSurf(vec2 q){float r=length(q)/uSl.y,th=atan(q.x,q.y)-uSlL.y;
- return uSlS.x+uSlS.y*(r*r-.667)+uSlL.x*(sin(r*13.+uSlL.z)*(.6+.4*sin(3.*th+1.3))+.5*sin(5.*th-r*6.+uSlL.z*.7));}
+float slSurf(vec2 q){float r=length(q)/uSl.y,th=atan(q.x,q.y)-uSlL.y,pk=uSlL.w;
+ float wv=sin(r*13.+uSlL.z)*(.6+.4*sin(3.*th+1.3))+.5*sin(5.*th-r*6.+uSlL.z*.7);
+ float pv=r*r*cos(4.*th+.5*sin(uSlL.z*.21))*(.75+.25*sin(r*4.+uSlL.z*.6))+.45*sin(2.*th+r*5.+uSlL.z*.8)+.3*r*sin(7.*th-r*9.+uSlL.z*.5);
+ return uSlS.x+uSlS.y*(r*r-.667)+uSlL.x*mix(wv,pv*.95,pk);}
 vec3 slFleck(vec3 col,vec2 cp){vec2 ci=floor(cp),cf=fract(cp)-.5;float h=slHash(ci),h2=slHash(ci+17.3);
  float dd=length((cf-vec2(h2-.5,fract(h*7.31)-.5)*.45)*vec2(1.,1.5)),rad=.16+.24*h2,bl=1.-smoothstep(rad*.55,rad,dd);
  if(h>.955)return mix(col,vec3(.78,.6,.4),bl*.8);
  if(h>.82)return mix(col,vec3(.42,.06,.07),bl*.7);
  if(h<.13)return mix(col,uSlC*.4,bl*.8);
  return col;}
+// 걸쭉한 죽의 결: 잘게 갈린 알갱이가 엉겨 있다 (알갱이마다 빛깔이 조금씩 다르고 사이사이 골이 진다). hb: 알갱이 높이 (윗면 요철)
+vec3 slPorr(vec2 g,out float hb){
+ vec2 w=vec2(slNoise(g*vec2(17.,26.)),slNoise(g*vec2(17.,26.)+7.7))-.5;
+ vec2 q=g*vec2(210.,260.)+w*5.,qi=floor(q),qf=fract(q);float d1=9.,d2=9.;vec2 id=qi;
+ for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){vec2 o=vec2(float(i),float(j)),c=o+.15+.7*vec2(slHash(qi+o),slHash(qi+o+3.1))-qf;float dd=dot(c,c);if(dd<d1){d2=d1;d1=dd;id=qi+o;}else if(dd<d2)d2=dd;}
+ float ed=smoothstep(0.,.13,sqrt(d2)-sqrt(d1)),h=slHash(id+11.3),h2=slHash(id+5.9),m=slNoise(g*vec2(36.,48.)+w*3.),m2=slNoise(g*vec2(90.,120.)+w*4.+3.3);
+ vec3 c=uSlC*(.78+.22*h+.38*(m-.5)+.2*(m2-.5));
+ if(h2>.9)c=mix(c,uSlC*vec3(1.5,1.12,1.05),.75); // 덜 갈린 붉은 살점
+ else if(h2<.09)c*=.5; // 검게 엉긴 핏덩이
+ float ct=1.-smoothstep(.05,.2,sqrt(d1));if(h2>.955)c=mix(c,vec3(.6,.45,.35),ct*.9); // 알갱이 가운데 박힌 기름·뼛가루
+ c*=.74+.26*ed;hb=ed*(.4+.4*h)+.8*m+.3*m2;
+ return c;}
 vec3 slGrain(vec3 e,float u){
  vec2 g=vec2(u-uSlF.y,e.y-uSlF.x);
  float s1=slNoise(vec2(g.x*34.,g.y*80.)),s2=slNoise(vec2(g.x*110.+3.1,g.y*240.));
  vec3 col=uSlC*(.8+.32*s1+.12*s2);
- {float m=slNoise(vec2(g.x*38.+7.,g.y*130.)),br=smoothstep(.55,.8,slNoise(vec2(g.x*16.+2.,g.y*30.)));col=mix(col,mix(uSlC,uSlC2,.7),(smoothstep(.58,.64,m)-smoothstep(.66,.74,m))*br*uSlF.z*.5);} // 흐름 따라 끌리다 끊기는 물감 줄
+ {float m=slNoise(vec2(g.x*38.+7.,g.y*130.)),br=smoothstep(.55,.8,slNoise(vec2(g.x*16.+2.,g.y*30.)));col=mix(col,mix(uSlC,uSlC2,.55),(smoothstep(.58,.64,m)-smoothstep(.66,.74,m))*br*uSlF.z*.5*(1.-.6*uSlL.w));} // 흐름 따라 끌리다 끊기는 물감 줄
  col=slFleck(col,g*mix(150.,80.,uSlF.w));
- vec2 sp=g*300.;if(slHash(floor(sp)+5.7)>.982)col=mix(col,vec3(.9,.86,.78),1.-smoothstep(.12,.3,length(fract(sp)-.5)));
+ if(uSlL.w>.01){float hb;col=mix(col,slPorr(g,hb),uSlL.w);}
+ vec2 sp=g*300.;if(slHash(floor(sp)+5.7)>.982)col=mix(col,vec3(.9,.86,.78),(1.-smoothstep(.12,.3,length(fract(sp)-.5)))*(1.-.7*uSlL.w));
  return col*(.8+.2*clamp(e.y/.2,0.,1.));}
 void slApply(inout vec3 fc){
  if(uSl.x<.5)return;
- vec3 p=vSlW-uSlO;float A=uSl.y;
- if(abs(p.x)>A+.004||abs(p.z)>A+.004||p.y<-.02||p.y>uSlS.z)return;
- float S=slSurf(p.xz);if(p.y>S)return;
- vec3 d=normalize(uSlE-p);
- float tx=d.x>1e-4?(A-p.x)/d.x:d.x<-1e-4?(-A-p.x)/d.x:1e3,tz=d.z>1e-4?(A-p.z)/d.z:d.z<-1e-4?(-A-p.z)/d.z:1e3,ty=d.y>1e-4?(S-p.y)/d.y:1e3;
- float ts=min(tx,tz),t=max(0.,min(ts,ty)),vis=exp(-t/uSl.w);
+ vec3 p=vSlW-uSlO;float A=uSl.y,pk=uSlL.w;
+ if(abs(p.x)>A+.004||abs(p.z)>A+.004||p.y<-.02||p.y>uSlS.z+.026)return;
+ float S=slSurf(p.xz);vec3 d=normalize(uSlE-p);
+ float tx=d.x>1e-4?(A-p.x)/d.x:d.x<-1e-4?(-A-p.x)/d.x:1e3,tz=d.z>1e-4?(A-p.z)/d.z:d.z<-1e-4?(-A-p.z)/d.z:1e3,ts=min(tx,tz);
+ if(p.y>S){if(pk<.01)return;
+  #ifndef SL_TOP
+  {float cz=1.-smoothstep(0.,.024,p.y-S);if(cz>0.){float bn=slNoise(vec2(p.x*230.+p.z*170.,p.y*260.));fc=mix(fc,uSlC*(.7+.4*bn),cz*smoothstep(.3,.62,bn+.3*cz)*pk*.9);}} // 죽 위로 솟은 것은 윗면 가까이일수록 곤죽을 얼룩덜룩 뒤집어쓰고 있다
+  #endif
+  if(ts>.5)return; // 윗면 위에 있어도, 눈 쪽으로 가는 길이 유리 앞에 솟은 곤죽 덩어리 밑을 지나면 그 곤죽에 가린다 (걸쭉해서 벽 쪽이 솟을 때)
+  vec3 e=p+d*ts;float Se=slSurf(e.xz);if(e.y>=Se-.0004)return;float v2=exp(-(Se-e.y)/(uSl.w*2.2));if(v2>.996)return;
+  fc=mix(slGrain(e,tx<tz?(d.x>0.?-e.z:e.z):(d.z>0.?e.x:-e.x)),fc,v2);return;}
+ float ty=d.y>1e-4?(S-p.y)/d.y:1e3,t=max(0.,min(ts,ty)),vis=exp(-t/uSl.w);
+ if(pk>.01&&ts<ty){vec3 e=p+d*ts;float uu=tx<tz?(d.x>0.?-e.z:e.z):(d.z>0.?e.x:-e.x);vis*=1.-smoothstep(.45,.72,slNoise(vec2((uu-uSlF.y)*95.,(e.y-uSlF.x)*150.)))*pk*.6;} // 유리에 눌린 것 위로도 걸쭉한 곤죽이 얼룩져 흘러 지나간다
  if(vis>.996)return;
  vec3 e=p+d*t,c=uSlC;
  if(ts<ty)c=slGrain(e,tx<tz?(d.x>0.?-e.z:e.z):(d.z>0.?e.x:-e.x));
  fc=mix(c,fc,vis);}
-vec3 slTopCol(vec3 w){vec3 p=w-uSlO;float r=length(p.xz)/uSl.y,th=atan(p.x,p.z)+uSlL.y;vec3 c=vec3(0.);
+float slHb;
+vec3 slTopCol(vec3 w){vec3 p=w-uSlO;float r=length(p.xz)/uSl.y,th=atan(p.x,p.z)+uSlL.y;vec3 c=vec3(0.);slHb=0.;
  for(int k=0;k<2;k++){float f=fract(uSlL.z*.05+float(k)*.5),wk=1.-abs(2.*f-1.),rr=r*(.6+.8*f);
   vec2 g=vec2(cos(th+f*.9),sin(th+f*.9))*rr+float(k)*2.3;
   vec3 cc=uSlC*(.8+.3*slNoise(g*9.)+.12*slNoise(g*27.+1.7));
-  {float m=slNoise(g*vec2(7.,16.)+4.);cc=mix(cc,mix(uSlC,uSlC2,.75),(smoothstep(.6,.66,m)-smoothstep(.68,.76,m))*uSlF.z*.8);}
-  c+=slFleck(cc,g*mix(40.,22.,uSlF.w))*wk;}
+  {float m=slNoise(g*vec2(7.,16.)+4.);cc=mix(cc,mix(uSlC,uSlC2,.6),(smoothstep(.6,.66,m)-smoothstep(.68,.76,m))*uSlF.z*.8*(1.-.6*uSlL.w));}
+  vec3 fk=slFleck(cc,g*mix(40.,22.,uSlF.w));if(uSlL.w>.01){float hb;fk=mix(fk,slPorr(g*uSl.y,hb),uSlL.w);slHb+=hb*wk;}c+=fk*wk;}
+ if(uSlL.w>.01){float h=(p.y-uSlS.x-uSlS.y*(r*r-.667))/max(uSlL.x,1e-4);c*=mix(1.,.7+.42*smoothstep(-1.6,1.4,h),uSlL.w);} // 죽: 솟은 데는 밝고 접혀 들어간 골은 어둡다
  return c;}
+#ifdef SL_TOP
+vec3 slBump(vec3 sp,vec3 sn,vec2 dh){vec3 sx=dFdx(sp),sy=dFdy(sp),r1=cross(sy,sn),r2=cross(sn,sx);float d=dot(sx,r1);d*=(float(gl_FrontFacing)*2.-1.);vec3 g=sign(d)*(dh.x*r1+dh.y*r2);return normalize(abs(d)*sn-g);}
+#endif
 `;
 // 재질에 곤죽 계산을 끼운다. wp: 정점 셰이더에서 월드 좌표를 주는 식 (없으면 모형·인스턴스 행렬로 구한다)
 function slFog(sh,wp){Object.assign(sh.uniforms,SLU);
@@ -7025,8 +7052,10 @@ function slFog(sh,wp){Object.assign(sh.uniforms,SLU);
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>'+SL_FN).replace('#include <encodings_fragment>','slApply(gl_FragColor.rgb);\n#include <encodings_fragment>')}
 function slFogMat(m){m.onBeforeCompile=sh=>slFog(sh);return m}
 // 곤죽 윗면 높이 (통 기준 x,z). 셰이더의 slSurf와 같은 식
-function slSurf(x,z){const r=Math.hypot(x,z)/SL_A,th=Math.atan2(x,z)-MIX.rot;
- return MIX.sl+MIX.dimp*(r*r-.667)+MIX.la*(Math.sin(r*13+MIX.lin)*(.6+.4*Math.sin(3*th+1.3))+.5*Math.sin(5*th-r*6+MIX.lin*.7))}
+function slSurf(x,z){const r=Math.hypot(x,z)/SL_A,th=Math.atan2(x,z)-MIX.rot,pk=MIX.pk,L=MIX.lin;
+ const wv=Math.sin(r*13+L)*(.6+.4*Math.sin(3*th+1.3))+.5*Math.sin(5*th-r*6+L*.7);
+ const pv=r*r*Math.cos(4*th+.5*Math.sin(L*.21))*(.75+.25*Math.sin(r*4+L*.6))+.45*Math.sin(2*th+r*5+L*.8)+.3*r*Math.sin(7*th-r*9+L*.5);
+ return MIX.sl+MIX.dimp*(r*r-.667)+MIX.la*(wv+(pv*.95-wv)*pk)}
 // 곤죽 속에 묻혀 유리 쪽에서 안 보이는 자리인가 (몸 반두께 k만큼 여유를 둔다)
 const slHid=(x,y,z,k)=>MIX.sl>.004&&y<slSurf(x,z)-k&&seenGap(x,z)>k+.004;
 const mixIds=new Set();
@@ -7228,8 +7257,10 @@ function buildDock(){
   const tg=new THREE.BufferGeometry();tg.setAttribute('position',new THREE.BufferAttribute(pos,3));tg.setAttribute('uv',new THREE.BufferAttribute(uv,2));tg.setIndex(idx);tg.attributes.position.setUsage(THREE.DynamicDrawUsage);
   DOCK.lqPos=pos;DOCK.lqN=N;DOCK.lqTop=top;
   DOCK.liqM=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.22,metalness:0,envMapIntensity:.6});
+  DOCK.liqM.extensions={derivatives:true};
   DOCK.liqM.onBeforeCompile=sh=>{Object.assign(sh.uniforms,SLU);sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vSlW;').replace('#include <project_vertex>','#include <project_vertex>\nvSlW=(modelMatrix*vec4(transformed,1.)).xyz;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>'+SL_FN).replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb=slTopCol(vSlW);')};
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n#define SL_TOP'+SL_FN).replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb=slTopCol(vSlW);')
+    .replace('#include <normal_fragment_maps>','#include <normal_fragment_maps>\nif(uSlL.w>.01)normal=slBump(-vViewPosition,normal,vec2(dFdx(slHb),dFdy(slHb))*(.0016*uSlL.w));').replace('#include <encodings_fragment>','slApply(gl_FragColor.rgb);\n#include <encodings_fragment>')};
   DOCK.liq=new THREE.Mesh(tg,DOCK.liqM);DOCK.liq.visible=false;DOCK.liq.frustumCulled=false;jg.add(DOCK.liq);
   // 안쪽 옆면·바닥: 둥근 사각형 둘레를 따라 바닥 줄과 윗면 높이 줄, 바닥은 가운데에서 부채꼴로. 통 안쪽을 보는 면만 그린다
   {const ring=rrShape(A,A,rc).getPoints(5);if(ring.length>1&&ring[0].distanceTo(ring[ring.length-1])<1e-6)ring.pop();
@@ -7245,11 +7276,11 @@ function buildDock(){
   {const cv=document.createElement('canvas');cv.width=cv.height=256;MIX.mk=cv;MIX.mx=cpu2d(cv);const t=new THREE.CanvasTexture(cv);t.encoding=THREE.sRGBEncoding;t.center.set(.5,.5);MIX.mkTex=t;keepLiveCanvas(cv,t);
    DOCK.marM=new THREE.MeshStandardMaterial({map:t,transparent:true,depthWrite:false,roughness:.12,envMapIntensity:.6,opacity:1,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
    const tgM=tg.clone();tgM.attributes.position.setUsage(THREE.DynamicDrawUsage);
-   DOCK.mar=new THREE.Mesh(tgM,DOCK.marM);DOCK.mar.renderOrder=4;DOCK.mar.visible=false;DOCK.mar.frustumCulled=false;jg.add(DOCK.mar)}
+   slFogMat(DOCK.marM);DOCK.mar=new THREE.Mesh(tgM,DOCK.marM);DOCK.mar.renderOrder=4;DOCK.mar.visible=false;DOCK.mar.frustumCulled=false;jg.add(DOCK.mar)}
   {const ft=canvasTex(256,256,(c,w,h)=>{c.fillStyle='#000';c.fillRect(0,0,w,h);for(let i=0;i<900;i++){const x=Math.random()*w,y=Math.random()*h,r=rnd(1.5,7);const gr=c.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(255,255,255,'+rnd(.5,1)+')');gr.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=gr;c.fillRect(x-r,y-r,r*2,r*2)}},false);
    ft.wrapS=ft.wrapT=THREE.RepeatWrapping;ft.center.set(.5,.5);DOCK.foamTex=ft;
    DOCK.foamM=new THREE.MeshStandardMaterial({color:lin(0xf3c9c9),roughness:.85,envMapIntensity:.4,transparent:true,opacity:0,alphaMap:ft,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
-   DOCK.foam=new THREE.Mesh(tg2,DOCK.foamM);DOCK.foam.renderOrder=4;DOCK.foam.visible=false;DOCK.foam.frustumCulled=false;jg.add(DOCK.foam)}}
+   slFogMat(DOCK.foamM);DOCK.foam=new THREE.Mesh(tg2,DOCK.foamM);DOCK.foam.renderOrder=4;DOCK.foam.visible=false;DOCK.foam.frustumCulled=false;jg.add(DOCK.foam)}}
  // 통 안 조각 묶음 (통 기준 좌표): 팔 · 다리 · 눈알 · 창자 · 살점·뼛조각·종잇조각
  DOCK.bArm=solidBatch(jg,140,armIM.geometry,.3);DOCK.bLeg=solidBatch(jg,140,legIM.geometry,.3);DOCK.bEye=solidBatch(jg,90,eyeIM.geometry,.1);DOCK.bGut=solidBatch(jg,50,gutIM.geometry,.12);DOCK.bLump=solidBatch(jg,460,null,.4);
  for(const m of[DOCK.bArm,DOCK.bLeg,DOCK.bEye,DOCK.bGut,DOCK.bLump]){m.castShadow=false;slFogMat(m.material)}
@@ -7550,12 +7581,14 @@ function jarIdle(c,dt,top){ // 믹서가 멎어 있을 때. 곤죽이 차 있으
 function jarSwirl(c,dt,H){ // 소용돌이: 벽을 타고 올라가 가운데로 빨려 내려와 날을 지나 다시 벽으로 (위에서 보면 빙빙 돈다). 곤죽이 차면 걸쭉해서 묵직하게 돈다
  const lp=c.lp,rr0=Math.hypot(c.jx,c.jz),tk=1-.55*MIX.thick;
  lp.ph+=dt*MIX.flow*2.7*lp.k*tk;lp.th+=dt*MIX.flow*(7+4.5*(1-Math.min(1,rr0/JW)))*lp.ka*tk;
- const rc=.5*JW,ra=.44*JW*lp.ra*(1+.22*MIX.thick),yc=H*.5,ya=H*.46*lp.ya,rr=rc+ra*Math.cos(lp.ph),y=Math.max(.016,yc+ya*Math.sin(lp.ph)),tx=Math.sin(lp.th)*rr,tz=Math.cos(lp.th)*rr,k=Math.min(1,dt*10);
+ const rc=.5*JW,ra=.44*JW*lp.ra*(1+.22*MIX.thick),yc=H*.5,ya=H*.46*lp.ya,rr=rc+ra*Math.cos(lp.ph),tx=Math.sin(lp.th)*rr,tz=Math.cos(lp.th)*rr,k=Math.min(1,dt*10);
+ let y=Math.max(.016,yc+ya*Math.sin(lp.ph));
+ if(MIX.pk>.05){const R=c.r*MX_SC,cap=slSurf(c.jx,c.jz)-((c.jpz??(c.jpz=Math.random()))<.65?R*1.15:R*.15)*MIX.pk;if(y>cap)y=Math.max(.016,cap)} // 죽이 되면 몸 대부분은 윗면 밑에 잠겨 돌고, 몇만 윗몸을 내민 채 휩쓸린다
  c.jx+=(clamp(tx,-JW,JW)-c.jx)*k;c.jz+=(clamp(tz,-JW,JW)-c.jz)*k;c.jy+=(y-c.jy)*k;
  c.yaw=lp.th+Math.PI/2+Math.sin(time*7+c.jph)*.5;c.pt+=c.jwp*dt*MIX.flow*.8;c.roll+=c.jwr*dt*MIX.flow*.8;c.jlv=1.7;c.hb=0}
 const ZB=[];
 function jarBodies(dt){
- const on=MIX.w>.06,top=jarTop(),n=MIX.list.length;
+ const on=MIX.w>.06,top=jarTop(),n=MIX.list.length;if(on){heroPick(dt);sinkPick(dt)}
  MIX.climbT-=dt;if(!on&&MIX.climbT<=0){MIX.climbT=rnd(.5,.9);jarClimbPick(top)}
  if(!on&&MIX.near>.55&&n){MIX.cooT-=dt;if(MIX.cooT<=0){MIX.cooT=rnd(1.2,2.6);const cs=MIX.list.filter(c=>c.jmode==='climb');if(cs.length)AU.cooM(pick(cs).type,MIX.near)}} // 봐 주는 줄 알고 좋아한다
  // 더미(아직 안 휩쓸린 덩어리)의 밑바닥 높이: 소용돌이는 그 밑에서만 돈다. 국물이 차오르면 잠긴 데까지 소용돌이가 올라온다
@@ -7565,8 +7598,9 @@ function jarBodies(dt){
  const sink=MIX.slam>0?dt*.32:dt*MIX.w*.075*clamp(1-MIX.zoneN/14,0,1); // 날 둘레가 비는 만큼 더미가 내려앉는다 (날에 걸린 게 많으면 버틴다)
  const rot=dt*MIX.flow*1.3*(1-.45*MIX.thick),cr=Math.cos(rot),sr=Math.sin(rot); // 더미는 통째로 휘돈다
  for(let i=n-1;i>=0;i--){const c=MIX.list[i];if(c.dead){MIX.list.splice(i,1);continue}
+  if(c.jh){jarHero(c,dt,on);if(!c.dead){c.jsub=0;jarPos(c)}continue} // 유리를 따라 끌려 내려가는 놈
   if(c.jcut){jarDoomed(c,dt);if(!c.dead){c.jsub=slHid(c.jx,c.jy,c.jz,.02)?1:0;jarPos(c)}continue} // 날에 물려 토막 나기 직전
-  if(!on&&c.jmode!=='swirl'&&c.jmode!=='heap'&&c.jmode!=='cling'){jarIdle(c,dt,top);c.jsub=slHid(c.jx,c.jy,c.jz,.02)?1:0;jarPos(c);continue}
+  if(!on&&c.jmode!=='swirl'&&c.jmode!=='heap'&&c.jmode!=='cling'&&c.jmode!=='sink'){jarIdle(c,dt,top);c.jsub=slHid(c.jx,c.jy,c.jz,.02)?1:0;jarPos(c);continue}
   // 믹서가 돌기 시작하면: 맨 밑은 바로 날에 걸리고, 벽에 붙은 것은 매달려 버티고, 나머지는 더미째 남는다
   if(on&&(c.jmode==='pile'||c.jmode==='climb'||c.jmode==='fall'||c.jmode==='drop')){c.jhid=0;c.jsl=null;
    const wasClimb=c.jmode==='climb',loose=c.jmode==='fall'||c.jmode==='drop';
@@ -7577,15 +7611,16 @@ function jarBodies(dt){
    if(!c.jfz){c.jy-=sink;const x=c.jx,z=c.jz;c.jx=x*cr+z*sr;c.jz=-x*sr+z*cr;
     // 곤죽 윗면에 닿은 몸: 가운데 접혀 들어가는 데로 끌려가며 팔을 쳐들고 허우적대다 잠긴다
     if(MIX.sl>.012){const S=slSurf(c.jx,c.jz);
-     if(c.jy<S+.014){const k=Math.min(.5,dt*MIX.flow*(.45+.6*MIX.thick));c.jx-=c.jx*k;c.jz-=c.jz*k;c.jy-=dt*MIX.flow*.02;c.sub=1;
+     if(c.jy<S+.014){const k=Math.min(.5,dt*MIX.flow*(.45+.6*MIX.thick));c.jx-=c.jx*k;c.jz-=c.jz*k;c.jy-=dt*MIX.flow*.04;c.sub=1;
       if(c.swa==null)c.swa=Math.random()<.4; // 몇은 팔을 쳐들고, 나머지는 앞으로 허우적댄다
       if(c.swa){c.arL=.72+.28*Math.sin(time*17+c.jph);c.arR=.72+.28*Math.sin(time*17+c.jph+2.1);c.hb=.55}else{c.arL=-.45+.4*Math.sin(time*13+c.jph);c.arR=-.45+.4*Math.sin(time*13+c.jph+2.4);c.hb=.3}
-      if(c.jy<S-.012){c.jmode='swirl';c.sub=0;c.hb=0;c.arL=c.arR=0;if(Math.random()<.4&&time>MIX.squealT){MIX.squealT=time+.06;AU.squeal(c.type,.9*MIX.near,0,rnd(.25,.4),2)}}}
+      if(c.jy<S-.012){c.jmode='sink';c.skT=0;c.sk=rnd(.55,.95);c.sub=0;if(Math.random()<.4&&time>MIX.squealT){MIX.squealT=time+.06;AU.squeal(c.type,.9*MIX.near,0,rnd(.25,.4),2)}}
+      else if(Math.random()<dt*MIX.flow*1.4){c.jmode='swirl';c.sub=0;c.arL=c.arR=0;c.hb=0}} // 대부분은 버둥대다 그대로 곤죽 속으로 휩쓸려 들어간다
      else if(c.sub){c.sub=0;c.arL=c.arR=0;c.hb=0}}
     else if(c.jy<MIX.liq+.012&&Math.random()<dt*MIX.flow*2.5)c.jmode='swirl'; // 바닥에 고인 피에 잠긴 밑부분부터 소용돌이에 딸려 간다
     if(c.jy<.062)c.jmode='swirl'}
    c.roll+=Math.sin(time*13+c.jph)*dt*MIX.w*3.2;c.pt+=Math.sin(time*9+c.jph*2)*dt*MIX.w*1.8;c.yaw+=rot;
-   const low=c.jy<Hs+.05;if(low)c.flay=Math.min(1,(c.flay||0)+dt*MIX.w*.3); // 날 바로 위에 깔린 것들은 튀는 피를 뒤집어쓰고 버둥댄다
+   const low=c.jy<Hs+.05;if(low&&(c.flay||0)<.55)c.flay=Math.min(.55,(c.flay||0)+dt*MIX.w*.3); // 날 바로 위에 깔린 것들은 튀는 피를 뒤집어쓰고 버둥댄다 (옷·살빛은 알아볼 만큼 남는다)
    c.jhid=top-c.jy>.065&&seenGap(c.jx,c.jz)>.024?1:0;c.jlv=c.jhid?0:low?2.1:1.6;
    if(!on&&!c.jfz){c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null}}
   else if(c.jmode==='cling'){ // 유리·뚜껑에 매달려 버틴다: 휩쓸리는 힘만큼 힘이 빠지다가 놓친다
@@ -7596,12 +7631,18 @@ function jarBodies(dt){
     if(!sw)jarStrand(gx,gy,gz,c,2+(Math.random()*2|0),c.ink); // 유리에서 떨어지는 몸과 유리 사이에 진액이 실처럼 늘어난다
     if(time>MIX.squealT){MIX.squealT=time+.05;AU.squeal(c.type,1.1*MIX.near,0,rnd(.35,.6),sw?2:true)}} // 놓치면 더미 위로 떨어지거나 소용돌이에 딸려 간다
    if(!on){c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null;c.hb=0}}
+  else if(c.jmode==='sink'){ // 머리가 잠긴 뒤에도 쳐든 두 손이 곤죽 위에 남아 허우적대다 손끝까지 빨려 들어간다
+   if(!on){c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null;c.arL=c.arR=0;c.hb=0}
+   else{c.skT+=dt;c.jhid=0;const R=c.r*MX_SC,u=clamp(c.skT/c.sk,0,1),k=Math.min(.5,dt*MIX.flow*(.5+.4*MIX.pk)*(c.skT<0?.15:1));c.jx-=c.jx*k*.6;c.jz-=c.jz*k*.6;
+    c.jy=slSurf(c.jx,c.jz)-R*(1.1+1.4*u*u+(c.skT<0?1.6*ss(-c.skT/.3):0)); // 밑에서 떠오를 때는 손부터 곤죽을 뚫고 나온다c.pt+=wrapA(-Math.PI/2-c.pt)*Math.min(1,dt*7);c.roll+=wrapA(-c.roll)*Math.min(1,dt*7);c.yaw+=dt*MIX.flow*(1.2-.6*MIX.pk);
+    const fl=time*(17-5*u)+c.jph;c.arL=.86+.14*Math.sin(fl)-.25*u;c.arR=.86+.14*Math.sin(fl+2.1)-.25*u;c.hb=.5;c.jlv=1.8;
+    if(u>=1){c.jmode='swirl';c.skP=0;c.arL=c.arR=0;c.hb=0;bubPop(c.jx,c.jz)}}}
   else if(c.jmode==='swirl'){if(!on){c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null}else jarSwirl(c,dt,Hs)}
   // 날에 닿는 자리 (바닥 가운데)
-  if(on&&c.jy<BLADE_Y&&c.jmode!=='cling'&&Math.hypot(c.jx,c.jz)<BLADE_R)ZB.push(c);
+  if(on&&c.jy<BLADE_Y&&c.jmode!=='cling'&&!(c.jmode==='sink'&&c.skP)&&Math.hypot(c.jx,c.jz)<BLADE_R)ZB.push(c); // 떠올라 허우적대는 놈은 손끝까지 잠긴 뒤에 날에 닿는다
   if(c.type===2&&on&&c.jy<BLADE_Y&&!c.jin){c.jin=1;if(time>MIX.knockT){MIX.knockT=time+.07;AU.clunk(MIX.near*MIX.w)}}else if(c.jy>=BLADE_Y)c.jin=0; // 점토는 얼음 갈 때처럼 날에 부딪혀 덜그럭거린다
   if(on&&c.jmode==='swirl'&&wallGap(c.jx,c.jz)<.02&&MIX.flow>.35)gsSmear(c.jx,c.jy,c.jz,c.ink,c.flay>.25?.55:.3);
-  c.jsub=slHid(c.jx,c.jy,c.jz,.02)?1:0; // 곤죽 속 깊이 묻혀 유리 쪽에서 안 보이는 몸은 그리지 않는다
+  c.jsub=c.jmode!=='sink'&&slHid(c.jx,c.jy,c.jz,.02)?1:0; // 곤죽 속 깊이 묻혀 유리 쪽에서 안 보이는 몸은 그리지 않는다 (잠겨 드는 놈은 손이 위에 남아 있다)
   jarPos(c)}
  MIX.zoneN=ZB.length;
  // 날에 걸리는 족족 토막 낸다. 1초에 걸리는 수는 남은 몸 수에 따라 (많을수록 빽빽하게 연달아, 적게 남으면 금방 끝난다). 엉겨 붙어 헛돌 때는 날 둘레 몇 개만
@@ -7615,6 +7656,50 @@ function jarDoomed(c,dt){ // 날 쪽으로 빨려 들며 발버둥 친다
  const a=Math.atan2(c.jx,c.jz)+dt*MIX.flow*14,r=lerp(Math.hypot(c.jx,c.jz),BLADE_R*.9,Math.min(1,dt*10));c.jx=Math.sin(a)*r;c.jz=Math.cos(a)*r;c.jy=Math.max(.022,c.jy-dt*.7);
  c.roll+=dt*28*Math.sin(time*31+c.jph);c.pt+=dt*14*Math.sin(time*23+c.jph);c.yaw+=dt*9;c.jlv=2.4;c.jhid=0;c.arL=-1+.5*Math.sin(time*29+c.jph);c.arR=-1+.5*Math.sin(time*29+c.jph+1.4);
  if(time>=c.jcut){if(MIX.w>.02)jarSever(c);else{c.jcut=0;AU.cutVoice(c.scr);c.scr=null;c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null}}}
+// 유리를 따라 끌려 내려가 죽는 놈: 보는 쪽 유리에 얼굴과 손바닥이 눌린 채 소리 지르며 곤죽 속으로 끌려 내려가고, 날에 닿으면 그 유리 쪽으로 터진다
+function heroWall(){const cx=camera.position.x-jarW.x,cz=camera.position.z-jarW.z;return Math.abs(cz)>=Math.abs(cx)?(cz>0?0:2):(cx>0?1:3)}
+const wallXZ=(w,u,e)=>w===0?[u,e]:w===1?[e,-u]:w===2?[-u,-e]:[-e,u]; // 벽 w 위 가로 자리 u, 가운데서 거리 e → (x,z). 소용돌이가 도는 쪽으로 u가 커진다
+const wallU=(w,x,z)=>w===0?x:w===1?-z:w===2?-x:z;
+function heroPick(dt){MIX.heroT-=dt;if(MIX.heroT>0||MIX.w<.35||MIX.near<.35)return;MIX.heroT=rnd(.45,.8);
+ let n=0;for(const c of MIX.list)if(c.jh)n++;if(n>=3)return;
+ const w=heroWall(),[nx,nz]=wallXZ(w,0,1);let best=null,bs=-1e9;
+ for(const c of MIX.list){if(c.jh||c.jcut||c.dead||c.jmode==='fall'||c.jmode==='drop'||c.jmode==='sink'||c.jmode==='pile'||c.jmode==='climb')continue;
+  const d=JW-(c.jx*nx+c.jz*nz),s=-d*9+(c.jmode==='cling'&&c.jwall===w?.6:0)+(c.jy>MIX.sl-.03?.25:0)+Math.random()*.5;if(s>bs){bs=s;best=c}} // 보는 쪽 유리에 가까운 놈, 거기 매달려 있던 놈부터
+ if(best)heroStart(best,w)}
+function sinkPick(dt){MIX.skPT=(MIX.skPT??.8)-dt;if(MIX.skPT>0||MIX.pk<.45||MIX.w<.35||MIX.near<.35)return;MIX.skPT=rnd(1,2);
+ let n=0,best=null,bs=-1e9;for(const c of MIX.list){if(c.jmode==='sink')n++;else if(c.jmode==='swirl'&&!c.jh&&!c.jcut&&!c.dead){const s=Math.random()+(c.jy>.07?.3:0);if(s>bs){bs=s;best=c}}}
+ if(n>=2||!best)return;
+ const w=heroWall(),[nx,nz]=wallXZ(w,0,1),a=Math.atan2(nx,nz)+rnd(-.6,.6),r=JW*rnd(.55,.75),c=best; // 보는 쪽 유리 가까운 윗면에서 떠오른다 (가운데 몰린 것들에 묻히지 않게)
+ c.jx=Math.sin(a)*r;c.jz=Math.cos(a)*r;c.jmode='sink';c.skP=1;c.skT=-.3;c.sk=rnd(1.2,1.7);c.sub=0;c.jfz=0;c.jhid=0;c.swa=1;c.pt=-Math.PI/2;c.roll=0;c.flay=Math.min(c.flay||0,.45);
+ if(time>MIX.squealT){MIX.squealT=time+.06;AU.squeal(c.type,.9*MIX.near,.12,rnd(.4,.6),2)}}
+function heroStart(c,w){
+ c.jh={w,t:0,T:rnd(1.25,1.8),sx:c.jx,sy:c.jy,sz:c.jz,y0:clamp(Math.max(c.jy,MIX.sl-.015),BLADE_Y+.06,MX_H-.06),u:clamp(wallU(w,c.jx,c.jz),-(JW-.025),JW-.025),du:rnd(.012,.03),sub:0,pr:0,hit:0};
+ c.jmode='hero';c.jfz=0;c.jcut=0;c.jhid=0;c.swa=null;c.sub=0;c.flay=Math.min(c.flay||0,.3);c.panic=1;
+ if(c.scr){AU.cutVoice(c.scr);c.scr=null}
+ if(time>MIX.heroS){MIX.heroS=time+.22;c.scr=AU.squeal(c.type,1.2*MIX.near,0,rnd(.8,1.1),c.jh.y0<MIX.sl-.02?2:false)}} // 유리 쪽 비명은 또렷하게
+function jarHero(c,dt,on){const h=c.jh,R=c.r*MX_SC;h.t+=dt;
+ if(!on){c.jh=null;c.jmode='drop';c.jvy=0;c.jvx=c.jvz=0;c.jland=null;c.arL=c.arR=0;c.hb=0;if(c.scr){AU.cutVoice(c.scr);c.scr=null}return}
+ const u=Math.min(1,h.t/h.T),e=u*u*(1.6-.6*u),k=Math.min(1,h.t/.14); // 처음엔 버티다 점점 빨리 끌려 내려간다 · 첫 순간 유리 쪽으로 홱 끌려와 처박힌다
+ h.u=clamp(h.u+h.du*dt*(.4+MIX.flow),-(JW-.022),JW-.022);const[tx,tz]=wallXZ(h.w,h.u,JW+.006);
+ c.jx=lerp(h.sx,tx,k);c.jz=lerp(h.sz,tz,k);c.jy=lerp(h.sy,lerp(h.y0,BLADE_Y-.006,e),k);
+ wallPose(c,h.w,Math.min(1,dt*18));c.hb=.3+.2*Math.sin(time*9+c.jph);c.panic=1;c.gk=1.25;c.jlv=2.4; // 배와 얼굴을 유리에 붙이고 고개를 젖혀 소리 지른다
+ const fl=time*(15+6*u)+c.jph;c.arL=.62+.32*Math.sin(fl);c.arR=.62+.32*Math.sin(fl+2.3); // 두 손바닥으로 유리를 두드리며 허우적댄다
+ if(k>=1&&!h.hit){h.hit=1;AU.glassHit(.7*MIX.near);if(c.jy>MIX.sl+.01)gsHit(c.jx,c.jy+R,c.jz,c.ink,.7)}
+ h.pr-=dt;if(h.pr<=0&&k>=1){h.pr=.055;const hy=c.jy+R*1.85;if(hy>MIX.sl+.004)for(const sd of[-1,1]){const[hx,hz]=wallXZ(h.w,h.u+sd*R*.55,MX_A-.001);gsPrint(hx,hy,hz,c)}} // 짚은 손바닥이 끌려 내려가며 핏자국을 긋는다 (곤죽 위에서만)
+ if(!h.sub&&c.jy+R*1.2<slSurf(c.jx,c.jz)-.004){h.sub=1;if(c.scr)AU.cutVoice(c.scr);c.scr=AU.squeal(c.type,.95*MIX.near,0,rnd(.35,.5),2);if(time>MIX.gurT){MIX.gurT=time+.15;AU.drown(MIX.near)}} // 머리가 곤죽에 잠기면 비명이 꾸르륵 막힌다
+ if(u>=1)heroCut(c)}
+function heroCut(c){const w=c.jh.w,ns=MIX.sects.length,nb=MIX.bits.length,near=MIX.near,x=c.jx,y=c.jy,z=c.jz;
+ jarSever(c); // 토막 나서 팔다리·눈알이 따로 튄다 (c는 여기서 죽는다)
+ for(let i=ns;i<MIX.sects.length;i++)glueOn(MIX.sects[i],w,rnd(.55,1.1));
+ for(let i=nb;i<MIX.bits.length;i++)glueOn(MIX.bits[i],w,rnd(.4,1.2));
+ for(let i=0;i<7;i++){const b=bitAdd('lump',c,c.ink.clone().multiplyScalar(rnd(.5,.85)),rnd(.004,.0075),null,x+rnd(-.01,.01),y+rnd(-.006,.014),z+rnd(-.01,.01),LQ_BODY*.004);if(b)glueOn(b,w,rnd(.3,.75),rnd(-.07,.07),rnd(-.01,.05))} // 유리 안쪽으로 퍽 터진 피 덩이
+ MIX.bog=Math.min(1,MIX.bog+.55);shake=Math.max(shake,.26*near);
+ AU.jarChop(2,near);AU.snapBone(.6*near);AU.squelch(.5*near);if(Math.random()<.5)AU.jarCrunch(near)}
+function glueOn(p,w,t,vu,vy){const L=pLim(p),u=clamp(wallU(w,p.jx,p.jz)+rnd(-.012,.012),-(L-.004),L-.004),[x,z]=wallXZ(w,u,L);p.jx=x;p.jz=z;p.jy=clamp(p.jy,.012,MX_H-.03);p.fly=0;p.vx=p.vy=p.vz=0;
+ p.glue={w,t,u,vu:vu??rnd(-.03,.03),vy:vy??-rnd(.004,.012)}} // 유리에 철퍽 들러붙는다
+function glueStep(p,dt){const g=p.glue,L=pLim(p);g.t-=dt;g.u=clamp(g.u+(g.vu+.025*MIX.flow)*dt,-(L-.004),L-.004);g.vu*=Math.exp(-dt*4);g.vy=g.vy*Math.exp(-dt*3)-.01*dt;p.jy=clamp(p.jy+g.vy*dt,.012,MX_H-.03);
+ const[x,z]=wallXZ(g.w,g.u,L);p.jx=x;p.jz=z;if(g.t<=0){p.glue=null;lpInit(p)}} // 들러붙은 채 흐름 쪽으로 천천히 끌리다 떨어져 나가 다시 휩쓸린다
+function bubPop(x,z){for(let i=0;i<2;i++)if(MIX.bub.length<10)MIX.bub.push({x:x+rnd(-.006,.006),z:z+rnd(-.006,.006),t:0,T:rnd(.22,.4),r:rnd(.003,.006)});if(time>MIX.gurT){MIX.gurT=time+.18;AU.drown(.6*MIX.near)}} // 마지막 손끝이 잠긴 자리에 거품이 올라온다
 // 날이 몸통을 끊는 순간: 예초기처럼 머리 · 윗몸 · (다리 붙은) 아랫몸으로 토막 나서 날이 도는 쪽으로 튀어 나간다. 잘린 자리에서 피와 뼛조각이 뿜고, 팔다리·눈알이 따로 날아간다
 function jarSever(c){if(c.dead)return;
  const poop=c.type===6,zt=poop?1.45:1.32,zb=poop?-2:-1.66,zc=rnd(-1.15,1);let cuts;
@@ -7625,14 +7710,16 @@ function jarSever(c){if(c.dead)return;
  cuts.sort((a,b)=>a-b);const E=[zb-1].concat(cuts,[zt+1]);
  const rr=Math.hypot(c.jx,c.jz)||.01,ux=c.jx/rr,uz=c.jz/rr,tx=uz,tz=-ux,hs=.55+.45*MIX.w,near=MIX.near,R=c.r*MX_SC,ceil=MX_H-.03; // 날이 위에서 보아 반시계로 돈다: 그 접선 쪽으로 튄다
  const cp=Math.cos(c.pt),ax=Math.sin(c.yaw)*cp,ay=-Math.sin(c.pt),az=Math.cos(c.yaw)*cp; // 몸 길이 방향 (머리 쪽)
- const popEyes=!poop&&!c.noeye&&Math.random()<.45,nsec=E.length-1,lq=LQ_BODY*.62/nsec;
+ const popEyes=!poop&&!c.noeye&&Math.random()<.62,nsec=E.length-1,lq=LQ_BODY*.62/nsec;
  for(let i=0;i<nsec;i++){const zl=E[i],zh=E[i+1],a=Math.max(zl,zb),b=Math.min(zh,zt),zm=(a+b)/2,head=zh>zt&&zl>.3,big=b-a>1.3,off=(zm+.15)*R;
   const an=rnd(-.8,.8),dx=tx*Math.cos(an)-tz*Math.sin(an)+ux*rnd(-.1,.5),dz=tx*Math.sin(an)+tz*Math.cos(an)+uz*rnd(-.1,.5),dl=Math.hypot(dx,dz)||1,sp=(head?rnd(2,3.2):big?rnd(1,1.8):rnd(1.4,2.6))*hs;
   sectAdd(c,zl,zh,clamp(c.jx+ax*off,-JW,JW),clamp(c.jy+ay*off,.015,.09),clamp(c.jz+az*off,-JW,JW),dx/dl*sp,rnd(.9,2.4)*(head?1.2:1),dz/dl*sp,head&&!popEyes&&!c.noeye,lq)}
  for(const z of cuts){const off=(z+.15)*R,px=clamp(c.jx+ax*off,-JW,JW),py=clamp(c.jy+ay*off,.02,ceil),pz=clamp(c.jz+az*off,-JW,JW); // 잘린 자리: 굵은 피와 살점, 뼈
   for(let j=0;j<10;j++){const s2=rnd(.9,3),sd=rnd(-.6,.6);jarDrop(px,py,pz,(tx+ux*sd)*s2,rnd(.4,2.6),(tz+uz*sd)*s2,rnd(.0022,.0048),c.ink)}
   for(let j=0;j<2;j++)bitAdd('lump',c,j?INTEST:BONE,rnd(.004,.007),[tx*rnd(1,2.4)+rnd(-.3,.3),rnd(.4,1.2),tz*rnd(1,2.4)+rnd(-.3,.3)],px,py,pz,LQ_BODY*.015)}
- if(!poop){const L=limbsOf(c).filter(q=>q.i<4&&!(c.cut&q.bit));for(const q of L)if(Math.random()<.55){c.cut|=q.bit; // 남은 팔다리가 날에 채여 따로 날아간다
+ if(!poop)for(let j=0;j<2;j++)bitAdd('lump',c,j?(c.skin||SKINC):c.tint,rnd(.005,.0085),[tx*rnd(.8,2)+rnd(-.4,.4),rnd(.4,1.1),tz*rnd(.8,2)+rnd(-.4,.4)],c.jx,c.jy,c.jz,LQ_BODY*.012); // 옷 빛·살빛이 그대로 남은 살가죽 조각
+ if(time>MIX.bogT){MIX.bogT=time+rnd(.2,.42);MIX.bog=Math.min(1,MIX.bog+.3)} // 뼈가 날에 걸릴 때마다 모터가 드득 처진다
+ if(!poop){const L=limbsOf(c).filter(q=>q.i<4&&!(c.cut&q.bit));for(const q of L)if(Math.random()<.7){c.cut|=q.bit; // 남은 팔다리가 날에 채여 따로 날아간다
    bitAdd(q.arm?'arm':'leg',c,null,null,[tx*rnd(1.2,2.6)+rnd(-.4,.4),rnd(.5,1.3),tz*rnd(1.2,2.6)+rnd(-.4,.4)],c.jx+rnd(-.01,.01),c.jy,c.jz+rnd(-.01,.01),LQ_BODY*.05)}
   if(L.length&&time>MIX.limbT){MIX.limbT=time+.07;AU.limbOff(.7*near)}}
  if(popEyes){c.noeye=1;const hx=clamp(c.jx+ax*1.3*R,-JW,JW),hy=clamp(c.jy+ay*1.3*R,.02,ceil),hz=clamp(c.jz+az*1.3*R,-JW,JW); // 머리가 갈릴 때 눈알이 튀어 나간다
@@ -7646,13 +7733,13 @@ function jarSever(c){if(c.dead)return;
  AU.cutVoice(c.scr);c.scr=null;
  if(time>MIX.chopT){MIX.chopT=time+rnd(.04,.065);AU.jarChop(cuts.length,near)}
  if(time>MIX.chT&&Math.random()<.3){MIX.chT=time+.14;AU.choke(c.type,.7*near,.16)}
- if(time>MIX.boneT&&Math.random()<.3){MIX.boneT=time+.09;AU.snapBone(.45*near)}
+ if(time>MIX.boneT&&Math.random()<.5){MIX.boneT=time+.09;AU.snapBone(.45*near)}
  const i=MIX.list.indexOf(c);if(i>=0)MIX.list.splice(i,1);
  killCreature(c,'blend',c.x,c.z,0,1)}
 // 토막: 몸 모형을 그대로 쓰고 범위(zl~zh) 밖은 시뻘건 단면으로 접힌다. 처음엔 날아가며 유리에 부딪혀 튀다가 소용돌이에 딸려 간다
 function sectAdd(c,zl,zh,x,y,z,vx,vy,vz,eyes,liq){
  if(MIX.sects.length>=SECT_CAP){for(let k=0;k<2;k++)bitAdd('lump',c,k?RAWC:c.skin||SKINC,rnd(.006,.01),[vx*rnd(.5,.9),vy,vz*rnd(.5,.9)],x,y,z,liq/2);return null} // 너무 많으면 바로 살점으로 흩어진다
- const pb=c.type===6,s={type:c.type,tint:c.tint,ink:c.ink,skin:c.skin,r:c.r,sc:MX_SC,zl,zh,zc:(Math.max(zl,pb?-2:-1.66)+Math.min(zh,pb?1.45:1.32))/2,cut:c.cut|0,eyes:!!eyes,flay:Math.min(1,(c.flay||0)+.35),
+ const pb=c.type===6,s={type:c.type,tint:c.tint,ink:c.ink,skin:c.skin,r:c.r,sc:MX_SC,zl,zh,zc:(Math.max(zl,pb?-2:-1.66)+Math.min(zh,pb?1.45:1.32))/2,cut:c.cut|0,eyes:!!eyes,flay:Math.min(.75,(c.flay||0)+.3),
   jx:x,jy:y,jz:z,vx,vy,vz,fly:rnd(.28,.5),pt:c.pt,yaw:c.yaw,roll:c.roll,wp:rnd(-16,16),wy:rnd(-12,12),wr:rnd(-16,16),lp:{ph:0,th:0,k:rnd(.8,1.3),ka:rnd(.8,1.25),ra:rnd(.6,1),ya:rnd(.6,1)},liq,tw:rnd(.6,1.6),t0:time,leak:rnd(1.4,2.6)};
  MIX.sects.push(s);return s}
 function bitAdd(k,c,col,size,vel,x,y,z,liq){const lq=liq??(k==='lump'?LQ_BODY*.015:LQ_BODY*.04),cc=col||(k==='eye'?WHITE:k==='gut'?INTEST:c.type===6?c.tint:c.type===5?AISK:SKINC);
@@ -7680,20 +7767,25 @@ function flyStep(p,dt){const ceil=jarCeil(p.jx,p.jz),inS=p.jy<MIX.sl;p.fly-=dt;p
  if(p.fly<=0)lpInit(p)}
 // 조각: 몸과 같이 돌다가 날에 맞을 때마다 잘게 쪼개지고, 다 잘아지면 국물이 된다
 function pieceLoop(p,dt,H,on){if(p.fly>0){flyStep(p,dt);return}
+ if(p.glue){glueStep(p,dt);return}
  const lp=p.lp;
- if(!on||MIX.flow<.1){p.jy=Math.max(p.rest??(p.rest=.008+Math.random()*Math.max(.004,jarHeap()*.9)),p.jy-dt*.25);return} // 가라앉는다
+ if(!on||MIX.flow<.1){p.jy=Math.max(p.rest??(p.rest=MIX.pk>.4?Math.min(p.jy,Math.max(.008,MIX.sl-.004)):.008+Math.random()*Math.max(.004,jarHeap()*.9)),p.jy-dt*.25);return} // 가라앉는다 (걸쭉한 죽 속에서는 그 자리에 떠 있다)
  p.rest=null;const rr0=Math.hypot(p.jx,p.jz),tk=1-.6*MIX.thick;lp.ph+=dt*MIX.flow*3*lp.k*tk;lp.th+=dt*MIX.flow*(7.5+5*(1-Math.min(1,rr0/JW)))*lp.ka*tk; // 곤죽이 차면 묵직하게 돈다
- const top=MIX.nHeap>20?Math.max(H,MIX.cH-.02):H,co=Math.cos(lp.ph),hh=co>0?lerp(H,top,Math.min(1,co*2)):H,rc=.5*JW,ra=.45*JW*lp.ra*(1+.25*MIX.thick),rr=rc+ra*co,y=Math.max(.012,hh*.5+hh*.47*lp.ya*Math.sin(lp.ph)),k=Math.min(1,dt*12);
- p.jx+=(clamp(Math.sin(lp.th)*rr,-JW-.004,JW+.004)-p.jx)*k;p.jz+=(clamp(Math.cos(lp.th)*rr,-JW-.004,JW+.004)-p.jz)*k;p.jy+=(y-p.jy)*k}
+ const top=MIX.nHeap>20?Math.max(H,MIX.cH-.02):H,co=Math.cos(lp.ph),hh=co>0?lerp(H,top,Math.min(1,co*2)):H,rc=.5*JW,ra=.45*JW*lp.ra*(1+.25*MIX.thick),
+  L=pLim(p),rr=lerp(rc+ra*co,L/Math.max(Math.abs(Math.sin(lp.th)),Math.abs(Math.cos(lp.th)),.5),ss(clamp((co-.72)/.28,0,1))*(.35+.65*MIX.pk)),k=Math.min(1,dt*12); // 고리 바깥쪽을 돌 때는 유리에 눌려 지나간다 (걸쭉할수록 오래)
+ let y=Math.max(.012,hh*.5+hh*.47*lp.ya*Math.sin(lp.ph));
+ if(MIX.pk>.05){const sz=p.k?p.r*p.sc*.7:p.s*.6,cap=slSurf(p.jx,p.jz)-((p.pz??(p.pz=Math.random()))<.8?sz+.003:-sz*.3)*MIX.pk;if(y>cap)y=Math.max(.012,cap)} // 죽이 되면 대부분 윗면 밑에 잠겨 돌고, 몇 개만 반쯤 솟았다 잠긴다
+ p.jx+=(clamp(Math.sin(lp.th)*rr,-L,L)-p.jx)*k;p.jz+=(clamp(Math.cos(lp.th)*rr,-L,L)-p.jz)*k;p.jy+=(y-p.jy)*k}
+const pLim=p=>p.k?Math.min(JW+.004,MX_A-.0015-p.s*.85):JW+.004; // 조각 가운데가 갈 수 있는 끝: 토막은 유리를 넘은 살이 셰이더에서 눌리고, 작은 조각은 유리를 뚫지 않게 크기만큼 안쪽
 const inBlades=p=>p.jy<.06&&Math.hypot(p.jx,p.jz)<JW*.7;
 function jarPieces(dt){
  const on=MIX.w>.06,H=MIX.Hs||MIX.cH;let zone=0;
  for(let i=MIX.sects.length-1;i>=0;i--){const s=MIX.sects[i];pieceLoop(s,dt,H,on);
-  const spin=s.fly>0?1.3:on?MIX.flow:0;s.pt+=s.wp*dt*spin;s.yaw+=s.wy*dt*spin;s.roll+=s.wr*dt*spin;
+  const spin=s.glue?.12:s.fly>0?1.3:on?MIX.flow:0;s.pt+=s.wp*dt*spin;s.yaw+=s.wy*dt*spin;s.roll+=s.wr*dt*spin;
   if(s.leak>0){s.leak-=dt;if(Math.random()<dt*(s.fly>0?14:on?6:2))sectLeak(s)} // 잘린 단면에서 피가 맥박 치듯 튄다
   if(on&&!(s.fly>0)){if(wallGap(s.jx,s.jz)<.02&&MIX.flow>.35)gsSmear(s.jx,s.jy,s.jz,s.ink,.45);
    const ib=inBlades(s);if(ib)zone+=.5;if(Math.random()<dt*MIX.w*(ib?(MIX.bridge?16:13):MIX.liq>.03?(MIX.list.length?.9:2.2):.5)){MIX.sects.splice(i,1);sectChop(s)}}}
- for(let i=MIX.bits.length-1;i>=0;i--){const b=MIX.bits[i];if(b.tube)continue;pieceLoop(b,dt,H,on);const spin=b.fly>0?1.2:on?MIX.flow:0;b.rx+=b.wx*dt*spin;b.ry+=b.wy*dt*spin;b.rz+=b.wz*dt*spin;
+ for(let i=MIX.bits.length-1;i>=0;i--){const b=MIX.bits[i];if(b.tube)continue;pieceLoop(b,dt,H,on);const spin=b.glue?.12:b.fly>0?1.2:on?MIX.flow:0;b.rx+=b.wx*dt*spin;b.ry+=b.wy*dt*spin;b.rz+=b.wz*dt*spin;
   if(on&&!(b.fly>0)){if(inBlades(b)){zone+=b.k==='lump'?.05:.2;if(Math.random()<dt*MIX.w*(b.k==='lump'?5:6)){MIX.bits.splice(i,1);bitChop(b);continue}}
    if(MIX.liq>.02)b.s-=dt*MIX.w*(MIX.list.length||MIX.sects.length?.0028:.009);if(b.s<.004){MIX.bits.splice(i,1);liqAdd(b.liq,b.col,1);if(b.ty===1&&Math.random()<.3)marbleStroke(b.col,.5)}}}
  MIX.zone+=zone}
@@ -7704,7 +7796,7 @@ function sectChop(s){ // 토막이 날에 다시 걸려 반으로 갈려 튀거�
  const near=MIX.near,c={type:s.type,tint:s.tint,ink:s.ink,skin:s.skin,r:s.r,jx:s.jx,jy:s.jy,jz:s.jz,cut:s.cut,pt:s.pt,yaw:s.yaw,roll:s.roll,flay:s.flay},rr=Math.hypot(s.jx,s.jz)||.01,ux=s.jx/rr,uz=s.jz/rr,tx=uz,tz=-ux;
  const pb=s.type===6,a=Math.max(s.zl,pb?-2:-1.66),b=Math.min(s.zh,pb?1.45:1.32);
  if(b-a>.95&&MIX.sects.length<SECT_CAP-1){const zm=(a+b)/2+rnd(-.12,.12);for(const[l,h]of[[s.zl,zm],[zm,s.zh]]){const sp=rnd(.9,2.2)*(.5+.5*MIX.w),an=rnd(-.8,.8),dx=tx*Math.cos(an)-tz*Math.sin(an)+ux*rnd(-.1,.4),dz=tx*Math.sin(an)+tz*Math.cos(an)+uz*rnd(-.1,.4),dl=Math.hypot(dx,dz)||1;
-   const q=sectAdd(c,l,h,s.jx,s.jy,s.jz,dx/dl*sp,rnd(.3,1),dz/dl*sp,s.eyes&&h>=s.zh,s.liq*.5);if(q){q.fly=rnd(.15,.3);q.leak=rnd(.8,1.6);q.flay=Math.min(1,s.flay+.2)}}}
+   const q=sectAdd(c,l,h,s.jx,s.jy,s.jz,dx/dl*sp,rnd(.3,1),dz/dl*sp,s.eyes&&h>=s.zh,s.liq*.5);if(q){q.fly=rnd(.15,.3);q.leak=rnd(.8,1.6);q.flay=Math.min(.85,s.flay+.15)}}}
  else{const n=2+(Math.random()*3|0);for(let k=0;k<n;k++)bitAdd('lump',c,k?(Math.random()<.5?s.skin||SKINC:RAWC):s.ink,rnd(.005,.009),[tx*rnd(.8,2)+rnd(-.3,.3),rnd(.2,.9),tz*rnd(.8,2)+rnd(-.3,.3)],s.jx,s.jy,s.jz,s.liq/n);
   if(s.type===1)marbleStroke(s.tint,.8);if(s.eyes&&Math.random()<.7)bitAdd('eye',c,null,null,[tx*rnd(1,2),rnd(.4,1),tz*rnd(1,2)],s.jx,s.jy,s.jz,LQ_BODY*.02)}
  for(let j=0;j<3;j++){const s2=rnd(.8,2.2),sd=rnd(-.6,.6);jarDrop(s.jx,s.jy,s.jz,(tx+ux*sd)*s2,rnd(.2,1),(tz+uz*sd)*s2,rnd(.002,.0045),s.ink)}
@@ -7738,37 +7830,46 @@ function jarDrops(dt){const D2=MIX.drops,L0=MX_A-.0025;
   else if(d.y<Math.max(.004,MIX.sl)||d.vy>0&&d.y>jarCeil(d.x,d.z)+.02)gone=1; // 곤죽에 떨어지면 섞인다
   if(gone)D2.splice(i,1)}}
 // 물감이 국물 윗면에 줄무늬로 번진다 (믹서가 돌수록 섞여 흐려진다)
-function marbleStroke(col,k){const g=MIX.mx;if(!g)return;g.save();g.translate(128,128);g.rotate(rnd(0,TAU));const q=_bc.copy(col).lerp(MIX.col,.45),st='rgba('+Math.round(Math.pow(q.r,1/2.2)*255)+','+Math.round(Math.pow(q.g,1/2.2)*255)+','+Math.round(Math.pow(q.b,1/2.2)*255)+',';
+function marbleStroke(col,k){const g=MIX.mx;if(!g)return;g.save();g.translate(128,128);g.rotate(rnd(0,TAU));const q=_bc.copy(col).lerp(MIX.col,.7),st='rgba('+Math.round(Math.pow(q.r,1/2.2)*255)+','+Math.round(Math.pow(q.g,1/2.2)*255)+','+Math.round(Math.pow(q.b,1/2.2)*255)+',';
  for(let i=0;i<3;i++){const r0=rnd(20,110);g.strokeStyle=st+(.3*k)+')';g.lineWidth=rnd(3,10)*k;g.beginPath();for(let a=0;a<4;a+=.12){const r=r0+a*rnd(2,6);g.lineTo(Math.cos(a)*r,Math.sin(a)*r)}g.stroke()}g.restore();MIX.mkDirty=1}
 /* ── 통 유리 안쪽 자국 (앞 · 오른쪽 · 뒤 · 왼쪽 네 면을 이어 그린 그림) ── */
 function gsUV(x,y,z){const A=MX_A;let w,u;if(Math.abs(z)>=Math.abs(x)){if(z>0){w=0;u=(x+A)/(2*A)}else{w=2;u=(A-x)/(2*A)}}else{if(x>0){w=1;u=(A-z)/(2*A)}else{w=3;u=(z+A)/(2*A)}}return[w*256+clamp(u,0,1)*255,clamp(1-y/MX_H,0,1)*255,w]}
 const rgbStr=(c,a)=>'rgba('+Math.round(Math.pow(clamp(c.r,0,1),1/2.2)*255)+','+Math.round(Math.pow(clamp(c.g,0,1),1/2.2)*255)+','+Math.round(Math.pow(clamp(c.b,0,1),1/2.2)*255)+','+a+')';
 const gsK=w=>1; // 보는 쪽 유리도 다른 면과 똑같이 묻는다
-const gsSub=(y,w)=>MIX.sl>.01&&MIX.vw[w]&&y<MIX.sl-.004; // 보는 쪽 유리에서 곤죽에 잠긴 자리: 곤죽이 유리에 맞닿아 있으니 자국을 따로 그리지 않는다
-function gsHit(x,y,z,col,k){const g=MIX.gx;if(!g)return;const m=Math.max(Math.abs(x),Math.abs(z))||1,ex=x*MX_A/m,ez=z*MX_A/m; // 가장 가까운 유리면, 맞은 자리에 터진 피
- const[u,v,w]=gsUV(ex,clamp(y,.006,MX_H-.006),ez),q=gsK(w);if(gsSub(y,w))return;k*=.75+.25*q;const r=rnd(4,8)*k,st=1+2*MIX.flow;g.fillStyle=rgbStr(col,.72*q);g.beginPath();g.ellipse(u,v,r*st,r*rnd(.55,.9),rnd(-.2,.2),0,TAU);g.fill();
+const gsSub=(y,w,x,z)=>MIX.sl>.01&&MIX.vw[w]&&y<(x==null?MIX.sl:slSurf(x,z))-.004; // 보는 쪽 유리에서 곤죽에 잠긴 자리: 곤죽이 유리에 맞닿아 있으니 자국을 따로 그리지 않는다 (그 자리 윗면 높이로 본다)
+const gsWall=(w,u)=>{const A=MX_A-.001,t=-A+2*A*u;return w===0?[t,A]:w===2?[-t,-A]:w===1?[A,-t]:[-A,t]}; // 유리면 w의 가로 자리 u(0~1) → (x,z). gsUV의 거꾸로
+const gsPk=col=>MIX.pk>.05?_gsc2.copy(col).lerp(MIX.col,.55*MIX.pk).multiplyScalar(1-.2*MIX.pk).clone():col; // 죽이 되면 튀어 묻는 것도 곤죽을 뒤집어쓴 빛깔이다
+function gsHit(x,y,z,col,k){const g=MIX.gx;if(!g)return;col=gsPk(col);const m=Math.max(Math.abs(x),Math.abs(z))||1,ex=x*MX_A/m,ez=z*MX_A/m; // 가장 가까운 유리면, 맞은 자리에 터진 피
+ const[u,v,w]=gsUV(ex,clamp(y,.006,MX_H-.006),ez),q=gsK(w);if(gsSub(y,w,ex,ez))return;k*=.75+.25*q;const r=rnd(4,8)*k,st=1+2*MIX.flow;g.fillStyle=rgbStr(col,.72*q);g.beginPath();g.ellipse(u,v,r*st,r*rnd(.55,.9),rnd(-.2,.2),0,TAU);g.fill();
  for(let i=0;i<5;i++){const a=rnd(0,TAU),d=r*rnd(1.1,2.6),rr=rnd(.8,2.6)*k;g.beginPath();g.ellipse(u+Math.cos(a)*d*st,v+Math.sin(a)*d,rr*st,rr,0,0,TAU);g.fill()}
  if(Math.random()<.45)MIX.drips.push({u:u+rnd(-r,r)*.5,v,len:rnd(14,50),t:0,col,w:rnd(2.2,4)});MIX.gsDirty=1}
-function gsDot(x,y,z,col,r,sp){const g=MIX.gx;if(!g)return;const[u,v,w]=gsUV(x,clamp(y,.004,MX_H-.004),z),q=gsK(w),s=r*rnd(700,1100)*(.7+.3*q),st=1+Math.min(2.5,sp*.6)*(MIX.flow>.2?1:.3); // 진액 덩이 하나: 유리에 철퍽 붙어 넓게 번지고, 도는 동안은 옆으로 끌린다
- if(gsSub(y,w))return;g.fillStyle=rgbStr(col,.7*q);g.beginPath();g.ellipse(u,v,s*st,s,0,0,TAU);g.fill();
+function gsDot(x,y,z,col,r,sp){const g=MIX.gx;if(!g)return;col=gsPk(col);const[u,v,w]=gsUV(x,clamp(y,.004,MX_H-.004),z),q=gsK(w),s=r*rnd(700,1100)*(.7+.3*q),st=1+Math.min(2.5,sp*.6)*(MIX.flow>.2?1:.3); // 진액 덩이 하나: 유리에 철퍽 붙어 넓게 번지고, 도는 동안은 옆으로 끌린다
+ if(gsSub(y,w,x,z))return;g.fillStyle=rgbStr(col,.16*q);g.beginPath();g.ellipse(u,v,s*st*1.3,s*1.2,0,0,TAU);g.fill(); // 얇게 번진 가장자리
+ g.fillStyle=rgbStr(_gsc2.copy(col).multiplyScalar(.66),.86*q);g.beginPath();g.ellipse(u+rnd(-.3,.3)*s,v,s*st*.85,s*.85,0,0,TAU);g.fill(); // 진하게 엉긴 가운데
  if(Math.random()<.35){const a=rnd(0,TAU),d=s*rnd(1.5,3);g.fillStyle=rgbStr(col,.55*q);g.beginPath();g.ellipse(u+Math.cos(a)*d*st,v+Math.sin(a)*d,s*.4,s*.4,0,0,TAU);g.fill()}
  if(Math.random()<.3)MIX.drips.push({u,v,len:rnd(10,32),t:0,col,w:Math.max(1.6,Math.min(3.2,s*.7))});MIX.gsDirty=1} // 덩이는 꼬리를 끌며 천천히 흘러내린다
 // 돌아가는 동안 곤죽이 윗면 위로 치대며 올라와 유리에 두껍게 발리고, 묵은 자국은 조금씩 씻겨 옅어진다 (곤죽에 잠긴 데는 곤죽이 유리에 맞닿아 있다)
-function gsCoat(){const g=MIX.gx;if(!g)return;const L=MIX.sl,top=clamp(L+.014+.05*MIX.flow,0,MX_H),v0=(1-top/MX_H)*256,v1=(1-L/MX_H)*256;
- g.globalCompositeOperation='destination-out';for(let w=0;w<4;w++){g.fillStyle='rgba(0,0,0,.05)';g.fillRect(w*256,0,256,256)}g.globalCompositeOperation='source-over';
+const _gsc=new THREE.Color(),_gsc2=new THREE.Color();
+function gsCoat(){const g=MIX.gx;if(!g)return;const L=MIX.sl,pk=MIX.pk,top=clamp(L+.014+.05*MIX.flow,0,MX_H),v0=(1-top/MX_H)*256,v1=(1-L/MX_H)*256;
+ g.globalCompositeOperation='destination-out';for(let w=0;w<4;w++){g.fillStyle='rgba(0,0,0,'+(MIX.vw[w]&&pk>.3?.05+.1*pk:.05)+')';g.fillRect(w*256,0,256,256)}g.globalCompositeOperation='source-over'; // 죽일 때 보는 쪽 유리는 묵은 얼룩이 빨리 씻겨 윗면 너머가 또렷이 보인다
  gsClearSub();
- if(L>.01&&v1>v0)for(let w=0;w<4;w++){const gr=g.createLinearGradient(0,v0,0,v1);gr.addColorStop(0,rgbStr(MIX.col,0));gr.addColorStop(1,rgbStr(MIX.col,.07*MIX.w));g.fillStyle=gr;g.fillRect(w*256,v0,256,v1-v0+2);
-  for(let i=0;i<2;i++){g.fillStyle=rgbStr(MIX.col,.22);g.beginPath();g.ellipse(w*256+rnd(0,256),v0+rnd(0,v1-v0),rnd(2,5),rnd(3,8),0,0,TAU);g.fill()}}
+ if(L>.01&&v1>v0)for(let w=0;w<4;w++){
+  if(pk<.95){const gr=g.createLinearGradient(0,v0,0,v1);gr.addColorStop(0,rgbStr(MIX.col,0));gr.addColorStop(1,rgbStr(MIX.col,.07*MIX.w*(1-pk)));g.fillStyle=gr;g.fillRect(w*256,v0,256,v1-v0+2); // 묽을 때: 윗면 위로 얇게 물드는 막
+   for(let i=0;i<2;i++){g.fillStyle=rgbStr(MIX.col,.22*(1-pk));g.beginPath();g.ellipse(w*256+rnd(0,256),v0+rnd(0,v1-v0),rnd(2,5),rnd(3,8),0,0,TAU);g.fill()}}
+  if(pk>.05)for(let i=0,n=MIX.vw[w]?(Math.random()<.4?1:0):4;i<n;i++){const[x,z]=gsWall(w,Math.random()),[u,v]=gsUV(x,slSurf(x,z)+rnd(-.001,.007),z),r=rnd(1.8,4.2); // 죽: 윗면 따라 유리에 굵은 덩이로 엉겨 붙고 군데군데 흘러내린다 (얇은 막 없이. 보는 쪽 유리는 가끔 한 덩이씩만)
+   g.fillStyle=rgbStr(_gsc.copy(MIX.col).multiplyScalar(rnd(.42,.75)),rnd(.75,.95)*pk);g.beginPath();g.ellipse(u,v,r*rnd(1,1.9),r*rnd(.8,1.4),0,0,TAU);g.fill();
+   if(Math.random()<.25)MIX.drips.push({u,v,len:rnd(6,22),t:0,col:_gsc.clone(),w:Math.max(1.4,r*.6)})}}
  MIX.gsDirty=1}
 // 보는 쪽 유리에서 곤죽에 잠긴 자리의 자국을 지운다: 곤죽이 유리에 바로 맞닿아 있으니 그 위에 자국이 떠 보이면 안 된다
-function gsClearSub(){const g=MIX.gx;if(!g||MIX.sl<.01)return;const v=(1-(MIX.sl-.004)/MX_H)*256;for(let w=0;w<4;w++)if(MIX.vw[w])g.clearRect(w*256,v,256,258-v);MIX.gsDirty=1}
+function gsClearSub(){const g=MIX.gx;if(!g||MIX.sl<.01)return;for(let w=0;w<4;w++)if(MIX.vw[w])for(let i=0;i<32;i++){const[x,z]=gsWall(w,(i+.5)/32),v=(1-(slSurf(x,z)-.004)/MX_H)*256;g.clearRect(w*256+i*8,v,8,258-v)}MIX.gsDirty=1} // 그 자리 윗면 높이를 따라 (솟은 데는 높게)
 // 곤죽이 빠져나간 자리: 유리에 두꺼운 막이 남고 군데군데 줄줄 흘러내린다
 function gsFilm(h0,h1){const g=MIX.gx;if(!g||h1<=h0)return;const v0=(1-h1/MX_H)*256,v1=(1-h0/MX_H)*256;g.fillStyle=rgbStr(MIX.col,.22);g.fillRect(0,v0,1024,v1-v0+1);
  for(let i=0;i<10;i++){g.fillStyle=rgbStr(MIX.col,rnd(.25,.5));g.fillRect(rnd(0,1024),v0,rnd(3,14),v1-v0+1)} // 군데군데 두껍게 남는다
  for(let i=0;i<3;i++)if(Math.random()<.5)MIX.drips.push({u:rnd(0,1024),v:v1,len:rnd(16,60),t:0,col:MIX.col,w:rnd(2,4.5)});MIX.gsDirty=1}
-function gsSmear(x,y,z,col,a){if(time<(MIX.smT||0))return;MIX.smT=time+.03;const g=MIX.gx;if(!g)return;const[u,v,w]=gsUV(x,y,z),dir=-1,len=rnd(10,26)*MIX.flow;a*=gsK(w);if(gsSub(y,w))return; // 어느 면에서 보나 소용돌이는 왼쪽에서 오른쪽으로 돈다: 꼬리는 왼쪽으로 끌린다
+function gsSmear(x,y,z,col,a){if(time<(MIX.smT||0))return;MIX.smT=time+.03;const g=MIX.gx;if(!g)return;const[u,v,w]=gsUV(x,y,z),dir=-1,len=rnd(10,26)*MIX.flow;a*=gsK(w);if(gsSub(y,w,x,z))return; // 어느 면에서 보나 소용돌이는 왼쪽에서 오른쪽으로 돈다: 꼬리는 왼쪽으로 끌린다
+ if(MIX.pk>.05)col=_gsc.copy(col).lerp(MIX.col,.65*MIX.pk).multiplyScalar(1-.3*MIX.pk); // 죽이 되면 유리에 문대지는 건 제 빛깔보다 곤죽 빛깔이다
  const gr=g.createLinearGradient(u,v,u+dir*len,v);gr.addColorStop(0,rgbStr(col,a));gr.addColorStop(1,rgbStr(col,0));g.fillStyle=gr;g.beginPath();g.ellipse(u+dir*len/2,v+rnd(-2,2),len/2,rnd(1.5,4),rnd(-.08,.08),0,TAU);g.fill();MIX.gsDirty=1}
-function gsPrint(x,y,z,c){const g=MIX.gx;if(!g)return;const[u,v]=gsUV(x,y,z),col=c.flay>.1?c.ink:MIX.col;g.fillStyle=rgbStr(col,.55);g.beginPath();g.ellipse(u,v,2.6,3.2,0,0,TAU);g.fill();for(let f=0;f<4;f++){g.fillRect(u-2.4+f*1.6,v-6.5,.9,3.4)}MIX.gsDirty=1} // 손바닥 자국
+function gsPrint(x,y,z,c){const g=MIX.gx;if(!g)return;const[u,v]=gsUV(x,y,z),col=_gsc2.copy(c.flay>.1?c.ink:MIX.col).lerp(MIX.col,MIX.sl>.01?.65:0).multiplyScalar(.85);g.fillStyle=rgbStr(col,.6);g.beginPath();g.ellipse(u,v,2.6,3.2,0,0,TAU);g.fill();for(let f=0;f<4;f++){g.fillRect(u-2.4+f*1.6,v-6.5,.9,3.4)}MIX.gsDirty=1} // 손바닥 자국
 function gsDrips(dt){const g=MIX.gx;if(!g||!MIX.drips.length)return;for(let i=MIX.drips.length-1;i>=0;i--){const d=MIX.drips[i],v0=d.v+d.t;d.t+=dt*(MIX.w>.3?rnd(.8,2.4):rnd(2.5,7));if(d.t>d.len){g.fillStyle=rgbStr(d.col,.5);g.beginPath();g.ellipse(d.u,d.v+d.t,d.w*.8,d.w*1.1,0,0,TAU);g.fill();MIX.drips.splice(i,1);continue} // 걸쭉해서 천천히 흘러내리다 끝에 방울이 맺힌다
   g.fillStyle=rgbStr(d.col,.45);g.fillRect(d.u-d.w/2,v0,d.w,d.v+d.t-v0+1);MIX.gsDirty=1}if(MIX.drips.length>90)MIX.drips.splice(0,MIX.drips.length-90)}
 function gsRing(h){const g=MIX.gx;if(!g||h<.01)return;const v=(1-h/MX_H)*255;g.fillStyle=rgbStr(MIX.col,.5);g.fillRect(0,v-2,1024,4);g.fillStyle=rgbStr(MIX.col,.18);g.fillRect(0,v+2,1024,14);MIX.gsDirty=1} // 국물이 빠진 높이에 남는 띠
@@ -7778,7 +7879,7 @@ function mixUpdate(dt){
  if(!roboActive()){if(MIX.w||MIX.hold){MIX.w=0;MIX.flow=0}MIX.look=damp(MIX.look,0,4,dt);AU.blendMotor(0);return}
  const near=MIX.near=dockNear();
  // 흔들림을 먼저 정하고 통 원점을 잡는다: 유리와 안의 내용물이 한 박자씩 어긋나 유리 밖으로 들락거리지 않게
- {const a=.0018*MIX.w*(.3+MIX.load)+(MIX.bridge?.0007*MIX.w:0)+MIX.slam*.004;DOCK.jar.position.set(Math.sin(time*91)*a,MX_Y+Math.abs(Math.sin(time*67))*a*.4,Math.cos(time*83)*a)}
+ {MIX.bog=Math.max(0,MIX.bog-dt*3.5);const a=.0018*MIX.w*(.3+MIX.load+1.6*MIX.bog)+(MIX.bridge?.0007*MIX.w:0)+MIX.slam*.004;DOCK.jar.position.set(Math.sin(time*91)*a,MX_Y+Math.abs(Math.sin(time*67))*a*.4,Math.cos(time*83)*a)}
  DOCK.g.updateMatrixWorld();jarW.copy(DOCK.g.position).add(DOCK.jar.position);
  {const v=MIX.vw,cx=camera.position.x-jarW.x,cz=camera.position.z-jarW.z;v[0]=cz>MX_A?1:0;v[1]=cx>MX_A?1:0;v[2]=cz<-MX_A?1:0;v[3]=cx<-MX_A?1:0} // 카메라 쪽 유리면
  const n=MIX.list.length,has=n+MIX.sects.length+MIX.bits.length+MIX.tube.length>0;
@@ -7798,9 +7899,10 @@ function mixUpdate(dt){
   MIX.sl=MIX.drain?Math.min(MIX.sl,MIX.liq):damp(MIX.sl,Math.min(MX_H-.04,s),4,dt);if(MIX.sl<1e-4)MIX.sl=0;MIX.thick=clamp(MIX.sl/.05,0,1)}
  // 곤죽 윗면: 물처럼 깔때기로 깊이 패지 않고 가운데가 얕게 꺼진다. 덩이가 많을수록 울퉁불퉁하게 접혀 들어가고, 멈추면 출렁임 없이 천천히 주저앉는다
  {const run=MIX.flow;MIX.ck=damp(MIX.ck,clamp((MIX.sects.length+.12*MIX.bits.length)/80,0,1),1.2,dt);
-  const dT=run*Math.min(.034,MIX.sl*.5);MIX.dimp=damp(MIX.dimp,dT,dT>MIX.dimp?2.2:.8,dt);
-  const lT=Math.min(MIX.sl*.25,run*(.0012+.006*MIX.ck)+(MIX.sl>.01?.0005:0));MIX.la=damp(MIX.la,lT,lT>MIX.la?2:.5,dt);
-  MIX.rot+=dt*run*1.4;MIX.lin+=dt*run*2.6;MIX.fy+=dt*run*.085;MIX.fs+=dt*run*.15;if(run<.05&&MIX.sl>.01)MIX.fy-=dt*.004; // 유리에 맞닿은 곤죽은 벽을 타고 올라가며 옆으로 끌린다 (멈추면 아주 천천히 흘러내린다)
+  MIX.pk=damp(MIX.pk,clamp((MIX.sl-.03)/.07,0,1),1.2,dt);const pk=MIX.pk; // 갈릴수록 걸쭉해진다: 처음엔 휘돌다가 죽처럼 무겁게 접혀 들어간다
+  const dT=run*Math.min(.034,MIX.sl*.5)*(1-.5*pk);MIX.dimp=damp(MIX.dimp,dT,dT>MIX.dimp?2.2:.8,dt);
+  const lT=Math.min(MIX.sl*.25,run*(.0012+.006*MIX.ck+.0035*pk)+(MIX.sl>.01?.0005+.0015*pk:0));MIX.la=damp(MIX.la,lT,lT>MIX.la?2:.5*(1-.7*pk),dt); // 걸쭉하면 멈춰도 덩어리진 모양이 오래 남는다
+  MIX.rot+=dt*run*1.4*(1-.55*pk);MIX.lin+=dt*run*2.6*(1-.4*pk);MIX.fy+=dt*run*.085;MIX.fs+=dt*run*.15;if(run<.05&&MIX.sl>.01)MIX.fy-=dt*.004; // 유리에 맞닿은 곤죽은 벽을 타고 올라가며 옆으로 끌린다 (멈추면 아주 천천히 흘러내린다)
   MIX.mrb=Math.max(0,MIX.mrb-dt*MIX.w*.05)}
  // 내용물 높이 (휩쓸려 도는 높이)
  {let m=0;for(const c of MIX.list)if(c.jmode==='swirl'||c.jmode==='heap'||c.jmode==='cling')m++;MIX.cH=clamp(.07+MX_MAX*(m+.35*MIX.sects.length+.03*MIX.bits.length)/MX_CAP,.07,MX_H-.05);MIX.cH=Math.max(MIX.cH,MIX.sl+.015)}
@@ -7810,14 +7912,15 @@ function mixUpdate(dt){
  if(MIX.bridge){MIX.bAge+=dt;if(MIX.auto&&MIX.bAge>1.1&&MIX.pulse<=0)MIX.pulse=.6}else MIX.bAge=0; // 알아서 돌 때 엉겨 붙어 헛돌면 잠깐 끊었다가 다시 돌린다 (뜬 더미가 날에 처박힌다)
  // 곤죽 빛깔: 갈려 들어간 진액과 속살 빛깔 그대로 (묽게 하지 않는다)
  if(MIX.cw>0){const bw=MIX.bw||0,fw=MIX.fw||0,k=bw>0&&fw>0?.32:fw>0?1:0,ib=1/Math.max(1e-9,bw),i_f=1/Math.max(1e-9,fw); // 피가 바탕이고 속살은 3할만 섞여 밟을 때 진액처럼 검붉다
-  MIX.col.setRGB(lerp((MIX.br||0)*ib,(MIX.fr||0)*i_f,k)*.78,lerp((MIX.bg||0)*ib,(MIX.fg||0)*i_f,k)*.5,lerp((MIX.bb||0)*ib,(MIX.fb||0)*i_f,k)*.52)}
- if(MIX.w>.35&&MIX.sl>.01)MIX.foam=Math.min(1,MIX.foam+dt*MIX.w*MIX.flow*.16);else MIX.foam=Math.max(0,MIX.foam-dt*.008);
+  MIX.col.setRGB(lerp((MIX.br||0)*ib,(MIX.fr||0)*i_f,k)*.58,lerp((MIX.bg||0)*ib,(MIX.fg||0)*i_f,k)*.3,lerp((MIX.bb||0)*ib,(MIX.fb||0)*i_f,k)*.27)} // 분홍기 없이 갈색 도는 검붉은 빛
+ if(MIX.w>.35&&MIX.sl>.01)MIX.foam=Math.min(1,MIX.foam+dt*MIX.w*MIX.flow*.16*(1-.85*MIX.pk));else MIX.foam=Math.max(0,MIX.foam-dt*.008);
  // 걸쭉한 것이 갈리는 소리: 묵직하게 꿀렁인다
  if(MIX.w>.4&&MIX.sl>.03){MIX.glT-=dt;if(MIX.glT<=0){MIX.glT=rnd(.35,.8);AU.slosh(.34*near*MIX.thick)}}
  // 멈추면 윗면에서 굵은 기포가 부풀었다 터진다
  if(MIX.w>.5)MIX.wr=1;else if(MIX.wr&&MIX.w<.2){MIX.wr=0;if(MIX.sl>.02){MIX.bubN=3+(Math.random()*4|0);MIX.bubT=rnd(.25,.6)}}
  if(MIX.bubN>0&&MIX.w<.2){MIX.bubT-=dt;if(MIX.bubT<=0&&MIX.bub.length<8){MIX.bubN--;MIX.bubT=rnd(.3,.9);const a=rnd(0,TAU),r=Math.sqrt(Math.random())*SL_A*.78;MIX.bub.push({x:Math.sin(a)*r,z:Math.cos(a)*r,t:0,T:rnd(.7,1.4),r:rnd(.006,.013)})}}
- for(let i=MIX.bub.length-1;i>=0;i--){const b=MIX.bub[i];b.t+=dt;if(MIX.sl<.01||MIX.w>.3){MIX.bub.splice(i,1);continue}
+ if(MIX.w>.3&&MIX.pk>.3&&MIX.bub.length<8&&Math.random()<dt*MIX.pk*1.6){const a=rnd(0,TAU),r=Math.sqrt(Math.random())*SL_A*.8;MIX.bub.push({x:Math.sin(a)*r,z:Math.cos(a)*r,t:0,T:rnd(.45,.9),r:rnd(.006,.012)})} // 죽 끓듯 부글거린다
+ for(let i=MIX.bub.length-1;i>=0;i--){const b=MIX.bub[i];b.t+=dt;if(MIX.sl<.01){MIX.bub.splice(i,1);continue}
   if(b.t>=b.T){MIX.bub.splice(i,1);const y=slSurf(b.x,b.z);AU.bubble(rnd(110,190),.2*near);AU.bubble(rnd(260,360),.08*near,.03);for(let k=0;k<2;k++)jarDrop(b.x,y+.004,b.z,rnd(-.15,.15),rnd(.5,.9),rnd(-.15,.15),.002,MIX.col)}}
  MIX.mkT=(MIX.mkT||0)-dt;if(MIX.w>.3&&MIX.mkT<=0&&MIX.mx){MIX.mkT=.12;MIX.mx.globalCompositeOperation='destination-out';MIX.mx.fillStyle='rgba(0,0,0,'+(.05*MIX.w)+')';MIX.mx.fillRect(0,0,256,256);MIX.mx.globalCompositeOperation='source-over';MIX.mkDirty=1}
  gsDrips(dt);MIX.coT=(MIX.coT||0)-dt;if(MIX.w>.3&&MIX.coT<=0){MIX.coT=.15;gsCoat()}
@@ -7830,9 +7933,9 @@ function mixUpdate(dt){
  drainUpdate(dt);
  // 흔들림 · 날 · 다이얼 · 전원 불빛
  if(near>.6&&MIX.w>.2)shake=Math.max(shake,.22*MIX.w*(.25+MIX.load)*near);
- MIX.look=damp(MIX.look,mixSpotD()<.45&&(MIX.press||MIX.w>.05||MIX.drain>0)?1:0,MIX.look<.5?2.6:2,dt);{let top=MIX.sl;for(const c of MIX.list)if(c.jy>top)top=c.jy;top=clamp(top+.03,.08,MX_H);MIX.lookY=damp(MIX.lookY??.15,clamp(.42*top+.05,.09,.21),1.4,dt);MIX.lookZ=damp(MIX.lookZ??1,clamp((top-.12)/.22,0,1),1.4,dt)}
+ MIX.look=damp(MIX.look,mixSpotD()<.45&&(MIX.press||MIX.w>.05||MIX.drain>0)?1:0,MIX.look<.5?2.6:2,dt);{let top=MIX.sl;for(const c of MIX.list)if(c.jy>top)top=c.jy;top=clamp(top+.03,.08,MX_H);MIX.lookY=damp(MIX.lookY??.15,clamp(.5*top,.085,.21),1.4,dt);MIX.lookZ=damp(MIX.lookZ??1,clamp((top-.13)/.24,0,1),1.4,dt)}
  MIX.lookP=-Math.atan2(CAM.eye-(MX_Y+MIX.lookY),Math.max(.6,P.z-DOCK.z)); // 믹서 앞에 서서 돌리는 동안은 통 안에서 일이 벌어지는 높이(쌓인 몸 꼭대기·곤죽 윗면)를 따라 당겨 본다: 날이 묻히면 위로, 비우면 아래로. 찰수록 조금 넓게 (고개는 위아래로만)
- AU.blendMotor(MIX.w,MIX.load,Math.min(1,MIX.sl*8),MIX.bridge?1:0,near);
+ AU.blendMotor(MIX.w,Math.min(1,MIX.load+MIX.bog),Math.min(1,MIX.sl*8),MIX.bridge?1:0,near);
  if(MIX.w>.5&&MIX.load>.25&&time>MIX.sndT){MIX.sndT=time+rnd(.05,.11);AU.crackle(1+Math.round(MIX.load*3),.5*near*MIX.load,0,500,1500,.022);if(Math.random()<.4)AU.squelch(.35*near*MIX.load)}
 }
 function mixPress(){MIX.lastPress=time;MIX.cutB=Math.max(MIX.cutB,1);if(MIX.slamNext){MIX.slamNext=0;MIX.slam=.5;MIX.cutB+=4}const n=MIX.list.length;
@@ -7894,7 +7997,7 @@ const _bc=new THREE.Color();
 function liquidDraw(){const L=MIX.sl,vis=L>.0025;DOCK.liq.visible=DOCK.mar.visible=DOCK.lb.visible=vis;DOCK.foam.visible=vis&&MIX.foam>.02;
  const u=SLU.uSl.value;u.x=vis?1:0;if(!vis){DOCK.bBub.visible=false;return}
  // 곤죽 계산에 쓰는 값: 통 자리 · 윗면 모양 · 빛깔 · 흐름
- u.y=SL_A;u.w=.0055;SLU.uSlO.value.copy(jarW);SLU.uSlE.value.copy(camera.position).sub(jarW);SLU.uSlS.value.set(L,MIX.dimp,L+MIX.dimp*1.4+MIX.la*1.7+.006,0);SLU.uSlL.value.set(MIX.la,MIX.rot,MIX.lin,0);
+ u.y=SL_A;u.w=.0055*(1-.5*MIX.pk);SLU.uSlO.value.copy(jarW);SLU.uSlE.value.copy(camera.position).sub(jarW);SLU.uSlS.value.set(L,MIX.dimp,L+MIX.dimp*1.4+MIX.la*(1.7+1.5*MIX.pk)+.006,0);SLU.uSlL.value.set(MIX.la,MIX.rot,MIX.lin,MIX.pk);DOCK.liqM.roughness=.22+.16*MIX.pk;DOCK.liqM.envMapIntensity=.6-.42*MIX.pk;DOCK.marM.opacity=1-.95*MIX.pk; // 죽처럼 걸쭉해지면 윗면 광이 죽고 물감 줄도 묻힌다
  SLU.uSlC.value.copy(MIX.col);SLU.uSlC2.value.copy(MIX.ac);SLU.uSlF.value.set(MIX.fy,MIX.fs,MIX.mrb,MIX.ck);DOCK.lbM.color.copy(MIX.col);
  const p=DOCK.lqPos,top=DOCK.lqTop;
  for(let k=0;k<top;k++)p[k*3+1]=clamp(slSurf(p[k*3],p[k*3+2]),.002,MX_H-.008);
@@ -7903,7 +8006,7 @@ function liquidDraw(){const L=MIX.sl,vis=L>.0025;DOCK.liq.visible=DOCK.mar.visib
  for(let k=0;k<top;k++){const x=p[k*3],y=p[k*3+1],z=p[k*3+2];mp.setXYZ(k,x,y+.001,z);fp.setXYZ(k,x,y+.0022,z)}
  mp.needsUpdate=fp.needsUpdate=true;{const nn=g.attributes.normal.array;for(const q of[DOCK.mar.geometry,DOCK.foam.geometry]){if(!q.attributes.normal)q.setAttribute('normal',new THREE.BufferAttribute(new Float32Array(nn.length),3));q.attributes.normal.array.set(nn);q.attributes.normal.needsUpdate=true}} // 무늬·거품 층은 윗면 법선을 그대로 쓴다
  {const b=DOCK.lbPos,n=DOCK.lbN;for(let i=0;i<n;i++){const k=(n+i)*3;b[k+1]=clamp(slSurf(b[k],b[k+2]),.002,MX_H-.008)}DOCK.lb.geometry.attributes.position.needsUpdate=true} // 안쪽 옆면 윗줄은 윗면 높이를 따라간다
- DOCK.foamM.opacity=Math.min(.42,MIX.foam*.5);DOCK.foamM.color.copy(MIX.col).lerp(FOAMW,.45);DOCK.foamTex.rotation=-MIX.rot*.85;
+ DOCK.foamM.opacity=Math.min(.42,MIX.foam*.5)*(1-MIX.pk);DOCK.foamM.color.copy(MIX.col).lerp(FOAMW,.45);DOCK.foamTex.rotation=-MIX.rot*.85;
  MIX.mkTex.rotation=-MIX.rot;
  {const m=DOCK.bBub;let n=0;for(const b of MIX.bub){const k=Math.sin(Math.PI*.5*Math.min(1,b.t/b.T)),r=b.r*k,y=slSurf(b.x,b.z); // 부풀어 오르는 기포
    D.position.set(b.x,y-r*.3,b.z);D.rotation.set(0,0,0);D.scale.set(r,r*.85,r);D.updateMatrix();m.setMatrixAt(n,D.matrix);m.setColorAt(n,_bc.copy(MIX.col).lerp(FOAMW,.1));n++}
@@ -7977,6 +8080,7 @@ Object.assign(AU,{vbuf:{},vdec:{},vwant:null,
  eyeBlink(k=1){if(!this.ok)return;this.tone('sine',1900,1500,.035,.035*k);this.noise('bandpass',4200,3600,4,.02,.025*k)},
  roboBump(k=1){this.tone('triangle',540,320,.05,.18*k);this.noise('bandpass',2300,1200,2,.03,.16*k)},
  dockThunk(k=1){this.tone('sine',rnd(150,210),66,.1,.34*k);this.noise('lowpass',800,200,.8,.08,.24*k);this.noise('bandpass',2600,1500,3,.04,.07*k,.03)},
+ drown(k=1){if(!this.ok||k<.05)return;this.noise('lowpass',520,160,1.1,.32,.2*k);for(let i=0;i<6;i++)this.bubble(rnd(100,230),.13*k,i*.045+rnd(0,.02))}, // 곤죽에 잠겨 숨이 꾸르륵 막히는 소리 (배수구 gurgle과 다른 소리)
  jarThud(k=1){this.tone('sine',rnd(110,150),48,.12,.3*k,0,this.muf);this.noise('lowpass',520,140,.8,.1,.24*k);this.tone('sine',2300,2240,.08,.02*k,.004)},
  glassSqueak(k=1){if(!this.ok)return;this.noise('bandpass',rnd(2300,2900),rnd(3200,3800),9,.17,.09*k);this.tone('sine',rnd(1800,2200),rnd(2300,2700),.14,.025*k)},
  cooM(type,k=1){if(!this.ok||!this.muf)return;k*=this.voiceLevel*1.6;const b=[1280,1080,860,1560,1180,990,620][type]*.42*rnd(.94,1.06);for(let i=0;i<2;i++){const d=i*.115,f=b*(1+.2*i);this.tone('triangle',f,f*1.34,.09,.05*k,d,this.muf);this.tone('sine',f*2,f*2.7,.07,.02*k,d,this.muf)}},
